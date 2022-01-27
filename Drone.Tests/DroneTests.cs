@@ -1,4 +1,5 @@
 ﻿using FlyingDrone;
+using FlyingPizza.Drone;
 using Xunit;
 
 namespace Drone.Tests
@@ -11,7 +12,7 @@ namespace Drone.Tests
             var home = new Point(0.0, 0.0);
             var dest = new Point(3.0, 4.0);
 
-            var drone = new FlyingDrone.Drone(1, home);
+            var drone = new FlyingPizza.Drone.Drone(1, home);
             drone.Destination = dest;
 
             Point[] expectedRoute = {
@@ -30,7 +31,7 @@ namespace Drone.Tests
             var home = new Point(0.0, 0.0);
             var dest = new Point(-3.0, -4.0);
 
-            var drone = new FlyingDrone.Drone(1, home);
+            var drone = new FlyingPizza.Drone.Drone(1, home);
             drone.Destination = dest;
 
             Point[] expectedRoute = {
