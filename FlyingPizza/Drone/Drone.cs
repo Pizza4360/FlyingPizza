@@ -1,41 +1,32 @@
 ﻿using System;
-using System.Threading;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
-namespace FlyingDrone
+namespace FlyingPizza.Drone
 {
     public enum DroneState
     {
-        READY,
-        DELIVERING,
-        RETURNING,
-        DEAD,
-        CHARGING
+        Ready,
+        Delivering,
+        Returning,
+        Dead,
+        Charging
     }
 
-    public class Point
+    public sealed record Point(double X, double Y) 
     {
-        public Point(double X, double Y)
-    {
-        this.X = X;
-        this.Y = Y;
-    }
-
-        public double X { get; set; }
-        public double Y { get; set; }
-
-        public override bool Equals(object? obj)
-        {
-            return obj.GetType() == typeof(Point)
-                   && Math.Abs(X - ((Point) obj).X) < Drone.TOLERANCE
-                   && Math.Abs(Y - ((Point) obj).Y) < Drone.TOLERANCE;
-        }
+        public const double Tolerance = 0.0000001;
+        public bool Equals(Point other) =>
+            other != null
+            && Math.Abs(X - other.X) < Tolerance
+            && Math.Abs(Y - other.Y) < Tolerance;
+        
+        public override int GetHashCode() => HashCode.Combine(X, Y);
     }
  
     public class Drone
     {
-        public const double TOLERANCE = 0.000001;
+        private const int DroneUpdateInterval = 2000;
 
         // The unique ID of this drone which is stored in the database
         private int Id { get; }
@@ -57,111 +48,95 @@ namespace FlyingDrone
         {
             Id = id;
             Location = Home = Destination = home;
-            Status = DroneState.READY;
+            Status = DroneState.Ready;
         }
-
-        // Calculate the next Point.X or Point.Y along a route
-        double routeStep(double v, int i, int numberOfLocations, bool isLatitude) 
-            => isLatitude && Math.Abs(Home.X - Destination.X) < TOLERANCE
-                ? Home.X
-            : !isLatitude && Math.Abs(Home.Y - Destination.Y) < TOLERANCE
-                ? Home.Y
-            : (v * (i + 1)) / numberOfLocations;
 
         // Return an array of Point records simulating a drone's delivery route
         public Point[] GetRoute()
         {
-            if (Math.Abs(Home.X - Destination.X) < TOLERANCE && Math.Abs(Home.Y - Destination.Y) < TOLERANCE)
+            if (Math.Abs(Home.X - Destination.X) < Point.Tolerance 
+                && Math.Abs(Home.Y - Destination.Y) < Point.Tolerance)
             {
                 throw new ArgumentException(
                     "Destination cannot be the same as the Delivery station!");
             }
 
             // Longitude distance to get to destination
-            double xDistance = Home.X - Destination.X;
+            var xDistance = Home.X - Destination.X;
 
             // Latitude distance to get to destination
-            double yDistance = Home.Y - Destination.Y;
+            var yDistance = Home.Y - Destination.Y;
 
-            // # of locations should be the absolute value of the hypotenuse, rounded up to the
-            // nearest integer
-            int numberOfLocations = Math.Abs((int)Math.Ceiling(Math.Sqrt(
+            // # of steps should be the absolute value of the hypotenuse,
+            // rounded up to the nearest integer
+            var stepsCount = Math.Abs((int)Math.Ceiling(Math.Sqrt(
                 xDistance * xDistance + yDistance * yDistance)));
-
-            double xStepSize = Math.Abs(Destination.X - Home.X) / numberOfLocations;
-            double yStepSize = Math.Abs(Destination.Y - Home.Y) / numberOfLocations;
-
-            int xDirection = Destination.X > Home.X ? 1 : -1;
-            int yDirection = Destination.Y > Home.Y ? 1 : -1;
             
-            Point[] route = new Point[numberOfLocations];
+            // The incremental change in latitude & longitude for each discrete
+            // Point
+            var xStep = Math.Abs(Destination.X - Home.X) / stepsCount;
+            var yStep = Math.Abs(Destination.Y - Home.Y) / stepsCount;
 
-            for (int i = 0; i < numberOfLocations - 1; i++)
+            // The multiplier to ensure the direction of StepSize
+            // increases for Destination X and Y > Home X and Y
+            // decreases for Destination X and Y < Home X and Y
+            var xDirection = Destination.X > Home.X ? 1 : -1;
+            var yDirection = Destination.Y > Home.Y ? 1 : -1;
+            
+            Point[] route = new Point[stepsCount];
+
+            for (var i = 0; i < stepsCount - 1; i++)
             {
-                route[i] = new((i + 1) * xStepSize * xDirection,(i + 1) * yStepSize * yDirection);
+                route[i] = new Point((i + 1) * xStep * xDirection,
+                    (i + 1) * yStep * yDirection);
             }
 
-            route[numberOfLocations - 1] = Destination;
-
-            // // LINQ yields all the points (except possibly the last one) along the route, one unit apart.
-            // List<Point> route = Enumerable.Range(0, numberOfLocations - 1)
-            //     .Select(i => new Point(
-            //         routeStep(xDistance, i, numberOfLocations, true),
-            //         routeStep(yDistance, i, numberOfLocations, false)
-            //     )).ToList();
-
-            // Add the Destination Point if needed.
-            // if (!route.TakeLast(1).Equals(Destination))
-            // {
-            //     route.Add(Destination);
-            // }
-            // return route.ToArray();
+            route[stepsCount - 1] = Destination;
             return route;
         }
 
         // Dispatch a drone to deliver a pizza.
-        public void deliverOrder(Point customerLocation)
+        public void DeliverOrder(Point customerLocation)
         {
             Destination = customerLocation;
-            UpdateStatus(DroneState.DELIVERING);
-            Point[] route = GetRoute();
-            Console.WriteLine(this);
-
-            for (int i = 0; i < route.Length; i++)
+            var route = GetRoute();
+            UpdateStatus(DroneState.Delivering);
+            
+            // Travel to Destination
+            foreach (var point in route)
             {
-                Location = route[i];
-                UpdateLocation(Location);
-                Console.WriteLine(this);
-                Thread.Sleep(2000);
+                UpdateLocation(point, DroneUpdateInterval);
             }
-
-            UpdateStatus(DroneState.RETURNING);
-            for (int i = route.Length - 1; i >0; i--)
+            UpdateStatus(DroneState.Returning);
+            
+            // Travel back to Home
+            foreach (var point in route.Reverse())
             {
-                Location = route[i];
-                UpdateLocation(Location);
-                Console.WriteLine(this);
-                Thread.Sleep(2000);
+                UpdateLocation(point, DroneUpdateInterval);
             }
-            UpdateStatus(DroneState.READY);
+            UpdateStatus(DroneState.Ready);
         }
 
-        // Todo: Post a status update to the database.
         private void UpdateStatus(DroneState state)
         {
-            this.Status = state;
-            throw new NotImplementedException();
+            Status = state;
+            // Todo: Post a status update to the database.
         }
 
-        // Todo: Post a location update to the database. 
-        private void UpdateLocation(Point location)
+        private void UpdateLocation(Point location, int sleepTime = 0)
         {
-            throw new NotImplementedException();
+            Location = location;
+            Console.WriteLine(this);
+            Thread.Sleep(sleepTime);
+            // Todo: Post a location update to the database. 
         }
 
         public override string ToString()
         {
-            return $"ID:{Id}\nlocation:{Location}\nDestination:{Destination}\nStatus:{Status}";
+            return $"ID:{Id}\n" +
+                   $"location:{Location}\n" +
+                   $"Destination:{Destination}\n" +
+                   $"Status:{Status}";
         }
     }
 }
