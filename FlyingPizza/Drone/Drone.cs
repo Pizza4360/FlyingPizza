@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using FlyingPizza.Services;
 
 namespace FlyingPizza.Drone
 {
@@ -29,26 +30,36 @@ namespace FlyingPizza.Drone
         private const int DroneUpdateInterval = 2000;
 
         // The unique ID of this drone which is stored in the database
-        private int Id { get; }
+        //TODO: DewsDavid31 - I changed this to public for our sanity in testing/database
+        public int Id { get; }
 
         // The point representing the pizza restaurant
         private Point Home { get; }
 
         // The current position of the drone
-        private Point Location { get; set; } 
+        //TODO: DewsDavid31 - I changed this to public for our sanity in testing/database
+        public Point Location { get; set; } 
 
         // The desired position of the drone
         public Point Destination { get; set; }
 
         // Current status of the drone
-        private DroneState Status { get; set; }
-        
+        //TODO: DewsDavid31 - I changed this to public for our sanity in testing/database
+        public DroneState Status { get; set; }
+
+        private RestDbSvc RestSvc { get;}
+
         // Constructor
         public Drone(int id, Point home)
         {
             Id = id;
             Location = Home = Destination = home;
             Status = DroneState.Ready;
+            
+            // This may not work unless you ssh into mongo server
+            RestSvc = new RestDbSvc();
+            var postTask = RestSvc.Post<Drone>("http://localhost:8080/" + Id, this);
+            
         }
 
         // Return an array of Point records simulating a drone's delivery route
@@ -120,7 +131,8 @@ namespace FlyingPizza.Drone
         private void UpdateStatus(DroneState state)
         {
             Status = state;
-            // Todo: Post a status update to the database.
+            // Post a status update to the database.
+            updateRest();
         }
 
         private void UpdateLocation(Point location, int sleepTime = 0)
@@ -128,9 +140,17 @@ namespace FlyingPizza.Drone
             Location = location;
             Console.WriteLine(this);
             Thread.Sleep(sleepTime);
-            // Todo: Post a location update to the database. 
+            // Post a location update to the database.
+            updateRest();
         }
-
+        //TODO: needs Rest to be SSH'd into to use, also silently fails to upsert a record.
+        // Puts a Drone object into MongoDB, used to put separate fields instead, but it didn't work
+        // CORRECTION: neither does this, sadly...
+        private void updateRest()
+        {
+            var putTask = RestSvc.Put<Drone>("http://localhost:8080/" + Id, this);
+            putTask.Wait();
+        }
         public override string ToString()
         {
             return $"ID:{Id}\n" +
