@@ -43,5 +43,19 @@ namespace Drone.Tests
             };
             Assert.Equal(expectedRoute, drone.GetRoute());
         }
+        [Fact]
+        public void TestDatabaseHasLocation()
+        {
+            //TODO: I have no idea how to hook to this dang thing by C# since
+            // Apparently I can't understand webdev sorry
+            Assert.False(true, "Not implemented");
+        }
+        [Fact]
+        public void TestDatabaseHasStatus()
+        {
+
+            //TODO: I have no idea how to hook to this dang thing by C#
+            Assert.False(true, "Not implemented");
+        }
     }
 }
