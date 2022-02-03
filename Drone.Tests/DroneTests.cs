@@ -49,9 +49,8 @@ namespace Drone.Tests
         }
 
         [Fact]
-        public void TestDatabaseHasFields()
+        public void TestDatabaseHasLocation()
         {
-            // TODO: this GET works, but POST fails
             // TO RUN: use ssh -L 8080:localhost:8080 root@147.182.227.239 using password given by Kamren
 
             var home = new Point(0.0, 0.0);
@@ -61,13 +60,33 @@ namespace Drone.Tests
             var drone = new FlyingPizza.Drone.Drone(1, home);
 
             drone.DeliverOrder(dest);
-            var getTask = restPoint.Get<FlyingPizza.Drone.Drone>("http://localhost:8080/" + drone.Id);
+            var getTask = restPoint.Get<Point>("http://localhost:8080/Fleet/");
             getTask.Wait();
+            var resultLocation = getTask.Result;
             // Waiting for rest to come back
-
-            FlyingPizza.Drone.Drone savedDrone = getTask.Result;
+            
             Assert.True(getTask.IsCompletedSuccessfully, "Failed to successfully Get on database");
-            Assert.Equal(drone, savedDrone);
+            Assert.Equal(drone.Location, resultLocation);
+        }
+        [Fact]
+        public void TestDatabaseHasStatus()
+        {
+            // TO RUN: use ssh -L 8080:localhost:8080 root@147.182.227.239 using password given by Kamren
+
+            var home = new Point(0.0, 0.0);
+
+            var dest = new Point(-3.0, -4.0);
+
+            var drone = new FlyingPizza.Drone.Drone(1, home);
+
+            drone.DeliverOrder(dest);
+            var getTask = restPoint.Get<string>("http://localhost:8080/Fleet/");
+            getTask.Wait();
+            var resultStatus = getTask.Result;
+            // Waiting for rest to come back
+            
+            Assert.True(getTask.IsCompletedSuccessfully, "Failed to successfully Get on database");
+            Assert.Equal(drone.Status.ToString(), resultStatus);
         }
     }
 }

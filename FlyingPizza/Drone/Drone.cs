@@ -55,11 +55,12 @@ namespace FlyingPizza.Drone
             Id = id;
             Location = Home = Destination = home;
             Status = DroneState.Ready;
-            
+
             // This may not work unless you ssh into mongo server
             RestSvc = new RestDbSvc();
-            var postTask = RestSvc.Post<Drone>("http://localhost:8080/" + Id, this);
-            
+            var postTask = RestSvc.Post<Point>("http://localhost:8080/Fleet/",Location);
+            postTask = RestSvc.Post<string>("http://localhost:8080/Fleet/", Status.ToString());
+
         }
 
         // Return an array of Point records simulating a drone's delivery route
@@ -148,8 +149,10 @@ namespace FlyingPizza.Drone
         // CORRECTION: neither does this, sadly...
         private void updateRest()
         {
-            var putTask = RestSvc.Put<Drone>("http://localhost:8080/" + Id, this);
-            putTask.Wait();
+            var postTask = RestSvc.Put<Point>("http://localhost:8080/Fleet/", Location);
+            postTask = RestSvc.Put<string>("http://localhost:8080/Fleet/", Status.ToString());
+
+
         }
         public override string ToString()
         {
