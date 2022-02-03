@@ -30,7 +30,7 @@ namespace FlyingPizza.Services
             http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
                 "Basic",
                 Convert.ToBase64String(
-                    System.Text.Encoding.ASCII.GetBytes("admins:Snarfblat")));
+                    System.Text.Encoding.ASCII.GetBytes("admin:secret")));
 
 
             http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -50,7 +50,7 @@ namespace FlyingPizza.Services
             http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
                 "Basic",
                 Convert.ToBase64String(
-                    System.Text.Encoding.ASCII.GetBytes("admins:Snarfblat")));
+                    System.Text.Encoding.ASCII.GetBytes("admin:secret")));
 
 
             http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -70,7 +70,7 @@ namespace FlyingPizza.Services
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
                     "Basic",
                     Convert.ToBase64String(
-                        System.Text.Encoding.ASCII.GetBytes("admins:Snarfblat")));
+                        System.Text.Encoding.ASCII.GetBytes("admin:secret")));
 
 
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
