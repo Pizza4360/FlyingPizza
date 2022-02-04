@@ -16,7 +16,7 @@ namespace Drone.Tests
             var home = new Point(0.0, 0.0);
             var dest = new Point(3.0, 4.0);
 
-            var drone = new FlyingPizza.Drone.Drone(1, home);
+            var drone = new FlyingPizza.Drone.DroneModel(1, home);
             drone.Destination = dest;
 
             Point[] expectedRoute = {
@@ -35,7 +35,7 @@ namespace Drone.Tests
             var home = new Point(0.0, 0.0);
             var dest = new Point(-3.0, -4.0);
 
-            var drone = new FlyingPizza.Drone.Drone(1, home);
+            var drone = new FlyingPizza.Drone.DroneModel(1, home);
             drone.Destination = dest;
 
             Point[] expectedRoute = {
@@ -57,7 +57,7 @@ namespace Drone.Tests
 
             var dest = new Point(-3.0, -4.0);
 
-            var drone = new FlyingPizza.Drone.Drone(1, home);
+            var drone = new FlyingPizza.Drone.DroneModel(1, home);
 
             drone.DeliverOrder(dest);
             var getTask = restPoint.Get<Point>("http://localhost:8080/Fleet/");
@@ -77,7 +77,7 @@ namespace Drone.Tests
 
             var dest = new Point(-3.0, -4.0);
 
-            var drone = new FlyingPizza.Drone.Drone(1, home);
+            var drone = new FlyingPizza.Drone.DroneModel(1, home);
 
             drone.DeliverOrder(dest);
             var getTask = restPoint.Get<string>("http://localhost:8080/Fleet/");
