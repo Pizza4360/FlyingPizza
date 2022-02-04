@@ -16,7 +16,7 @@ namespace Drone.Tests
             var home = new Point(0.0, 0.0);
             var dest = new Point(3.0, 4.0);
 
-            var drone = new FlyingPizza.Drone.Drone(1, home);
+            var drone = new FlyingPizza.Drone.DroneModel(1, home);
             drone.Destination = dest;
 
             Point[] expectedRoute = {
@@ -35,7 +35,7 @@ namespace Drone.Tests
             var home = new Point(0.0, 0.0);
             var dest = new Point(-3.0, -4.0);
 
-            var drone = new FlyingPizza.Drone.Drone(1, home);
+            var drone = new FlyingPizza.Drone.DroneModel(1, home);
             drone.Destination = dest;
 
             Point[] expectedRoute = {
@@ -47,6 +47,27 @@ namespace Drone.Tests
             };
             Assert.Equal(expectedRoute, drone.GetRoute());
         }
+
+        [Fact]
+        public void TestDatabaseHasLocation()
+        {
+            // TO RUN: use ssh -L 8080:localhost:8080 root@147.182.227.239 using password given by Kamren
+
+            var home = new Point(0.0, 0.0);
+
+            var dest = new Point(-3.0, -4.0);
+
+            var drone = new FlyingPizza.Drone.DroneModel(1, home);
+
+            drone.DeliverOrder(dest);
+            var getTask = restPoint.Get<Point>("http://localhost:8080/Fleet/");
+            getTask.Wait();
+            var resultLocation = getTask.Result;
+            // Waiting for rest to come back
+            
+            Assert.True(getTask.IsCompletedSuccessfully, "Failed to successfully Get on database");
+            Assert.Equal(drone.Location, resultLocation);
+        }
         [Fact]
         public void TestDatabaseHasStatus()
         {
@@ -56,16 +77,16 @@ namespace Drone.Tests
 
             var dest = new Point(-3.0, -4.0);
 
-            var drone = new FlyingPizza.Drone.Drone(1, home);
+            var drone = new FlyingPizza.Drone.DroneModel(1, home);
 
             drone.DeliverOrder(dest);
-            var getTask = restPoint.Get<int>("http://localhost:8080/Fleet/Status/0");
+            var getTask = restPoint.Get<string>("http://localhost:8080/Fleet/");
             getTask.Wait();
             var resultStatus = getTask.Result;
             // Waiting for rest to come back
             
             Assert.True(getTask.IsCompletedSuccessfully, "Failed to successfully Get on database");
-            Assert.Equal((int) drone.Status, resultStatus);
+            Assert.Equal(drone.Status.ToString(), resultStatus);
         }
     }
 }
