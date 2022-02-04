@@ -14,6 +14,14 @@ namespace Drone.Tests
     public class DroneTests
     {
         RestDbSvc restPoint = new RestDbSvc();
+        private async Task<DroneModel> getRestDrone()
+        {
+            // Todo: register drone if not in the DB this creates duplicates
+            var droneDeserialized = await restPoint.Get<DroneModel>("http://localhost:8080/Fleet/61fd97f2efe16a6bb253cbb7"); ;
+            Console.WriteLine(droneDeserialized);
+            return droneDeserialized;
+        }
+        
         
         [Fact]
         public void TestGetRouteAllPositiveNumbers()
@@ -54,7 +62,7 @@ namespace Drone.Tests
         }
 
         [Fact]
-        public void TestDatabaseHasLocation()
+        public void TestDatabaseHasDrone()
         {
             // TO RUN: use ssh -L 8080:localhost:8080 root@147.182.227.239 using password given by Kamren
 
@@ -63,35 +71,13 @@ namespace Drone.Tests
             var dest = new Point(-3.0, -4.0);
 
             var drone = new FlyingPizza.Drone.DroneModel(1, home);
-
-            drone.DeliverOrder(dest);
-            var getTask = restPoint.Get<Point>("http://localhost:8080/Fleet/");
-            getTask.Wait();
-            var resultLocation = getTask.Result;
-            // Waiting for rest to come back
+            
+            var getTask = restPoint.Get<DroneModel>("http://localhost:8080/Fleet/61fd97f2efe16a6bb253cbb7");
+            var resultDroneModel = getRestDrone().Result;
+            // TODO: when put in async private task or waited, Serializer still chokes on drone object JSON
             
             Assert.True(getTask.IsCompletedSuccessfully, "Failed to successfully Get on database");
-            Assert.Equal(drone.Location, resultLocation);
-        }
-        [Fact]
-        public void TestDatabaseHasStatus()
-        {
-            // TO RUN: use ssh -L 8080:localhost:8080 root@147.182.227.239 using password given by Kamren
-
-            var home = new Point(0.0, 0.0);
-
-            var dest = new Point(-3.0, -4.0);
-
-            var drone = new FlyingPizza.Drone.DroneModel(1, home);
-
-            drone.DeliverOrder(dest);
-            var getTask = restPoint.Get<string>("http://localhost:8080/Fleet/");
-            getTask.Wait();
-            var resultStatus = getTask.Result;
-            // Waiting for rest to come back
-            
-            Assert.True(getTask.IsCompletedSuccessfully, "Failed to successfully Get on database");
-            Assert.Equal(drone.Status.ToString(), resultStatus);
+            Assert.Equal(drone, resultDroneModel);
         }
     }
 }

@@ -69,7 +69,7 @@ namespace FlyingPizza.Drone
 
         private async Task doStuff()
         {
-            // Todo: register drone if not in the DB
+            // Todo: register drone if not in the DB this creates duplicates
             var urlAndShit = await RestSvc.Post<DroneModel>("http://localhost:8080/Fleet/", this);
             Url = urlAndShit.Headers.Location.AbsoluteUri;
             var task = RestSvc.Put(Url, this);
