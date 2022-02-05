@@ -56,7 +56,7 @@ namespace Drone.Tests
                 new (-1.2, -1.6),
                 new (-1.8, -2.4),
                 new (-2.4, -3.2),
-                new (-3.0, -4.0)
+                new (-3.0, sc-4.0)
             };
             Assert.Equal(expectedRoute, drone.GetRoute());
         }
@@ -72,11 +72,9 @@ namespace Drone.Tests
 
             var drone = new FlyingPizza.Drone.DroneModel(1, home);
             
-            var getTask = restPoint.Get<DroneModel>("http://localhost:8080/Fleet/61fd97f2efe16a6bb253cbb7");
             var resultDroneModel = getRestDrone().Result;
             // TODO: when put in async private task or waited, Serializer still chokes on drone object JSON
             
-            Assert.True(getTask.IsCompletedSuccessfully, "Failed to successfully Get on database");
             Assert.Equal(drone, resultDroneModel);
         }
     }

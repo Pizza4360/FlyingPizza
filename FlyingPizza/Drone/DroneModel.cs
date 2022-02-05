@@ -2,40 +2,27 @@
 using System.Linq;
 using System.Threading;
 using FlyingPizza.Services;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using Xunit.Sdk;
 
 
 namespace FlyingPizza.Drone
 {
-    public enum DroneState
+    public sealed record DroneRecord(int FleetNumber, string Id, Point Location, DroneState State)
     {
-        Ready,
-        Delivering,
-        Returning,
-        Dead,
-        Charging
+        public static DroneRecord From(DroneModel model)
+        {
+            return new(model.FleetNumber, model.Id, model.Location, model.Status);
+        }
     }
-
-    public sealed record Point(double X, double Y) 
-    {
-        public const double Tolerance = 0.0000001;
-        public bool Equals(Point other) =>
-            other != null
-            && Math.Abs(X - other.X) < Tolerance
-            && Math.Abs(Y - other.Y) < Tolerance;
-        
-        public override int GetHashCode() => HashCode.Combine(X, Y);
-    }
- 
     public class DroneModel : ComponentBase
     {
         private const int DroneUpdateInterval = 2000;
 
         // The unique ID of this drone which is stored in the database
         //TODO: DewsDavid31 - I changed this to public for our sanity in testing/database
-        public int Id { get; }
+        public int FleetNumber { get; }
 
         // The point representing the pizza restaurant
         private Point Home { get; }
@@ -53,28 +40,37 @@ namespace FlyingPizza.Drone
 
         private RestDbSvc RestSvc { get;}
         
-        private String Url { get; set; }
+        private string Url { get; set; }
+        public string Id { get; set; }
+        
+        private string FleetPage = "http://localhost:8080/Fleet/";
 
         // Constructor
-        public DroneModel(int id, Point home)
+        public DroneModel(int fleetNumber, Point home, string Id = "")
         {
-            Id = id;
+            FleetNumber = fleetNumber;
             Location = Home = Destination = home;
             Status = DroneState.Ready;
 
             // This may not work unless you ssh into mongo server
             RestSvc = new RestDbSvc();
-            doStuff();
+            if (Id.Equals("")) RegisterDrone();
         }
 
-        private async Task doStuff()
+        private async Task RegisterDrone()
         {
             // Todo: register drone if not in the DB this creates duplicates
-            var urlAndShit = await RestSvc.Post<DroneModel>("http://localhost:8080/Fleet/", this);
-            Url = urlAndShit.Headers.Location.AbsoluteUri;
+            FleetPage = "http://localhost:8080/Fleet/";
+            var response = await RestSvc.Post<DroneRecord>(FleetPage, DroneRecord.From(this));
+            if (response.Headers.Location is not null) Url = response.Headers.Location.AbsoluteUri;
+            else throw new NullException("Something went wrong here");
             var task = RestSvc.Put(Url, this);
             Console.WriteLine(task + "");
+            
+            // Todo make sure you get the Id back and assign it here
+            Id = task + "";
         }
+
         // Return an array of Point records simulating a drone's delivery route
         public Point[] GetRoute()
         {
@@ -156,16 +152,16 @@ namespace FlyingPizza.Drone
             // Post a location update to the database.
             updateRest();
         }
-        //TODO: needs Rest to be SSH'd into to use, also silently fails to upsert a record.
+        //TODOd: needs Rest to be SSH'd into to use, also silently fails to upsert a record.
         // Puts a Drone object into MongoDB, used to put separate fields instead, but it didn't work
         // CORRECTION: neither does this, sadly...
         private void updateRest()
         {
-            var postTask = RestSvc.Put<DroneModel>("http://localhost:8080/Fleet/", this);
+            RestSvc.Post<DroneRecord>(FleetPage, DroneRecord.From(this));
         }
         public override string ToString()
         {
-            return $"ID:{Id}\n" +
+            return $"ID:{FleetNumber}\n" +
                    $"location:{Location}\n" +
                    $"Destination:{Destination}\n" +
                    $"Status:{Status}";
