@@ -8,16 +8,25 @@ using FlyingPizza.Drone;
 using FlyingPizza.Services;
 using Microsoft.AspNetCore.Components;
 using Xunit;
+using Xunit.Abstractions;
+using System.Linq;
 
 namespace Drone.Tests
 {
     public class DroneTests
     {
+        private readonly ITestOutputHelper _testOutputHelper;
         RestDbSvc restPoint = new RestDbSvc();
-        private async Task<DroneModel> getRestDrone()
+
+        public DroneTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+        
+        private async Task<JsonDocument> getRestDroneRecord(int badge)
         {
             // Todo: register drone if not in the DB this creates duplicates
-            var locationDeserialized = await restPoint.Get<DroneModel>("http://localhost:8080/Fleet/61fded17efe16a6bb253cc33?keys={_id:0,url:1}");
+            var locationDeserialized = await restPoint.Get<JsonDocument>("http://localhost:8080/Fleet?filter={badgeNumber: " + badge + "}&keys={_id:0,badgeNumber:1,location:1,state:1}");
             Console.WriteLine(locationDeserialized);
             return locationDeserialized;
         }
@@ -74,7 +83,7 @@ namespace Drone.Tests
                 new (-2.4, -3.2),
                 new (-3.0, -4.0)
             };
-            //Assert.Equal(expectedRoute, drone.GetRoute());
+            Assert.Equal(expectedRoute, drone.GetRoute());
             Assert.True(false, "if only C# Xunit could have assert.fail");
         }
 
@@ -87,15 +96,19 @@ namespace Drone.Tests
 
             var dest = new Point(-3.0, -4.0);
 
-            //var drone = new FlyingPizza.Drone.DroneModel(3, home);
+            var drone = new FlyingPizza.Drone.DroneModel(2, home);
             
-            var resultDroneLocation = getRestDroneLocation().Result;
-            var resultDroneStatus = getRestDroneStatus().Result;
+            var resultDroneRecord = getRestDroneRecord(2);
+            resultDroneRecord.Wait();
+            var res = resultDroneRecord.Result;
 
+            var droneActualRecord = DroneRecord.From(drone);
+
+            var ourRecords = res.RootElement.EnumerateArray().Select(_ => DroneRecord.Deserialize(_)).ToArray();
             // TODO: when put in async private task or waited, Serializer still chokes on drone object JSON
-            
-            Assert.Equal(home, resultDroneLocation);
-            Assert.Equal("Ready", resultDroneStatus);
+
+            Assert.NotNull(res);
+            Assert.Equal(droneActualRecord, ourRecords[0]);
         }
     }
 }
