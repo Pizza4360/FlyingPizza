@@ -30,7 +30,7 @@ namespace Drone.Tests
             var dest = new Point(3.0, 4.0);
 
             var drone = new FlyingPizza.Drone.DroneModel(1, home);
-            drone.Destination = dest;
+            drone.Delivery = dest;
 
             Point[] expectedRoute = {
                 new (0.6, 0.8),
@@ -49,7 +49,7 @@ namespace Drone.Tests
             var dest = new Point(-3.0, -4.0);
 
             var drone = new FlyingPizza.Drone.DroneModel(1, home);
-            drone.Destination = dest;
+            drone.Delivery = dest;
 
             Point[] expectedRoute = {
                 new (-0.6, -0.8),
