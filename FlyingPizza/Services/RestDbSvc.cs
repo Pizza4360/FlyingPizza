@@ -137,7 +137,7 @@ namespace FlyingPizza.Services
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
                 "Basic",
                 Convert.ToBase64String(
-                    System.Text.Encoding.ASCII.GetBytes("admins:Snarfblat")));
+                    System.Text.Encoding.ASCII.GetBytes("admin:secret")));
 
             return await http.SendAsync(request);
         }
