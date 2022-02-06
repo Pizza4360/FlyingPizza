@@ -69,7 +69,6 @@ namespace Drone.Tests
             var dest = new Point(-3.0, -4.0);
 
             var drone = new FlyingPizza.Drone.DroneModel(2, home);
-            var writeTask = drone.writeDb();
             var resultDroneRecord = drone.readDbArray();
             var res  = resultDroneRecord.Result;
 

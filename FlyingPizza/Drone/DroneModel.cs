@@ -37,8 +37,7 @@ namespace FlyingPizza.Drone
         private RestDbSvc RestSvc { get;}
         
         // The url to send commands to a drone
-        //TODO: Removed since updating it upon construction of itself is becoming tedious
-        //private string Url { get; set; }
+        public string Url { get; set; }
         
         
         // Constructor
@@ -49,6 +48,8 @@ namespace FlyingPizza.Drone
             Delivery = location;
             Status =  new DroneStatus(DroneState.Ready);
             RestSvc = new RestDbSvc();
+            var setUrl = writeDb();
+            setUrl.Wait();
         }
 
         // atomic write of drone to database (hopefully)
@@ -58,13 +59,17 @@ namespace FlyingPizza.Drone
                                                 "}&keys={badgeNumber:1}");
             if (badgesTask.Length >= 1)
             {
-                RestSvc.Put(FleetPage, this);
+                var putResp = await RestSvc.Put(Url, this);
             }
             else
             {
-                RestSvc.Post(FleetPage, this);
+                var response = await RestSvc.Post<DroneModel>(FleetPage, this);
+                if (response.Headers.Location is not null) Url = response.Headers.Location.AbsoluteUri;
+                else throw new NullException("Failed to fetch URL of this drone");
+                var postResponse = await RestSvc.Put<DroneModel>(Url, this);
             }
         }
+
         // Atomic read (hopefully) of drone record
         public async Task<DroneModel[]> readDbArray()
         {
@@ -154,7 +159,7 @@ namespace FlyingPizza.Drone
             Console.WriteLine(this);
             Thread.Sleep(sleepTime);
             // Post a location update to the database.
-            writeDb().Wait();
+            //writeDb().Wait();
         }
         
         // send update to the database
@@ -165,6 +170,7 @@ namespace FlyingPizza.Drone
             return $"badgeNumber:{BadgeNumber}\n" +
                    $"location:{Location}\n" +
                    $"Destination:{Delivery}\n" +
+                   $"Destination:{Url}\n" +
                    $"Status:{Status}";
         }
         
@@ -179,7 +185,7 @@ namespace FlyingPizza.Drone
             else
             {
                 if (test.Delivery == this.Delivery && test.Location == this.Location &&
-                    test.BadgeNumber == this.BadgeNumber)
+                    test.BadgeNumber == this.BadgeNumber && test.Url == this.Url)
                 {
                     return true;
                 }
