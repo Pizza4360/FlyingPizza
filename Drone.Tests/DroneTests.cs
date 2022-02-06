@@ -16,38 +16,11 @@ namespace Drone.Tests
     public class DroneTests
     {
         private readonly ITestOutputHelper _testOutputHelper;
-        RestDbSvc restPoint = new RestDbSvc();
 
         public DroneTests(ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
         }
-        
-        private async Task<DroneModel> getRestDroneRecord(int badge)
-        {
-            // Todo: register drone if not in the DB this creates duplicates
-            var locationDeserialized = await restPoint.Get<DroneModel[]>("http://localhost:8080/Fleet?filter={badgeNumber: " + badge + "}");
-            Console.WriteLine(locationDeserialized);
-            return locationDeserialized[0];
-        }
-        private async Task<Point> getRestDroneLocation()
-        {
-            // Todo: register drone if not in the DB this creates duplicates
-            var locationDeserialized = await restPoint.Get<Point>("http://localhost:8080/Fleet/61fded17efe16a6bb253cc33?keys={location:1}");
-                
-            Console.WriteLine(locationDeserialized);
-            return locationDeserialized;
-        }
-        private async Task<string> getRestDroneStatus()
-        {
-            // Todo: register drone if not in the DB this creates duplicates
-           var locationDeserialized = await restPoint.Get<string>("http://localhost:8080/Fleet/61fded17efe16a6bb253cc33?keys={_id:0,Status:1}");
-                
-            Console.WriteLine(locationDeserialized);
-            return locationDeserialized;
-        }
-        
-        
         [Fact]
         public void TestGetRouteAllPositiveNumbers()
         {
@@ -96,15 +69,13 @@ namespace Drone.Tests
             var dest = new Point(-3.0, -4.0);
 
             var drone = new FlyingPizza.Drone.DroneModel(2, home);
-            
-            var resultDroneRecord = getRestDroneRecord(2);
-            //resultDroneRecord.Wait();
-            var res = resultDroneRecord.Result;
-            
+            var writeTask = drone.writeDb();
+            var resultDroneRecord = drone.readDbArray();
+            var res  = resultDroneRecord.Result;
 
-            //Assert.NotNull(res);
             
-            Assert.Equal(drone, res);
+            
+            Assert.Equal(drone, res[0]);
         }
     }
 }
