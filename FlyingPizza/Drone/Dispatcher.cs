@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using FlyingPizza.Drone;
 using FlyingPizza.Services;
 
@@ -15,7 +16,7 @@ namespace DroneDispatcher
             Url = url;
         }
         
-        public DroneStatus GetStatus(DroneStatus status)
+        public string GetStatus(string status)
         {
             // Todo retrieve status form db with query
             throw new NotImplementedException();
@@ -38,23 +39,22 @@ namespace DroneDispatcher
     {
         private List<DroneConnection> Drones;
 
-        public Dispatcher(string url)
-        {
-            
-        }
+        public Dispatcher(){}
 
         private static string[] GetDroneUrls()
         {
-            // Todo make this return a Dictionary of {_id:url}
-            RestDbSvc r = new RestDbSvc();
-            var url = "http://localhost:8080/Fleet?keys={'_id': 1, 'url':1}";
-            var entries = r.Get<JsonDocument>(url);
-            entries.Wait();
-            return entries.Result.RootElement.EnumerateArray()
-                .Select(
-                    _ => _.GetProperty("url").ToString()
-                )
-                .ToArray();
+            // // Todo make this return a Dictionary of {_id:url}
+            // RestDbSvc r = new RestDbSvc();
+            // var url = "http://localhost:8080/Fleet?keys={'_id': 1, 'url':1}";
+            // var entries = r.Get<JsonDocument>(url);
+            // entries.Wait();
+            // entries.Result.RootElement.
+            // return entries.Result.RootElement.EnumerateArray()
+            //     .Select(
+            //         _ => _.GetProperty("url").ToString()
+            //     )
+            //     .ToArray();
+            return new[] {""};
         }
         
         private void ServeForever()
@@ -69,10 +69,14 @@ namespace DroneDispatcher
             /*Todo and make sure order object is updated in database to "assigned"*/
         }
 
-        private List<Order> GetActiveOrders()
+        public async Task<Order[]> GetActiveOrders()
         {
-            // Todo make it happen
-            throw new NotImplementedException();
+            var url = "http://localhost:8080/Orders"; 
+            RestDbSvc  r = new RestDbSvc();
+            var entries = r.Get<Order[]>(url);
+            entries.Wait();
+            Console.WriteLine("r status:" + entries);
+            return entries.Result;
         }
     }
 }
