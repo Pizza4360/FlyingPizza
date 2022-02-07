@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FlyingPizza.Drone;
 using FlyingPizza.Services;
@@ -35,32 +37,42 @@ namespace DroneDispatcher
 
         public Dispatcher(){}
 
-        private static string[] GetDroneUrls()
+        private record UrlRecord(string Url);
+        public static async Task<string[]> GetDroneUrls()
         {
-            // // Todo make this return a Dictionary of {_id:url}
-            // RestDbSvc r = new RestDbSvc();
-            // var url = "http://localhost:8080/Fleet?keys={'_id': 1, 'url':1}";
-            // var entries = r.Get<JsonDocument>(url);
-            // entries.Wait();
-            // entries.Result.RootElement.
-            // return entries.Result.RootElement.EnumerateArray()
-            //     .Select(
-            //         _ => _.GetProperty("url").ToString()
-            //     )
-            //     .ToArray();
-            return new[] {""};
+            //Todo: make sure you fix this the Kamron way...
+            var url = "http://localhost:8080/Fleet?keys={url:1, _id:0}";
+            var task = new RestDbSvc().Get<UrlRecord[]>(url);
+            task.Wait();
+            var objs = task.Result; 
+            string[] arr = new string[task.Result.Length];
+            for (int i = 0; i < arr.Length; i++)
+            {
+                arr[i] = objs[i].Url;
+            }
+            return arr;
         }
         
         private void ServeForever()
         {
-            /*Todo, check for orders and make it happen*/
             
-            /*Todo, loop forever, pausing every 2 seconds*/
-            
-            /* Todo, when an order comes in, get a list of available drones
-             * and pick the first available DroneConnection to deliver the order. */
-            
-            /*Todo and make sure order object is updated in database to "assigned"*/
+            /*Todod, loop forever, pausing every 2 seconds*/
+            while (true)
+            {
+                /*Todod, check for orders and make it happen*/
+                var activeOrders = GetActiveOrders().Result;
+                if (activeOrders.Length > 0)
+                {
+                    /* Todo, when an order comes in, get a list of available drones
+                     * and pick the first available DroneConnection to deliver the order. */
+                    var task = new RestDbSvc().Get<DroneModel>(
+                        "http://localhost:8080/Fleet?keys={url:1, _id:0}&filter={orderId:\"\"}");
+                    task.Wait();
+                    /*Todo and make sure order object is updated in database to "assigned".*/
+                    /*Todo push the order to the drone via http protocol.*/
+                }
+                Thread.Sleep(2000);
+            }
         }
 
         public async Task<Order[]> GetActiveOrders()

@@ -1,4 +1,7 @@
-﻿using FlyingPizza.Drone;
+﻿using System;
+using DroneDispatcher;
+using FlyingPizza.Drone;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,6 +16,19 @@ namespace Drone.Tests
         {
             _testOutputHelper = testOutputHelper;
         }
+
+        /*
+        [Fact]
+        public void TestGetDroneUrls()
+        {
+            var urls = Dispatcher.GetDroneUrls().Result;
+            foreach (object o in urls)
+            {
+                _testOutputHelper.WriteLine($"this object has '{o}' in it");
+            }
+            Assert.Equal(urls.Length, 6);
+        }
+        */
         
         [Fact]
         public void TestGetRouteAllPositiveNumbers()

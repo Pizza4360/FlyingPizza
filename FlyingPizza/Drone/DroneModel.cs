@@ -121,8 +121,8 @@ namespace FlyingPizza.Drone
             taskDelivery.Wait();
             Delivery = taskDelivery.Result;
             var route = GetRoute();
+            OrderId = orderId;
             UpdateStatus(Delivering);
-            
             // Travel to Destination
             foreach (var point in route)
             {
@@ -135,6 +135,7 @@ namespace FlyingPizza.Drone
             {
                 UpdateLocation(point, DroneUpdateInterval);
             }
+            OrderId = "";
             UpdateStatus(Ready);
         }
         
