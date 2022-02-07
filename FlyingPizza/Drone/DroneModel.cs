@@ -29,6 +29,9 @@ namespace FlyingPizza.Drone
 
         // The current position of the drone
         public Point Location { get; set; } 
+        
+        
+        public String OrderId { get; set; } 
 
         // The desired position of the drone
         public Point Delivery { get; set; }
@@ -113,9 +116,12 @@ namespace FlyingPizza.Drone
         }
 
         // Dispatch a drone to deliver a pizza.
-        public void DeliverOrder(Point customerOrder)
+        public void DeliverOrder(String orderId)
         {
-            Delivery = customerOrder;
+            string url = $"http://localhost:8080/Orders/{orderId}/?keys={{deliveryLocation:1, _id:0}}";
+            var taskDelivery = RestSvc.Get<Point>(url);
+            taskDelivery.Wait();
+            Delivery = taskDelivery.Result;
             var route = GetRoute();
             UpdateStatus(Delivering);
             

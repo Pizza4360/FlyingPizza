@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using FlyingPizza.Services;
 
 namespace FlyingPizza.Drone
@@ -13,9 +14,8 @@ namespace FlyingPizza.Drone
         public JsonElement Document;
         private RestDbSvc Svc;
         
-        public Object OrderId {get; set;}
         public List<Object> Items {get; set;}
-        public string CustomerId {get; set;}
+        public string Customer {get; set;}
         string DeliveryAddress {get; set;}
         public Point DeliveryLocation { get; } = new (0.0, 0.0);
         public int BadgeNumber {get; set;}
@@ -28,9 +28,8 @@ namespace FlyingPizza.Drone
         public override string ToString()
         {
           return 
-          $"OrderId={OrderId}" +
           $"Items={Items}" +
-          $"CustomerId={CustomerId}" +
+          $"CustomerId={Customer}" +
           $"DeliveryAddress={DeliveryAddress}" +
           $"DeliveryLocation={DeliveryLocation}" +
           $"BadgeNumber={BadgeNumber}" +
@@ -97,6 +96,13 @@ namespace FlyingPizza.Drone
           var entries = Svc.Get<JsonDocument>(url);
           entries.Wait();
           return entries.Result.RootElement.EnumerateArray();
+        }
+
+        public async static Task<Order[]> GetOrders(int badgeNumber = -1)
+        {
+          string url = $"http://localhost:8080/Fleet?filter={{badgeNumber:{badgeNumber}}}";
+            var task = await new RestDbSvc().Get<Order[]>(url);
+            return task;
         }
     }
 }

@@ -12,7 +12,8 @@ namespace scratch
     {
         public async static Task Main(string[] args)
         {
-            Console.WriteLine(DroneModel.GetDrone(5));
+            Order[] orders = Order.GetOrders().Result;
+            Console.WriteLine(orders);
         }
 
         private static string[] GetDroneUrls()

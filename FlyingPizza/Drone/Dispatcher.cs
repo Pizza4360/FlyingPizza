@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using FlyingPizza.Drone;
 using FlyingPizza.Services;
@@ -11,27 +9,23 @@ namespace DroneDispatcher
     public class DroneConnection
     {
         private string Url;
-        public DroneConnection(string url)
+        private int BadgeNumber;
+        public DroneConnection(string url, int badgeNumber)
         {
             Url = url;
+            BadgeNumber = badgeNumber;
         }
         
-        public string GetStatus(string status)
+        public async Task<string> GetStatus()
         {
-            // Todo retrieve status form db with query
-            throw new NotImplementedException();
+            return await new RestDbSvc().Get<string>($"{Url}?keys={{status:1, _id:0}}");
         }
         
         public void AssignOrder(Order order)
         {
-            // Todo send message to drone to make it call DeliverOrder()
-            throw new NotImplementedException();
-        }
-        
-        public Order GetOrder()
-        {
-            // Todo get order info 
-            throw new NotImplementedException();
+            var drone = DroneModel.GetDrone(BadgeNumber);
+            drone.Delivery = order.DeliveryLocation;
+            new RestDbSvc().Put(Url, drone);
         }
     }
     
