@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlyingPizza", "FlyingPizza\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drone.Tests", "Drone.Tests\Drone.Tests.csproj", "{EEF22EB1-B0AD-4F77-B529-F0B3606D367F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DroneDispatcher", "DroneDispatcher\DroneDispatcher\DroneDispatcher.csproj", "{7EFC218E-249C-4D7F-A3BB-AA2742B04C75}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{EEF22EB1-B0AD-4F77-B529-F0B3606D367F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEF22EB1-B0AD-4F77-B529-F0B3606D367F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEF22EB1-B0AD-4F77-B529-F0B3606D367F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7EFC218E-249C-4D7F-A3BB-AA2742B04C75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7EFC218E-249C-4D7F-A3BB-AA2742B04C75}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7EFC218E-249C-4D7F-A3BB-AA2742B04C75}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7EFC218E-249C-4D7F-A3BB-AA2742B04C75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

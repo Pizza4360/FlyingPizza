@@ -36,7 +36,7 @@ namespace Drone.Tests
             var home = new Point(0.0, 0.0);
             var dest = new Point(3.0, 4.0);
 
-            var drone = DroneModel.AddDrone().Result;
+            var drone = DroneModel.AddDrone("").Result;
             drone.Delivery = dest;
 
             Point[] expectedRoute = {
@@ -55,7 +55,7 @@ namespace Drone.Tests
             var home = new Point(0.0, 0.0);
             var dest = new Point(-3.0, -4.0);
             
-            var drone = DroneModel.AddDrone().Result;
+            var drone = DroneModel.AddDrone("").Result;
             drone.Delivery = dest;
 
             Point[] expectedRoute = {
@@ -71,7 +71,7 @@ namespace Drone.Tests
         [Fact]
         public void TestDatabaseHasDrone()
         {
-            var droneTask = DroneModel.AddDrone();
+            var droneTask = DroneModel.AddDrone("");
             droneTask.Wait();
             var drone = droneTask.Result;
             var droneCopy = DroneModel.GetDrone(drone.BadgeNumber);
