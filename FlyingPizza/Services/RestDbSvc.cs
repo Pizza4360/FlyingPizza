@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Net.Http.Json;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.IO;
 using System.Text;
 
 namespace FlyingPizza.Services
@@ -30,7 +27,7 @@ namespace FlyingPizza.Services
             http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
                 "Basic",
                 Convert.ToBase64String(
-                    System.Text.Encoding.ASCII.GetBytes("admins:Snarfblat")));
+                    System.Text.Encoding.ASCII.GetBytes("admin:secret")));
 
 
             http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -50,8 +47,7 @@ namespace FlyingPizza.Services
             http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
                 "Basic",
                 Convert.ToBase64String(
-                    System.Text.Encoding.ASCII.GetBytes("admins:Snarfblat")));
-
+                    System.Text.Encoding.ASCII.GetBytes("admin:secret")));
 
             http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -70,7 +66,7 @@ namespace FlyingPizza.Services
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
                     "Basic",
                     Convert.ToBase64String(
-                        System.Text.Encoding.ASCII.GetBytes("admins:Snarfblat")));
+                        System.Text.Encoding.ASCII.GetBytes("admin:secret")));
 
 
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -137,7 +133,7 @@ namespace FlyingPizza.Services
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
                 "Basic",
                 Convert.ToBase64String(
-                    System.Text.Encoding.ASCII.GetBytes("admins:Snarfblat")));
+                    System.Text.Encoding.ASCII.GetBytes("admin:secret")));
 
             return await http.SendAsync(request);
         }
