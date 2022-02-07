@@ -1,5 +1,4 @@
-﻿using System;
-using FlyingPizza.Drone;
+﻿using FlyingPizza.Drone;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -7,6 +6,7 @@ namespace Drone.Tests
 {
     public class DroneTests
     {
+        // Helper method for console output during testing.
         private readonly ITestOutputHelper _testOutputHelper;
 
         public DroneTests(ITestOutputHelper testOutputHelper)
@@ -59,7 +59,6 @@ namespace Drone.Tests
             droneTask.Wait();
             var drone = droneTask.Result;
             var droneCopy = DroneModel.GetDrone(drone.BadgeNumber);
-            _testOutputHelper.WriteLine(drone.Status.Equals(droneCopy.Status).ToString());
             Assert.True(drone.Equals(droneCopy));
         }
     }
