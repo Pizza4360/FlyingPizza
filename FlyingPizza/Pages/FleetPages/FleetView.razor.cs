@@ -11,11 +11,12 @@ namespace FlyingPizza.Pages.FleetPages
     {
 
         public string Greeting = null;
+        public string[] block;
 
         protected override void OnInitialized()
         {
             Greeting = "Hello";
-
+            block = new string[5]{ "drone1", "drone2", "drone3", "drone4", "drone5" };
 
             //DroneData[] drone = await restDbSvc.Get<DroneData[]>("localhost:4544/Fleet?filter={ }");
             //DroneData drone = await restDvSvc.Post<DroneData>(url, DroneData)
