@@ -9,6 +9,11 @@
     padding: 1.5rem !important;
 }
 
+.title-bar {
+    background-color: #ECF3F3;
+    color: red;
+}
+
 .drone-fleet {
     display: grid;
     grid-template-columns: repeat(auto-fill, 20rem);
