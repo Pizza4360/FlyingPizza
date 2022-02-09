@@ -1,20 +1,20 @@
 ﻿@page "/fleetView"
-@inject Services.RestDbSvc restDbSvc
+@inject Services.RestDbSvc restPoint
 
 @*<img src="../images/drone.jpg" />*@
-<h3 >
-    <span class="title-bar">Title Bar</span>
-</h3>
+<div class="status-bar">
+    <b>Fleet Size: @size</b>
+</div>
 
 <div class="main">
     <ul class="drone-fleet">
-        @if (@block != null)
+        @if (Fleet != null)
         {
-            @foreach (var drone in block)
+            @foreach (var drone in Fleet)
             {
                 <li style="background-image: url('../images/drone.jpg')">
                     <div class="drone-status">
-                        <span class="price">@drone status: Home</span>
+                        <span class="price">@drone.Status</span>
                     </div>
                 </li>
             }
