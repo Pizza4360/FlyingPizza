@@ -14,11 +14,13 @@ namespace FlyingPizza.Pages.FleetPages
         public string[] block;
         public DroneModel[] Fleet = null;
         public int size;
+        public string address;
 
         protected override async Task OnInitializedAsync()
         {
             Fleet = await restPoint.Get<DroneModel[]>("http://localhost:8080/Fleet/?sort={badgeNumber:1}");
             size = Fleet.Length;
+            address = "890 Auraria Pkwy";
 
         }
        /* protected override void OnInitialized()
