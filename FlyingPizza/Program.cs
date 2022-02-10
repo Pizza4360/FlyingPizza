@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Radzen;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -19,8 +20,11 @@ namespace FlyingPizza
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
+            builder.Services.AddSingleton<Services.GlobalDataSvc>(new Services.GlobalDataSvc());
+
             builder.Services.AddSingleton<Services.RestDbSvc>(new Services.RestDbSvc());
 
+            builder.Services.AddScoped<DialogService>();
 
             await builder.Build().RunAsync();
         }
