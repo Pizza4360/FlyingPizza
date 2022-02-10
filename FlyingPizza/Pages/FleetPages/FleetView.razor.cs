@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FlyingPizza.Drone;
+using FlyingPizza.Pages.FleetPages;
+using Radzen;
+
 
 
 namespace FlyingPizza.Pages.FleetPages
@@ -23,10 +26,13 @@ namespace FlyingPizza.Pages.FleetPages
             address = "890 Auraria Pkwy";
 
         }
-       /* protected override void OnInitialized()
+
+        public async Task<Boolean> GoToDrone(DroneModel drone)
         {
-            Greeting = "Hello";
-            block = new string[5]{ "drone1", "drone2", "drone3", "drone4", "drone5" };
-        } */
+            globalData.currDrone = drone;
+            var r = await dialogService.OpenAsync<DetailedDrone>("View Drone");
+            return r;
+        }
+      
     }
 }

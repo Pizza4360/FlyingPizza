@@ -60,8 +60,9 @@
 }
 
     .drone-status .title {
-        color: white;
-        font-size: 1.4rem;
+        color: #3b3b3b;
+        font-size: 1.5rem;
+        font-weight: 700;
         display: block;
         margin: 0.2rem 0 0.4rem 0;
         font-family: 'Bahnschrift', Arial, Helvetica, sans-serif;
@@ -80,3 +81,12 @@
         color: white;
         line-height: 2rem;
     }
+
+    .drone-status .more {
+        position: absolute;
+        bottom: 0.5rem;
+        left: 0.3rem;
+        padding: 0rem 0.7rem;
+        line-height: 2rem;
+    }
+

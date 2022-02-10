@@ -1,7 +1,8 @@
 ﻿@page "/fleetView"
 @inject Services.RestDbSvc restPoint
-
-<!--Bar at top for various quick reference info-->
+@inject Services.GlobalDataSvc globalData
+@inject Radzen.DialogService dialogService
+@*<img src="../images/drone.jpg" />*@
 <div class="status-bar">
     <b>Fleet Size: @size</b>
 </div>
@@ -16,7 +17,12 @@
                 <!--Creates a block for each drone with id, status, more info button and a drone img-->
                 <li style="background-image: url('../images/drone.jpg')">
                     <div class="drone-status">
+                        <span class="title">ID: @drone.BadgeNumber</span>
                         <span class="price">@drone.Status</span>
+                        <span class="more">
+                            <RadzenButton style="background-color: #3b3b3b" Icon="add_circle_outline" Click=@(args => GoToDrone(drone)) />
+                        </span>
+
                     </div>
                 </li>
             }
