@@ -1,8 +1,36 @@
 ﻿@page "/fleetView"
-@inject Services.RestDbSvc restDbSvc
+@inject Services.RestDbSvc restPoint
+@inject Services.GlobalDataSvc globalData
+@inject Radzen.DialogService dialogService
+
+<!--Quick info about various fleet metrics at top of page-->
+<div class="status-bar">
+    <b>Fleet Size: @size</b>
+</div>
+
+<!--Block that displays all the current drones in the fleet-->
+<div class="main">
+    <ul class="drone-fleet">
+        @if (Fleet != null)
+        {
+            @foreach (var drone in Fleet)
+            {
+                <!--Creates a block for each drone with id, status, more info button and a drone img-->
+                <li style="background-image: url('../images/drone.jpg')">
+                    <div class="drone-status">
+                        <span class="title">ID: @drone.BadgeNumber</span>
+                        <span class="price">@drone.Status</span>
+                        <span class="more">
+                            <RadzenButton style="background-color: #3b3b3b" Icon="add_circle_outline" Click=@(args => GoToDrone(drone)) />
+                        </span>
+
+                    </div>
+                </li>
+            }
+        }
+    </ul>
+</div>
 
 
-<h3>FleetView</h3>
 
 
-<b>String: @Greeting</b>

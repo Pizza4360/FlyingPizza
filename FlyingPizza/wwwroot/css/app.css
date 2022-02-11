@@ -2,6 +2,7 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: linear-gradient(rgba(0,0,0,0) 40%, rgba(0,0,0,0.4) 80%);
 }
 
 a, .btn-link {
@@ -48,3 +49,5 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+

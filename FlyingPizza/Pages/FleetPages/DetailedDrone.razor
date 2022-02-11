@@ -1,0 +1,18 @@
+﻿@page "/detaildrone"
+@inject Services.GlobalDataSvc globalData
+@inject Radzen.DialogService dialogService
+
+<h3>DetailedDrone</h3>
+
+@if (globalData.currDrone != null)
+{
+<b>@globalData.currDrone.ToString()</b>
+
+}
+
+<div class="row">
+    <div class="col-md-12 text-right">
+        <RadzenButton Click="@((args) => dialogService.Close(false))" ButtonStyle="ButtonStyle.Secondary" Text="Cancel" Style="width: 120px" Class="mr-1" />
+        <RadzenButton Click="@((args) => dialogService.Close(true))" Text="OK" Style="width: 120px" />
+    </div>
+</div> 

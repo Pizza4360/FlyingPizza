@@ -1,36 +1,32 @@
-﻿using FlyingDrone.Pages.FleetPages;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FlyingPizza.Drone;
+using FlyingPizza.Pages.FleetPages;
+using Radzen;
+
+
 
 namespace FlyingPizza.Pages.FleetPages
 {
     partial class FleetView : ComponentBase
     {
-
-        public string Greeting = null;
-
-        protected override void OnInitialized()
+        public DroneModel[] Fleet = null;
+        public int size;
+        protected override async Task OnInitializedAsync()
         {
-            Greeting = "Hello";
-
-
-            //DroneData[] drone = await restDbSvc.Get<DroneData[]>("localhost:4544/Fleet?filter={ }");
-            //DroneData drone = await restDvSvc.Post<DroneData>(url, DroneData)
-
-            // Post template
-            //Case newCase = new Case() { caseStatus = "uninitialized" };
-            //var rval = await restDbSvc.Post<Case>("http://localhost:8080/cases/", newCase);
-
-            //newCaseURL = rval.Headers.Location.AbsoluteUri;
-
-            //caseVar = await restDbSvc.Get<Case>(newCaseURL);
-            //caseVar.url = newCaseURL;
-
+            Fleet = await restPoint.Get<DroneModel[]>("http://localhost:8080/Fleet/?sort={badgeNumber:1}");
+            size = Fleet.Length;
         }
 
-
+        public async Task<Boolean> GoToDrone(DroneModel drone)
+        {
+            globalData.currDrone = drone;
+            var r = await dialogService.OpenAsync<DetailedDrone>("View Drone");
+            return r;
+        }
+      
     }
 }

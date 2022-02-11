@@ -10,6 +10,7 @@
 
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    max-width: 30vw;
 }
 
 .top-row {
@@ -66,5 +67,11 @@
     .main > div {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
+    }
+}
+
+@media (min-width: 720px) {
+    .sidebar {
+        max-width: 23vw;
     }
 }
