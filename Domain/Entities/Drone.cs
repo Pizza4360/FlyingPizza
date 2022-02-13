@@ -23,6 +23,8 @@ namespace Domain.Entities
 
         public string Status { get; set; }
 
-        public string IPAddress { get; set; }
+        public string IpAddress { get; set; }
+
+        public string DispatcherUrl { get; set; }
     }
 }
