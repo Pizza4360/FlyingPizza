@@ -1,5 +1,4 @@
 ﻿using Domain;
-using Domain.DTO.ApiDto;
 using Domain.Entities;
 using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
@@ -9,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 
 namespace DroneDispatcher.Controllers
 {
@@ -31,7 +31,7 @@ namespace DroneDispatcher.Controllers
 
         #region endpoints
         [HttpPost("/register")]
-        public async Task<IActionResult> RegisterNewDrone(RegisterDroneDto droneInfo)
+        public async Task<IActionResult> RegisterNewDrone(InitializeDroneRegistrationDto droneInfo)
         {
             var newDrone = new Drone
             {
@@ -41,8 +41,10 @@ namespace DroneDispatcher.Controllers
 
             await _dronesRepository.CreateAsync(newDrone);
 
-            // TODO: Register drone w/ dispatcher
-
+            // TODO: Register drone w/ dispatcher by doing the following:
+                // Todo: wait for OK message back from drone
+                // Todo: dispatcher saves handshake record to DB
+			    // Todo: dispatcher sends OK back to drone so that drone can stop waiting and start updating status
             return Ok();
         }
 
@@ -51,7 +53,7 @@ namespace DroneDispatcher.Controllers
         {
             var didSucceed = false;
             var availableDrones = _drones.Where(drone => drone.GetDroneInfo().Status == Constants.DroneStatus.READY);
-            if (availableDrones.Count() > 0)
+            if (availableDrones.Any())
             {
                 didSucceed = await availableDrones.First().AssignDeilvery(newOrder.Id, newOrder.DeliveryLocation);
             }
