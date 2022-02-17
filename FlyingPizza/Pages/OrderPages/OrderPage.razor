@@ -1,16 +1,33 @@
 ﻿@page "/order"
 @inject Services.RestDbSvc restpoint
 @inject NavigationManager _navigationManager
-<h3>OrderPage</h3>
 
-<!--Customer should already have a cart which will be a global item collection in global data-->
-<!--Get customer name-->
-<b>Customer Name:</b>
-<RadzenTextBox Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.Customer = e.Value.ToString()) />
-<!--Get customer delivery address-->
-<b>Address:</b>
-<RadzenTextBox Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.DeliveryAddress = e.Value.ToString()) />
+<h3>Create New Order</h3>
 
-<div class="col-6">
-    <RadzenButton Click=@(args => makeOrder()) Text="Create Case" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
+<div class="row row-cols-2">
+    <div class=".col-md-">
+        <div  class="right">
+            <b>Customer Name: </b>
+            <br />
+            <b>Address: </b>
+        </div>
+    </div>
+    <div class=".col-md-">
+        <div class="left">
+            <RadzenTextBox Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.Customer = e.Value.ToString()) />
+            <br />
+            <RadzenTextBox Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.DeliveryAddress = e.Value.ToString()) />
+        </div>
+    </div>
 </div>
+<div class="row">
+    
+</div>
+    <!--Customer should already have a cart which will be a global item collection in global data-->
+    <!--Get customer name-->
+       
+   
+
+    <div class="col-6">
+        <RadzenButton Click=@(args => makeOrder()) Text="Create Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
+    </div>
