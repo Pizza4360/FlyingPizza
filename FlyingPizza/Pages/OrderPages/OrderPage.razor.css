@@ -1,0 +1,24 @@
+﻿*,
+::after,
+::before {
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.right {
+    display: flex;
+    flex-direction:column;
+    align-items: flex-end;
+    width: 150px
+    
+}
+
+.left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 150px;
+
+}
