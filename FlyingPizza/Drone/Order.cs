@@ -16,14 +16,14 @@ namespace FlyingPizza.Drone
         public string Id { get; set; }
         public List<Object> Items {get; set;}
         public string Customer {get; set;}
-        string DeliveryAddress {get; set;}
+        public string DeliveryAddress {get; set;}
         public Point DeliveryLocation { get; } = new (0.0, 0.0);
         public int BadgeNumber {get; set;}
         
         // Todo: make these DateTime
         public string TimeOrdered {get; set;}
         public string TimeDelivered {get; set;}
-        
+        public string URL { get; set; }
 
         public override string ToString()
         {
