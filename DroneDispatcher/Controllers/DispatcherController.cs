@@ -31,7 +31,7 @@ namespace DroneDispatcher.Controllers
 
         #region endpoints
         [HttpPost("/register")]
-        public async Task<IActionResult> RegisterNewDrone(InitializeDroneRegistrationDto droneInfo)
+        public async Task<IActionResult> RegisterNewDrone(InitializeDroneRegistration droneInfo)
         {
             var newDrone = new Drone
             {
