@@ -18,14 +18,17 @@ namespace DroneDispatcher.Controllers
     {
         private readonly IDronesRepository _dronesRepository;
         private readonly IOrdersRepository _ordersRepository;
-        private readonly List<IDroneGateway> _drones;
+        private readonly IDroneGateway _droneGateway;
         private readonly Queue<Order> _unfilledOrders;
 
-        public DispatcherController(IDronesRepository droneRepository, IOrdersRepository ordersRepository)
+        public DispatcherController(
+            IDronesRepository droneRepository,
+            IOrdersRepository ordersRepository,
+            IDroneGateway droneGateway)
         {
             _dronesRepository = droneRepository;
             _ordersRepository = ordersRepository;
-            _drones = new List<IDroneGateway>(); // TODO: get drones from the repository and make actual gateway objects
+            _droneGateway = droneGateway;
             _unfilledOrders = new Queue<Order>();
         }
 
@@ -52,10 +55,10 @@ namespace DroneDispatcher.Controllers
         public async Task<IActionResult> AddNewOrder(Order newOrder)
         {
             var didSucceed = false;
-            var availableDrones = _drones.Where(drone => drone.GetDroneInfo().Status == Constants.DroneStatus.READY);
+            var availableDrones = await _dronesRepository.GetAllAvailableDronesAsync();
             if (availableDrones.Any())
             {
-                didSucceed = await availableDrones.First().AssignDeilvery(newOrder.Id, newOrder.DeliveryLocation);
+                didSucceed = await _droneGateway.AssignDeilvery(availableDrones.First().IpAddress, newOrder.Id, newOrder.DeliveryLocation);
             }
             else
             {
@@ -83,11 +86,9 @@ namespace DroneDispatcher.Controllers
         {
             if (_unfilledOrders.Count() > 0)
             {
+                var droneIpAddress = (await _dronesRepository.GetByIdAsync(droneId)).IpAddress;
                 var nextOrder = _unfilledOrders.Dequeue();
-                var didSucceed = await _drones
-                    .Where(drone => drone.GetDroneInfo().Id == droneId)
-                    .First()
-                    .AssignDeilvery(nextOrder.Id, nextOrder.DeliveryLocation);
+                var didSucceed = await _droneGateway.AssignDeilvery(droneIpAddress, nextOrder.Id, nextOrder.DeliveryLocation);
 
                 // TODO: Unhappy Path
             }
