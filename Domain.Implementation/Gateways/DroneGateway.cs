@@ -3,6 +3,7 @@ using Domain.Entities;
 using Domain.Interfaces.Gateways;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -29,20 +30,33 @@ namespace Domain.Implementation.Gateways
 
             return response.IsSuccessStatusCode;
         }
-
-        public Task<bool> OKToSendStatus(string droneIpAddress)
+        
+        public async Task<bool> OKToSendStatus(string droneIpAddress)
         {
-            throw new NotImplementedException();
+            var body = JsonContent.Create(HttpStatusCode.OK);
+            var requestUri = new Uri($"https://{droneIpAddress}/completregistration");
+            var response = await _httpClient.PostAsync(requestUri, body);
+            return response.IsSuccessStatusCode;
         }
 
-        public Task<bool> CompleteRegistration(string droneIpAddress, string droneId, string dispatcherUrl, GeoLocation homeLocation)
+        // Todo send register command to drone with badge number & url for db
+        public async Task<bool> CompleteRegistration(
+            string droneIpAddress,
+            Guid badgeNumber, // Todo ask Harrison why this is not badgeNumber
+            string dispatcherUrl, 
+            GeoLocation homeLocation)
         {
-            throw new System.NotImplementedException();
+            var body = JsonContent.Create(badgeNumber);
+            var requestUri = new Uri($"https://{droneIpAddress}/initregistration");
+            // response should be good
+            var response = await _httpClient.PostAsync(requestUri, body);
+            return response.IsSuccessStatusCode;
         }
 
-        public Drone GetDroneInfo()
+        /*
+        public Drone GetDroneInfo(IpAddress address)
         {
-            throw new System.NotImplementedException();
-        }
+            
+        }*/
     }
 }

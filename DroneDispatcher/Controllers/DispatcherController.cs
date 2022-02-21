@@ -36,24 +36,23 @@ namespace DroneDispatcher.Controllers
         [HttpPost("/register")]
         public async Task<IActionResult> RegisterNewDrone(InitializeDroneRegistration droneInfo)
         {
+            // Todo make a new guid and make sure it is different from all other drones
             var newDrone = new Drone
             {
                 BadgeNumber = droneInfo.BadgeNumber,
-                IpAddress = droneInfo.IpAddress
+                IpAddress = droneInfo.IpAddress,
             };
-
 
             // Register drone w/ dispatcher by doing the following:
             // wait for OK message back from drone
-                var response = await _droneGateway.CompleteRegistration(newDrone.IpAddress, newDrone.Id,
+                var response = await _droneGateway.CompleteRegistration(newDrone.IpAddress, newDrone.BadgeNumber,
                     newDrone.DispatcherUrl, newDrone.HomeLocation);
-                // Todo: save drone to database
-                // dispatcher saves handshake record to DB
+                // Todod: save drone to database
                 await _dronesRepository.CreateAsync(newDrone);
-                // dispatcher sends OK back to drone so that drone can stop waiting and start updating status
+                // Todo dispatcher saves handshake record to DB
+                
+                // Todod dispatcher sends OK back to drone so that drone can stop waiting and start updating status
                 await _droneGateway.OKToSendStatus(newDrone.IpAddress);
-
-
                 return Ok();
         }
 
