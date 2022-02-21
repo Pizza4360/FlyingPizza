@@ -42,13 +42,19 @@ namespace DroneDispatcher.Controllers
                 IpAddress = droneInfo.IpAddress
             };
 
-            await _dronesRepository.CreateAsync(newDrone);
 
-            // TODO: Register drone w/ dispatcher by doing the following:
-                // Todo: wait for OK message back from drone
-                // Todo: dispatcher saves handshake record to DB
-			    // Todo: dispatcher sends OK back to drone so that drone can stop waiting and start updating status
-            return Ok();
+            // Register drone w/ dispatcher by doing the following:
+            // wait for OK message back from drone
+                var response = await _droneGateway.CompleteRegistration(newDrone.IpAddress, newDrone.Id,
+                    newDrone.DispatcherUrl, newDrone.HomeLocation);
+                // Todo: save drone to database
+                // dispatcher saves handshake record to DB
+                await _dronesRepository.CreateAsync(newDrone);
+                // dispatcher sends OK back to drone so that drone can stop waiting and start updating status
+                await _droneGateway.OKToSendStatus(newDrone.IpAddress);
+
+
+                return Ok();
         }
 
         [HttpPost("/add_order")]

@@ -30,6 +30,11 @@ namespace Domain.Implementation.Gateways
             return response.IsSuccessStatusCode;
         }
 
+        public Task<bool> OKToSendStatus(string droneIpAddress)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<bool> CompleteRegistration(string droneIpAddress, string droneId, string dispatcherUrl, GeoLocation homeLocation)
         {
             throw new System.NotImplementedException();
