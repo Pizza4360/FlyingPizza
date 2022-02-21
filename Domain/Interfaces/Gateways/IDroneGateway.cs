@@ -8,5 +8,7 @@ namespace Domain.Interfaces.Gateways
         public Task<bool> CompleteRegistration(string droneIpAddress, string droneId, string dispatcherUrl, GeoLocation homeLocation);
 
         public Task<bool> AssignDeilvery(string droneIpAddress, string orderNumber, GeoLocation orderLocation);
+
+        public Task<bool> OKToSendStatus(string droneIpAddress);
     }
 }
