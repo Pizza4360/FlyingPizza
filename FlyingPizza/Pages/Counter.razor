@@ -1,18 +1,17 @@
 ﻿@page "/counter"
+@*https://www.radzen.com/documentation/blazor/googlemap/*@
 @*https://blazor.radzen.com/googlemap*@
 <div class="row p-3">
     <div class="col">
         <RadzenCard Class="mb-4">
-            <RadzenCheckBox @bind-Value=@showMadridMarker Name="showMarker" />
-            <RadzenLabel Text="Show marker for Madrid" Component="showMarker" Style="margin-left: 8px; vertical-align: middle;" />
+            <RadzenCheckBox @bind-Value=@showMSU Name="showMarker" />
+            <RadzenLabel Text="Show marker for MSU Denver" Component="showMarker" Style="margin-left: 8px; vertical-align: middle;" />
         </RadzenCard>
-        <RadzenGoogleMap style="height: 400px" Zoom=@zoom Center=@(new GoogleMapPosition() { Lat = 42.6977, Lng = 23.3219 }) MapClick=@OnMapClick MarkerClick=@OnMarkerClick>
+        <RadzenGoogleMap style="height: 400px" Zoom=@zoom Center=@(new GoogleMapPosition() { Lat = 39.745918, Lng = -105.007492}) MapClick=@OnMapClick MarkerClick=@OnMarkerClick>
             <Markers>
-                <RadzenGoogleMapMarker Title="London" Label="London" Position=@(new GoogleMapPosition() { Lat = 51.5074, Lng = 0.1278 }) />
-                <RadzenGoogleMapMarker Title="Paris " Label="Paris" Position=@(new GoogleMapPosition() { Lat = 48.8566, Lng = 2.3522 }) />
-                @if (showMadridMarker)
+                @if (showMSU)
                 {
-                    <RadzenGoogleMapMarker Title="Madrid " Label="Madrid" Position=@(new GoogleMapPosition() { Lat = 40.4168, Lng = -3.7038 }) />
+                    <RadzenGoogleMapMarker Title="MSU Denver " Label="MSU Denver" Position=@(new GoogleMapPosition() { Lat = 39.745918, Lng = -105.007492 }) />
                 }
             </Markers>
         </RadzenGoogleMap>
@@ -23,7 +22,7 @@
 
 @code {
     int zoom = 3;
-    bool showMadridMarker;
+    bool showMSU;
     EventConsole console;
 
     void OnMapClick(GoogleMapClickEventArgs args)
