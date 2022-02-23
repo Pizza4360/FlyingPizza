@@ -2,14 +2,14 @@
 
 namespace FlyingPizza.Drone
 {
-    public sealed record Point(double X, double Y) 
+    public sealed record Point(double Lat, double Long) 
     {
         public const double Tolerance = 0.0000001;
         public bool Equals(Point other) =>
             other != null
-            && Math.Abs(X - other.X) < Tolerance
-            && Math.Abs(Y - other.Y) < Tolerance;
+            && Math.Abs(Lat - other.Lat) < Tolerance
+            && Math.Abs(Long - other.Long) < Tolerance;
         
-        public override int GetHashCode() => HashCode.Combine(X, Y);
+        public override int GetHashCode() => HashCode.Combine(Lat, Long);
     }
 }
