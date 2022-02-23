@@ -39,11 +39,19 @@ namespace FlyingPizza.Shared
         }
         
         // This is a basic filter but done sorted
-        public static string FilterSorted(string collName, string filterType, string filterVal, string sort)
+        public static string BasicFilterSort(string collName, string filterType, string filterVal, string sort)
         {
             connectionString = "http://localhost:8080/" + collName + "?filter={'" + filterType + "':'" + filterVal + "'}&sort={"+ sort +"}";
             return connectionString;
         }
+
+
+        public static string QueryArray(string collName, string arrayName, string filterType, string filterVal)
+        {
+            connectionString = "http://localhost:8080/" + collName + "?filter={'" + arrayName + "':{'"+filterType+"':'" + filterVal + "'}";
+            return connectionString;
+        }
+
 
     }
 }
