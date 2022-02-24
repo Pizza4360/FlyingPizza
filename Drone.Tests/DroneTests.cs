@@ -1,6 +1,4 @@
-﻿using System;
-using DroneDispatcher;
-using FlyingPizza.Drone;
+﻿using FlyingPizza.Drone;
 
 using Xunit;
 using Xunit.Abstractions;
@@ -16,20 +14,6 @@ namespace Drone.Tests
         {
             _testOutputHelper = testOutputHelper;
         }
-
-        /*
-        [Fact]
-        public void TestGetDroneUrls()
-        {
-            var urls = Dispatcher.GetDroneUrls().Result;
-            foreach (object o in urls)
-            {
-                _testOutputHelper.WriteLine($"this object has '{o}' in it");
-            }
-            Assert.Equal(urls.Length, 6);
-        }
-        */
-        
         [Fact]
         public void TestGetRouteAllPositiveNumbers()
         {
@@ -66,16 +50,6 @@ namespace Drone.Tests
                 new (-3.0, -4.0)
             };
             Assert.Equal(expectedRoute, drone.GetRoute());
-        }
-
-        [Fact]
-        public void TestDatabaseHasDrone()
-        {
-            var droneTask = DroneModel.AddDrone("");
-            droneTask.Wait();
-            var drone = droneTask.Result;
-            var droneCopy = DroneModel.GetDrone(drone.BadgeNumber);
-            Assert.True(drone.Equals(droneCopy));
         }
     }
 }
