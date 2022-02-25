@@ -14,7 +14,7 @@ namespace Domain.Implementation.Gateways
     {
         private static readonly HttpClient _httpClient = new HttpClient();
 
-        public async Task<bool> AssignDeilvery(string droneIpAddress, string orderNumber, GeoLocation orderLocation)
+        public async Task<bool> AssignDelivery(string droneIpAddress, string orderNumber, GeoLocation orderLocation)
         {
             var route = new List<GeoLocation> { orderLocation };
 

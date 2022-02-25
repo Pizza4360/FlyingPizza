@@ -20,16 +20,20 @@ namespace DroneDispatcher.Controllers
         private readonly IOrdersRepository _ordersRepository;
         private readonly IDroneGateway _droneGateway;
         private readonly Queue<Order> _unfilledOrders;
+        public GeoLocation Home { get;}
+        // TODO: added since dispatcher should know where it starts?
 
         public DispatcherController(
             IDronesRepository droneRepository,
             IOrdersRepository ordersRepository,
-            IDroneGateway droneGateway)
+            IDroneGateway droneGateway,
+            GeoLocation home)
         {
             _dronesRepository = droneRepository;
             _ordersRepository = ordersRepository;
             _droneGateway = droneGateway;
             _unfilledOrders = new Queue<Order>();
+            Home = home;
         }
 
         #region endpoints
@@ -41,6 +45,14 @@ namespace DroneDispatcher.Controllers
             {
                 BadgeNumber = droneInfo.BadgeNumber,
                 IpAddress = droneInfo.IpAddress,
+                // TODO: added since required elsewhere in the handshake, may not be ideal
+                HomeLocation = Home,
+                DispatcherUrl = droneInfo.DispatcherUrl,
+                Destination = Home,
+                CurrentLocation = Home,
+                OrderId = "",
+                Status = "Ready",
+                Id = ""
             };
 
             // Register drone w/ dispatcher by doing the following:
@@ -63,7 +75,7 @@ namespace DroneDispatcher.Controllers
             var availableDrones = await _dronesRepository.GetAllAvailableDronesAsync();
             if (availableDrones.Any())
             {
-                didSucceed = await _droneGateway.AssignDeilvery(availableDrones.First().IpAddress, newOrder.Id, newOrder.DeliveryLocation);
+                didSucceed = await _droneGateway.AssignDelivery(availableDrones.First().IpAddress, newOrder.Id, newOrder.DeliveryLocation);
             }
             else
             {
@@ -93,7 +105,7 @@ namespace DroneDispatcher.Controllers
             {
                 var droneIpAddress = (await _dronesRepository.GetByIdAsync(droneId)).IpAddress;
                 var nextOrder = _unfilledOrders.Dequeue();
-                var didSucceed = await _droneGateway.AssignDeilvery(droneIpAddress, nextOrder.Id, nextOrder.DeliveryLocation);
+                var didSucceed = await _droneGateway.AssignDelivery(droneIpAddress, nextOrder.Id, nextOrder.DeliveryLocation);
 
                 // TODO: Unhappy Path
             }
