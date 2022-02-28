@@ -63,7 +63,7 @@ namespace FlyingPizza.Shared
         // filtertype is the attribute you want to filter by for example badgenumber
         // filter val is the value of that attribute eg a 1 to search for badge number 1
         // sort is the sort string and direction so 'badgeNumber':1 to get them in ascending order and 'badgenumber':-1 for descending
-        public static string connectionString = null;
+        
 
 
 
