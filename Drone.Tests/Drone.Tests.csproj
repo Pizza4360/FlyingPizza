@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DroneDispatcher\DroneDispatcher.csproj" />
     <ProjectReference Include="..\FlyingPizza\FlyingPizza.csproj" />
   </ItemGroup>
 

@@ -7,7 +7,7 @@
             <RadzenCheckBox @bind-Value=@showMSU Name="showMarker" />
             <RadzenLabel Text="Show marker for MSU Denver" Component="showMarker" Style="margin-left: 8px; vertical-align: middle;" />
         </RadzenCard>
-        <RadzenGoogleMap style="height: 400px" Zoom=@zoom Center=@(new GoogleMapPosition() { Lat = 39.745918, Lng = -105.007492}) MapClick=@OnMapClick MarkerClick=@OnMarkerClick>
+        <RadzenGoogleMap style="height: 550px" Zoom=@zoom Center=@(new GoogleMapPosition() { Lat = 39.745918, Lng = -105.007492}) MapClick=@OnMapClick MarkerClick=@OnMarkerClick>
             <Markers>
                 @if (showMSU)
                 {
@@ -21,13 +21,18 @@
 <EventConsole @ref=@console Class="mt-4" />
 
 @code {
-    int zoom = 3;
+    int zoom = 15;
     bool showMSU;
     EventConsole console;
 
     void OnMapClick(GoogleMapClickEventArgs args)
     {
         console.Log($"Map clicked at Lat: {args.Position.Lat}, Lng: {args.Position.Lng}");
+    }
+
+    void OnMarkerClick(RadzenGoogleMapMarker marker)
+    {
+        console.Log($"Map {marker.Title} marker clicked. Marker position -> Lat: {marker.Position.Lat}, Lng: {marker.Position.Lng}");
     }
 
     void OnMarkerClick(RadzenGoogleMapMarker marker)

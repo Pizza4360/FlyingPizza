@@ -110,18 +110,18 @@ namespace FlyingPizza.Drone
         // Return an array of Point records simulating a drone's delivery route
         public Point[] GetRoute()
         {
-            if (Math.Abs(Location.X - Delivery.X) < Point.Tolerance 
-                && Math.Abs(Location.Y - Delivery.Y) < Point.Tolerance)
+            if (Math.Abs(Location.Lat - Delivery.Lat) < Point.Tolerance 
+                && Math.Abs(Location.Long - Delivery.Long) < Point.Tolerance)
             {
                 throw new ArgumentException(
                     "Destination cannot be the same as the Delivery station!");
             }
 
             // Longitude distance to get to destination
-            var xDistance = Location.X - Delivery.X;
+            var xDistance = Location.Lat - Delivery.Lat;
 
             // Latitude distance to get to destination
-            var yDistance = Location.Y - Delivery.Y;
+            var yDistance = Location.Long - Delivery.Long;
 
             // # of steps should be the absolute value of the hypotenuse,
             // rounded up to the nearest integer
@@ -130,14 +130,14 @@ namespace FlyingPizza.Drone
             
             // The incremental change in latitude & longitude for each discrete
             // Point
-            var xStep = Math.Abs(Delivery.X - Location.X) / stepsCount;
-            var yStep = Math.Abs(Delivery.Y - Location.Y) / stepsCount;
+            var xStep = Math.Abs(Delivery.Lat - Location.Lat) / stepsCount;
+            var yStep = Math.Abs(Delivery.Long - Location.Long) / stepsCount;
 
             // The multiplier to ensure the direction of StepSize
             // increases for Destination X and Y > Home X and Y
             // decreases for Destination X and Y < Home X and Y
-            var xDirection = Delivery.X > Location.X ? 1 : -1;
-            var yDirection = Delivery.Y > Location.Y ? 1 : -1;
+            var xDirection = Delivery.Lat > Location.Lat ? 1 : -1;
+            var yDirection = Delivery.Long > Location.Long ? 1 : -1;
             
             Point[] route = new Point[stepsCount];
 
