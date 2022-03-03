@@ -15,10 +15,17 @@ namespace FlyingPizza.Pages.FleetPages
     {
         public DroneModel[] Fleet = null;
         public int size;
+        public Boolean connection = false;
         protected override async Task OnInitializedAsync()
         {
-            Fleet = await restPoint.Get<DroneModel[]>("http://localhost:8080/Fleet/?sort={badgeNumber:1}");
-            size = Fleet.Length;
+            try
+            {
+                Fleet = await restPoint.Get<DroneModel[]>("http://localhost:8080/Fleet/?sort={badgeNumber:1}");
+                size = Fleet.Length;
+                connection = true;
+            }
+            catch { 
+            }         
         }
 
         public async Task<Boolean> GoToDrone(DroneModel drone)
