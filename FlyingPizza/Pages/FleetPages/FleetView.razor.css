@@ -1,6 +1,7 @@
 ﻿
 .connection-bar {
     position: relative;
+    z-index:1;
     width: 70px;
     border-radius: 0.5rem;
     background-color: #3b3b3b;
@@ -93,6 +94,7 @@
     .drone-fleet > li {
         height: 10rem;
         position: relative;
+        z-index: 0;
         background-size: cover;
         border-radius: 0.5rem;
         list-style-type: none;

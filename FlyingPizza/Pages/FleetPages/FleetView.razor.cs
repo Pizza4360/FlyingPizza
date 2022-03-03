@@ -28,11 +28,10 @@ namespace FlyingPizza.Pages.FleetPages
             }         
         }
 
-        public async Task<Boolean> GoToDrone(DroneModel drone)
+        public async Task GoToDrone(DroneModel drone)
         {
             globalData.currDrone = drone;
-            var r = await dialogService.OpenAsync<DetailedDrone>("View Drone");
-            return r;
+            await dialogService.OpenAsync<DetailedDrone>("View Drone");           
         }
       
     }
