@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UserSecretsId>50dbe9b5-d0a0-4d6f-b49a-22b1d4199894</UserSecretsId>
+    <UserSecretsId>b9170e25-2e18-4e2a-bffe-512990b89092</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
@@ -10,8 +10,5 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
   </ItemGroup>
 
-  <ItemGroup>
-  	<ProjectReference Include="..\Domain\Domain.csproj" />
-	<ProjectReference Include="..\Domain.Implementation\Domain.Implementation.csproj" />
-  </ItemGroup>
+
 </Project>
