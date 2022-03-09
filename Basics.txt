@@ -1,5 +1,8 @@
 ﻿
 
+
+pizza.cs.4360@gmail.com
+
 So here is a file that outlines what you will need to do to access our database with your code. 
 
 ssh -L 8080:localhost:8080 root@147.182.227.239
