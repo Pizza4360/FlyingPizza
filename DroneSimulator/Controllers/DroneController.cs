@@ -1,4 +1,5 @@
-﻿using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
+﻿using System;
+using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.Entities;
 using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
@@ -20,6 +21,7 @@ namespace DroneSimulator.Controllers
             _dronesRepository = dronesRepository;
             _dispatcherGateway = dispatcherGateway;
             _drone = new Drone(123, new GeoLocation(), dispatcherGateway); // TODO: initialize this from the drones repository, based on a drone id from environment variables
+            Console.WriteLine(_drone);
         }
 
         [HttpPost("assigndelivery")]
@@ -32,7 +34,8 @@ namespace DroneSimulator.Controllers
         [HttpPost("initregistration")]
         public async Task<IActionResult> InitializeRegistration()
         {
-            return Ok();
+            Console.WriteLine("YAY");
+            return Ok("YAY");
         }
 
         [HttpPost("completeregistration")]
