@@ -7,7 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace Domain.Implementation.Repositories
+namespace DomainImplementation.Repositories
 {
     public abstract class MongoRepository<DomainEntity> : IBaseRepository<DomainEntity>
         where DomainEntity : IBaseEntity

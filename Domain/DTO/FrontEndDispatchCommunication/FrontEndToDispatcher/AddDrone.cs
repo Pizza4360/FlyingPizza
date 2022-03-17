@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Domain.DTO.FrontEndDispatchCommunnication
+namespace Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher
 {
     public class AddDrone
     {

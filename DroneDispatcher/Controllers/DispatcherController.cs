@@ -37,9 +37,10 @@ namespace DroneDispatcher.Controllers
         }
 
         #region endpoints
-        [HttpPost("/register")]
+        [HttpPost("register")]
         public async Task<IActionResult> RegisterNewDrone(InitializeDroneRegistration droneInfo)
         {
+            Console.WriteLine("We are gonna register some shit!!");
             // Todo make a new guid and make sure it is different from all other drones
             var newDrone = new Drone
             {

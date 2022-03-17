@@ -52,11 +52,5 @@ namespace Domain.Implementation.Gateways
             var response = await _httpClient.PostAsync(requestUri, body);
             return response.IsSuccessStatusCode;
         }
-
-        /*
-        public Drone GetDroneInfo(IpAddress address)
-        {
-            
-        }*/
     }
 }

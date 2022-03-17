@@ -1,8 +1,9 @@
 ﻿using System;
+using Domain.Interfaces;
 
 namespace Domain.Entities
 {
-    public class Order
+    public class Order : IBaseEntity
     {
         public string Id { get; set; }
 

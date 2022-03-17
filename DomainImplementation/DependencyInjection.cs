@@ -1,5 +1,8 @@
-﻿using Domain.Implementation.Repositories;
+﻿using Domain.Implementation.Gateways;
+using Domain.Interfaces.Gateways;
+using DomainImplementation.Repositories;
 using Domain.Interfaces.Repositories;
+using DomainImplementation.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 
@@ -23,6 +26,7 @@ namespace Domain.Implementation
                     services.GetService<IMongoClient>().GetDatabase("restheart"),
                     "Fleet");
             });
+            services.AddScoped<IDispatcherGateway>(services => new DispatcherGateway());
             #endregion repositories
         }
     }
