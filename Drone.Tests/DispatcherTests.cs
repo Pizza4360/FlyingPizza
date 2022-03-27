@@ -117,7 +117,7 @@ namespace Drone.Tests
     {
         public Domain.Entities.Drone DroneAtGateway { get; private set; }
 
-        public Task<bool> CompleteRegistration(string droneIpAddress, Guid badgeNumber, string dispatcherUrl, GeoLocation homeLocation)
+        public Task<bool> StartRegistration(string droneIpAddress, Guid badgeNumber, string dispatcherUrl, GeoLocation homeLocation)
         {
             DroneAtGateway = new Domain.Entities.Drone
             {
@@ -163,7 +163,7 @@ namespace Drone.Tests
         public void TestRegister()
         {
             var controller = new DispatcherController(Drones, Orders, Gateway, new GeoLocation());
-            var droneInfo = new InitializeDroneRegistration
+            var droneInfo = new DroneRegistrationInfo
             {
                 BadgeNumber = new Guid(),
                 IpAddress = "Test IP",
@@ -181,7 +181,7 @@ namespace Drone.Tests
         public void TestAddOrder()
         {
             var controller = new DispatcherController(Drones, Orders, Gateway, new GeoLocation());
-            var droneInfo = new InitializeDroneRegistration
+            var droneInfo = new DroneRegistrationInfo
             {
                 BadgeNumber = new Guid(),
                 IpAddress = "Test IP",
@@ -209,7 +209,7 @@ namespace Drone.Tests
         public void TestCompleteDelivery()
         {
             var controller = new DispatcherController(Drones, Orders, Gateway, new GeoLocation());
-            var droneInfo = new InitializeDroneRegistration
+            var droneInfo = new DroneRegistrationInfo
             {
                 BadgeNumber = new Guid(),
                 IpAddress = "Test IP",
@@ -242,7 +242,7 @@ namespace Drone.Tests
         public void TestReadyForOrder()
         {
             var controller = new DispatcherController(Drones, Orders, Gateway, new GeoLocation());
-            var droneInfo = new InitializeDroneRegistration
+            var droneInfo = new DroneRegistrationInfo
             {
                 BadgeNumber = new Guid(),
                 IpAddress = "Test IP",

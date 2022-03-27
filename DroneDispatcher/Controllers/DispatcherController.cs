@@ -25,20 +25,24 @@ namespace DroneDispatcher.Controllers
 
         public DispatcherController(
             IDronesRepository droneRepository,
-            IOrdersRepository ordersRepository,
-            IDroneGateway droneGateway,
-            GeoLocation home)
+            // IOrdersRepository ordersRepository,
+            IDroneGateway droneGateway
+            )
         {
             _dronesRepository = droneRepository;
-            _ordersRepository = ordersRepository;
+            // _ordersRepository = ordersRepository;
             _droneGateway = droneGateway;
             _unfilledOrders = new Queue<Order>();
-            Home = home;
+            Home = new GeoLocation
+            {
+                Latitude = 12,
+                Longitude = 123
+            };
         }
 
         #region endpoints
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterNewDrone(InitializeDroneRegistration droneInfo)
+        public async Task<IActionResult> RegisterNewDrone(DroneRegistrationInfo droneInfo)
         {
             Console.WriteLine("We are gonna register some shit!!");
             // Todo make a new guid and make sure it is different from all other drones
@@ -48,22 +52,25 @@ namespace DroneDispatcher.Controllers
                 IpAddress = droneInfo.IpAddress,
                 // TODO: added since required elsewhere in the handshake, may not be ideal
                 HomeLocation = Home,
-                DispatcherUrl = droneInfo.DispatcherUrl,
+                DispatcherUrl = "http://localhost:4000",
                 Destination = Home,
                 CurrentLocation = Home,
                 OrderId = "",
                 Status = "Ready",
                 Id = ""
             };
-
+            
             // Register drone w/ dispatcher by doing the following:
             // wait for OK message back from drone
-                var response = await _droneGateway.CompleteRegistration(newDrone.IpAddress, newDrone.BadgeNumber,
+            
+                var response = await _droneGateway.StartRegistration(newDrone.IpAddress, newDrone.BadgeNumber,
                     newDrone.DispatcherUrl, newDrone.HomeLocation);
+                if (!response)
+                    return Problem("either the drone is not ready to be initialized or is already part of a fleet.");
                 // Todod: save drone to database
                 await _dronesRepository.CreateAsync(newDrone);
                 // Todo dispatcher saves handshake record to DB
-                
+                    
                 // Todod dispatcher sends OK back to drone so that drone can stop waiting and start updating status
                 await _droneGateway.OKToSendStatus(newDrone.IpAddress);
                 return Ok();
