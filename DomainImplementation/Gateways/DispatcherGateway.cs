@@ -13,10 +13,10 @@ namespace Domain.Implementation.Gateways
         private static readonly HttpClient _httpClient = new HttpClient();
         public async Task<bool> UpdateDroneStatus(UpdateStatusDto status)
         {
-            Console.WriteLine("delivering ");
             var body = JsonContent.Create(status);
-            var requestUri = new Uri($"http://localhost:4000/dispatcher/assigndelivery");
+            var requestUri = new Uri($"http://172.18.0.0:4000/dispatcher/update_status");
             var response = await _httpClient.PostAsync(requestUri, body);
+            Console.WriteLine(body + "!!!!");
             return response.IsSuccessStatusCode;
         }
     }

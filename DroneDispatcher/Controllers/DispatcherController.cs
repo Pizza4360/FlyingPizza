@@ -54,7 +54,7 @@ namespace DroneDispatcher.Controllers
                 IpAddress = droneInfo.IpAddress,
                 // TODO: added since required elsewhere in the handshake, may not be ideal
                 HomeLocation = Home,
-                DispatcherUrl = "http://localhost:4000",
+                DispatcherUrl = "http://172.18.0.0:4000",
                 Destination = Home,
                 CurrentLocation = Home,
                 OrderId = "",
@@ -88,14 +88,14 @@ namespace DroneDispatcher.Controllers
             var availableDrones = new List<Drone>{
                 new Drone
                 {
-                    IpAddress = "localhost:5001",
+                    IpAddress = "172.18.0.1:5001",
                     Id = "1",
                     BadgeNumber = new Guid(),
                     OrderId = "",
                     HomeLocation = Home,
                     CurrentLocation = Home,
                     Status = "ready",
-                    DispatcherUrl = "localhost:4000"
+                    DispatcherUrl = "172.18.0.0:4000"
                 }
             };
             var newOrder = new Order
@@ -103,8 +103,8 @@ namespace DroneDispatcher.Controllers
                 Id = order.Id,
                 DeliveryLocation = new GeoLocation
                 {
-                    Latitude = 39.736134990245326m,
-                    Longitude = -104.99060497415945m
+                    Latitude = 39.74273568191456m,
+                    Longitude = -105.00771026053671m
                 }
             };
             if (availableDrones.Any())

@@ -4,13 +4,13 @@ FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
-EXPOSE 5000
+EXPOSE 4000
 
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
 COPY ["DroneDispatcher/DroneDispatcher.csproj", "DroneDispatcher/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
-COPY ["Domain.Implementation/Domain.Implementation.csproj", "Domain.Implementation/"]
+COPY ["DomainImplementation/DomainImplementation.csproj", "DomainImplementation/"]
 RUN dotnet restore "DroneDispatcher/DroneDispatcher.csproj"
 COPY . .
 WORKDIR "/src/DroneDispatcher"

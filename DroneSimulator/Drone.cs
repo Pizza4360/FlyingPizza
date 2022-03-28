@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Domain.Interfaces.Gateways;
 using Domain.Entities;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
@@ -104,7 +103,7 @@ namespace DroneSimulator
         }
 
         // Dispatch a drone to deliver a pizza.
-        public async Task deliverOrder(GeoLocation customerLocation)
+        public void deliverOrder(GeoLocation customerLocation)
         {
             Destination = customerLocation;
             UpdateStatus(DroneState.DELIVERING);
@@ -155,7 +154,9 @@ namespace DroneSimulator
 
         public override string ToString()
         {
-            return $"ID:{Id}\nlocation:{Location}\nDestination:{Destination}\nStatus:{State}";
+            var loc = $"{{{Location.Latitude},{Location.Longitude}}}";
+            var dest = $"{{{Destination.Latitude},{Destination.Longitude}}}";
+            return $"ID:{Id}\nlocation:{loc}\nDestination:{dest}\nStatus:{State}";
         }
 
         static double reversHaversine(double lat1, double lat2, double lon1, double lon2)
