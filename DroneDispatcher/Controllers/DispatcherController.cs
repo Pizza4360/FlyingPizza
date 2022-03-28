@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
+using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
+using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
 
 namespace DroneDispatcher.Controllers
 {
@@ -35,8 +37,8 @@ namespace DroneDispatcher.Controllers
             _unfilledOrders = new Queue<Order>();
             Home = new GeoLocation
             {
-                Latitude = 12,
-                Longitude = 123
+                Latitude = 39.74364421910773m,
+                Longitude = -105.00561147600774m
             };
         }
 
@@ -76,14 +78,40 @@ namespace DroneDispatcher.Controllers
                 return Ok();
         }
 
-        [HttpPost("/add_order")]
-        public async Task<IActionResult> AddNewOrder(Order newOrder)
+        [HttpPost("add_order")]
+        public async Task<IActionResult> AddNewOrder(AddOrderDTO order)
         {
+            Console.WriteLine("adding a new order");
             var didSucceed = false;
-            var availableDrones = await _dronesRepository.GetAllAvailableDronesAsync();
+            //Todo, eventually availableDrones needs to come from the db 
+            // var availableDrones = await _dronesRepository.GetAllAvailableDronesAsync();
+            var availableDrones = new List<Drone>{
+                new Drone
+                {
+                    IpAddress = "localhost:5001",
+                    Id = "1",
+                    BadgeNumber = new Guid(),
+                    OrderId = "",
+                    HomeLocation = Home,
+                    CurrentLocation = Home,
+                    Status = "ready",
+                    DispatcherUrl = "localhost:4000"
+                }
+            };
+            var newOrder = new Order
+            {
+                Id = order.Id,
+                DeliveryLocation = new GeoLocation
+                {
+                    Latitude = 39.736134990245326m,
+                    Longitude = -104.99060497415945m
+                }
+            };
             if (availableDrones.Any())
             {
-                didSucceed = await _droneGateway.AssignDelivery(availableDrones.First().IpAddress, newOrder.Id, newOrder.DeliveryLocation);
+                //Todo, this needs to actually come from the repo one day...
+                // var newOrder = await _ordersRepository.GetByIdAsync(orderId);
+                    didSucceed = await _droneGateway.AssignDelivery(availableDrones.First().IpAddress, newOrder.Id, newOrder.DeliveryLocation);
             }
             else
             {
@@ -93,10 +121,10 @@ namespace DroneDispatcher.Controllers
 
             // TODO: unhappy path
 
-            return Ok();
+            return Ok("aight");
         }
 
-        [HttpPost("/complete_delivery")]
+        [HttpPost("complete_delivery")]
         public async Task<IActionResult> CompleteDelivery(string orderNumber)
         {
             var order = await _ordersRepository.GetByIdAsync(orderNumber);
@@ -106,7 +134,7 @@ namespace DroneDispatcher.Controllers
             return Ok();
         }
 
-        [HttpPost("/ready_for_order")]
+        [HttpPost("ready_for_order")]
         public async Task<IActionResult> DroneIsReadyForOrder(string droneId)
         {
             if (_unfilledOrders.Count() > 0)
@@ -122,6 +150,12 @@ namespace DroneDispatcher.Controllers
         }
         #endregion endpoints
 
-
+        [HttpPost("update_status")]
+        public async Task<IActionResult> UpdateStatus(UpdateStatusDto dto)
+        {
+            Console.WriteLine($"putting:\n{dto}");
+            //Todo need to put to db...
+            return Ok();
+        }
     }
 }

@@ -31,7 +31,7 @@ curl -X POST localhost:5001/drone/initregistration \
 curl -X POST localhost:4000/dispatcher/add_order \
 -H 'Content-type: application/json' \
 -H 'Accept: application/json' \
--d '{ "badgeNumber": "76b5b3ce-305b-4baf-a949-115fcaac1cf6", "ipAddress": "http://localhost:5001"}'
+-d '{ "orderId": "TESTmrtyuafwdnrusdku"}'
 
 
 

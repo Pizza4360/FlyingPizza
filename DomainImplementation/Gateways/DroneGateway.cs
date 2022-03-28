@@ -16,18 +16,19 @@ namespace Domain.Implementation.Gateways
 
         public async Task<bool> AssignDelivery(string droneIpAddress, string orderNumber, GeoLocation orderLocation)
         {
+            Console.WriteLine($"DroneGateway.AssignDelivery({droneIpAddress}, {orderNumber}, {orderLocation})");
             var route = new List<GeoLocation> { orderLocation };
-
             var body = JsonContent.Create(new DeliverOrderDto
             {
                 OrderId = orderNumber,
-                Route = route
+                OrderLocation = orderLocation
+                // Route = route
             });
 
             var requestUri = new Uri($"http://{droneIpAddress}/drone/assigndelivery");
-
+            Console.WriteLine($"uri={requestUri}");
             var response = await _httpClient.PostAsync(requestUri, body);
-
+            Console.WriteLine($"response={response}");
             return response.IsSuccessStatusCode;
         }
         

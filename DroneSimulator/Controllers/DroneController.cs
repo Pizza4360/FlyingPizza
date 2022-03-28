@@ -20,14 +20,18 @@ namespace DroneSimulator.Controllers
         {
             _dronesRepository = dronesRepository;
             _dispatcherGateway = dispatcherGateway;
-            _drone = new Drone(123, new GeoLocation(), dispatcherGateway); // TODO: initialize this from the drones repository, based on a drone id from environment variables
+            _drone = new Drone("123", new GeoLocation
+            {
+                Latitude = 39.74364421910773m,
+                Longitude = -105.00561147600774m
+            }, dispatcherGateway); // TODO: initialize this from the drones repository, based on a drone id from environment variables
             Console.WriteLine(_drone);
         }
 
         [HttpPost("assigndelivery")]
         public async Task<IActionResult> AssignDelivery(DeliverOrderDto order)
         {
-            _drone.deliverOrder(order.Route[0]);
+            _drone.deliverOrder(order.OrderLocation);
             return Ok();
         }
 
