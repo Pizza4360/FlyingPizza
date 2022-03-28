@@ -9,7 +9,7 @@ namespace Domain.DTO.DroneCommunicationDto.DroneToDispatcher
         public string Id { get; set; }
         public override string ToString()
         {
-            return $"location={Location}\tstatus={State}\tid={Id}";
+            return $"UpdateStatusDto={{location:{Location}\tState:{State}\tId={Id}}}";
         }
     }
 }

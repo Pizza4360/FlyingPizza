@@ -2,7 +2,6 @@
 using Domain.Entities;
 using Domain.Interfaces.Gateways;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -12,23 +11,21 @@ namespace Domain.Implementation.Gateways
 {
     public class DroneGateway : IDroneGateway
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient HttpClient = new HttpClient();
 
         public async Task<bool> AssignDelivery(string droneIpAddress, string orderNumber, GeoLocation orderLocation)
         {
             Console.WriteLine($"DroneGateway.AssignDelivery({droneIpAddress}, {orderNumber}, {orderLocation})");
-            var route = new List<GeoLocation> { orderLocation };
             var body = JsonContent.Create(new DeliverOrderDto
             {
                 OrderId = orderNumber,
                 OrderLocation = orderLocation
-                // Route = route
             });
 
             var requestUri = new Uri($"http://{droneIpAddress}/drone/assigndelivery");
-            Console.WriteLine($"uri={requestUri}");
-            var response = await _httpClient.PostAsync(requestUri, body);
-            Console.WriteLine($"response={response}");
+            Console.WriteLine($"DroneGateway.AssignDelivery - request uri={requestUri}"); // Debug
+            var response = await HttpClient.PostAsync(requestUri, body);
+            Console.WriteLine($"DroneGateway.AssignDelivery - response={response}"); // Debug
             return response.IsSuccessStatusCode;
         }
         
@@ -36,21 +33,21 @@ namespace Domain.Implementation.Gateways
         {
             var body = JsonContent.Create(HttpStatusCode.OK);
             var requestUri = new Uri($"http://{droneIpAddress}/drone/completregistration");
-            var response = await _httpClient.PostAsync(requestUri, body);
+            var response = await HttpClient.PostAsync(requestUri, body);
             return response.IsSuccessStatusCode;
         }
 
         // Todo send register command to drone with badge number & url for db
         public async Task<bool> StartRegistration(
             string droneIpAddress,
-            Guid badgeNumber, // Todo ask Harrison why this is not badgeNumber
+            Guid badgeNumber,
             string dispatcherUrl, 
             GeoLocation homeLocation)
         {
             var body = JsonContent.Create(badgeNumber);
             var requestUri = new Uri($"http://{droneIpAddress}/drone/initregistration");
             // response should be good
-            var response = await _httpClient.PostAsync(requestUri, body);
+            var response = await HttpClient.PostAsync(requestUri, body);
             return response.IsSuccessStatusCode;
         }
     }

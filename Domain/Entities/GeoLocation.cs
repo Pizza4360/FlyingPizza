@@ -4,7 +4,7 @@ namespace Domain.Entities
 {
     public class GeoLocation
     {
-        public const decimal Tolerance = 0.0000001m;
+        private const decimal Tolerance = 0.0000001m;
 
         public decimal Latitude { get; set; }
 
@@ -16,5 +16,9 @@ namespace Domain.Entities
             && Math.Abs(Longitude - other.Longitude) < Tolerance;
 
         public override int GetHashCode() => HashCode.Combine(Latitude, Longitude);
+        public override string ToString()
+        {
+            return $"GeoLocation:{{x:{Latitude},y:{Longitude}}}";
+        }
     }
 }

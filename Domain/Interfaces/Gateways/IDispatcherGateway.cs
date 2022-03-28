@@ -5,6 +5,6 @@ namespace Domain.Interfaces.Gateways
 {
     public interface IDispatcherGateway
     {
-        public Task<bool> UpdateDroneStatus(UpdateStatusDto status);
+        public Task<bool> PutDroneState(UpdateStatusDto status);
     }
 }
