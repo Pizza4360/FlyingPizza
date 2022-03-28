@@ -31,15 +31,16 @@ namespace DroneSimulator.Controllers
         [HttpPost("assigndelivery")]
         public async Task<IActionResult> AssignDelivery(DeliverOrderDto order)
         {
-            _drone.deliverOrder(order.OrderLocation);
+            _drone.DeliverOrder(order.OrderLocation);
             return Ok();
         }
 
         [HttpPost("initregistration")]
         public async Task<IActionResult> InitializeRegistration()
         {
-            Console.WriteLine("YAY");
-            return Ok("YAY");
+            Console.WriteLine($"Initializing{_drone}");
+            // Todo, add logic to verify legitimacy of adding a drone.
+            return Ok("Drone successfully initialized");
         }
 
         [HttpPost("completeregistration")]

@@ -1,29 +1,36 @@
 ﻿using System;
 using System.Threading;
-using System.Collections.Generic;
 using System.Linq;
 using Domain.Interfaces.Gateways;
 using Domain.Entities;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
-using Microsoft.AspNetCore.Routing;
 using static System.Decimal;
 
 namespace DroneSimulator
 {
     public enum DroneState
     {
-        READY,
-        DELIVERING,
-        RETURNING,
-        DEAD,
-        CHARGING
+        Ready,
+        Delivering,
+        Returning,
+        Dead,
+        Charging
     }
 
     public class Drone
     {
-        private const double Drone_Speed = 0.0089408;
+        // Radius of the Earth used in calculating distance 
+        private const int EarthRadius = 6371;
 
-        private const double Tick_Count = 2.00;
+        // 20 MPH as meters per second
+        private const double DroneSpeed = 0.0089408;
+        
+        // Number of milliseconds to wait before updating Drone status
+        private const int DroneUpdateInterval = 2000;
+
+        // I don't think this makes sense but it's working...
+        private const double StepSize = DroneUpdateInterval / 1000 * DroneSpeed;
+        
         // The unique ID of this drone which is stored in the database
         private string Id { get; }
 
@@ -34,59 +41,48 @@ namespace DroneSimulator
         private GeoLocation Location { get; set; }
 
         // The desired position of the drone
-        public GeoLocation Destination { get; set; }
+        private GeoLocation Destination { get; set; }
 
-        // Current status of the drone
+        // Current state of the drone
         private DroneState State { get; set; }
 
+        // Gateway for communication with the dispatcher
         private readonly IDispatcherGateway _dispatcher;
 
         // Constructor
-        public Drone(string id, GeoLocation Home, IDispatcherGateway dispatcher)
+        public Drone(string id, GeoLocation home, IDispatcherGateway dispatcher)
         {
             Id = id;
-            Location = Home;
-            Destination = Home;
-            State = DroneState.READY;
+            Location = home;
+            Destination = home;
+            State = DroneState.Ready;
             _dispatcher = dispatcher;
-            this.Home = Home;
+            Home = home;
         }
-
-        // Calculate the next Point.X or Point.Y along a route
-        // decimal routeStep(decimal v, int i, int numberOfLocations, bool isLatitude)
-        //     => isLatitude && Home.Latitude == Destination.Latitude
-        //         ? Home.Latitude
-        //         : !isLatitude && Home.Longitude == Destination.Longitude
-        //             ? Home.Longitude
-        //             : (v * (i + 1)) / numberOfLocations;
-
+        
         // Return an array of Point records simulating a drone's delivery route
-        public GeoLocation[] GetRoute()
+        private GeoLocation[] GetRoute()
         {
-            if (Home.Latitude == Destination.Latitude && Home.Longitude == Destination.Longitude)
+            if (Home.Equals(Destination))
             {
                 throw new ArgumentException(
                     "Destination cannot be the same as the Delivery station!");
             }
 
-
-            // # of locations should be the absolute value of the hypotenuse, rounded up to the
-            // nearest integer
-
-            var distance = haversine(ToDouble(Home.Latitude), ToDouble(Home.Longitude),
+            var distance = Haversine(ToDouble(Home.Latitude), ToDouble(Home.Longitude),
                 ToDouble(Destination.Latitude), ToDouble(Destination.Longitude));
-            var step_size = Tick_Count * Drone_Speed;
-            
-            var numberOfLocations = (int)Math.Floor(distance / step_size);
 
-            Console.WriteLine($"need to travel {distance} km, step_size={step_size}, num locations={numberOfLocations}");
-            // Longitude distance to get to destination
+            var numberOfLocations = (int)Math.Floor(distance / StepSize);
+
+            Console.WriteLine($"need to travel {distance} km, step_size={StepSize}, num locations={numberOfLocations}");
+            // Latitude distance to get to destination
             var xStep = (Home.Longitude - Destination.Longitude) / numberOfLocations;
             
-            // Latitude distance to get to destination
+            // Longitude distance to get to destination
             var yStep = (Home.Latitude - Destination.Latitude) / numberOfLocations;
+            
             // LINQ yields all the points (except possibly the last one) along the route, one unit apart.
-            List<GeoLocation> route = Enumerable.Range(0, numberOfLocations - 1)
+            var route = Enumerable.Range(0, numberOfLocations - 1)
                 .Select(i => new GeoLocation
                 {
                     Latitude = i * xStep,
@@ -94,7 +90,7 @@ namespace DroneSimulator
                 }).ToList();
 
             // Add the Destination Point if needed.
-            if (!route.TakeLast(1).Equals(Destination))
+            if (!route.Last().Equals(Destination))
             {
                 route.Add(Destination);
             }
@@ -103,34 +99,34 @@ namespace DroneSimulator
         }
 
         // Dispatch a drone to deliver a pizza.
-        public void deliverOrder(GeoLocation customerLocation)
+        public void DeliverOrder(GeoLocation customerLocation)
         {
             Destination = customerLocation;
-            UpdateStatus(DroneState.DELIVERING);
+            UpdateStatus(DroneState.Delivering);
             var route = GetRoute();
             var s = string.Join(",", route.Select(x => $"{{{x.Latitude},{x.Longitude}}}").ToArray());
-            Console.WriteLine($"{this},route={s}");
+            Console.WriteLine($"{this},route:{s}"); // Debug
 
-            for (int i = 0; i < route.Length; i++)
+            foreach (var location in route)
             {
-                Location = route[i];
-                UpdateLocation(Location);
-                Console.WriteLine(this);
-                Thread.Sleep(2000);
+                Location = location;
+                UpdateLocation();
+                Console.WriteLine(this); // Debug
+                Thread.Sleep(DroneUpdateInterval);
             }
 
             Console.WriteLine("Order complete!");
-            UpdateStatus(DroneState.RETURNING);
+            UpdateStatus(DroneState.Returning);
             for (int i = route.Length - 1; i > 0; i--)
             {
                 Location = route[i];
-                UpdateLocation(Location);
-                Console.WriteLine(this);
-                Thread.Sleep(2000);
+                UpdateLocation();
+                Console.WriteLine(this); // Debug
+                Thread.Sleep(DroneUpdateInterval);
             }
 
-            UpdateStatus(DroneState.READY);
-            Console.WriteLine("Back home!");
+            UpdateStatus(DroneState.Ready);
+            Console.WriteLine("Back home!"); // Debug
         }
 
         private void UpdateStatus(DroneState state)
@@ -143,46 +139,32 @@ namespace DroneSimulator
             });
         }
 
-        private void UpdateLocation(GeoLocation location)
+        private void UpdateLocation()
         {
             _dispatcher.UpdateDroneStatus(new UpdateStatusDto
             {
                 Id = Id,
-                Location = location
+                Location = Location
             });
         }
 
         public override string ToString()
         {
-            var loc = $"{{{Location.Latitude},{Location.Longitude}}}";
-            var dest = $"{{{Destination.Latitude},{Destination.Longitude}}}";
-            return $"ID:{Id}\nlocation:{loc}\nDestination:{dest}\nStatus:{State}";
+            return $"Drone:{{Id:{Id},Location:{Location},Destination:{Destination},State:{State}}}";
         }
+        
+        // Helper function for Haversine formula readability
+        private static double ToRadians(double x) => Math.PI / 180 * x;
 
-        static double reversHaversine(double lat1, double lat2, double lon1, double lon2)
-        {
-            return 2 * 6371000 * Math.Asin(Math.Sqrt((lat2 - lat2) / 2) + Math.Cos(lat1) * Math.Cos(lat2) *
-                Math.Pow(Math.Sin((lon2 - lon1) / 2), 2));
-        }
-        static double haversine(double lat1, double lon1,
-            double lat2, double lon2)
-        {
-            // distance between latitudes and longitudes
-            double dLat = (Math.PI / 180) * (lat2 - lat1);
-            double dLon = (Math.PI / 180) * (lon2 - lon1);
+        // Helper function for Haversine formula readability
+        private static double SinSquared(double x) => Math.Pow(Math.Sin(ToRadians(x) / 2), 2);
 
-            // convert to radians
-            lat1 = (Math.PI / 180) * (lat1);
-            lat2 = (Math.PI / 180) * (lat2);
-
-            // apply formulae
-            double a = Math.Pow(Math.Sin(dLat / 2), 2) +
-                       Math.Pow(Math.Sin(dLon / 2), 2) *
-                       Math.Cos(lat1) * Math.Cos(lat2);
-            double rad = 6371;
-            double c = 2 * Math.Asin(Math.Sqrt(a));
-            return rad * c;
-        }
+        // Calculate the difference between two points on a sphere
+        private static double Haversine(
+            double lat1, double lon1,
+            double lat2, double lon2) =>
+        EarthRadius * 2 * Math.Asin(
+            Math.Sqrt(SinSquared(lat2 - lat1)) + SinSquared((lon2 - lon1) * Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2))));
     }
 }
 
