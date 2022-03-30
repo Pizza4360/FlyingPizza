@@ -35,10 +35,10 @@ namespace DroneSimulator
         private string Id { get; }
 
         // The point representing the pizza restaurant
-        private GeoLocation Home { get; }
+        public GeoLocation Home { get; set; }
 
         // The current position of the drone
-        private GeoLocation Location { get; set; }
+        public GeoLocation Location { get; set; }
 
         // The desired position of the drone
         public GeoLocation Destination { get; set; }
@@ -63,6 +63,7 @@ namespace DroneSimulator
         // Return an array of Geolocations representing a drone's delivery route
         public GeoLocation[] GetRoute()
         {
+            // TODO: BUG #1 route is of opposite sign until destination
             if (Home.Equals(Destination))
             {
                 throw new ArgumentException(

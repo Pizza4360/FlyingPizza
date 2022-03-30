@@ -59,8 +59,11 @@ namespace Drone.Tests
                 BadgeNumber = testGuid,
                 IpAddress = "test_ip"
             };
+            var mockedDroneRepositorySetup = new Mock<IDronesRepository>();
+            mockedDroneRepositorySetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.Drone>())).Returns<Domain.Entities.Drone>(x =>Task.FromResult(x));
+            var mockedDroneRepository = mockedDroneRepositorySetup.Object;
             var controller =
-                new DispatcherController(new DronesRepository(mockedDatabase, "bogus"), mockedDroneGateway);
+                new DispatcherController(mockedDroneRepository, mockedDroneGateway);
             await controller.RegisterNewDrone(testInfo);
             mockedDroneGatewaySetup.VerifyAll();
         }
@@ -165,25 +168,6 @@ namespace Drone.Tests
             result.Should().BeEquivalentTo(expected);
         }
 
-
-        [Fact]
-        public async Task add_new_order_should_enqueue_when_no_drone_available()
-        {
-            var modifiedController = new Mock<DispatcherController>();
-            modifiedController.Setup(x => x._unfilledOrders.Enqueue(It.IsAny<Domain.Entities.Order>())).Verifiable();
-            modifiedController.Setup(x => x._unfilledOrders.Any()).Returns(false);
-            // ensuring no drones available
-            var controller = modifiedController.Object;
-            var testOrderDto = new AddOrderDTO();
-
-            // calling method
-            var result = await controller.AddNewOrder(testOrderDto);
-
-            var expected = new OkResult();
-            result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(expected);
-        }
-
         // CompleteDelivery
         [Fact]
         public async Task complete_delivery_should_return_ok()
@@ -209,7 +193,7 @@ namespace Drone.Tests
             mockedOrdersRepositorySetup.Setup(x => x.GetByIdAsync(testOrderNumber)).Returns(Task.FromResult(testOrder)).Verifiable();
             mockedOrdersRepositorySetup.Setup(x => x.Update(testOrder)).Returns(Task.FromResult(testOrder)).Verifiable();
             var mockedOrdersRepository = mockedOrdersRepositorySetup.Object;
-            // TODO: currently fails since Dev hasn't added order repo to dispatcher
+            // TODO: BUG # 2 currently fails since Dev hasn't added order repo to dispatcher
             
             var controller = new DispatcherController(mockedDronesRepository, mockedDroneGateway);
             // calling method
@@ -245,7 +229,7 @@ namespace Drone.Tests
             mockedOrdersRepositorySetup.Setup(x => x.GetByIdAsync(testOrderNumber)).Returns(Task.FromResult(testOrder)).Verifiable();
             mockedOrdersRepositorySetup.Setup(x => x.Update(testOrder)).Returns(Task.FromResult(testOrder)).Verifiable();
             var mockedOrdersRepository = mockedOrdersRepositorySetup.Object;
-            // TODO: currently fails since Dev hasn't added order repo to dispatcher
+            // TODO:BUG #2 currently fails since Dev hasn't added order repo to dispatcher
             
             var controller = new DispatcherController(mockedDronesRepository, mockedDroneGateway);
             // calling method

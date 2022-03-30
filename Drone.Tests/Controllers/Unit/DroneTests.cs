@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using Castle.Core.Internal;
@@ -27,11 +29,18 @@ namespace Drone.Tests
         [Fact]
         public void drone_should_have_destination_in_route()
         {
-            var home = new Point(0.0, 0.0);
-            var dest = new Point(3.0, 4.0);
-
-            var drone = DroneModel.AddDrone("").Result;
-            drone.Delivery = dest;
+            var home = new GeoLocation{
+                Latitude = 0.0m,
+                Longitude = 0.0m
+                
+            };
+            var dest = new GeoLocation{
+                Latitude = 3.0m,
+                Longitude = 4.0m
+            };
+            var mockedDispatcher = new Mock<IDispatcherGateway>().Object;
+            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
+            drone.Destination = dest;
 
             var route =  drone.GetRoute();
             route.Should().NotBeNull();
@@ -74,11 +83,14 @@ namespace Drone.Tests
             };
             var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
             drone.Destination = dest;
-
+           
             var route =  drone.GetRoute();
             route.Should().NotBeNull();
-            route.Should().Satisfy(x => x.Latitude >= 0.0m, x => x.Longitude >= 0.0m);
-
+            foreach (var geoLocation in route)
+            {
+                geoLocation.Latitude.Should().BeGreaterThanOrEqualTo(0m);
+                geoLocation.Longitude.Should().BeGreaterThanOrEqualTo(0m);
+            }
         }
 
         [Fact]
@@ -86,20 +98,24 @@ namespace Drone.Tests
         {
             var mockedDispatcher = new Mock<IDispatcherGateway>().Object;
             var home = new GeoLocation{
-                Latitude = 3.0m,
-                Longitude = 4.0m
+                Latitude = 0.0m,
+                Longitude = 0.0m
                 
             };
             var dest = new GeoLocation{
-                Latitude = 0.0m,
-                Longitude = 0.0m
+                Latitude = -3.0m,
+                Longitude = -4.0m
             };
             var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
             drone.Destination = dest;
 
             var route =  drone.GetRoute();
             route.Should().NotBeNull();
-            route.Should().Satisfy(x => x.Latitude <= 0.0m, x => x.Longitude <= 0.0m);
+            foreach (var geoLocation in route)
+            {
+                geoLocation.Latitude.Should().BeLessThanOrEqualTo(0.0m);
+                geoLocation.Longitude.Should().BeLessThanOrEqualTo(0.0m);
+            }
         }
     }
 }
