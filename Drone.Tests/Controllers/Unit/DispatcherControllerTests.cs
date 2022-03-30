@@ -253,27 +253,8 @@ namespace Drone.Tests
 
             mockedOrdersRepositorySetup.VerifyAll();
         }
-        
+
         // DroneIsReadyForOrders
-        [Fact]
-        public async Task drone_is_ready_for_orders_should_dequeue_on_unfilled_orders()
-        {
-            var modifiedController = new Mock<DispatcherController>();
-            modifiedController.Setup(x => x._unfilledOrders.Dequeue()).Verifiable();
-            modifiedController.Setup(x => x._unfilledOrders.Any()).Returns(true);
-            // ensuring orders are unfilled
-            var controller = modifiedController.Object;
-            var testGuidString = "some nonsense";
-
-            // calling method
-            var result = await controller.DroneIsReadyForOrder(testGuidString);
-
-            var expected = new OkResult();
-            result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(expected);
-            modifiedController.VerifyAll();
-        }
-        
         [Fact]
         public async Task drone_is_ready_for_orders_should_always_return_ok()
         {

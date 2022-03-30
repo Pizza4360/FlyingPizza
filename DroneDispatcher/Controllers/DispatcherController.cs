@@ -17,7 +17,7 @@ namespace DroneDispatcher.Controllers
     public class DispatcherController : ControllerBase
     {
         private readonly IDronesRepository _dronesRepository;
-        private readonly IOrdersRepository _ordersRepository;
+        public readonly IOrdersRepository _ordersRepository;
         private readonly IDroneGateway _droneGateway;
         public readonly Queue<Order> _unfilledOrders;
 

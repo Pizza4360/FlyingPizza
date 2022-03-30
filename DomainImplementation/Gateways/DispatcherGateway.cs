@@ -2,7 +2,6 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
 using Domain.Interfaces.Gateways;
 
@@ -21,5 +20,6 @@ namespace Domain.Implementation.Gateways
             Console.WriteLine($"DispatcherGateway.UpdateDroneStatus - response={response}"); // Debug
             return response.IsSuccessStatusCode;
         }
+        
     }
 }
