@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
@@ -9,13 +8,13 @@ using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
 using DomainImplementation.Repositories;
 using DroneDispatcher.Controllers;
-using Xunit;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Moq;
+using Xunit;
 
-namespace Drone.Tests
+namespace Drone.Tests.Controllers.Unit
 {
 
 

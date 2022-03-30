@@ -9,7 +9,7 @@ namespace Domain.Implementation.Gateways
 {
     public class DispatcherGateway : IDispatcherGateway
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private static HttpClient _httpClient = new HttpClient();
         public async Task<bool> PutDroneState(UpdateStatusDto status)
         {
             Console.WriteLine($"DispatcherGateway.UpdateDroneStatus({status})");
@@ -19,6 +19,12 @@ namespace Domain.Implementation.Gateways
             var response = await _httpClient.PostAsync(requestUri, body);
             Console.WriteLine($"DispatcherGateway.UpdateDroneStatus - response={response}"); // Debug
             return response.IsSuccessStatusCode;
+        }
+        
+        public void changeHandler(HttpMessageHandler handler)
+        {
+            // Added for mocking reasons, no way around it
+            _httpClient = new HttpClient(handler);
         }
         
     }

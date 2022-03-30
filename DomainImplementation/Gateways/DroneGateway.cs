@@ -11,7 +11,7 @@ namespace Domain.Implementation.Gateways
 {
     public class DroneGateway : IDroneGateway
     {
-        private static readonly HttpClient HttpClient = new HttpClient();
+        private static HttpClient HttpClient = new HttpClient();
 
         public async Task<bool> AssignDelivery(string droneIpAddress, string orderNumber, GeoLocation orderLocation)
         {
@@ -49,6 +49,12 @@ namespace Domain.Implementation.Gateways
             // response should be good
             var response = await HttpClient.PostAsync(requestUri, body);
             return response.IsSuccessStatusCode;
+        }
+
+        public void changeHandler(HttpMessageHandler handler)
+        {
+            // Added for mocking reasons, no way around it
+            HttpClient = new HttpClient(handler);
         }
     }
 }

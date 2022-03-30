@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using Castle.Core.Internal;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Interfaces.Gateways;
-using FlyingPizza.Drone;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Routing.Matching;
-using Xunit;
-using Xunit.Abstractions;
 using FluentAssertions;
 using Moq;
+using Xunit;
+using Xunit.Abstractions;
 
-namespace Drone.Tests
+namespace Drone.Tests.Controllers.Unit
 {
     public class DroneTests
     {
