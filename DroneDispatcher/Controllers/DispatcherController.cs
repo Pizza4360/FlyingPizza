@@ -19,7 +19,7 @@ namespace DroneDispatcher.Controllers
         private readonly IDronesRepository _dronesRepository;
         private readonly IOrdersRepository _ordersRepository;
         private readonly IDroneGateway _droneGateway;
-        private readonly Queue<Order> _unfilledOrders;
+        public readonly Queue<Order> _unfilledOrders;
 
         public GeoLocation Home { get; }
         // TODO: added since dispatcher should know where it starts?
