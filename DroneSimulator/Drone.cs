@@ -41,7 +41,7 @@ namespace DroneSimulator
         private GeoLocation Location { get; set; }
 
         // The desired position of the drone
-        private GeoLocation Destination { get; set; }
+        public GeoLocation Destination { get; set; }
 
         // Current state of the drone
         private DroneState State { get; set; }
@@ -61,7 +61,7 @@ namespace DroneSimulator
         }
         
         // Return an array of Geolocations representing a drone's delivery route
-        private GeoLocation[] GetRoute()
+        public GeoLocation[] GetRoute()
         {
             if (Home.Equals(Destination))
             {

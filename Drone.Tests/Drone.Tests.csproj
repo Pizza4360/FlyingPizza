@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DroneDispatcher\DroneDispatcher.csproj" />
+    <ProjectReference Include="..\DroneSimulator\DroneSimulator.csproj" />
     <ProjectReference Include="..\FlyingPizza\FlyingPizza.csproj" />
   </ItemGroup>
 

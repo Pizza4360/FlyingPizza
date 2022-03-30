@@ -32,7 +32,7 @@ namespace FlyingDrone
         private int Id { get; }
 
         // The point representing the pizza restaurant
-        private Point Home { get; }
+        private Point Home { get; set; }
 
         // The current position of the drone
         private Point Location { get; set; }
@@ -44,10 +44,11 @@ namespace FlyingDrone
         private DroneState Status { get; set; }
         
         // Constructor
-        public Drone(int id, Point Home)
+        public Drone(int id, Point start)
         {
             this.Id = id;
-            Location = Home = Destination = Home;
+            Location = Destination;
+            Home = start;
             Status = DroneState.READY;
         }
 
