@@ -63,7 +63,6 @@ namespace DroneSimulator
         // Return an array of Geolocations representing a drone's delivery route
         public GeoLocation[] GetRoute()
         {
-            // TODO: BUG #1 route is of opposite sign until destination
             if (Home.Equals(Destination))
             {
                 throw new ArgumentException(
@@ -77,10 +76,10 @@ namespace DroneSimulator
 
             Console.WriteLine($"need to travel {distance} km, step_size={StepSize}, num locations={numberOfLocations}");
             // Latitude distance to get to destination
-            var xStep = (Home.Longitude - Destination.Longitude) / numberOfLocations;
+            var xStep = (Destination.Longitude - Home.Longitude) / numberOfLocations;
             
             // Longitude distance to get to destination
-            var yStep = (Home.Latitude - Destination.Latitude) / numberOfLocations;
+            var yStep = (Destination.Latitude - Home.Latitude) / numberOfLocations;
             
             // LINQ yields all the points (except possibly the last one) along the route, one unit apart.
             var route = Enumerable.Range(0, numberOfLocations - 1)
