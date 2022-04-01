@@ -79,6 +79,7 @@ namespace DroneDispatcher.Controllers
             Console.WriteLine("adding a new order");
             bool didSucceed;
             //Todo, eventually availableDrones needs to come from the db 
+            // TODO: bug #4 currently this method just creates a drone and an order, making else logic unreachable
             // var availableDrones = await _dronesRepository.GetAllAvailableDronesAsync();
             var availableDrones = new List<Drone>
             {

@@ -278,6 +278,7 @@ namespace Drone.Tests.Controllers.Unit
             
             var controller = new DispatcherController(mockedDronesRepository, mockedDroneGateway);
             
+            // need a drone available to add an order?
             
             // adding wanted order to orders
             await controller.AddNewOrder(testOrderDto);
