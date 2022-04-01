@@ -5,6 +5,7 @@ using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using MongoDB.Driver.Core.Events;
 
 namespace DroneSimulator.Controllers
 {
@@ -14,7 +15,7 @@ namespace DroneSimulator.Controllers
     {
         private readonly IDronesRepository _dronesRepository;
         private readonly IDispatcherGateway _dispatcherGateway;
-        private readonly Drone _drone;
+        private Drone _drone;
 
         public DroneController(IDronesRepository dronesRepository, IDispatcherGateway dispatcherGateway)
         {
@@ -47,6 +48,11 @@ namespace DroneSimulator.Controllers
         public async Task<IActionResult> CompleteRegistration()
         {
             return Ok();
+        }
+
+        public void changeDrone(Drone drone)
+        {
+            _drone = drone;
         }
     }
 }

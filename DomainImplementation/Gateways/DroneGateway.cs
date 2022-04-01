@@ -32,7 +32,7 @@ namespace Domain.Implementation.Gateways
         public async Task<bool> OKToSendStatus(string droneIpAddress)
         {
             var body = JsonContent.Create(HttpStatusCode.OK);
-            var requestUri = new Uri($"http://{droneIpAddress}/drone/completregistration");
+            var requestUri = new Uri($"http://{droneIpAddress}/drone/completeregistration");
             var response = await HttpClient.PostAsync(requestUri, body);
             return response.IsSuccessStatusCode;
         }
