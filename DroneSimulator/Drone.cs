@@ -35,13 +35,13 @@ namespace DroneSimulator
         private string Id { get; }
 
         // The point representing the pizza restaurant
-        private GeoLocation Home { get; }
+        public GeoLocation Home { get; set; }
 
         // The current position of the drone
-        private GeoLocation Location { get; set; }
+        public GeoLocation Location { get; set; }
 
         // The desired position of the drone
-        private GeoLocation Destination { get; set; }
+        public GeoLocation Destination { get; set; }
 
         // Current state of the drone
         private DroneState State { get; set; }
@@ -61,7 +61,7 @@ namespace DroneSimulator
         }
         
         // Return an array of Geolocations representing a drone's delivery route
-        private GeoLocation[] GetRoute()
+        public GeoLocation[] GetRoute()
         {
             if (Home.Equals(Destination))
             {
@@ -76,10 +76,10 @@ namespace DroneSimulator
 
             Console.WriteLine($"need to travel {distance} km, step_size={StepSize}, num locations={numberOfLocations}");
             // Latitude distance to get to destination
-            var xStep = (Home.Longitude - Destination.Longitude) / numberOfLocations;
+            var xStep = (Destination.Longitude - Home.Longitude) / numberOfLocations;
             
             // Longitude distance to get to destination
-            var yStep = (Home.Latitude - Destination.Latitude) / numberOfLocations;
+            var yStep = (Destination.Latitude - Home.Latitude) / numberOfLocations;
             
             // LINQ yields all the points (except possibly the last one) along the route, one unit apart.
             var route = Enumerable.Range(0, numberOfLocations - 1)

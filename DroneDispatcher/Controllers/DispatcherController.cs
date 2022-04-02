@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Domain;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
 using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
@@ -18,21 +17,20 @@ namespace DroneDispatcher.Controllers
     public class DispatcherController : ControllerBase
     {
         private readonly IDronesRepository _dronesRepository;
-        private readonly IOrdersRepository _ordersRepository;
+        public readonly IOrdersRepository _ordersRepository;
         private readonly IDroneGateway _droneGateway;
         public readonly Queue<Order> _unfilledOrders;
 
         public GeoLocation Home { get; }
-        // TODO: added since dispatcher should know where it starts?
 
         public DispatcherController(
-            IDroneGateway droneGateway,
-            IDronesRepository droneRepository = null
-            // IOrdersRepository ordersRepository,
+            IDronesRepository droneRepository,
+            IOrdersRepository ordersRepository,
+            IDroneGateway droneGateway
         )
         {
             _dronesRepository = droneRepository;
-            // _ordersRepository = ordersRepository;
+            _ordersRepository = ordersRepository;
             _droneGateway = droneGateway;
             _unfilledOrders = new Queue<Order>();
             Home = new GeoLocation
@@ -47,15 +45,14 @@ namespace DroneDispatcher.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterNewDrone(DroneRegistrationInfo droneInfo)
         {
-            Console.WriteLine($"Registering drone #{droneInfo.BadgeNumber} at \"{droneInfo.IpAddress}\"");
+            Console.WriteLine("We are gonna register some shit!!");
             // Todo make a new guid and make sure it is different from all other drones
             var newDrone = new Drone
             {
                 BadgeNumber = droneInfo.BadgeNumber,
                 IpAddress = droneInfo.IpAddress,
-                // TODO: added since required elsewhere in the handshake, may not be ideal
                 HomeLocation = Home,
-                DispatcherUrl = $"{Utils.GetLocalIPAddress()}:4000",
+                DispatcherUrl = "http://172.18.0.0:4000",
                 Destination = Home,
                 CurrentLocation = Home,
                 OrderId = "",
@@ -71,7 +68,7 @@ namespace DroneDispatcher.Controllers
             // Todo dispatcher saves handshake record to DB
 
             await _droneGateway.OKToSendStatus(newDrone.IpAddress);
-            return Ok($"Successfully added drone #{droneInfo.BadgeNumber} to fleet.");
+            return Ok();
         }
 
         [HttpPost("add_order")]
@@ -79,35 +76,11 @@ namespace DroneDispatcher.Controllers
         {
             Console.WriteLine("adding a new order");
             bool didSucceed;
-            //Todo, eventually availableDrones needs to come from the db 
-            // var availableDrones = await _dronesRepository.GetAllAvailableDronesAsync();
-            var availableDrones = new List<Drone>
-            {
-                new Drone
-                {
-                    IpAddress = "172.18.0.1:5001",
-                    Id = "1",
-                    BadgeNumber = new Guid(),
-                    OrderId = "",
-                    HomeLocation = Home,
-                    CurrentLocation = Home,
-                    Status = "ready",
-                    DispatcherUrl = "172.18.0.0:4000"
-                }
-            };
-            var newOrder = new Order
-            {
-                Id = order.Id,
-                DeliveryLocation = new GeoLocation
-                {
-                    Latitude = 39.74273568191456m,
-                    Longitude = -105.00771026053671m
-                }
-            };
+             var availableDrones = await _dronesRepository.GetAllAvailableDronesAsync();
+            
+            var newOrder = await _ordersRepository.GetByIdAsync(order.Id);
             if (availableDrones.Any())
             {
-                //Todo, this needs to actually come from the repo one day...
-                // var newOrder = await _ordersRepository.GetByIdAsync(orderId);
                 didSucceed = await _droneGateway.AssignDelivery(availableDrones.First().IpAddress, newOrder.Id,
                     newOrder.DeliveryLocation);
             }

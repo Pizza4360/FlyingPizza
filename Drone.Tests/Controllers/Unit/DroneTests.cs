@@ -1,9 +1,11 @@
-﻿using FlyingPizza.Drone;
-
+﻿using Domain.Entities;
+using Domain.Interfaces.Gateways;
+using FluentAssertions;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Drone.Tests
+namespace Drone.Tests.Controllers.Unit
 {
     public class DroneTests
     {
@@ -14,42 +16,97 @@ namespace Drone.Tests
         {
             _testOutputHelper = testOutputHelper;
         }
+
+        [Fact]
+        public void drone_should_have_destination_in_route()
+        {
+            var home = new GeoLocation{
+                Latitude = 0.0m,
+                Longitude = 0.0m
+                
+            };
+            var dest = new GeoLocation{
+                Latitude = 3.0m,
+                Longitude = 4.0m
+            };
+            var mockedDispatcher = new Mock<IDispatcherGateway>().Object;
+            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
+            drone.Destination = dest;
+
+            var route =  drone.GetRoute();
+            route.Should().NotBeNull();
+            route.Should().Contain(dest);
+        }
+        
+        [Fact]
+        public void drone_should_have_start_in_route()
+        {
+            var mockedDispatcher = new Mock<IDispatcherGateway>().Object;
+            var home = new GeoLocation{
+                Latitude = 0.0m,
+                Longitude = 0.0m
+                
+            };
+            var dest = new GeoLocation{
+                Latitude = 3.0m,
+                Longitude = 4.0m
+            };
+            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
+            drone.Destination = dest;
+
+            var route =  drone.GetRoute();
+            route.Should().NotBeNull();
+            route.Should().Contain(home);
+        }
+        
         [Fact]
         public void TestGetRouteAllPositiveNumbers()
         {
-            var home = new Point(0.0, 0.0);
-            var dest = new Point(3.0, 4.0);
-
-            var drone = DroneModel.AddDrone("").Result;
-            drone.Delivery = dest;
-
-            Point[] expectedRoute = {
-                new (0.6, 0.8),
-                new (1.2, 1.6),
-                new (1.8, 2.4),
-                new (2.4, 3.2),
-                new (3.0, 4.0)
+            var mockedDispatcher = new Mock<IDispatcherGateway>().Object;
+            var home = new GeoLocation{
+                Latitude = 0.0m,
+                Longitude = 0.0m
+                
             };
-            Assert.Equal(expectedRoute, drone.GetRoute());
+            var dest = new GeoLocation{
+                Latitude = 3.0m,
+                Longitude = 4.0m
+            };
+            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
+            drone.Destination = dest;
+           
+            var route =  drone.GetRoute();
+            route.Should().NotBeNull();
+            foreach (var geoLocation in route)
+            {
+                geoLocation.Latitude.Should().BeGreaterThanOrEqualTo(0m);
+                geoLocation.Longitude.Should().BeGreaterThanOrEqualTo(0m);
+            }
         }
 
         [Fact]
         public void TestGetRouteAllNegativeNumbers()
         {
-            var home = new Point(0.0, 0.0);
-            var dest = new Point(-3.0, -4.0);
-            
-            var drone = DroneModel.AddDrone("").Result;
-            drone.Delivery = dest;
-
-            Point[] expectedRoute = {
-                new (-0.6, -0.8),
-                new (-1.2, -1.6),
-                new (-1.8, -2.4),
-                new (-2.4, -3.2),
-                new (-3.0, -4.0)
+            var mockedDispatcher = new Mock<IDispatcherGateway>().Object;
+            var home = new GeoLocation{
+                Latitude = 0.0m,
+                Longitude = 0.0m
+                
             };
-            Assert.Equal(expectedRoute, drone.GetRoute());
+            var dest = new GeoLocation{
+                Latitude = -3.0m,
+                Longitude = -4.0m
+            };
+            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
+            drone.Destination = dest;
+
+            var route =  drone.GetRoute();
+            route.Should().NotBeNull();
+            foreach (var geoLocation in route)
+            {
+                geoLocation.Latitude.Should().BeLessThanOrEqualTo(0.0m);
+                geoLocation.Longitude.Should().BeLessThanOrEqualTo(0.0m);
+            }
         }
     }
 }
