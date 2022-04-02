@@ -24,6 +24,7 @@ namespace Drone.Tests.Controllers.Integration
         [Fact]
         public async Task dispatcher_gateway_should_update_status_with_dispatcher()
         {
+            var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
             var testUpdateDto = new UpdateStatusDto
             {
                 Id = "something",
@@ -36,7 +37,7 @@ namespace Drone.Tests.Controllers.Integration
             };
             var mockedDronesRepo = new Mock<IDronesRepository>().Object;
             var mockedDroneGateway = new Mock<IDroneGateway>().Object;
-            var testDispatcherController = new DispatcherController(mockedDronesRepo,mockedDroneGateway);
+            var testDispatcherController = new DispatcherController(mockedDronesRepo,mockedOrdersRepo,mockedDroneGateway);
             var mockedHandlerSetup = new Mock<HttpMessageHandler>();
                 mockedHandlerSetup.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage {

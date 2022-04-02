@@ -43,7 +43,7 @@ namespace Drone.Tests.Controllers.EndToEnd
         [Fact]
         public async Task dispatcher_controller_should_start_registration_to_drone()
         {
-            
+            var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
             var testDroneInfo = new DroneRegistrationInfo
             {
                 BadgeNumber = new Guid(),
@@ -53,7 +53,7 @@ namespace Drone.Tests.Controllers.EndToEnd
             var mockedDispatcherGateway = new Mock<IDispatcherGateway>().Object;
             var testDroneGateway = new DroneGateway();
             var testDroneController = new DroneController(mockedDronesRepo, mockedDispatcherGateway);
-            var testDispatcherController = new DispatcherController(mockedDronesRepo,testDroneGateway);
+            var testDispatcherController = new DispatcherController(mockedDronesRepo,mockedOrdersRepo,testDroneGateway);
             var mockedDroneHandlerSetup = new Mock<HttpMessageHandler>();
             var mockedDispatcherHandlerSetup = new Mock<HttpMessageHandler>();
             mockedDroneHandlerSetup.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x => x.RequestUri == new Uri($"http://test_ip/drone/initregistration")), ItExpr.IsAny<CancellationToken>())
@@ -93,6 +93,7 @@ namespace Drone.Tests.Controllers.EndToEnd
         public async Task dispatcher_controller_should_assign_delivery_to_drone()
         {
             // This is accidentally end-to-end
+            var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
             var mockedDroneRepo = new Mock<IDronesRepository>().Object;
             var mockedDispatcherGateway = new Mock<IDispatcherGateway>().Object;
             var testDroneController = new DroneController(mockedDroneRepo, mockedDispatcherGateway);
@@ -117,7 +118,7 @@ namespace Drone.Tests.Controllers.EndToEnd
                 Id = "testOrderID"
             };
          
-            var testDispatcherController = new DispatcherController(mockedDroneRepo,testDroneGateway);
+            var testDispatcherController = new DispatcherController(mockedDroneRepo,mockedOrdersRepo,testDroneGateway);
             var mockedDroneHandlerSetup = new Mock<HttpMessageHandler>();
             var mockedHandlerSetup = new Mock<HttpMessageHandler>();
             mockedHandlerSetup.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
