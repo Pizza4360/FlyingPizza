@@ -81,7 +81,7 @@ namespace DroneDispatcher.Controllers
             var newOrder = await _ordersRepository.GetByIdAsync(order.Id);
             if (availableDrones.Any())
             {
-                didSucceed = await _droneGateway.AssignDelivery(availableDrones.First().IpAddress, newOrder.Id,
+                didSucceed = await _droneGateway.AssignDelivery(availableDrones.First().IpAddress, newOrder.Id, 
                     newOrder.DeliveryLocation);
             }
             else

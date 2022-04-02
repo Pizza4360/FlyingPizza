@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Domain;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
 using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
@@ -21,107 +23,86 @@ namespace Drone.Tests.Controllers.Unit
     public class DispatcherControllerTests
     {
         private const string TestDeliveryAddress = "yo mama";
+        private const string TestOrderNumber = "123";
         private const string TestCustomerName = "bobby";
         private const string TestOrderId = "some stuff";
-        private const string TestDroneIp = "test_ip";
-        private const string TestDispatcherUrl = "http://172.18.0.0:4000";
+        private const string InvalidTestIp = "test_ip";
+        private const string ValidTestIp = "172.18.0.0";
+        private const string TestDispatcherUrl = "http://" + ValidTestIp + ":4000";
         
-        private static Guid TestGuid = new();
-        private static DateTimeOffset TestTimeDelivered = DateTimeOffset.UtcNow;
-        private static GeoLocation TestDeliveryLocation = new()
+        private static readonly Guid TestGuid = new();
+        private static readonly DateTimeOffset TestTimeDelivered = DateTimeOffset.UtcNow;
+        private static readonly GeoLocation TestDeliveryLocation = new()
         {
             Latitude = 39.74362771992734m, Longitude = -105.00549345883957m
         };
-        private static GeoLocation TestHomeLocation = new()
+        private static readonly GeoLocation TestHomeLocation = new()
         {
             Latitude = 39.74364421910773m,
             Longitude = -105.00561147600774m
         };
-        private static Order TestFakeOrder = new()
+        private static readonly Order TestOrder = new()
         {
             DeliveryAddress = TestDeliveryAddress,
             TimeDelivered = TestTimeDelivered,
-            Id = TestOrderId,
+            Id = TestOrderNumber,
             TimeOrdered = TestTimeDelivered,
             DeliveryLocation = TestDeliveryLocation,
             CustomerName = TestCustomerName
         };
 
-        private static AddOrderDTO _addOrderDto = new()
+        private static readonly AddOrderDTO AddOrderDto = new()
         {
             DeliveryLocaion = TestDeliveryLocation,
             Id = TestOrderId
         };
-        private static DroneRegistrationInfo DroneRegistrationInfo = new() {
+        private static readonly DroneRegistrationInfo DroneRegistrationInfo = new() {
             BadgeNumber = TestGuid,
-            IpAddress = TestDroneIp
+            IpAddress = ValidTestIp
         };
         private static Domain.Entities.Drone TestDrone = new() {
-            IpAddress = TestDroneIp,
+            IpAddress = ValidTestIp,
             Destination = TestDeliveryLocation,
             BadgeNumber = TestGuid,
             CurrentLocation = TestHomeLocation,
-            Status = Domain.Constants.DroneStatus.READY,
+            Status = Constants.DroneStatus.READY,
             OrderId = TestOrderId,
             DispatcherUrl = TestDispatcherUrl,
             Id = "TestGuid",
             HomeLocation = TestHomeLocation
         };
-        
-        private IOrdersRepository _mockOrdersRepo;
-        private IMongoDatabase _mockDatabase;
-        private IDroneGateway _mockDroneGateway;
-        private IDroneGateway _mockDroneGateway2;
-        private DispatcherController _controller;
-        private static Mock<IDroneGateway> _droneGatewaySetup = new();
-        private static Mock<IDroneGateway> _droneGatewaySetup2 = new();
-        private static Mock<IDronesRepository> _droneRepoSetup = new();
-        private static Mock<IOrdersRepository> _orderRepoSetup = new();
 
-        private IDronesRepository _mockDroneRepository;
+        private Mock<IOrdersRepository> _ordersSetup;
+        private IOrdersRepository _orders;
+        private Mock<IDronesRepository> _dronesSetup;
+        private IDronesRepository _drones;
+        private Mock<IDroneGateway> _gatewaySetup;
+        private IDroneGateway _gateway;
+        private IMongoDatabase _database;
+        private DispatcherController _controller;
 
         public DispatcherControllerTests()
         {
-            // Set up mocked drone gateway
-            _droneGatewaySetup.Setup(x => x.StartRegistration(
-                TestDroneIp,
-                TestGuid, 
-                TestDispatcherUrl,
-                TestHomeLocation)
-            ).Returns(Task.FromResult(true)).Verifiable();
-            _droneGatewaySetup.Setup(x => x.AssignDelivery(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<GeoLocation>()))
-                .Returns(Task.FromResult(true)).Verifiable();
-            _mockDroneGateway = _droneGatewaySetup.Object;
+            _dronesSetup = new Mock<IDronesRepository>();
+            _dronesSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.Drone>())).Returns<Domain.Entities.Drone>(x =>Task.FromResult(x));
+            _dronesSetup.Setup(x => x.GetByIdAsync(It.IsAny<string>()));
+            _dronesSetup.Setup(x => x.GetAllAvailableDronesAsync()).ReturnsAsync(new List<Domain.Entities.Drone>{TestDrone}.AsEnumerable());
+            _drones = _dronesSetup.Object;
             
-            // Set up mocked drone repository
-            _droneRepoSetup = new Mock<IDronesRepository>();
-            _droneRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.Drone>())).Returns<Domain.Entities.Drone>(Task.FromResult);
-            _droneRepoSetup.Setup(_ => _.GetAllAvailableDronesAsync()).Returns(Task.FromResult(
-                new List<Domain.Entities.Drone>(1) { TestDrone }.AsEnumerable()));
-            _droneRepoSetup.Setup(x => x.GetByIdAsync(It.IsAny<string>())) .Returns(Task.FromResult(new Domain.Entities.Drone()));
-            _mockDroneRepository = _droneRepoSetup.Object;
+            _gatewaySetup = new Mock<IDroneGateway>();
+            _gatewaySetup.Setup(x => x.StartRegistration(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<GeoLocation>())).ReturnsAsync(true).Verifiable();
+            _gatewaySetup.Setup(x => x.AssignDelivery( It.IsAny<string>(), It.IsAny<string>(), It.IsAny<GeoLocation>())).ReturnsAsync(true).Verifiable();
+            _gateway = _gatewaySetup.Object;
             
-            // Second version forcing mock of gateway to say drone is valid
-            _droneGatewaySetup2 = new Mock<IDroneGateway>();
-            _droneGatewaySetup2
-                .Setup(x => x.StartRegistration(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(),
-                    It.IsAny<GeoLocation>())).Returns(Task.FromResult(true));
-            _mockDroneGateway2 = _droneGatewaySetup2.Object;
+            _database = new Mock<IMongoDatabase>().Object;
             
-            // Set up mocked orders repository
-            _orderRepoSetup.Setup(x => x.GetByIdAsync("some stuff")).Returns(Task.FromResult(TestFakeOrder));
-            _mockOrdersRepo = _orderRepoSetup.Object;
-            _mockOrdersRepo = new Mock<IOrdersRepository>().Object;
-           
-            // Set up mocked database
-            _mockDatabase = new Mock<IMongoDatabase>().Object;
-            
-            // Set up mocked controller
-            _controller = new DispatcherController(_mockDroneRepository, _mockOrdersRepo, _mockDroneGateway );
-            
+            _ordersSetup = new Mock<IOrdersRepository>();
+            _ordersSetup.Setup(x => x.GetByIdAsync(It.IsAny<string>())).ReturnsAsync(TestOrder).Verifiable();
+            _ordersSetup.Setup(x => x.Update(TestOrder)).ReturnsAsync(TestOrder).Verifiable();
+            _orders = _ordersSetup.Object;
+            _controller = new DispatcherController(_drones, _orders, _gateway);
         }
         
-        // Update Status
         [Fact]
         public async Task DispatcherControllerShouldReturnOk()
         {
@@ -130,71 +111,114 @@ namespace Drone.Tests.Controllers.Unit
             result.Should().BeEquivalentTo(expected);
         }
         
-
         // RegisterNewDrone
         [Fact]
         public async Task DispatcherControllerRegisterShouldSendProperDataToGateway()
         {
+            _gatewaySetup = new Mock<IDroneGateway>();
+            _gateway = _gatewaySetup.Object;
             await _controller.RegisterNewDrone(DroneRegistrationInfo);
-            _droneGatewaySetup.VerifyAll();
+            _gatewaySetup.Verify();
         }
 
-        [Fact]
+        [Fact]// InvalidRegistrationNotOk
         public async Task DispatcherControllerShouldReturnProblemOnIncorrectDroneInfo()
         {
-            var result = await _controller.RegisterNewDrone(DroneRegistrationInfo);
+            var badDroneInfo = new DroneRegistrationInfo
+            {
+                BadgeNumber = TestGuid,
+                IpAddress = InvalidTestIp
+            };
+            var result = await _controller.RegisterNewDrone(badDroneInfo);
             // Problem object result used in register drone that is invalid for now, will change with black box changes.
             result.Should().NotBeNull();
             result.Should().BeOfType<ObjectResult>();
         }
 
-        [Fact]
+        [Fact]// ValidRegistrationOk
         public async Task DispatcherShouldReturnOkOnValidDroneInfo()
         {
-            var controller = new DispatcherController(_mockDroneRepository, _mockOrdersRepo, _mockDroneGateway2);
-            var result = await controller.RegisterNewDrone(DroneRegistrationInfo);
+            var result = await _controller.RegisterNewDrone(DroneRegistrationInfo);
             var expected = new OkResult();
             result.Should().BeEquivalentTo(expected);
         }
 
-
-        // addNewOrder
+        
+        // OrderAssignedIfDroneAvailable
         [Fact]
         public async Task AddNewOrderShouldAssignAnOrderIfAvailable()
         {
             // calling method
-            await _controller.AddNewOrder(_addOrderDto);
-            _droneGatewaySetup.VerifyAll();
+            _ordersSetup = new Mock<IOrdersRepository>();
+            _dronesSetup = new Mock<IDronesRepository>();
+            _gatewaySetup = new Mock<IDroneGateway>();
+            _dronesSetup.Setup(x => x.GetAllAvailableDronesAsync()).ReturnsAsync(new List<Domain.Entities.Drone>{TestDrone});
+            // _dronesSetup.Setup(x => x.GetByIdAsync(It.IsAny<string>()));
+            _ordersSetup.Setup(x => x.GetByIdAsync(It.IsAny<string>())).ReturnsAsync(TestOrder).Verifiable();
+            _gatewaySetup.Setup(x => x.AssignDelivery( It.IsAny<string>(), It.IsAny<string>(), It.IsAny<GeoLocation>())).ReturnsAsync(true).Verifiable();
+            _controller = new DispatcherController(_drones, _orders, _gateway);
+            await _controller.AddNewOrder(AddOrderDto);
+            _gatewaySetup.Verify(x => x.AssignDelivery( It.IsAny<string>(), It.IsAny<string>(), It.IsAny<GeoLocation>()));
         }
-
-        [Fact]
+        
+        [Fact]// AddNewOrderOk
         public async Task AddNewOrderShouldReturnOk()
         {
-            var result = await _controller.AddNewOrder(_addOrderDto);
+            var result = await _controller.AddNewOrder(AddOrderDto);
             var expected = new OkResult();
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(expected);
         }
-
-        // CompleteDelivery
+        
+        // CompleteDeliveryOk
         [Fact]
         public async Task CompleteDeliveryShouldReturnOk()
         {
-            var result = await _controller.CompleteDelivery(TestOrderId);
+            // calling method
+            var result = await _controller.CompleteDelivery(TestOrderNumber);
             var expected = new OkResult();
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(expected);
-            _orderRepoSetup.VerifyAll();
+            _ordersSetup.Verify();
         }
 
-        [Fact]
+
+
+        private static IDronesRepository OrderSetup(out IDroneGateway mockedDroneGateway,
+            out Mock<IOrdersRepository> mockedOrdersRepositorySetup, out string testOrderNumber)
+        {
+            var mockedDronesRepository = new Mock<IDronesRepository>().Object;
+            mockedDroneGateway = new Mock<IDroneGateway>().Object;
+            mockedOrdersRepositorySetup = new Mock<IOrdersRepository>();
+            testOrderNumber = "35";
+            var testOrder = new Order
+            {
+                Id = testOrderNumber,
+                CustomerName = "testee",
+                DeliveryLocation = new GeoLocation
+                {
+                    Latitude = 69,
+                    Longitude = 69
+                },
+                TimeOrdered = DateTimeOffset.UtcNow
+                // TimeDelivered assumed null by business logic
+            };
+
+            // Ensuring orders repo is updated
+            var s = testOrderNumber;
+            mockedOrdersRepositorySetup.Setup(x => x.GetByIdAsync(s)).Returns(Task.FromResult(testOrder))
+                .Verifiable();
+            mockedOrdersRepositorySetup.Setup(x => x.Update(testOrder)).Returns(Task.FromResult(testOrder)).Verifiable();
+            return mockedDronesRepository;
+        }
+
+        [Fact] // CompleteDeliveryUpdatesOrders
         public async Task CompleteDeliveryShouldUpdateOrders()
         {
             await _controller.CompleteDelivery(TestOrderId);
-            _orderRepoSetup.VerifyAll();
+            _ordersSetup.Verify();
         }
 
-        // DroneIsReadyForOrders
         [Fact]
         public async Task DroneIsReadyForOrdersShouldAlwaysReturnOk()
         {
@@ -203,27 +227,26 @@ namespace Drone.Tests.Controllers.Unit
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(expected);
         }
-
-        [Fact]
+        
+        [Fact] //ReadyDroneGetsCorrectOrder
         public async Task DroneIsReadyForOrdersShouldAssignTheCorrectOrder()
         {
-            await _controller.AddNewOrder(_addOrderDto);
+            await _controller.AddNewOrder(AddOrderDto);
             // calling method
             await _controller.DroneIsReadyForOrder($"{TestGuid}");
-
+        
             // Checking assign has right parameters
-            _droneGatewaySetup.VerifyAll();
+            _gatewaySetup.Verify();
         }
-
-        [Fact]
+        
+        [Fact] // 
         public async Task DroneIsReadyForOrdersShouldGetAsyncCorrectly()
         {
-            // adding wanted order to orders
-            await _controller.AddNewOrder(_addOrderDto);
+            await _controller.AddNewOrder(AddOrderDto);
             // calling method
             await _controller.DroneIsReadyForOrder($"{TestGuid}");
             // Checking getasync has right parameters
-            _droneGatewaySetup.VerifyAll();
+            _gatewaySetup.Verify();
         }
     }
 }
