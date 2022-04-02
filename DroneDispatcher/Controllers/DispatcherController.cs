@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
 using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
@@ -25,9 +26,9 @@ namespace DroneDispatcher.Controllers
         // TODO: added since dispatcher should know where it starts?
 
         public DispatcherController(
-            IDronesRepository droneRepository,
+            IDroneGateway droneGateway,
+            IDronesRepository droneRepository = null
             // IOrdersRepository ordersRepository,
-            IDroneGateway droneGateway
         )
         {
             _dronesRepository = droneRepository;
@@ -46,7 +47,7 @@ namespace DroneDispatcher.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterNewDrone(DroneRegistrationInfo droneInfo)
         {
-            Console.WriteLine("We are gonna register some shit!!");
+            Console.WriteLine($"Registering drone #{droneInfo.BadgeNumber} at \"{droneInfo.IpAddress}\"");
             // Todo make a new guid and make sure it is different from all other drones
             var newDrone = new Drone
             {
@@ -54,7 +55,7 @@ namespace DroneDispatcher.Controllers
                 IpAddress = droneInfo.IpAddress,
                 // TODO: added since required elsewhere in the handshake, may not be ideal
                 HomeLocation = Home,
-                DispatcherUrl = "http://172.18.0.0:4000",
+                DispatcherUrl = $"{Utils.GetLocalIPAddress()}:4000",
                 Destination = Home,
                 CurrentLocation = Home,
                 OrderId = "",
@@ -70,7 +71,7 @@ namespace DroneDispatcher.Controllers
             // Todo dispatcher saves handshake record to DB
 
             await _droneGateway.OKToSendStatus(newDrone.IpAddress);
-            return Ok();
+            return Ok($"Successfully added drone #{droneInfo.BadgeNumber} to fleet.");
         }
 
         [HttpPost("add_order")]

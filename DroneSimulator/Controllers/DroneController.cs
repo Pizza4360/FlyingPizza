@@ -31,7 +31,9 @@ namespace DroneSimulator.Controllers
         [HttpPost("assigndelivery")]
         public async Task<IActionResult> AssignDelivery(DeliverOrderDto order)
         {
+            Console.WriteLine($"Assigned order `{order.OrderId}`");
             _drone.DeliverOrder(order.OrderLocation);
+            Console.WriteLine($"Done with order `{order.OrderId}`");
             return Ok();
         }
 
@@ -40,7 +42,7 @@ namespace DroneSimulator.Controllers
         {
             Console.WriteLine($"Initializing{_drone}");
             // Todo, add logic to verify legitimacy of adding a drone.
-            return Ok("Drone successfully initialized");
+            return Ok($"Initializing{_drone}");
         }
 
         [HttpPost("completeregistration")]
