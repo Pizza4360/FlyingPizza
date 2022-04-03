@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Linq;
+using Domain.DTO.DispatcherDrone.DroneToDispatcher;
 using Domain.Interfaces.Gateways;
 using Domain.Entities;
-using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
 using static System.Decimal;
 
 namespace DroneSimulator
@@ -131,7 +131,7 @@ namespace DroneSimulator
         {
             State = state;
             _dispatcher.PutDroneState(
-                new UpdateStatusDto
+                new PutStatusDto
                 {
                     Id = Id,
                     State = $"{state}"
@@ -143,7 +143,7 @@ namespace DroneSimulator
         {
             Location = location;
             _dispatcher.PutDroneState(
-                new UpdateStatusDto
+                new PutStatusDto
                 {
                     Id = Id,
                     Location = Location

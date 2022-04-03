@@ -1,11 +1,11 @@
-﻿using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Interfaces.Gateways;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Domain.DTO.DispatcherDrone.DispatcherToDrone;
 
 namespace Domain.Implementation.Gateways
 {
@@ -16,7 +16,7 @@ namespace Domain.Implementation.Gateways
         public async Task<bool> AssignDelivery(string droneIpAddress, string orderNumber, GeoLocation orderLocation)
         {
             Console.WriteLine($"DroneGateway.AssignDelivery({droneIpAddress}, {orderNumber}, {orderLocation})");
-            var body = JsonContent.Create(new DeliverOrderDto
+            var body = JsonContent.Create(new PostDeliverOrderDto
             {
                 OrderId = orderNumber,
                 OrderLocation = orderLocation

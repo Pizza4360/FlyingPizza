@@ -2,7 +2,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
+using Domain.DTO.DispatcherDrone.DroneToDispatcher;
 using Domain.Interfaces.Gateways;
 
 namespace Domain.Implementation.Gateways
@@ -10,7 +10,7 @@ namespace Domain.Implementation.Gateways
     public class DroneToDispatcherGateway : IDispatcherGateway
     {
         private static HttpClient _httpClient = new HttpClient();
-        public async Task<bool> PutDroneState(UpdateStatusDto status)
+        public async Task<bool> PutDroneState(PutStatusDto status)
         {
             Console.WriteLine($"DispatcherGateway.UpdateDroneStatus({status})");
             var body = JsonContent.Create(status);

@@ -3,8 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
-using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
+using Domain.DTO.DispatcherDrone.DispatcherToDrone;
 using Domain.DTO.DispatcherFrontEnd.FrontEndToDispatcher;
 using Domain.Entities;
 using Domain.Implementation.Gateways;
@@ -45,7 +44,7 @@ namespace Drone.Tests.Controllers.EndToEnd
         public async Task dispatcher_controller_should_start_registration_to_drone()
         {
             var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
-            var testDroneInfo = new DroneRegistrationInfo
+            var testDroneInfo = new PostDroneRegistrationDto
             {
                 BadgeNumber = new Guid(),
                 IpAddress = "test_ip"
@@ -100,7 +99,7 @@ namespace Drone.Tests.Controllers.EndToEnd
             var testDroneController = new DroneController(mockedDroneRepo, mockedDispatcherGateway);
             var testDroneGateway = new DroneGateway();
 
-            var testDeliverOrderDto = new DeliverOrderDto
+            var testDeliverOrderDto = new PostDeliverOrderDto
             {
                OrderId = "testOrderId",
                OrderLocation = new GeoLocation

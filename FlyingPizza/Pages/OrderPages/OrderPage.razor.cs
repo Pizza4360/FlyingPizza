@@ -25,6 +25,7 @@ namespace FlyingPizza.Pages.OrderPages
 
             // upload final object to the server. 
             var r = await restpoint.Post<Order>("http://localhost:8080/Orders", custOrder);
+            var r2 = await _dispatcherGateway.PostOrder(custOrder);
             custOrder.URL = r.Headers.Location.AbsoluteUri;
             r = await restpoint.Put<Order>(custOrder.URL,custOrder);
             // Navigate to page to display users current order. 

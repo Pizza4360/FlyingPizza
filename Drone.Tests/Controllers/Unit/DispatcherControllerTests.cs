@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain;
+using Domain.DTO.DispatcherDrone.DispatcherToDrone;
+using Domain.DTO.DispatcherDrone.DroneToDispatcher;
 using Domain.DTO.DispatcherFrontEnd.FrontEndToDispatcher;
-using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
-using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
-using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
 using Domain.Entities;
 using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
@@ -61,13 +60,13 @@ namespace Drone.Tests.Controllers.Unit
             DeliveryLocation = TestDeliveryLocation,
             CustomerName = TestCustomerName
         };
-        private static readonly DroneRegistrationInfo 
-            BadDroneInfo = new()
+        private static readonly PostDroneRegistrationDto 
+            BadPostDroneDto = new()
             {
                 BadgeNumber = TestGuid,
                 IpAddress = InvalidTestIp
             }, 
-            DroneRegistrationInfo = new() {
+            PostDroneRegistrationDto = new() {
                 BadgeNumber = TestGuid,
                 IpAddress = ValidTestIp
             };
@@ -115,7 +114,7 @@ namespace Drone.Tests.Controllers.Unit
         public async Task DispatcherControllerShouldReturnOk()
         {
             SetUpAll(out var controller, out _, out _);
-            var result = await controller.UpdateStatus(new UpdateStatusDto());
+            var result = await controller.UpdateStatus(new PutStatusDto());
             var expected = new OkResult();
             result.Should().BeEquivalentTo(expected);
         }
@@ -125,7 +124,7 @@ namespace Drone.Tests.Controllers.Unit
         public async Task DispatcherControllerRegisterShouldSendProperDataToGateway()
         {
             SetUpAll(out var controller, out _, out var gateway, MethodSetups.GatewayShouldStartRegistration, MethodSetups.DroneShouldCreateAsync);
-            await controller.RegisterNewDrone(DroneRegistrationInfo);
+            await controller.RegisterNewDrone(PostDroneRegistrationDto);
             gateway.Verify();
         }
 
@@ -133,7 +132,7 @@ namespace Drone.Tests.Controllers.Unit
         public async Task DispatcherControllerShouldReturnProblemOnIncorrectDroneInfo()
         {
             SetUpAll(out var controller, out _, out _);
-            var result = await controller.RegisterNewDrone(BadDroneInfo);
+            var result = await controller.RegisterNewDrone(BadPostDroneDto);
             // Problem object result used in register drone that is invalid for now, will change with black box changes.
             result.Should().NotBeNull();
             result.Should().BeOfType<ObjectResult>();
@@ -143,7 +142,7 @@ namespace Drone.Tests.Controllers.Unit
         public async Task DispatcherShouldReturnOkOnValidDroneInfo()
         {
             SetUpAll(out var controller, out _, out _, MethodSetups.DroneShouldCreateAsync, MethodSetups.GatewayShouldStartRegistration);
-            var result = await controller.RegisterNewDrone(DroneRegistrationInfo);
+            var result = await controller.RegisterNewDrone(PostDroneRegistrationDto);
             var expected = new OkResult();
             result.Should().BeEquivalentTo(expected);
         }

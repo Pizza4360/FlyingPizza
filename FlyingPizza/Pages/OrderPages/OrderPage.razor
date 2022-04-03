@@ -1,6 +1,8 @@
 ﻿@page "/order"
+@using FlyingPizza.Services
 @inject Services.RestDbSvc restpoint
 @inject NavigationManager _navigationManager
+@inject FrontEndToDispatcherGateway _dispatcherGateway
 
 <div class="status-bar">
     <b>Create New Order</b>

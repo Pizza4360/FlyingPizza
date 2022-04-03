@@ -23,6 +23,8 @@ namespace FlyingPizza
             builder.Services.AddSingleton<Services.GlobalDataSvc>(new Services.GlobalDataSvc());
 
             builder.Services.AddSingleton<Services.RestDbSvc>(new Services.RestDbSvc());
+            
+            builder.Services.AddSingleton<Services.FrontEndToDispatcherGateway>(new Services.FrontEndToDispatcherGateway());
 
             builder.Services.AddScoped<DialogService>();
 

@@ -1,11 +1,10 @@
 ﻿using System;
-using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.Entities;
 using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using MongoDB.Driver.Core.Events;
+using Domain.DTO.DispatcherDrone.DispatcherToDrone;
 
 namespace DroneSimulator.Controllers
 {
@@ -30,7 +29,7 @@ namespace DroneSimulator.Controllers
         }
 
         [HttpPost("assigndelivery")]
-        public async Task<IActionResult> AssignDelivery(DeliverOrderDto order)
+        public async Task<IActionResult> AssignDelivery(PostDeliverOrderDto order)
         {
             Console.WriteLine($"Assigned order `{order.OrderId}`");
             _drone.DeliverOrder(order.OrderLocation);

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher
-{
-    public class AddDroneDto
+namespace FlyingPizza.DTO.DispatcherFrontEnd
+{ 
+    public class GetRegistrationResultsDto
     {
         public string IpAddress { get; set; }
         public Guid BadgeNumber { get; set; }

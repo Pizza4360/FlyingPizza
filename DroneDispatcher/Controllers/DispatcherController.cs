@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.DTO.DispatcherDrone.DispatcherToDrone;
+using Domain.DTO.DispatcherDrone.DroneToDispatcher;
 using Domain.DTO.DispatcherFrontEnd.FrontEndToDispatcher;
-using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
-using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
 
 
 namespace DroneDispatcher.Controllers
@@ -44,14 +44,14 @@ namespace DroneDispatcher.Controllers
         #region endpoints
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterNewDrone(DroneRegistrationInfo droneInfo)
+        public async Task<IActionResult> RegisterNewDrone(PostDroneRegistrationDto postDroneDto)
         {
             Console.WriteLine("We are gonna register some shit!!");
             // Todo make a new guid and make sure it is different from all other drones
             var newDrone = new Drone
             {
-                BadgeNumber = droneInfo.BadgeNumber,
-                IpAddress = droneInfo.IpAddress,
+                BadgeNumber = postDroneDto.BadgeNumber,
+                IpAddress = postDroneDto.IpAddress,
                 HomeLocation = Home,
                 DispatcherUrl = "http://172.18.0.0:4000",
                 Destination = Home,
@@ -128,7 +128,7 @@ namespace DroneDispatcher.Controllers
 
         //Todo need to put to db... why you not working??
         [HttpPost("update_status")]
-        public async Task<IActionResult> UpdateStatus(UpdateStatusDto dto)
+        public async Task<IActionResult> UpdateStatus(PutStatusDto dto)
         {
             Console.WriteLine($"putting:\n{dto}");
             return Ok();

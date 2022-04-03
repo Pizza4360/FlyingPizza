@@ -17,7 +17,10 @@ namespace FlyingPizza.Drone
         public List<Object> Items {get; set;}
         public string Customer {get; set;}
         public string DeliveryAddress {get; set;}
-        public Point DeliveryLocation { get; } = new (0.0, 0.0);
+        public GeoLocation DeliveryLocation { get; } = new GeoLocation {
+          Latitude = (decimal)0.0001,
+          Longitude = (decimal)0.0001
+        };
         public int BadgeNumber {get; set;}
         
         // Todo: make these DateTime

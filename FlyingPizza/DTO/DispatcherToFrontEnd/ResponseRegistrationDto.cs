@@ -1,7 +1,7 @@
 using System;
 using System.Net.Http;
 
-namespace Domain.DTO.DispatcherFrontEnd.DispatcherToFrontEnd
+namespace FlyingPizza.DTO.DispatcherFrontEnd
 {
     public class ResponseRegistrationDto
     {
