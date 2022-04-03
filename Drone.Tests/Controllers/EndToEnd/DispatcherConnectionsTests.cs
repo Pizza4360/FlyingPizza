@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
+using Domain.DTO.DispatcherFrontEnd.FrontEndToDispatcher;
 using Domain.Entities;
 using Domain.Implementation.Gateways;
 using Domain.Interfaces.Gateways;
@@ -108,7 +109,7 @@ namespace Drone.Tests.Controllers.EndToEnd
                    Longitude = -105.0010m
                }
             };
-            var testOrderDto = new AddOrderDTO
+            var testOrderDto = new PostAddOrderDto
             {
                 DeliveryLocaion = new GeoLocation
                 {
