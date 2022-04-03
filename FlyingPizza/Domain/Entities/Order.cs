@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using FlyingPizza.Services;
 
-namespace FlyingPizza.Drone
+namespace FlyingPizza.Domain.Entities
 {
   public class Order
     {

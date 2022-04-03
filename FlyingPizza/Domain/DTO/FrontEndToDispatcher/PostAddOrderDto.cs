@@ -1,8 +1,6 @@
+using FlyingPizza.Domain.Entities;
 
-using FlyingPizza;
-using FlyingPizza.Drone;
-
-namespace FlyingPizza.DTO.DispatcherFrontEnd
+namespace FlyingPizza.Domain.DTO.FrontEndToDispatcher
 {
     public class PostAddOrderDto
     {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FlyingPizza.Drone;
+﻿using FlyingPizza;
 
 namespace FlyingDrone.Pages.FleetPages
 {
@@ -14,8 +10,8 @@ namespace FlyingDrone.Pages.FleetPages
         public string Url { get; set; }
         public string Order { get; set; }
         public string batteryLife { get; set; }
-        public Point location { get;set;}
-        public Point destination { get; set; }
+        public GeoLocation location { get;set;}
+        public GeoLocation destination { get; set; }
 
     }
 }

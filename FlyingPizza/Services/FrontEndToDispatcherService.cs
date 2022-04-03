@@ -2,8 +2,9 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using FlyingPizza.Drone;
-using FlyingPizza.DTO.DispatcherFrontEnd;
+using FlyingPizza.Domain.DTO.DispatcherFrontEnd;
+using FlyingPizza.Domain.DTO.FrontEndToDispatcher;
+using FlyingPizza.Domain.Entities;
 
 namespace FlyingPizza.Services
 {
