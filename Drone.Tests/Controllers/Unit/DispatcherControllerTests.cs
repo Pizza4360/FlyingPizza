@@ -19,25 +19,36 @@ namespace Drone.Tests.Controllers.Unit
 {
     public class DispatcherControllerTests
     {
-        private const string TestDeliveryAddress = "yo mama";
-        private const string TestOrderNumber = "123";
-        private const string TestCustomerName = "bobby";
-        private const string TestOrderId = "some stuff";
-        private const string InvalidTestIp = "test_ip";
-        private const string ValidTestIp = "172.18.0.0";
-        private const string TestDispatcherUrl = "http://" + ValidTestIp + ":4000";
+        private const string
+            TestDeliveryAddress = "yo mama",
+            TestOrderNumber = "123",
+            TestCustomerName = "bobby",
+            TestOrderId = "some stuff",
+            InvalidTestIp = "test_ip",
+            ValidTestIp = "172.18.0.0",
+            TestDispatcherUrl = "http://" + ValidTestIp + ":4000",
+            DroneShouldCreateAsync = "DroneShouldCreateAsync",
+            DroneShouldGetByIdAsync = "DroneShouldGetByIdAsync2",
+            DroneShouldGetAllAvailableDronesAsync = "DroneShouldGetAllAvailableDronesAsync",
+            OrderShouldGetByIdAsync = "OrderShouldGetByIdAsync",
+            OrderShouldUpdate = "OrderShouldUpdate",
+            GatewayShouldStartRegistration = "GatewayShouldStartRegistration",
+            GatewayShouldAssignDelivery2 = "GatewayShouldAssignDelivery2";
+        
+        private static readonly GeoLocation 
+            TestDeliveryLocation = new() 
+            {
+                Latitude = 39.74362771992734m, Longitude = -105.00549345883957m
+            },
+            TestHomeLocation = new()
+            {
+                Latitude = 39.74364421910773m,
+                Longitude = -105.00561147600774m
+            };
         
         private static readonly Guid TestGuid = new();
         private static readonly DateTimeOffset TestTimeDelivered = DateTimeOffset.UtcNow;
-        private static readonly GeoLocation TestDeliveryLocation = new()
-        {
-            Latitude = 39.74362771992734m, Longitude = -105.00549345883957m
-        };
-        private static readonly GeoLocation TestHomeLocation = new()
-        {
-            Latitude = 39.74364421910773m,
-            Longitude = -105.00561147600774m
-        };
+        
         private static readonly Order TestOrder = new()
         {
             DeliveryAddress = TestDeliveryAddress,
@@ -47,20 +58,21 @@ namespace Drone.Tests.Controllers.Unit
             DeliveryLocation = TestDeliveryLocation,
             CustomerName = TestCustomerName
         };
-        private static readonly DroneRegistrationInfo BadDroneInfo = new()
-        {
-            BadgeNumber = TestGuid,
-            IpAddress = InvalidTestIp
-        };
+        private static readonly DroneRegistrationInfo 
+            BadDroneInfo = new()
+            {
+                BadgeNumber = TestGuid,
+                IpAddress = InvalidTestIp
+            }, 
+            DroneRegistrationInfo = new() {
+                BadgeNumber = TestGuid,
+                IpAddress = ValidTestIp
+            };
 
         private static readonly AddOrderDTO AddOrderDto = new()
         {
             DeliveryLocaion = TestDeliveryLocation,
             Id = TestOrderId
-        };
-        private static readonly DroneRegistrationInfo DroneRegistrationInfo = new() {
-            BadgeNumber = TestGuid,
-            IpAddress = ValidTestIp
         };
         private static readonly Domain.Entities.Drone TestDrone = new() {
             IpAddress = ValidTestIp,
@@ -73,14 +85,7 @@ namespace Drone.Tests.Controllers.Unit
             Id = "TestGuid",
             HomeLocation = TestHomeLocation
         };
-        private static string DroneShouldCreateAsync = "DroneShouldCreateAsync";
-        private static string DroneShouldGetByIdAsync = "DroneShouldGetByIdAsync2";
-        private static string DroneShouldGetAllAvailableDronesAsync = "DroneShouldGetAllAvailableDronesAsync";
-        private static string OrderShouldGetByIdAsync = "OrderShouldGetByIdAsync";
-        private static string OrderShouldUpdate = "OrderShouldUpdate";
-        private static string GatewayShouldStartRegistration = "GatewayShouldStartRegistration";
-        private static string GatewayShouldAssignDelivery2 = "GatewayShouldAssignDelivery2";
-        
+
         private static void SetUpAll(IEnumerable<string> toggles, out DispatcherController controller, out Mock<IOrdersRepository> orders, out Mock<IDroneGateway> gateway)
         {
             var drones = new Mock<IDronesRepository>();
