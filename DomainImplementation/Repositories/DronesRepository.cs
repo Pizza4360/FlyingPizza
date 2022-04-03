@@ -4,8 +4,9 @@ using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain;
 
-namespace Domain.Implementation.Repositories
+namespace DomainImplementation.Repositories
 {
     public class DronesRepository : MongoRepository<Drone>, IDronesRepository
     {

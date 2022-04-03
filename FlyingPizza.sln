@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drone.Tests", "Drone.Tests\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{EAE9D819-963F-45C6-AB2D-D5E2BF807CC0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Implementation", "Domain.Implementation\Domain.Implementation.csproj", "{991EDF6F-5D86-4D32-ABDF-FD6B93E2FF68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainImplementation", "DomainImplementation\DomainImplementation.csproj", "{991EDF6F-5D86-4D32-ABDF-FD6B93E2FF68}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DroneDispatcher", "DroneDispatcher\DroneDispatcher.csproj", "{4ED5EA46-F9D5-4F7A-A8A8-4EF5A6D069C4}"
 EndProject

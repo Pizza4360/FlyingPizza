@@ -1,5 +1,8 @@
-﻿using Domain.Implementation.Repositories;
+﻿using Domain.Implementation.Gateways;
+using Domain.Interfaces.Gateways;
+using DomainImplementation.Repositories;
 using Domain.Interfaces.Repositories;
+using DomainImplementation.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 
@@ -12,7 +15,7 @@ namespace Domain.Implementation
             #region database connection
             services.AddSingleton<IMongoClient>(services =>
             {
-                return new MongoClient("mongodb://localhost:27018/?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false");
+                return new MongoClient("mongodb://root:FlyingPizza1Here@147.182.238.228:27017");
             });
             #endregion database connection
 
@@ -23,6 +26,8 @@ namespace Domain.Implementation
                     services.GetService<IMongoClient>().GetDatabase("restheart"),
                     "Fleet");
             });
+            services.AddScoped<IDroneGateway>(services => new DroneGateway());
+            services.AddScoped<IDispatcherGateway>(services => new DispatcherGateway());
             #endregion repositories
         }
     }

@@ -10,6 +10,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.Entities;
+using Domain.Implementation;
+using Domain.Interfaces.Repositories;
+using DomainImplementation.Repositories;
+using DroneSimulator.Controllers;
+// using DomainImplementation.Repositories;
 
 namespace DroneSimulator
 {
@@ -26,6 +32,7 @@ namespace DroneSimulator
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.InjectDependencies();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
