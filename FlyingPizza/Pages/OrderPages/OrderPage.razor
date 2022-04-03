@@ -10,7 +10,7 @@
 
 <div class="right">
     <b>Customer Name: </b>
-    <RadzenTextBox Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.Customer = e.Value.ToString()) />
+    <RadzenTextBox Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.CustomerName = e.Value.ToString()) />
     <br />
     <b>Address: </b>
     <RadzenTextBox Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.DeliveryAddress = e.Value.ToString()) />

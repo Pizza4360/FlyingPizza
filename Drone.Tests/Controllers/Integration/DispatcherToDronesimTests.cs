@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
+using Domain.DTO.DispatcherDrone.DroneToDispatcher;
 using Domain.Entities;
 using Domain.Implementation.Gateways;
 using Domain.Interfaces.Gateways;
@@ -25,9 +25,9 @@ namespace Drone.Tests.Controllers.Integration
         public async Task dispatcher_gateway_should_update_status_with_dispatcher()
         {
             var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
-            var testUpdateDto = new UpdateStatusDto
+            var testUpdateDto = new PutStatusDto
             {
-                Id = "something",
+                BadgeNumber = "something",
                 Location = new GeoLocation
                 {
                     Latitude = 69,

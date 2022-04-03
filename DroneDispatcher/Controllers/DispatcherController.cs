@@ -57,7 +57,7 @@ namespace DroneDispatcher.Controllers
                 Destination = Home,
                 CurrentLocation = Home,
                 OrderId = "",
-                Status = "Ready",
+                State = "Ready",
                 Id = ""
             };
 
@@ -67,7 +67,7 @@ namespace DroneDispatcher.Controllers
                 return Problem("either the drone is not ready to be initialized or is already part of a fleet.");
             await _dronesRepository.CreateAsync(newDrone);
             // Todo dispatcher saves handshake record to DB
-
+            
             await _droneGateway.OKToSendStatus(newDrone.IpAddress);
             return Ok();
         }
@@ -131,6 +131,12 @@ namespace DroneDispatcher.Controllers
         public async Task<IActionResult> UpdateStatus(PutStatusDto dto)
         {
             Console.WriteLine($"putting:\n{dto}");
+            await _dronesRepository.Update(new Drone
+            {
+                CurrentLocation = dto.Location,
+                State = dto.State,
+                BadgeNumber = new Guid(dto.BadgeNumber)
+            });
             return Ok();
         }
     }

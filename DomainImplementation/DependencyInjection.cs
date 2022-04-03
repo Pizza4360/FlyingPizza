@@ -2,11 +2,10 @@
 using Domain.Interfaces.Gateways;
 using DomainImplementation.Repositories;
 using Domain.Interfaces.Repositories;
-using DomainImplementation.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 
-namespace Domain.Implementation
+namespace DomainImplementation
 {
     public static class DependencyInjection
     {
@@ -15,7 +14,7 @@ namespace Domain.Implementation
             #region database connection
             services.AddSingleton<IMongoClient>(services =>
             {
-                return new MongoClient("mongodb://root:FlyingPizza1Here@147.182.238.228:27017");
+                return new MongoClient("mongodb+srv://mjohn314:Jh4RgVEbmmrbvQg@pdbs2021.pxbt9.mongodb.net/");
             });
             #endregion database connection
 
@@ -26,6 +25,14 @@ namespace Domain.Implementation
                     services.GetService<IMongoClient>().GetDatabase("restheart"),
                     "Fleet");
             });
+            
+            services.AddScoped<IOrdersRepository>(services =>
+            {
+                return new OrdersRepository(
+                    services.GetService<IMongoClient>().GetDatabase("restheart"),
+                    "Fleet");
+            });
+            
             services.AddScoped<IDroneGateway>(services => new DroneGateway());
             services.AddScoped<IDispatcherGateway>(services => new DroneToDispatcherGateway());
             #endregion repositories

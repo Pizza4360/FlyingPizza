@@ -48,7 +48,9 @@ namespace DomainImplementation.Repositories
 
         private protected async Task<IEnumerable<DomainEntity>> GetAllWhereAsync(Expression<Func<DomainEntity, bool>> filter)
         {
-            return (await _collection.FindAsync(filter)).ToEnumerable();
+            var asyncCursor = await _collection.FindAsync(filter);
+            Console.WriteLine($"all the drones:\n{asyncCursor.ToEnumerable()}");
+            return asyncCursor.ToEnumerable();
         }
     }
 }

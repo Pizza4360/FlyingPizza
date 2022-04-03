@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Domain.Implementation</RootNamespace>
+    <RootNamespace>DomainImplementation</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

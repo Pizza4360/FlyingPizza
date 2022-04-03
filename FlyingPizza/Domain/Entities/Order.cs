@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using FlyingPizza.Services;
 
-namespace FlyingPizza.Drone
+namespace FlyingPizza.Domain.Entities
 {
   public class Order
     {
@@ -15,7 +15,7 @@ namespace FlyingPizza.Drone
         private string OrderPage = "localhost:8080/Orders"; 
         public string Id { get; set; }
         public List<Object> Items {get; set;}
-        public string Customer {get; set;}
+        public string CustomerName {get; set;}
         public string DeliveryAddress {get; set;}
         public GeoLocation DeliveryLocation { get; } = new GeoLocation {
           Latitude = (decimal)0.0001,
@@ -32,7 +32,7 @@ namespace FlyingPizza.Drone
         {
           return 
           $"Items={Items}" +
-          $"CustomerId={Customer}" +
+          $"CustomerId={CustomerName}" +
           $"DeliveryAddress={DeliveryAddress}" +
           $"DeliveryLocation={DeliveryLocation}" +
           $"BadgeNumber={BadgeNumber}" +

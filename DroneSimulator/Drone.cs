@@ -133,7 +133,7 @@ namespace DroneSimulator
             _dispatcher.PutDroneState(
                 new PutStatusDto
                 {
-                    Id = Id,
+                    BadgeNumber = Id,
                     State = $"{state}"
                 });
         }
@@ -145,7 +145,7 @@ namespace DroneSimulator
             _dispatcher.PutDroneState(
                 new PutStatusDto
                 {
-                    Id = Id,
+                    BadgeNumber = Id,
                     Location = Location
                 });
         }

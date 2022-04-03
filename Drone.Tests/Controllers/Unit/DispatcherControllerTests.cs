@@ -81,7 +81,7 @@ namespace Drone.Tests.Controllers.Unit
             Destination = TestDeliveryLocation,
             BadgeNumber = TestGuid,
             CurrentLocation = TestHomeLocation,
-            Status = Constants.DroneStatus.READY,
+            State = Constants.DroneStatus.READY,
             OrderId = TestOrderId,
             DispatcherUrl = TestDispatcherUrl,
             Id = "TestGuid",

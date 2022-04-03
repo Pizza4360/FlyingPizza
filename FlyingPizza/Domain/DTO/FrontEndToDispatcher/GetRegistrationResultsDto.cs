@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FlyingPizza.DTO.DispatcherFrontEnd
+namespace FlyingPizza.Domain.DTO.FrontEndToDispatcher
 { 
     public class GetRegistrationResultsDto
     {

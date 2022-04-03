@@ -1,4 +1,4 @@
-namespace FlyingPizza.DTO.DispatcherFrontEnd
+namespace FlyingPizza.Domain.DTO.DispatcherFrontEnd
 {
     public class ResponseDroneDto
     {

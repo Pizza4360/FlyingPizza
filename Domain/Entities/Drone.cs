@@ -12,18 +12,17 @@ namespace Domain.Entities
         public string Id { get; set; }
 
         public Guid BadgeNumber { get; set; }
+        
+        public GeoLocation CurrentLocation { get; set; }
+        
+        public GeoLocation Destination { get; set; }
 
         public string OrderId { get; set; }
 
+        public string State { get; set; }
+        
         public GeoLocation HomeLocation { get; set; }
-
-        [BsonElement("Location")]
-        public GeoLocation CurrentLocation { get; set; }
-
-        public GeoLocation Destination { get; set; }
-
-        public string Status { get; set; }
-
+        
         public string IpAddress { get; set; }
 
         public string DispatcherUrl { get; set; }
