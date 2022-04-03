@@ -3,11 +3,10 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
-using Domain.Interfaces.Gateways;
 
 namespace Domain.Implementation.Gateways
 {
-    public class DispatcherGateway : IDispatcherGateway
+    public class FrontEndToDispatcherGateway
     {
         private static HttpClient _httpClient = new HttpClient();
         public async Task<bool> PutDroneState(UpdateStatusDto status)
@@ -26,6 +25,5 @@ namespace Domain.Implementation.Gateways
             // Added for mocking reasons, no way around it
             _httpClient = new HttpClient(handler);
         }
-        
     }
 }

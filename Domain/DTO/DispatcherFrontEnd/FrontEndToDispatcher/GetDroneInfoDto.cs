@@ -4,4 +4,4 @@ namespace Domain.DTO.DispatcherFrontEnd.FrontEndToDispatcher
     {
         
     }
-}
+} 

@@ -29,7 +29,7 @@ namespace Drone.Tests.Controllers.EndToEnd
         {
             var mockedDronesRepository = new Mock<IDronesRepository>().Object;
             //testDroneGateway.changeHandler(mockedDroneHandler);
-            var testDispatcherGateway = new DispatcherGateway();
+            var testDispatcherGateway = new DroneToDispatcherGateway();
             //testDispatcherGateway.changeHandler(mockedDispatcherHandler);
             // Mocking http server
             var testDroneController = new DroneController(mockedDronesRepository, testDispatcherGateway);
@@ -81,7 +81,7 @@ namespace Drone.Tests.Controllers.EndToEnd
                 });
             var mockedDispatcherHandler = mockedDispatcherHandlerSetup.Object;
             testDroneGateway.changeHandler(mockedDroneHandler);
-            var testDispatcherGateway = new DispatcherGateway();
+            var testDispatcherGateway = new DroneToDispatcherGateway();
             testDispatcherGateway.changeHandler(mockedDispatcherHandler);
             // Mocking http server
             var response = await testDispatcherController.RegisterNewDrone(testDroneInfo);
@@ -138,7 +138,7 @@ namespace Drone.Tests.Controllers.EndToEnd
             testDroneGateway.changeHandler(mockedHandler);
             var testDrone = new DroneSimulator.Drone("test_badge", testDeliverOrderDto.OrderLocation, mockedDispatcherGateway);
             testDroneController.changeDrone(testDrone);
-            var testDispatcherGateway = new DispatcherGateway();
+            var testDispatcherGateway = new DroneToDispatcherGateway();
             testDispatcherGateway.changeHandler(mockedHandler);
             // Mocking http server
             var response = await testDispatcherController.AddNewOrder(testOrderDto);

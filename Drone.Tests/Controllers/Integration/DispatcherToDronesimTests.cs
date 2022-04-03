@@ -47,7 +47,7 @@ namespace Drone.Tests.Controllers.Integration
                 });
                 var mockedHandler = mockedHandlerSetup.Object;
     
-            var testDispatcherGateway = new DispatcherGateway();
+            var testDispatcherGateway = new DroneToDispatcherGateway();
             testDispatcherGateway.changeHandler(mockedHandler);
             // Mocking http server
 
