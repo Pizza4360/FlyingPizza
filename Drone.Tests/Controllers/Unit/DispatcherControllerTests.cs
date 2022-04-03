@@ -79,7 +79,6 @@ namespace Drone.Tests.Controllers.Unit
         private static string OrderShouldGetByIdAsync = "OrderShouldGetByIdAsync";
         private static string OrderShouldUpdate = "OrderShouldUpdate";
         private static string GatewayShouldStartRegistration = "GatewayShouldStartRegistration";
-        private static string GatewayShouldAssignDelivery = "GatewayShouldAssignDelivery";
         private static string GatewayShouldAssignDelivery2 = "GatewayShouldAssignDelivery2";
         
         private static void SetUpAll(IEnumerable<string> toggles, out DispatcherController controller, out Mock<IOrdersRepository> orders, out Mock<IDroneGateway> gateway)
@@ -94,7 +93,6 @@ namespace Drone.Tests.Controllers.Unit
             if(enumerable.Contains(OrderShouldGetByIdAsync))orders.Setup(x => x.GetByIdAsync(It.IsAny<string>())).ReturnsAsync(TestOrder).Verifiable();
             if(enumerable.Contains(OrderShouldUpdate))orders.Setup(x => x.Update(TestOrder)).ReturnsAsync(TestOrder).Verifiable();
             if(enumerable.Contains(GatewayShouldStartRegistration))gateway.Setup(x => x.StartRegistration(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<GeoLocation>())).ReturnsAsync(true).Verifiable();
-            if(enumerable.Contains(GatewayShouldAssignDelivery))gateway.Setup(x => x.AssignDelivery( It.IsAny<string>(), It.IsAny<string>(), It.IsAny<GeoLocation>())).ReturnsAsync(true).Verifiable();
             if(enumerable.Contains(GatewayShouldAssignDelivery2))gateway.Setup(x => x.AssignDelivery(It.IsAny<string>(),It.IsAny<string>(), It.IsAny<GeoLocation>())).Verifiable();
             controller = new DispatcherController(drones.Object, orders.Object, gateway.Object);
         }
@@ -141,7 +139,7 @@ namespace Drone.Tests.Controllers.Unit
         [Fact]
         public async Task AddNewOrderShouldAssignAnOrderIfAvailable()
         {
-            SetUpAll(new List<string>{DroneShouldGetAllAvailableDronesAsync, DroneShouldGetByIdAsync, OrderShouldGetByIdAsync, GatewayShouldAssignDelivery}, out var controller, out _, out var gateway);
+            SetUpAll(new List<string>{DroneShouldGetAllAvailableDronesAsync, DroneShouldGetByIdAsync, OrderShouldGetByIdAsync, GatewayShouldAssignDelivery2}, out var controller, out _, out var gateway);
             await controller.AddNewOrder(AddOrderDto);
             gateway.Verify(x => x.AssignDelivery( It.IsAny<string>(), It.IsAny<string>(), It.IsAny<GeoLocation>()));
         }
@@ -149,7 +147,7 @@ namespace Drone.Tests.Controllers.Unit
         [Fact]// AddNewOrderOk
         public async Task AddNewOrderShouldReturnOk()
         {
-            SetUpAll(new List<string>{GatewayShouldAssignDelivery}, out var controller, out _, out _);
+            SetUpAll(new List<string>{GatewayShouldAssignDelivery2}, out var controller, out _, out _);
             var result = await controller.AddNewOrder(AddOrderDto);
             var expected = new OkResult();
             result.Should().NotBeNull();
@@ -160,7 +158,7 @@ namespace Drone.Tests.Controllers.Unit
         [Fact]
         public async Task CompleteDeliveryShouldReturnOk()
         {
-            SetUpAll(new List<string>{OrderShouldGetByIdAsync, OrderShouldUpdate, GatewayShouldAssignDelivery}, out var controller, out var orders, out _);
+            SetUpAll(new List<string>{OrderShouldGetByIdAsync, OrderShouldUpdate, GatewayShouldAssignDelivery2}, out var controller, out var orders, out _);
             // calling method
             var result = await controller.CompleteDelivery(TestOrderNumber);
             var expected = new OkResult();
