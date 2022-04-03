@@ -4,17 +4,23 @@ namespace Domain.Entities
 {
     public class GeoLocation
     {
-        public const decimal Tolerance = 0.0000001m;
+        private const decimal Tolerance = 0.0000001m;
 
         public decimal Latitude { get; set; }
 
         public decimal Longitude { get; set; }
 
-        public bool Equals(GeoLocation other) =>
-            other != null
-            && Math.Abs(Latitude - other.Latitude) < Tolerance
-            && Math.Abs(Longitude - other.Longitude) < Tolerance;
+        public override bool Equals(object? o)
+        {
+            return o is GeoLocation other &&
+                   Math.Abs(Latitude - other.Latitude) < Tolerance
+                   && Math.Abs(Longitude - other.Longitude) < Tolerance;
+        }
 
         public override int GetHashCode() => HashCode.Combine(Latitude, Longitude);
+        public override string ToString()
+        {
+            return $"GeoLocation:{{x:{Latitude},y:{Longitude}}}";
+        }
     }
 }

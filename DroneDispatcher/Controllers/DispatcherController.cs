@@ -1,14 +1,14 @@
-﻿using Domain;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
+using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
+using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
 
 namespace DroneDispatcher.Controllers
 {
@@ -17,37 +17,42 @@ namespace DroneDispatcher.Controllers
     public class DispatcherController : ControllerBase
     {
         private readonly IDronesRepository _dronesRepository;
-        private readonly IOrdersRepository _ordersRepository;
+        public readonly IOrdersRepository _ordersRepository;
         private readonly IDroneGateway _droneGateway;
-        private readonly Queue<Order> _unfilledOrders;
-        public GeoLocation Home { get;}
-        // TODO: added since dispatcher should know where it starts?
+        public readonly Queue<Order> _unfilledOrders;
+
+        public GeoLocation Home { get; }
 
         public DispatcherController(
             IDronesRepository droneRepository,
             IOrdersRepository ordersRepository,
-            IDroneGateway droneGateway,
-            GeoLocation home)
+            IDroneGateway droneGateway
+        )
         {
             _dronesRepository = droneRepository;
             _ordersRepository = ordersRepository;
             _droneGateway = droneGateway;
             _unfilledOrders = new Queue<Order>();
-            Home = home;
+            Home = new GeoLocation
+            {
+                Latitude = 39.74364421910773m,
+                Longitude = -105.00561147600774m
+            };
         }
 
         #region endpoints
-        [HttpPost("/register")]
-        public async Task<IActionResult> RegisterNewDrone(InitializeDroneRegistration droneInfo)
+
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterNewDrone(DroneRegistrationInfo droneInfo)
         {
+            Console.WriteLine("We are gonna register some shit!!");
             // Todo make a new guid and make sure it is different from all other drones
             var newDrone = new Drone
             {
                 BadgeNumber = droneInfo.BadgeNumber,
                 IpAddress = droneInfo.IpAddress,
-                // TODO: added since required elsewhere in the handshake, may not be ideal
                 HomeLocation = Home,
-                DispatcherUrl = droneInfo.DispatcherUrl,
+                DispatcherUrl = "http://172.18.0.0:4000",
                 Destination = Home,
                 CurrentLocation = Home,
                 OrderId = "",
@@ -55,27 +60,29 @@ namespace DroneDispatcher.Controllers
                 Id = ""
             };
 
-            // Register drone w/ dispatcher by doing the following:
-            // wait for OK message back from drone
-                var response = await _droneGateway.CompleteRegistration(newDrone.IpAddress, newDrone.BadgeNumber,
-                    newDrone.DispatcherUrl, newDrone.HomeLocation);
-                // Todod: save drone to database
-                await _dronesRepository.CreateAsync(newDrone);
-                // Todo dispatcher saves handshake record to DB
-                
-                // Todod dispatcher sends OK back to drone so that drone can stop waiting and start updating status
-                await _droneGateway.OKToSendStatus(newDrone.IpAddress);
-                return Ok();
+            var response = await _droneGateway.StartRegistration(newDrone.IpAddress, newDrone.BadgeNumber,
+                newDrone.DispatcherUrl, newDrone.HomeLocation);
+            if (!response)
+                return Problem("either the drone is not ready to be initialized or is already part of a fleet.");
+            await _dronesRepository.CreateAsync(newDrone);
+            // Todo dispatcher saves handshake record to DB
+
+            await _droneGateway.OKToSendStatus(newDrone.IpAddress);
+            return Ok();
         }
 
-        [HttpPost("/add_order")]
-        public async Task<IActionResult> AddNewOrder(Order newOrder)
+        [HttpPost("add_order")]
+        public async Task<IActionResult> AddNewOrder(AddOrderDTO order)
         {
-            var didSucceed = false;
-            var availableDrones = await _dronesRepository.GetAllAvailableDronesAsync();
+            Console.WriteLine("adding a new order");
+            bool didSucceed;
+             var availableDrones = await _dronesRepository.GetAllAvailableDronesAsync();
+            
+            var newOrder = await _ordersRepository.GetByIdAsync(order.Id);
             if (availableDrones.Any())
             {
-                didSucceed = await _droneGateway.AssignDelivery(availableDrones.First().IpAddress, newOrder.Id, newOrder.DeliveryLocation);
+                didSucceed = await _droneGateway.AssignDelivery(availableDrones.First().IpAddress, newOrder.Id,
+                    newOrder.DeliveryLocation);
             }
             else
             {
@@ -84,11 +91,11 @@ namespace DroneDispatcher.Controllers
             }
 
             // TODO: unhappy path
-
-            return Ok();
+            Console.WriteLine($"DispatcherController.AddNewOrder({order}) - Order Complete"); // Debug
+            return Ok(didSucceed);
         }
 
-        [HttpPost("/complete_delivery")]
+        [HttpPost("complete_delivery")]
         public async Task<IActionResult> CompleteDelivery(string orderNumber)
         {
             var order = await _ordersRepository.GetByIdAsync(orderNumber);
@@ -98,22 +105,32 @@ namespace DroneDispatcher.Controllers
             return Ok();
         }
 
-        [HttpPost("/ready_for_order")]
+        [HttpPost("ready_for_order")]
         public async Task<IActionResult> DroneIsReadyForOrder(string droneId)
         {
-            if (_unfilledOrders.Count() > 0)
+            if (_unfilledOrders.Any())
             {
                 var droneIpAddress = (await _dronesRepository.GetByIdAsync(droneId)).IpAddress;
                 var nextOrder = _unfilledOrders.Dequeue();
-                var didSucceed = await _droneGateway.AssignDelivery(droneIpAddress, nextOrder.Id, nextOrder.DeliveryLocation);
-
-                // TODO: Unhappy Path
+                var didSucceed =
+                    await _droneGateway.AssignDelivery(droneIpAddress, nextOrder.Id, nextOrder.DeliveryLocation);
             }
-
+            else
+            {
+                // TODO: Unhappy Path
+                Console.WriteLine("Unhappy Path 😓");
+            }
             return Ok();
         }
+
         #endregion endpoints
 
-
+        //Todo need to put to db... why you not working??
+        [HttpPost("update_status")]
+        public async Task<IActionResult> UpdateStatus(UpdateStatusDto dto)
+        {
+            Console.WriteLine($"putting:\n{dto}");
+            return Ok();
+        }
     }
 }

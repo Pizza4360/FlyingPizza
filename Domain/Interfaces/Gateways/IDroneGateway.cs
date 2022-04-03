@@ -6,7 +6,7 @@ namespace Domain.Interfaces.Gateways
 {
     public interface IDroneGateway
     {
-        public Task<bool> CompleteRegistration(string droneIpAddress, Guid badgeNumber, string 
+        public Task<bool> StartRegistration(string droneIpAddress, Guid badgeNumber, string 
         dispatcherUrl, GeoLocation homeLocation);
 
         public Task<bool> AssignDelivery(string droneIpAddress, string orderNumber, GeoLocation orderLocation);
