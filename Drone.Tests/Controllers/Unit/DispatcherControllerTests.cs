@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain;
+using Domain.DTO.DispatcherFrontEnd.FrontEndToDispatcher;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
 using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
@@ -71,7 +72,7 @@ namespace Drone.Tests.Controllers.Unit
                 IpAddress = ValidTestIp
             };
 
-        private static readonly AddOrderDTO AddOrderDto = new()
+        private static readonly PostAddOrderDto AddOrderDto = new()
         {
             DeliveryLocaion = TestDeliveryLocation,
             Id = TestOrderId
@@ -93,9 +94,9 @@ namespace Drone.Tests.Controllers.Unit
             var drones = new Mock<IDronesRepository>();
             orders = new Mock<IOrdersRepository>();
             gateway = new Mock<IDroneGateway>();
-            if(toggles.Contains(MethodSetups.DroneShouldCreateAsync)) 
+            if(toggles.Contains(MethodSetups.DroneShouldCreateAsync))
                 drones.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.Drone>())).Returns<Domain.Entities.Drone>(Task.FromResult);
-            if(toggles.Contains(MethodSetups.DroneShouldGetByIdAsync)) 
+            if(toggles.Contains(MethodSetups.DroneShouldGetByIdAsync))
                 drones.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain.Entities.Drone()));
             if(toggles.Contains(MethodSetups.DroneShouldGetAllAvailableDronesAsync))
                 drones.Setup(x => x.GetAllAvailableDronesAsync()).ReturnsAsync(new List<Domain.Entities.Drone>{TestDrone}.AsEnumerable());

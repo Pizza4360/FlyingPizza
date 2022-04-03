@@ -6,9 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.DTO.DispatcherFrontEnd.FrontEndToDispatcher;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
-using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
+
 
 namespace DroneDispatcher.Controllers
 {
@@ -72,7 +73,7 @@ namespace DroneDispatcher.Controllers
         }
 
         [HttpPost("add_order")]
-        public async Task<IActionResult> AddNewOrder(AddOrderDTO order)
+        public async Task<IActionResult> AddNewOrder(PostAddOrderDto order)
         {
             Console.WriteLine("adding a new order");
             bool didSucceed;
