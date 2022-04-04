@@ -1,4 +1,4 @@
-namespace FlyingPizza.DTO.DispatcherFrontEnd.FrontEndToDispatcher
+namespace Domain.DTO.DispatcherFrontEnd.FrontEndToDispatcher
 {
     public class PostNewDroneDto
     {

@@ -1,13 +1,13 @@
-﻿using Domain.Entities;
-using Domain.Interfaces.Gateways;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Domain.DTO.DispatcherDrone.DispatcherToDrone;
+using Domain.Entities;
+using Domain.Interfaces.Gateways;
 
-namespace Domain.Implementation.Gateways
+namespace DomainImplementation.Gateways
 {
     public class DroneGateway : IDroneGateway
     {

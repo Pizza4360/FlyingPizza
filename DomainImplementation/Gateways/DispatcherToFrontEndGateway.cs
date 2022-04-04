@@ -1,4 +1,4 @@
-namespace Domain.Implementation.Gateways
+namespace DomainImplementation.Gateways
 {
     public class DispatcherToFrontEndGateway
     {

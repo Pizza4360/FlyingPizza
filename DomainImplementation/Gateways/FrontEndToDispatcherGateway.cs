@@ -2,10 +2,9 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using FlyingPizza.DTO.DispatcherFrontEnd.FrontEndToDispatcher;
+using Domain.DTO.DispatcherFrontEnd.FrontEndToDispatcher;
 
-
-namespace Domain.Implementation.Gateways
+namespace DomainImplementation.Gateways
 {
     public class FrontEndToDispatcherGateway
     {

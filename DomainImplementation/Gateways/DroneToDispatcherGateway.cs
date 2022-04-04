@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Domain.DTO.DispatcherDrone.DroneToDispatcher;
 using Domain.Interfaces.Gateways;
 
-namespace Domain.Implementation.Gateways
+namespace DomainImplementation.Gateways
 {
     public class DroneToDispatcherGateway : IDispatcherGateway
     {
