@@ -16,6 +16,8 @@ namespace Domain.Entities
         public DateTimeOffset TimeOrdered { get; set; }
 
         public DateTimeOffset? TimeDelivered { get; set; }
+        
+        public string URL { get; set; }
 
         public bool HasBeenDelivered
         { get { return (TimeDelivered != null); } }

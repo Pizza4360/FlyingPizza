@@ -4,20 +4,12 @@ using System.Linq;
 using Domain.Interfaces.Gateways;
 using Domain.Entities;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
+using Domain.Implementation.Gateways;
 using static System.Decimal;
 
 namespace DroneSimulator
 {
-    public enum DroneState
-    {
-        Ready,
-        Delivering,
-        Returning,
-        Dead,
-        Charging
-    }
-
-    public class Drone
+    public class Drone : DroneRecord
     {
         // Radius of the Earth used in calculating distance 
         private const int EarthRadius = 6371;
@@ -30,56 +22,42 @@ namespace DroneSimulator
 
         // I don't think this makes sense but it's working...
         private const decimal StepSize = DroneUpdateInterval / 1000.0m * (decimal)DroneSpeed;
-        
-        // The unique ID of this drone which is stored in the database
-        private string Id { get; }
 
-        // The point representing the pizza restaurant
-        public GeoLocation Home { get; set; }
+        private IDispatcherGateway _dispatcher;
 
-        // The current position of the drone
-        public GeoLocation Location { get; set; }
-
-        // The desired position of the drone
-        public GeoLocation Destination { get; set; }
-
-        // Current state of the drone
-        private DroneState State { get; set; }
-
-        // Gateway for communication with the dispatcher
-        private readonly IDispatcherGateway _dispatcher;
-
-        // Constructor
-        public Drone(string id, GeoLocation home, IDispatcherGateway dispatcher)
+        public Drone(string id, GeoLocation homeLocation, IDispatcherGateway gateway, Guid badgeNumber, string ipAddress, string url)
         {
             Id = id;
-            Location = home;
-            Destination = home;
+            HomeLocation = homeLocation;
+            _dispatcher = gateway;
+            CurrentLocation = HomeLocation;
+            Destination = HomeLocation;
+            BadgeNumber = badgeNumber;
             State = DroneState.Ready;
-            _dispatcher = dispatcher;
-            Home = home;
+            IpAddress = ipAddress;
+            DispatcherUrl = url;
         }
-        
+
         // Return an array of Geolocations representing a drone's delivery route
         public GeoLocation[] GetRoute()
         {
-            if (Home.Equals(Destination))
+            if (HomeLocation.Equals(Destination))
             {
                 throw new ArgumentException(
                     "Destination cannot be the same as the Delivery station!");
             }
 
-            var distance = Haversine(ToDouble(Home.Latitude), ToDouble(Home.Longitude),
+            var distance = Haversine(ToDouble(HomeLocation.Latitude), ToDouble(HomeLocation.Longitude),
                 ToDouble(Destination.Latitude), ToDouble(Destination.Longitude));
 
             var numberOfLocations = (int)Math.Floor((decimal)distance / StepSize);
 
             Console.WriteLine($"need to travel {distance} km, step_size={StepSize}, num locations={numberOfLocations}");
             // Latitude distance to get to destination
-            var xStep = (Destination.Longitude - Home.Longitude) / numberOfLocations;
+            var xStep = (Destination.Longitude - HomeLocation.Longitude) / numberOfLocations;
             
             // Longitude distance to get to destination
-            var yStep = (Destination.Latitude - Home.Latitude) / numberOfLocations;
+            var yStep = (Destination.Latitude - HomeLocation.Latitude) / numberOfLocations;
             
             // LINQ yields all the points (except possibly the last one) along the route, one unit apart.
             var route = Enumerable.Range(0, numberOfLocations - 1)
@@ -141,18 +119,18 @@ namespace DroneSimulator
         // Send an Location update to DispatcherGateway
         private void UpdateLocation(GeoLocation location)
         {
-            Location = location;
+            CurrentLocation = location;
             _dispatcher.PutDroneState(
                 new UpdateStatusDto
                 {
                     Id = Id,
-                    Location = Location
+                    Location = CurrentLocation
                 });
         }
 
         public override string ToString()
         {
-            return $"Drone:{{Id:{Id},Location:{Location},Destination:{Destination},State:{State}}}";
+            return $"Drone:{{Id:{Id},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
         }
         
         // Helper function for Haversine formula readability

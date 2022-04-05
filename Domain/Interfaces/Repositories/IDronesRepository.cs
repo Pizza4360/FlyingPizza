@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Interfaces.Repositories
 {
-    public interface IDronesRepository : IBaseRepository<Drone>
+    public interface IDronesRepository : IBaseRepository<DroneRecord>
     {
-        public Task<Drone> GetDroneOnOrderAsync(string orderNumber);
+        public Task<DroneRecord> GetDroneOnOrderAsync(string orderNumber);
 
-        public Task<IEnumerable<Drone>> GetAllAvailableDronesAsync();
+        public Task<IEnumerable<DroneRecord>> GetAllAvailableDronesAsync();
     }
 }

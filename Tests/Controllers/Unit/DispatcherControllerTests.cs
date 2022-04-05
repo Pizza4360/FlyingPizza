@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
 using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
@@ -9,11 +6,6 @@ using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
 using DomainImplementation.Repositories;
 using DroneDispatcher.Controllers;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
-using Moq;
-using Xunit;
 
 namespace Drone.Tests.Controllers.Unit
 {
@@ -77,7 +69,7 @@ namespace Drone.Tests.Controllers.Unit
                 IpAddress = "test_ip"
             };
             var mockedDroneRepositorySetup = new Mock<IDronesRepository>();
-            mockedDroneRepositorySetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.Drone>())).Returns<Domain.Entities.Drone>(x =>Task.FromResult(x));
+            mockedDroneRepositorySetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns<Domain.Entities.DroneRecord>(x =>Task.FromResult(x));
             var mockedDroneRepository = mockedDroneRepositorySetup.Object;
             var controller =
                 new DispatcherController(mockedDroneRepository,mockedOrdersRepo, mockedDroneGateway);
@@ -112,8 +104,8 @@ namespace Drone.Tests.Controllers.Unit
             var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
             var mockedDronesRepositorySetup = new Mock<IDronesRepository>();
             // Forcing mongo mock to accept non-existent drone without connecting to server
-            mockedDronesRepositorySetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.Drone>()))
-                .Returns<Domain.Entities.Drone>((x => Task.FromResult(x)));
+            mockedDronesRepositorySetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>()))
+                .Returns<Domain.Entities.DroneRecord>((x => Task.FromResult(x)));
             var mockedDronesRepository = mockedDronesRepositorySetup.Object;
             // Forcing mock of gateway to say drone is valid
             var mockedDroneGatewaySetup = new Mock<IDroneGateway>();
@@ -150,20 +142,20 @@ namespace Drone.Tests.Controllers.Unit
                 Latitude = 39.74313274570401m, Longitude = -105.00641613869328m
             };
             var testGuid = new Guid();
-            mockedDronesRepositorySetup.Setup(x => x.GetAllAvailableDronesAsync()).Returns(Task.FromResult(new List<Domain.Entities.Drone>(1){new Domain.Entities.Drone
+            mockedDronesRepositorySetup.Setup(x => x.GetAllAvailableDronesAsync()).Returns(Task.FromResult(new List<Domain.Entities.DroneRecord>(1){new Domain.Entities.DroneRecord
             {
                 IpAddress = "test_ip",
                 Destination = testDestination,
                 BadgeNumber = testGuid,
                 CurrentLocation = testLocation,
-                Status = "on fire",
+                State = "on fire",
                 OrderId = "good enough",
                 DispatcherUrl = "test_url",
                 Id = "some stuff",
                 HomeLocation = testLocation
-            }} as IEnumerable<Domain.Entities.Drone>));
+            }} as IEnumerable<Domain.Entities.DroneRecord>));
             var mockedDroneGatewaySetup = new Mock<IDroneGateway>();
-            mockedDronesRepositorySetup.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain.Entities.Drone()));
+            mockedDronesRepositorySetup.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain.Entities.DroneRecord()));
             var mockedDronesRepository = mockedDronesRepositorySetup.Object;
             
             mockedOrdersRepoSetup.Setup(x => x.GetByIdAsync("some stuff")).Returns(Task.FromResult(getFakeOrder()));
@@ -336,7 +328,7 @@ namespace Drone.Tests.Controllers.Unit
             var mockedDroneGateway = mockedDroneGatewaySetup.Object;
             var mockedDispatcherGateway = new Mock<IDispatcherGateway>().Object;
 
-            mockedDronesRepositorySetup.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain.Entities.Drone()));
+            mockedDronesRepositorySetup.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain.Entities.DroneRecord()));
             var mockedDronesRepository = mockedDronesRepositorySetup.Object;
 
             
@@ -377,7 +369,7 @@ namespace Drone.Tests.Controllers.Unit
             };
             
             
-            mockedDronesRepositorySetup.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain.Entities.Drone()));
+            mockedDronesRepositorySetup.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain.Entities.DroneRecord()));
 ;
             var mockedDronesRepository = mockedDronesRepositorySetup.Object;
             var mockedDroneGatewaySetup  = new Mock<IDroneGateway>();
