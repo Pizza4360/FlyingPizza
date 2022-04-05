@@ -5,7 +5,7 @@ using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using MongoDB.Driver.Core.Events;
+using Domain.Implementation.Gateways;
 
 namespace DroneSimulator.Controllers
 {
@@ -14,18 +14,18 @@ namespace DroneSimulator.Controllers
     public class DroneController : ControllerBase
     {
         private readonly IDronesRepository _dronesRepository;
-        private readonly IDispatcherGateway _dispatcherGateway;
+        private readonly DispatcherGateway _dispatcherGateway;
         private Drone _drone;
 
         public DroneController(IDronesRepository dronesRepository, IDispatcherGateway dispatcherGateway)
         {
             _dronesRepository = dronesRepository;
-            _dispatcherGateway = dispatcherGateway;
             _drone = new Drone("123", new GeoLocation
             {
                 Latitude = 39.74364421910773m,
                 Longitude = -105.00561147600774m
-            }, dispatcherGateway); // TODO: initialize this from the drones repository, based on a drone id from environment variables
+            }, dispatcherGateway,
+                new Guid(), "1", "something"); // TODO: initialize this from the drones repository, based on a drone id from environment variables
             Console.WriteLine(_drone);
         }
 

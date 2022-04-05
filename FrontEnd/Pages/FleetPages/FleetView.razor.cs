@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using FlyingPizza.Drone;
-using FlyingPizza.Pages.FleetPages;
-using Radzen;
-
+using Domain.Entities;
 
 
 namespace FlyingPizza.Pages.FleetPages

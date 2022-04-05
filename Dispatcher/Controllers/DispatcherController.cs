@@ -47,7 +47,7 @@ namespace DroneDispatcher.Controllers
         {
             Console.WriteLine("We are gonna register some shit!!");
             // Todo make a new guid and make sure it is different from all other drones
-            var newDrone = new Drone
+            var newDrone = new DroneRecord
             {
                 BadgeNumber = droneInfo.BadgeNumber,
                 IpAddress = droneInfo.IpAddress,
@@ -56,7 +56,7 @@ namespace DroneDispatcher.Controllers
                 Destination = Home,
                 CurrentLocation = Home,
                 OrderId = "",
-                Status = "Ready",
+                State = DroneState.Ready,
                 Id = ""
             };
 
