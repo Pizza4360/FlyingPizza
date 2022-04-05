@@ -5,7 +5,7 @@ namespace Domain.DTO.DispatcherDrone.DroneToDispatcher
     public class PutStatusDto
     {
         public GeoLocation Location { get; set; }
-        public string State { get; set; }
+        public DroneState State { get; set; }
         public string BadgeNumber { get; set; }
         public override string ToString()
         {

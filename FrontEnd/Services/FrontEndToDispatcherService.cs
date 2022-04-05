@@ -2,16 +2,15 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using FlyingPizza.Domain.DTO.DispatcherToFrontEnd;
-using FlyingPizza.Domain.DTO.FrontEndToDispatcher;
-using FlyingPizza.Domain.Entities;
+using Domain.DTO.DispatcherFrontEnd.FrontEndToDispatcher;
+using Domain.Entities;
 
-namespace FlyingPizza.Services
+namespace FrontEnd.Services
 {
     public class FrontEndToDispatcherGateway
     {
         private static HttpClient _httpClient = new HttpClient();
-        public async Task<ResponseRegistrationDto> AddDrone(PostNewDroneDto droneDto)
+        public async Task<GetRegistrationResultsDto> AddDrone(PostNewDroneDto droneDto)
         {
             Console.WriteLine($"FrontEndToDispatcherGateway.AddDrone({droneDto})");
             var body = JsonContent.Create(droneDto);
@@ -19,7 +18,7 @@ namespace FlyingPizza.Services
             Console.WriteLine($"- request uri={requestUri}, body={body}"); // Debug
             var response = await _httpClient.PostAsync(requestUri, body);
             Console.WriteLine($"DispatcherGateway.UpdateDroneStatus - response={response}"); // Debug
-            return ResponseRegistrationDto.From(response.Content);
+            return GetRegistrationResultsDto.From(response.Content);
         }
         public async Task<bool> UpdateStatus(PostAddOrderDto orderDto)
         {

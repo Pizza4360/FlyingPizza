@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using FlyingPizza.Domain.Entities;
+using Domain.Entities;
+using Microsoft.AspNetCore.Components;
 
-namespace FlyingPizza.Pages.OrderPages
+namespace FrontEnd.Pages.OrderPages
 {
     partial class OrderPage : ComponentBase
     {
@@ -19,7 +19,7 @@ namespace FlyingPizza.Pages.OrderPages
         public async Task makeOrder()
         {
             // get time they ordered it
-            custOrder.TimeOrdered = DateTime.Now.ToString();
+            custOrder.TimeOrdered = DateTime.Now;
 
             // upload final object to the server. 
             var r = await restpoint.Post<Order>("http://localhost:8080/Orders", custOrder);

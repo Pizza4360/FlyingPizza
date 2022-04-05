@@ -21,7 +21,7 @@ namespace DomainImplementation.Repositories
 
         public async Task<IEnumerable<Drone>> GetAllAvailableDronesAsync()
         {
-            return await GetAllWhereAsync(drone => drone.State == Constants.DroneStatus.READY);
+            return await GetAllWhereAsync(drone => drone.State == DroneState.Ready);
         }
     }
 }

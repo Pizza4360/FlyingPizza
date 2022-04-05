@@ -1,4 +1,4 @@
-﻿namespace FlyingPizza.Pages.FleetPages
+﻿namespace FrontEnd.Pages.FleetPages
 {
     public class DroneData
     {

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Domain.Entities;
-using Order = FlyingPizza.Domain.Entities.Order;
 
-namespace FlyingPizza.Services
+namespace FrontEnd.Services
 {
     public class GlobalDataSvc
     {

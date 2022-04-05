@@ -10,6 +10,18 @@ namespace DroneSimulator
 {
     public class Drone : DroneFields
     {
+        // Radius of the Earth used in calculating distance 
+        private const int EarthRadius = 6371;
+
+        // 20 MPH as meters per second
+        private const double DroneSpeed = 0.0089408;
+        
+        // Number of milliseconds to wait before updating Drone status
+        private const int DroneUpdateInterval = 2000;
+
+        // I don't think this makes sense but it's working...
+        private const decimal StepSize = DroneUpdateInterval / 1000.0m * (decimal)DroneSpeed;
+        
         // Gateway for communication with the dispatcher
         private readonly IDispatcherGateway _dispatcher;
 
@@ -98,7 +110,7 @@ namespace DroneSimulator
                 new PutStatusDto
                 {
                     BadgeNumber = Id,
-                    State = $"{state}"
+                    State = State
                 });
         }
 

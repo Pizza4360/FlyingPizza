@@ -33,7 +33,7 @@ namespace Drone.Tests.Controllers.Integration
                     Latitude = 69,
                     Longitude = 69
                 },
-                State = "On fire I guess"
+                State = DroneState.Ready
             };
             var mockedDronesRepo = new Mock<IDronesRepository>().Object;
             var mockedDroneGateway = new Mock<IDroneGateway>().Object;

@@ -28,12 +28,5 @@ namespace Domain.Entities
         public string DispatcherUrl { get; set; }
     }
 
-    public enum DroneState
-    {
-        Ready,
-        Delivering,
-        Returning,
-        Dead,
-        Charging
-    }
+
 }

@@ -57,7 +57,7 @@ namespace DroneDispatcher.Controllers
                 Destination = Home,
                 CurrentLocation = Home,
                 OrderId = "",
-                State = "Ready",
+                State = DroneState.Ready,
                 Id = ""
             };
 

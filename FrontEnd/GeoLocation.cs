@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FlyingPizza
+namespace FrontEnd
 {
     public class GeoLocation
     {
