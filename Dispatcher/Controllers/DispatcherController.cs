@@ -48,7 +48,7 @@ namespace DroneDispatcher.Controllers
         {
             Console.WriteLine("We are gonna register some shit!!");
             // Todo make a new guid and make sure it is different from all other drones
-            var newDrone = new Drone
+            var newDrone = new DroneRecord
             {
                 BadgeNumber = postDroneDto.BadgeNumber,
                 IpAddress = postDroneDto.IpAddress,
@@ -131,7 +131,7 @@ namespace DroneDispatcher.Controllers
         public async Task<IActionResult> UpdateStatus(PutStatusDto dto)
         {
             Console.WriteLine($"putting:\n{dto}");
-            await _dronesRepository.Update(new Drone
+            await _dronesRepository.Update(new DroneRecord
             {
                 CurrentLocation = dto.Location,
                 State = dto.State,

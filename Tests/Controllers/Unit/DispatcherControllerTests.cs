@@ -76,7 +76,7 @@ namespace Drone.Tests.Controllers.Unit
             DeliveryLocaion = TestDeliveryLocation,
             Id = TestOrderId
         };
-        private static readonly Domain.Entities.Drone TestDrone = new() {
+        private static readonly Domain.Entities.DroneRecord TestDrone = new() {
             IpAddress = ValidTestIp,
             Destination = TestDeliveryLocation,
             BadgeNumber = TestGuid,
@@ -94,11 +94,11 @@ namespace Drone.Tests.Controllers.Unit
             orders = new Mock<IOrdersRepository>();
             gateway = new Mock<IDroneGateway>();
             if(toggles.Contains(MethodSetups.DroneShouldCreateAsync))
-                drones.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.Drone>())).Returns<Domain.Entities.Drone>(Task.FromResult);
+                drones.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns<Domain.Entities.DroneRecord>(Task.FromResult);
             if(toggles.Contains(MethodSetups.DroneShouldGetByIdAsync))
-                drones.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain.Entities.Drone()));
+                drones.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(new Domain.Entities.DroneRecord()));
             if(toggles.Contains(MethodSetups.DroneShouldGetAllAvailableDronesAsync))
-                drones.Setup(x => x.GetAllAvailableDronesAsync()).ReturnsAsync(new List<Domain.Entities.Drone>{TestDrone}.AsEnumerable());
+                drones.Setup(x => x.GetAllAvailableDronesAsync()).ReturnsAsync(new List<Domain.Entities.DroneRecord>{TestDrone}.AsEnumerable());
             if(toggles.Contains(MethodSetups.OrderShouldGetByIdAsync))
                 orders.Setup(x => x.GetByIdAsync(It.IsAny<string>())).ReturnsAsync(TestOrder).Verifiable();
             if(toggles.Contains(MethodSetups.OrderShouldUpdate))

@@ -4,22 +4,21 @@ using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Domain;
 
 namespace DomainImplementation.Repositories
 {
-    public class DronesRepository : MongoRepository<Drone>, IDronesRepository
+    public class DronesRepository : MongoRepository<DroneRecord>, IDronesRepository
     {
         public DronesRepository(IMongoDatabase database, string collectionName)
             : base(database, collectionName)
         { }
         
-        public async Task<Drone> GetDroneOnOrderAsync(string orderNumber)
+        public async Task<DroneRecord> GetDroneOnOrderAsync(string orderNumber)
         {
             return (await GetAllWhereAsync(drone => drone.OrderId == orderNumber)).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<Drone>> GetAllAvailableDronesAsync()
+        public async Task<IEnumerable<DroneRecord>> GetAllAvailableDronesAsync()
         {
             return await GetAllWhereAsync(drone => drone.State == DroneState.Ready);
         }

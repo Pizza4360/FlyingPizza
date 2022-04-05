@@ -4,11 +4,12 @@ using System.Linq;
 using Domain.DTO.DispatcherDrone.DroneToDispatcher;
 using Domain.Interfaces.Gateways;
 using Domain.Entities;
+using Domain.Interfaces;
 using static System.Decimal;
 
 namespace DroneSimulator
 {
-    public class Drone : DroneFields
+    public class SimDrone : DroneRecord
     {
         // Radius of the Earth used in calculating distance 
         private const int EarthRadius = 6371;
@@ -26,7 +27,7 @@ namespace DroneSimulator
         private readonly IDispatcherGateway _dispatcher;
 
         // Constructor
-        public Drone(string id, GeoLocation home, IDispatcherGateway dispatcher)
+        public SimDrone(string id, GeoLocation home, IDispatcherGateway dispatcher)
         {
             Id = id;
             CurrentLocation = home;
@@ -126,11 +127,6 @@ namespace DroneSimulator
                 });
         }
 
-        public override string ToString()
-        {
-            return $"Drone:{{Id:{Id},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
-        }
-        
         // Helper function for Haversine formula readability
         private static double ToRadians(double x) => Math.PI / 180 * x;
 
@@ -143,16 +139,6 @@ namespace DroneSimulator
             double lat2, double lon2) =>
         EarthRadius * 2 * Math.Asin(
             Math.Sqrt(SinSquared(lat2 - lat1)) + SinSquared((lon2 - lon1) * Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2))));
-        
-        public override bool Equals(object o)
-        {
-            if (o == null || o.GetType() != GetType()) return false;
-            Drone oo = (Drone) o;
-            return oo.BadgeNumber == BadgeNumber &&
-                   oo.CurrentLocation.Equals(CurrentLocation) &&
-                   oo.Destination.Equals(Destination) &&
-                   oo.State.Equals(State);
-        }
     }
 }
 

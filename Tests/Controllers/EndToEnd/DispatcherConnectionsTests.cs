@@ -135,7 +135,7 @@ namespace Drone.Tests.Controllers.EndToEnd
                 });
             var mockedHandler = mockedHandlerSetup.Object;
             testDroneGateway.changeHandler(mockedHandler);
-            var testDrone = new DroneSimulator.Drone("test_badge", testDeliverOrderDto.OrderLocation, mockedDispatcherGateway);
+            var testDrone = new DroneSimulator.SimDrone("test_badge", testDeliverOrderDto.OrderLocation, mockedDispatcherGateway);
             testDroneController.changeDrone(testDrone);
             var testDispatcherGateway = new DroneToDispatcherGateway();
             testDispatcherGateway.changeHandler(mockedHandler);

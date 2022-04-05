@@ -30,7 +30,7 @@ namespace Drone.Tests.Controllers.Unit
                 Longitude = 4.0m
             };
             var mockedDispatcher = new Mock<IDispatcherGateway>().Object;
-            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
+            var drone = new DroneSimulator.SimDrone("test id", home, mockedDispatcher);
             drone.Destination = dest;
 
             var route =  drone.GetRoute();
@@ -51,7 +51,7 @@ namespace Drone.Tests.Controllers.Unit
                 Latitude = 3.0m,
                 Longitude = 4.0m
             };
-            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
+            var drone = new DroneSimulator.SimDrone("test id", home, mockedDispatcher);
             drone.Destination = dest;
 
             var route =  drone.GetRoute();
@@ -72,7 +72,7 @@ namespace Drone.Tests.Controllers.Unit
                 Latitude = 3.0m,
                 Longitude = 4.0m
             };
-            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
+            var drone = new DroneSimulator.SimDrone("test id", home, mockedDispatcher);
             drone.Destination = dest;
            
             var route =  drone.GetRoute();
@@ -97,7 +97,7 @@ namespace Drone.Tests.Controllers.Unit
                 Latitude = -3.0m,
                 Longitude = -4.0m
             };
-            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
+            var drone = new DroneSimulator.SimDrone("test id", home, mockedDispatcher);
             drone.Destination = dest;
 
             var route =  drone.GetRoute();
