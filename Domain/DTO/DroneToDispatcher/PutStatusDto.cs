@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace Domain.DTO.DispatcherDrone.DroneToDispatcher
+namespace Domain.DTO.DroneToDispatcher
 {
     public class PutStatusDto
     {

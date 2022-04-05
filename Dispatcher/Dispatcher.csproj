@@ -4,7 +4,6 @@
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>50dbe9b5-d0a0-4d6f-b49a-22b1d4199894</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <RootNamespace>DroneDispatcher</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

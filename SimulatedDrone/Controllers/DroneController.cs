@@ -4,7 +4,7 @@ using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Domain.DTO.DispatcherDrone.DispatcherToDrone;
+using Domain.DTO.DispatcherToDrone;
 
 namespace DroneSimulator.Controllers
 {

@@ -12,7 +12,7 @@ public class DroneRecord: IBaseEntity
     public string Id { get; set; }
 
     public Guid BadgeNumber { get; set; }
-        
+    
     public GeoLocation CurrentLocation { get; set; }
         
     public GeoLocation Destination { get; set; }

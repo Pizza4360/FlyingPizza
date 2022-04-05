@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Linq;
-using Domain.DTO.DispatcherDrone.DroneToDispatcher;
+using Domain.DTO.DroneToDispatcher;
 using Domain.Interfaces.Gateways;
 using Domain.Entities;
 using Domain.Interfaces;

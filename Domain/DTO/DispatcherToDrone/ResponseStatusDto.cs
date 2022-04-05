@@ -1,4 +1,4 @@
-namespace Domain.DTO.DispatcherDrone.DispatcherToDrone
+namespace Domain.DTO.DispatcherToDrone
 {
     public class ResponseStatusDto
     {

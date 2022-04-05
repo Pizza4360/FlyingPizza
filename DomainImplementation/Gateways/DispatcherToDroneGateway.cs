@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Domain.DTO.DispatcherDrone.DispatcherToDrone;
+using Domain.DTO.DispatcherToDrone;
 using Domain.Entities;
 using Domain.Interfaces.Gateways;
 

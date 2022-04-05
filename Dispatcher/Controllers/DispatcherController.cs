@@ -1,17 +1,16 @@
-﻿using Domain.Entities;
-using Domain.Interfaces.Gateways;
-using Domain.Interfaces.Repositories;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Domain.DTO.DispatcherDrone.DispatcherToDrone;
-using Domain.DTO.DispatcherDrone.DroneToDispatcher;
-using Domain.DTO.DispatcherFrontEnd.FrontEndToDispatcher;
+using Domain.DTO.DispatcherToDrone;
+using Domain.DTO.DroneToDispatcher;
+using Domain.DTO.FrontEndToDispatcher;
+using Domain.Entities;
+using Domain.Interfaces.Gateways;
+using Domain.Interfaces.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
-
-namespace DroneDispatcher.Controllers
+namespace Dispatcher.Controllers
 {
     [ApiController]
     [Route("[controller]")]

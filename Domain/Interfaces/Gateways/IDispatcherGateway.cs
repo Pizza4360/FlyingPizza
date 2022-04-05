@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Domain.DTO.DispatcherDrone.DroneToDispatcher;
+using Domain.DTO.DroneToDispatcher;
 
 namespace Domain.Interfaces.Gateways
 {

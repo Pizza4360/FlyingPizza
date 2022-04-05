@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace Domain.DTO.DispatcherFrontEnd.FrontEndToDispatcher{
+namespace Domain.DTO.FrontEndToDispatcher{
     public class GetRegistrationResultsDto
     {
         public string IpAddress { get; set; }

@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace Domain.DTO.DispatcherDrone.DispatcherToDrone
+namespace Domain.DTO.DispatcherToDrone
 {
     public class PostDeliverOrderDto
     {

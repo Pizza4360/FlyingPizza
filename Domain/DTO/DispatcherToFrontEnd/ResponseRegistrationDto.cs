@@ -1,7 +1,7 @@
 using System;
 using System.Net.Http;
 
-namespace Domain.DTO.DispatcherFrontEnd.DispatcherToFrontEnd
+namespace Domain.DTO.DispatcherToFrontEnd
 {
     public class ResponseRegistrationDto
     {

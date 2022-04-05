@@ -2,7 +2,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Domain.DTO.DispatcherDrone.DroneToDispatcher;
+using Domain.DTO.DroneToDispatcher;
 using Domain.Interfaces.Gateways;
 
 namespace DomainImplementation.Gateways
