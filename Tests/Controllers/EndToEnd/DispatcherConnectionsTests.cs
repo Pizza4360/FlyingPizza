@@ -143,7 +143,7 @@ namespace Drone.Tests.Controllers.EndToEnd
             var response = await testDispatcherController.AddNewOrder(testOrderDto);
             var expected = new OkResult();
             response.Should().BeEquivalentTo(expected);
-            testDrone.Location.Should().BeEquivalentTo(testDeliverOrderDto.OrderLocation);
+            testDrone.CurrentLocation.Should().BeEquivalentTo(testDeliverOrderDto.OrderLocation);
         }
     }
 }

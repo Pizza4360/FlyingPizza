@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using FlyingPizza.Domain.Entities;
+using Domain.Entities;
+using Order = FlyingPizza.Domain.Entities.Order;
 
 namespace FlyingPizza.Services
 {
     public class GlobalDataSvc
     {
-        public DroneModel currDrone { get; set; }
+        public DroneFields currDrone { get; set; }
         public Order currOrder { get; set; }
         public List<Object> cart { get; set; }
 

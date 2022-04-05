@@ -19,12 +19,21 @@ namespace Domain.Entities
 
         public string OrderId { get; set; }
 
-        public string State { get; set; }
+        public DroneState State { get; set; }
         
         public GeoLocation HomeLocation { get; set; }
         
         public string IpAddress { get; set; }
 
         public string DispatcherUrl { get; set; }
+    }
+
+    public enum DroneState
+    {
+        Ready,
+        Delivering,
+        Returning,
+        Dead,
+        Charging
     }
 }
