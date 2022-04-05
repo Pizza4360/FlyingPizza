@@ -8,7 +8,7 @@ namespace FlyingPizza.Services
 {
     public class GlobalDataSvc
     {
-        public DroneModel currDrone { get; set; }
+        public DroneRecord currDrone { get; set; }
         public Order currOrder { get; set; }
         public List<Object> cart { get; set; }
 

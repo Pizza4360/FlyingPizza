@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace FlyingPizza.Drone
 {
-    public class DroneModel : ComponentBase
+    public class DroneRecord : ComponentBase
     {
         // The elapsed time between a drone getting to the next Point in a route
         private const int DroneUpdateInterval = 2000;
@@ -75,34 +75,34 @@ namespace FlyingPizza.Drone
         }
         
         // Make a new drone and add it to the database, then return it
-        public static async Task<DroneModel> AddDrone(string ipAddress)
+        public static async Task<DroneRecord> AddDrone(string ipAddress)
         {
             // Instantiate a drone with the "DefaultDrone" prototype info
-            var task = new RestDbSvc().Get<DroneModel>(DronePrototypeUrl);
+            var task = new RestDbSvc().Get<DroneRecord>(DronePrototypeUrl);
             task.Wait();
-            DroneModel dm = task.Result;
+            DroneRecord dm = task.Result;
             
             // Set the new url for this drone's DB info and ip address for this drone's physical machine
-            var responese = await new RestDbSvc().Post<DroneModel>("http://localhost:8080/Fleet", dm);
+            var responese = await new RestDbSvc().Post<DroneRecord>("http://localhost:8080/Fleet", dm);
             dm.Url = responese.Headers.Location.AbsoluteUri;
             dm.IpAddress = ipAddress;
             
             // Set the badge number to the next increasing integer  starting at 1
-            var countTask = await new RestDbSvc().Get<DroneModel[]>("http://localhost:8080/Fleet");
+            var countTask = await new RestDbSvc().Get<DroneRecord[]>("http://localhost:8080/Fleet");
             dm.BadgeNumber = countTask.Length;
             
             // Put the updated drone information back
-            new RestDbSvc().Put<DroneModel>(dm.Url, dm);
+            new RestDbSvc().Put<DroneRecord>(dm.Url, dm);
             
             // Return the drone's url
-            return await new RestDbSvc().Get<DroneModel>(dm.Url);
+            return await new RestDbSvc().Get<DroneRecord>(dm.Url);
         }
 
         // Get a drone by badge number
-        public static DroneModel GetDrone(int badgeNumber)
+        public static DroneRecord GetDrone(int badgeNumber)
         {
             string url = $"http://localhost:8080/Fleet?filter={{badgeNumber:{badgeNumber}}}";
-            var task = new RestDbSvc().Get<DroneModel[]>(url);
+            var task = new RestDbSvc().Get<DroneRecord[]>(url);
             task.Wait();
             return task.Result[0];
         }
@@ -203,7 +203,7 @@ namespace FlyingPizza.Drone
             {
                 svc = RestSvc;
             }
-            svc.Put<DroneModel>(FleetPage, this);
+            svc.Put<DroneRecord>(FleetPage, this);
         }
         
         // String for debugging GetDronepurposes
@@ -218,7 +218,7 @@ namespace FlyingPizza.Drone
         public override bool Equals(object o)
         {
             if (o == null || o.GetType() != GetType()) return false;
-            DroneModel oo = (DroneModel) o;
+            DroneRecord oo = (DroneRecord) o;
             return oo.BadgeNumber == BadgeNumber &&
                    oo.Location.Equals(Location) &&
                    oo.Delivery.Equals(Delivery) &&
