@@ -135,7 +135,7 @@ namespace Drone.Tests.Controllers.EndToEnd
                 });
             var mockedHandler = mockedHandlerSetup.Object;
             testDroneGateway.changeHandler(mockedHandler);
-            var testDrone = new DroneSimulator.Drone("test_badge", testDeliverOrderDto.OrderLocation, mockedDispatcherGateway);
+            var testDrone = new DroneSimulator.Drone("test_badge", testDeliverOrderDto.OrderLocation, mockedDispatcherGateway, new Guid(), "testIp", "testurl");
             testDroneController.changeDrone(testDrone);
             var testDispatcherGateway = new DispatcherGateway();
             testDispatcherGateway.changeHandler(mockedHandler);
@@ -143,7 +143,7 @@ namespace Drone.Tests.Controllers.EndToEnd
             var response = await testDispatcherController.AddNewOrder(testOrderDto);
             var expected = new OkResult();
             response.Should().BeEquivalentTo(expected);
-            testDrone.Location.Should().BeEquivalentTo(testDeliverOrderDto.OrderLocation);
+            testDrone.CurrentLocation.Should().BeEquivalentTo(testDeliverOrderDto.OrderLocation);
         }
     }
 }

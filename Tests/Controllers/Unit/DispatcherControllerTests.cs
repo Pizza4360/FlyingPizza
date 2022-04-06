@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
 using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
@@ -6,6 +9,11 @@ using Domain.Implementation.Repositories;
 using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
 using DroneDispatcher.Controllers;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
+using Moq;
+using Xunit;
 
 namespace Drone.Tests.Controllers.Unit
 {
@@ -148,7 +156,7 @@ namespace Drone.Tests.Controllers.Unit
                 Destination = testDestination,
                 BadgeNumber = testGuid,
                 CurrentLocation = testLocation,
-                State = "on fire",
+                State = DroneState.Delivering,
                 OrderId = "good enough",
                 DispatcherUrl = "test_url",
                 Id = "some stuff",

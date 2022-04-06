@@ -1,4 +1,7 @@
-﻿using Domain.Entities;
+﻿using System;
+using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
+using Domain.Entities;
+using Domain.Implementation.Gateways;
 using Domain.Interfaces.Gateways;
 using FluentAssertions;
 using Moq;
@@ -29,11 +32,11 @@ namespace Drone.Tests.Controllers.Unit
                 Latitude = 3.0m,
                 Longitude = 4.0m
             };
-            var mockedDispatcher = new Mock<IDispatcherGateway>().Object;
-            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
-            drone.Destination = dest;
+            var mockedDispatcherGateway = new Mock<DispatcherGateway>().Object;
+            var testDrone = new DroneSimulator.Drone("test_badge", home, mockedDispatcherGateway, new Guid(), "testIp", "testurl");
+            testDrone.Destination = dest;
 
-            var route =  drone.GetRoute();
+            var route =  testDrone.GetRoute();
             route.Should().NotBeNull();
             route.Should().Contain(dest);
         }
@@ -41,7 +44,6 @@ namespace Drone.Tests.Controllers.Unit
         [Fact]
         public void drone_should_have_start_in_route()
         {
-            var mockedDispatcher = new Mock<IDispatcherGateway>().Object;
             var home = new GeoLocation{
                 Latitude = 0.0m,
                 Longitude = 0.0m
@@ -51,10 +53,11 @@ namespace Drone.Tests.Controllers.Unit
                 Latitude = 3.0m,
                 Longitude = 4.0m
             };
-            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
-            drone.Destination = dest;
+            var mockedDispatcherGateway = new Mock<DispatcherGateway>().Object;
+            var testDrone = new DroneSimulator.Drone("test_badge", home, mockedDispatcherGateway, new Guid(), "testIp", "testurl");
+            testDrone.Destination = dest;
 
-            var route =  drone.GetRoute();
+            var route =  testDrone.GetRoute();
             route.Should().NotBeNull();
             route.Should().Contain(home);
         }
@@ -62,7 +65,6 @@ namespace Drone.Tests.Controllers.Unit
         [Fact]
         public void TestGetRouteAllPositiveNumbers()
         {
-            var mockedDispatcher = new Mock<IDispatcherGateway>().Object;
             var home = new GeoLocation{
                 Latitude = 0.0m,
                 Longitude = 0.0m
@@ -72,10 +74,11 @@ namespace Drone.Tests.Controllers.Unit
                 Latitude = 3.0m,
                 Longitude = 4.0m
             };
-            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
-            drone.Destination = dest;
+            var mockedDispatcherGateway = new Mock<DispatcherGateway>().Object;
+            var testDrone = new DroneSimulator.Drone("test_badge", home, mockedDispatcherGateway, new Guid(), "testIp", "testurl");
+            testDrone.Destination = dest;
            
-            var route =  drone.GetRoute();
+            var route =  testDrone.GetRoute();
             route.Should().NotBeNull();
             foreach (var geoLocation in route)
             {
@@ -87,7 +90,6 @@ namespace Drone.Tests.Controllers.Unit
         [Fact]
         public void TestGetRouteAllNegativeNumbers()
         {
-            var mockedDispatcher = new Mock<IDispatcherGateway>().Object;
             var home = new GeoLocation{
                 Latitude = 0.0m,
                 Longitude = 0.0m
@@ -97,10 +99,11 @@ namespace Drone.Tests.Controllers.Unit
                 Latitude = -3.0m,
                 Longitude = -4.0m
             };
-            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
-            drone.Destination = dest;
+            var mockedDispatcherGateway = new Mock<DispatcherGateway>().Object;
+            var testDrone = new DroneSimulator.Drone("test_badge", home, mockedDispatcherGateway, new Guid(), "testIp", "testurl");
+            testDrone.Destination = dest;
 
-            var route =  drone.GetRoute();
+            var route =  testDrone.GetRoute();
             route.Should().NotBeNull();
             foreach (var geoLocation in route)
             {
