@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Implementation;
 using Domain.Interfaces.Repositories;
-using DomainImplementation.Repositories;
 using DroneSimulator.Controllers;
 // using DomainImplementation.Repositories;
 

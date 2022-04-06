@@ -1,8 +1,7 @@
 ﻿using Domain.Implementation.Gateways;
+using Domain.Implementation.Repositories;
 using Domain.Interfaces.Gateways;
-using DomainImplementation.Repositories;
 using Domain.Interfaces.Repositories;
-using DomainImplementation.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 

@@ -1,12 +1,11 @@
-﻿using Domain.Entities;
-using Domain.Interfaces.Repositories;
-using MongoDB.Driver;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Domain;
+using Domain.Entities;
+using Domain.Interfaces.Repositories;
+using MongoDB.Driver;
 
-namespace DomainImplementation.Repositories
+namespace Domain.Implementation.Repositories
 {
     public class DronesRepository : MongoRepository<DroneRecord>, IDronesRepository
     {

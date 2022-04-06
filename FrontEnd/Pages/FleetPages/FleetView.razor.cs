@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Microsoft.AspNetCore.Components;
 
-
-namespace FlyingPizza.Pages.FleetPages
+namespace FrontEnd.Pages.FleetPages
 {
     partial class FleetView : ComponentBase
     {

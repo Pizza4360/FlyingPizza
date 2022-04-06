@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Threading.Tasks;
-using System.Net.Http.Json;
 using System.Net.Http.Headers;
-using System.Text.Json;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
-namespace FlyingPizza.Services
+namespace FrontEnd.Services
 {
 
     // this service is called by any and all methods and classes that need to make a request to the rest database

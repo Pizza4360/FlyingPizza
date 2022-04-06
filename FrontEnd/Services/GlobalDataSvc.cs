@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Domain.Entities;
 
-namespace FlyingPizza.Services
+namespace FrontEnd.Services
 {
     public class GlobalDataSvc
     {
