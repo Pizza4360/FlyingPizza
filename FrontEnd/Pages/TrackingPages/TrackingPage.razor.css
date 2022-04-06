@@ -1,0 +1,34 @@
+﻿
+.status-bar {
+    height: 85.2px;
+    border-radius: 0.5rem;
+    flex-grow: 1;
+    overflow-y: auto;
+    background-color: rgb(5, 39, 103);
+    padding: 1.5rem !important;
+    color: white;
+    text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.checkBox {
+    float: left;
+    padding: 0px;
+    margin-top: 5.5px;
+    margin-bottom: 3.5px;
+    margin-right: 0.5rem;
+    width: 25px;
+    height: 25px;
+}
+
+.testText {
+    color: green;
+    text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+/*    font-size: 1.5rem;
+*/    font-weight: 700;
+}
+    
+
+
+

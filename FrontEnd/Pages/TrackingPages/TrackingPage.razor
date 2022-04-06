@@ -1,17 +1,23 @@
-﻿@page "/counter"
+﻿@page "/tracking"
 @*https://www.radzen.com/documentation/blazor/googlemap/*@
 @*https://blazor.radzen.com/googlemap*@
+
+<div class="status-bar">
+         
+        <input class="checkBox" type="checkbox" onclick="@onBoxClick">
+        <b>Show Home</b>
+        <input class="checkBox" style="float: none; margin-left: 40px" type="checkbox" onclick="@onBoxClick">
+
+   
+</div>
+
 <div class="row p-3">
     <div class="col">
-        <RadzenCard Class="mb-4">
-            <RadzenCheckBox @bind-Value=@showMSU Name="showMarker" />
-            <RadzenLabel Text="Show marker for MSU Denver" Component="showMarker" Style="margin-left: 8px; vertical-align: middle;" />
-        </RadzenCard>
         <RadzenGoogleMap style="height: 550px" Zoom=@zoom Center=@(new GoogleMapPosition() { Lat = 39.745918, Lng = -105.007492}) MapClick=@OnMapClick MarkerClick=@OnMarkerClick>
             <Markers>
                 @if (showMSU)
                 {
-                    <RadzenGoogleMapMarker Title="MSU Denver " Label="MSU Denver" Position=@(new GoogleMapPosition() { Lat = 39.745918, Lng = -105.007492 }) />
+                    <RadzenGoogleMapMarker Title="MSU Denver " Label="Home" Position=@(new GoogleMapPosition() { Lat = 39.745918, Lng = -105.007492 }) />
                 }
             </Markers>
         </RadzenGoogleMap>
@@ -21,6 +27,7 @@
 <EventConsole @ref=@console Class="mt-4" />
 
 @code {
+    int test = 0;
     int zoom = 15;
     bool showMSU;
     EventConsole console;
@@ -35,4 +42,9 @@
         console.Log($"Map {marker.Title} marker clicked. Marker position -> Lat: {marker.Position.Lat}, Lng: {marker.Position.Lng}");
     }
 
-}}
+    void onBoxClick()
+    {
+        showMSU = !showMSU;
+    }
+
+}
