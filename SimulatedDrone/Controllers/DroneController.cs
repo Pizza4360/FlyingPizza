@@ -29,8 +29,8 @@ namespace DroneSimulator.Controllers
             Console.WriteLine(_drone);
         }
 
-        [HttpPost("assigndelivery")]
-        public async Task<IActionResult> AssignDelivery(DeliverOrderDto order)
+        [HttpPost("deliver")]
+        public async Task<IActionResult> Deliver(DeliverOrderDto order)
         {
             _drone.DeliverOrder(order.OrderLocation);
             return Ok();

@@ -48,7 +48,7 @@ namespace Tests.Controllers.Integration
                 var mockedHandler = mockedHandlerSetup.Object;
     
             var testDispatcherGateway = new DispatcherGateway();
-            testDispatcherGateway.changeHandler(mockedHandler);
+            testDispatcherGateway.ChangeHandler(mockedHandler);
             // Mocking http server
 
           

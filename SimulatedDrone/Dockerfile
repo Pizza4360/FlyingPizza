@@ -6,16 +6,16 @@ EXPOSE 5000
 
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
-COPY ["DroneSimulator/DroneSimulator.csproj", "DroneSimulator/"]
-RUN dotnet restore "DroneSimulator/DroneSimulator.csproj"
+COPY ["SimulatedDrone/SimulatedDrone.csproj", "SimulatedDrone/"]
+RUN dotnet restore "SimulatedDrone/SimulatedDrone.csproj"
 COPY . .
-WORKDIR "/src/DroneSimulator"
-RUN dotnet build "DroneSimulator.csproj" -c Release -o /app/build
+WORKDIR "/src/SimulatedDrone"
+RUN dotnet build "SimulatedDrone.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "DroneSimulator.csproj" -c Release -o /app/publish
+RUN dotnet publish "SimulatedDrone.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "DroneSimulator.dll"]
+ENTRYPOINT ["dotnet", "SimulatedDrone.dll"]

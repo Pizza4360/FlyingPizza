@@ -81,7 +81,7 @@ namespace Tests.Controllers.EndToEnd
             var mockedDispatcherHandler = mockedDispatcherHandlerSetup.Object;
             testDroneGateway.changeHandler(mockedDroneHandler);
             var testDispatcherGateway = new DispatcherGateway();
-            testDispatcherGateway.changeHandler(mockedDispatcherHandler);
+            testDispatcherGateway.ChangeHandler(mockedDispatcherHandler);
             // Mocking http server
             var response = await testDispatcherController.RegisterNewDrone(testDroneInfo);
             var expected = new OkResult();
@@ -130,7 +130,7 @@ namespace Tests.Controllers.EndToEnd
             mockedDroneHandlerSetup.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x => x.RequestUri == new Uri($"http://172.18.0.1:5001/drone/assigndelivery")), ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage {
                     StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(testDroneController.AssignDelivery(testDeliverOrderDto).IsCompletedSuccessfully.ToString())
+                    Content = new StringContent(testDroneController.Deliver(testDeliverOrderDto).IsCompletedSuccessfully.ToString())
                     // Assumed ok only for now
                 });
             var mockedHandler = mockedHandlerSetup.Object;
@@ -139,7 +139,7 @@ namespace Tests.Controllers.EndToEnd
                 Constants.BadgeNumber, "777 heaven circle", "localhost:5001");
             testDroneController.changeDrone(testDrone);
             var testDispatcherGateway = new DispatcherGateway();
-            testDispatcherGateway.changeHandler(mockedHandler);
+            testDispatcherGateway.ChangeHandler(mockedHandler);
             // Mocking http server
             var response = await testDispatcherController.AddNewOrder(testOrderDto);
             var expected = new OkResult();

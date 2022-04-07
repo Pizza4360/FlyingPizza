@@ -8,18 +8,18 @@ EXPOSE 4000
 
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
-COPY ["DroneDispatcher/DroneDispatcher.csproj", "DroneDispatcher/"]
+COPY ["Dispatcher/Dispatcher.csproj", "Dispatcher/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
 COPY ["DomainImplementation/DomainImplementation.csproj", "DomainImplementation/"]
-RUN dotnet restore "DroneDispatcher/DroneDispatcher.csproj"
+RUN dotnet restore "Dispatcher/Dispatcher.csproj"
 COPY . .
-WORKDIR "/src/DroneDispatcher"
-RUN dotnet build "DroneDispatcher.csproj" -c Release -o /app/build
+WORKDIR "/src/Dispatcher"
+RUN dotnet build "Dispatcher.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "DroneDispatcher.csproj" -c Release -o /app/publish
+RUN dotnet publish "Dispatcher.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "DroneDispatcher.dll"]
+ENTRYPOINT ["dotnet", "Dispatcher.dll"]
