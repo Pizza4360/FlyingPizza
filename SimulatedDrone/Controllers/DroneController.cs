@@ -25,7 +25,7 @@ namespace DroneSimulator.Controllers
                 Latitude = 39.74364421910773m,
                 Longitude = -105.00561147600774m
             }, dispatcherGateway,
-                new Guid(), "1", "something"); // TODO: initialize this from the drones repository, based on a drone id from environment variables
+                5, "1", "something"); // TODO: initialize this from the drones repository, based on a drone id from environment variables
             Console.WriteLine(_drone);
         }
 

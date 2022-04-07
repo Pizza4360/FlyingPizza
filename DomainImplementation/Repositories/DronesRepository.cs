@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using MongoDB.Driver;
+using Domain;
 
 namespace Domain.Implementation.Repositories
 {

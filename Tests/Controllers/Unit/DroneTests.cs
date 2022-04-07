@@ -5,7 +5,7 @@ using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Drone.Tests.Controllers.Unit
+namespace Tests.Controllers.Unit
 {
     public class DroneTests
     {
@@ -20,22 +20,15 @@ namespace Drone.Tests.Controllers.Unit
         [Fact]
         public void drone_should_have_destination_in_route()
         {
-            var home = new GeoLocation{
-                Latitude = 0.0m,
-                Longitude = 0.0m
-                
-            };
-            var dest = new GeoLocation{
-                Latitude = 3.0m,
-                Longitude = 4.0m
-            };
             var mockedDispatcher = new Mock<IDispatcherGateway>().Object;
-            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
-            drone.Destination = dest;
+            var drone = new DroneSimulator.Drone(Constants.DroneId, Constants.HomeLocation, mockedDispatcher, 1, Constants.DroneIp, Constants.Url)
+                {
+                    Destination = Constants.Destination
+                };
 
             var route =  drone.GetRoute();
             route.Should().NotBeNull();
-            route.Should().Contain(dest);
+            route.Should().Contain(Constants.Destination);
         }
         
         [Fact]
@@ -51,7 +44,7 @@ namespace Drone.Tests.Controllers.Unit
                 Latitude = 3.0m,
                 Longitude = 4.0m
             };
-            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
+            var drone = new DroneSimulator.Drone(Constants.DroneId, Constants.HomeLocation, mockedDispatcher, 1, Constants.DroneIp, Constants.Url);
             drone.Destination = dest;
 
             var route =  drone.GetRoute();
@@ -72,7 +65,7 @@ namespace Drone.Tests.Controllers.Unit
                 Latitude = 3.0m,
                 Longitude = 4.0m
             };
-            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
+            var drone = new DroneSimulator.Drone(Constants.DroneId, Constants.HomeLocation, mockedDispatcher, 1, Constants.DroneIp, Constants.Url);
             drone.Destination = dest;
            
             var route =  drone.GetRoute();
@@ -97,7 +90,7 @@ namespace Drone.Tests.Controllers.Unit
                 Latitude = -3.0m,
                 Longitude = -4.0m
             };
-            var drone = new DroneSimulator.Drone("test id", home, mockedDispatcher);
+            var drone = new DroneSimulator.Drone(Constants.DroneId, Constants.HomeLocation, mockedDispatcher, 1, Constants.DroneIp, Constants.Url);
             drone.Destination = dest;
 
             var route =  drone.GetRoute();

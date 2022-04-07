@@ -11,7 +11,7 @@ namespace Domain.Entities
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        public Guid BadgeNumber { get; set; }
+        public int BadgeNumber { get; set; }
 
         public string OrderId { get; set; }
 
@@ -22,7 +22,7 @@ namespace Domain.Entities
 
         public GeoLocation Destination { get; set; }
 
-        public DroneState State { get; set; }
+        public string State { get; set; }
 
         public string IpAddress { get; set; }
 

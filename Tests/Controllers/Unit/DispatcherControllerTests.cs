@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
 using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
@@ -6,8 +9,13 @@ using Domain.Implementation.Repositories;
 using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
 using DroneDispatcher.Controllers;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
+using Moq;
+using Xunit;
 
-namespace Drone.Tests.Controllers.Unit
+namespace Tests.Controllers.Unit
 {
 
 
@@ -52,7 +60,7 @@ namespace Drone.Tests.Controllers.Unit
         {
             var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
             var mockedDroneGatewaySetup = new Mock<IDroneGateway>();
-            var testGuid = new Guid();
+            var testGuid = 5;
             // Here we set up a verify hook so we can see if the right arguments were used in a startRegistration call
             mockedDroneGatewaySetup.Setup(x => x.StartRegistration("test_ip", testGuid, "http://172.18.0.0:4000",
                 new GeoLocation
@@ -83,7 +91,7 @@ namespace Drone.Tests.Controllers.Unit
             var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
             var mockedDatabase = new Mock<IMongoDatabase>().Object;
             var mockedDroneGateway = new Mock<IDroneGateway>().Object;
-            var testGuid = new Guid();
+            var testGuid = 5;
 
             var testInfo = new DroneRegistrationInfo
             {
@@ -110,10 +118,10 @@ namespace Drone.Tests.Controllers.Unit
             // Forcing mock of gateway to say drone is valid
             var mockedDroneGatewaySetup = new Mock<IDroneGateway>();
             mockedDroneGatewaySetup
-                .Setup(x => x.StartRegistration(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(),
+                .Setup(x => x.StartRegistration(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(),
                     It.IsAny<GeoLocation>())).Returns(Task.FromResult(true));
             var mockedDroneGateway = mockedDroneGatewaySetup.Object;
-            var testGuid = new Guid();
+            var testGuid = 5;
 
             var testInfo = new DroneRegistrationInfo
             {
@@ -141,12 +149,12 @@ namespace Drone.Tests.Controllers.Unit
             {
                 Latitude = 39.74313274570401m, Longitude = -105.00641613869328m
             };
-            var testGuid = new Guid();
-            mockedDronesRepositorySetup.Setup(x => x.GetAllAvailableDronesAsync()).Returns(Task.FromResult(new List<Domain.Entities.DroneRecord>(1){new Domain.Entities.DroneRecord
+            var testGuid = 5;
+            mockedDronesRepositorySetup.Setup(x => x.GetAllAvailableDronesAsync()).Returns(Task.FromResult(new List<Domain.Entities.DroneRecord>(1){new()
             {
                 IpAddress = "test_ip",
                 Destination = testDestination,
-                BadgeNumber = testGuid,
+                BadgeNumber = Constants.BadgeNumber,
                 CurrentLocation = testLocation,
                 State = "on fire",
                 OrderId = "good enough",
@@ -192,7 +200,7 @@ namespace Drone.Tests.Controllers.Unit
                 .Setup(x => x.AssignDelivery(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<GeoLocation>()))
                 .Returns(Task.FromResult(true)).Verifiable();
             var mockedDroneGateway = mockedDroneGatewaySetup.Object;
-            var testGuid = new Guid();
+            var testGuid = 5;
             var testInfo = new DroneRegistrationInfo
             {
                 BadgeNumber = testGuid,

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Linq;
+using Domain;
 using Domain.Interfaces.Gateways;
 using Domain.Entities;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
@@ -25,7 +26,7 @@ namespace DroneSimulator
 
         private IDispatcherGateway _dispatcher;
 
-        public Drone(string id, GeoLocation homeLocation, IDispatcherGateway gateway, Guid badgeNumber, string ipAddress, string url)
+        public Drone(string id, GeoLocation homeLocation, IDispatcherGateway gateway, int badgeNumber, string ipAddress, string url)
         {
             Id = id;
             HomeLocation = homeLocation;
@@ -105,7 +106,7 @@ namespace DroneSimulator
         }
 
         // Send an DroneState update to DispatcherGateway
-        private void UpdateDroneState(DroneState state)
+        private void UpdateDroneState(string state)
         {
             State = state;
             _dispatcher.PutDroneState(

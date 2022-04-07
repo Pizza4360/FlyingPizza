@@ -40,7 +40,7 @@ namespace Domain.Implementation.Gateways
         // Todo send register command to drone with badge number & url for db
         public async Task<bool> StartRegistration(
             string droneIpAddress,
-            Guid badgeNumber,
+            int badgeNumber,
             string dispatcherUrl, 
             GeoLocation homeLocation)
         {

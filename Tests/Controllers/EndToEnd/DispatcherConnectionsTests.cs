@@ -11,13 +11,13 @@ using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
 using DroneDispatcher.Controllers;
 using DroneSimulator.Controllers;
-using Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using Moq.Protected;
 using Xunit;
 
-namespace Drone.Tests.Controllers.EndToEnd
+namespace Tests.Controllers.EndToEnd
 {
     public class DispatcherConnectionsTests
     {
@@ -46,7 +46,7 @@ namespace Drone.Tests.Controllers.EndToEnd
             var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
             var testDroneInfo = new DroneRegistrationInfo
             {
-                BadgeNumber = new Guid(),
+                BadgeNumber = 5,
                 IpAddress = "test_ip"
             };
             var mockedDronesRepo = new Mock<IDronesRepository>().Object;
@@ -135,7 +135,8 @@ namespace Drone.Tests.Controllers.EndToEnd
                 });
             var mockedHandler = mockedHandlerSetup.Object;
             testDroneGateway.changeHandler(mockedHandler);
-            var testDrone = new DroneSimulator.Drone("test_badge", testDeliverOrderDto.OrderLocation, mockedDispatcherGateway);
+            var testDrone = new DroneSimulator.Drone("test_badge", testDeliverOrderDto.OrderLocation, mockedDispatcherGateway,
+                Constants.BadgeNumber, "777 heaven circle", "localhost:5001");
             testDroneController.changeDrone(testDrone);
             var testDispatcherGateway = new DispatcherGateway();
             testDispatcherGateway.changeHandler(mockedHandler);
@@ -143,7 +144,7 @@ namespace Drone.Tests.Controllers.EndToEnd
             var response = await testDispatcherController.AddNewOrder(testOrderDto);
             var expected = new OkResult();
             response.Should().BeEquivalentTo(expected);
-            testDrone.Location.Should().BeEquivalentTo(testDeliverOrderDto.OrderLocation);
+            testDrone.CurrentLocation.Should().BeEquivalentTo(testDeliverOrderDto.OrderLocation);
         }
     }
 }

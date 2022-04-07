@@ -15,7 +15,7 @@ using Moq;
 using Moq.Protected;
 using Xunit;
 
-namespace Drone.Tests.Controllers.Integration
+namespace Tests.Controllers.Integration
 {
     public class DispatcherToDronesim
     {
@@ -78,7 +78,7 @@ namespace Drone.Tests.Controllers.Integration
 
           
             
-            var response = await testDroneGateway.StartRegistration("test_ip", new Guid(), "http://172.18.0.0:4000/dispatcher",new GeoLocation{ Latitude = 69, Longitude = 69});
+            var response = await testDroneGateway.StartRegistration("test_ip", 5, "http://172.18.0.0:4000/dispatcher",new GeoLocation{ Latitude = 69, Longitude = 69});
             response.Should().BeTrue();
         }
     }
