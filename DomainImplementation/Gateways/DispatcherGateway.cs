@@ -21,7 +21,7 @@ namespace Domain.Implementation.Gateways
             return response.IsSuccessStatusCode;
         }
         
-        public void changeHandler(HttpMessageHandler handler)
+        public void ChangeHandler(HttpMessageHandler handler)
         {
             // Added for mocking reasons, no way around it
             _httpClient = new HttpClient(handler);

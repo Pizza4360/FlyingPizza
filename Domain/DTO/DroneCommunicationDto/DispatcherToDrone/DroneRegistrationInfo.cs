@@ -5,7 +5,7 @@ namespace Domain.DTO.DroneCommunicationDto.DispatcherToDrone
 {
     public class DroneRegistrationInfo
     {
-        public Guid BadgeNumber { get; set; }
+        public int BadgeNumber { get; set; }
 
         public string IpAddress { get; set; }
         

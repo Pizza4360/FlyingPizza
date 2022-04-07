@@ -22,7 +22,7 @@ namespace Domain.Implementation.Gateways
                 OrderLocation = orderLocation
             });
 
-            var requestUri = new Uri($"http://{droneIpAddress}/drone/assigndelivery");
+            var requestUri = new Uri($"http://{droneIpAddress}/drone/deliver");
             Console.WriteLine($"DroneGateway.AssignDelivery - request uri={requestUri}"); // Debug
             var response = await HttpClient.PostAsync(requestUri, body);
             Console.WriteLine($"DroneGateway.AssignDelivery - response={response}"); // Debug
@@ -40,7 +40,7 @@ namespace Domain.Implementation.Gateways
         // Todo send register command to drone with badge number & url for db
         public async Task<bool> StartRegistration(
             string droneIpAddress,
-            Guid badgeNumber,
+            int badgeNumber,
             string dispatcherUrl, 
             GeoLocation homeLocation)
         {
