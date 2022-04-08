@@ -18,7 +18,7 @@ namespace DroneSimulator
         // 20 MPH as meters per second
         private const double DroneSpeed = 0.0089408;
         
-        // Number of milliseconds to wait before updating Drone status
+        // Number of milliseconds to wait before updating SimDrone status
         private const int DroneUpdateInterval = 2000;
 
         // I don't think this makes sense but it's working...
@@ -77,7 +77,7 @@ namespace DroneSimulator
             return route.ToArray();
         }
 
-        // Tell Drone to deliver an order
+        // Tell SimDrone to deliver an order
         public void DeliverOrder(GeoLocation customerLocation)
         {
             Destination = customerLocation;
@@ -131,7 +131,7 @@ namespace DroneSimulator
 
         public override string ToString()
         {
-            return $"Drone:{{Id:{Id},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
+            return $"SimDrone:{{Id:{Id},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
         }
         
         // Helper function for Haversine formula readability

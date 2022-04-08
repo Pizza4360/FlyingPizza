@@ -14,12 +14,13 @@ namespace DroneSimulator.Controllers
     public class DroneController : ControllerBase
     {
         private readonly IDronesRepository _dronesRepository;
-        private readonly DispatcherGateway _dispatcherGateway;
+        private readonly DroneToDispatcherGateway _droneToDispatcherGateway;
         private Drone _drone;
 
-        public DroneController(IDronesRepository dronesRepository, IDispatcherGateway dispatcherGateway)
+        public DroneController(IDispatcherGateway dispatcherGateway)
         {
-            _dronesRepository = dronesRepository;
+            Console.WriteLine("hi i'm new");
+            // _dronesRepository = dronesRepository;
             _drone = new Drone("123", new GeoLocation
             {
                 Latitude = 39.74364421910773m,
@@ -29,9 +30,15 @@ namespace DroneSimulator.Controllers
             Console.WriteLine(_drone);
         }
 
+        [HttpPost("ping")]
+        public async Task<string> Ping(string s)
+        {
+            return $"hello, {s}";
+        }
         [HttpPost("deliver")]
         public async Task<IActionResult> Deliver(DeliverOrderDto order)
         {
+            Console.WriteLine($"Delivering order {{{order}}}");
             _drone.DeliverOrder(order.OrderLocation);
             return Ok();
         }
@@ -41,7 +48,7 @@ namespace DroneSimulator.Controllers
         {
             Console.WriteLine($"Initializing{_drone}");
             // Todo, add logic to verify legitimacy of adding a drone.
-            return Ok("Drone successfully initialized");
+            return Ok("SimDrone successfully initialized");
         }
 
         [HttpPost("completeregistration")]

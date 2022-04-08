@@ -18,9 +18,9 @@ namespace DroneDispatcher.Controllers
     public class DispatcherController : ControllerBase
     {
         private readonly IDronesRepository _dronesRepository;
-        public readonly IOrdersRepository _ordersRepository;
+        private readonly IOrdersRepository _ordersRepository;
         private readonly IDroneGateway _droneGateway;
-        public readonly Queue<Order> _unfilledOrders;
+        private readonly Queue<Order> _unfilledOrders;
 
         public GeoLocation Home { get; }
 

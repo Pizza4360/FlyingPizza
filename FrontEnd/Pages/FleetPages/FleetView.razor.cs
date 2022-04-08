@@ -25,7 +25,7 @@ namespace FrontEnd.Pages.FleetPages
         public async Task GoToDrone(DroneRecord drone)
         {
             globalData.currDrone = drone;
-            await dialogService.OpenAsync<DetailedDrone>("View Drone");           
+            await dialogService.OpenAsync<DetailedDrone>("View SimDrone");           
         }
       
     }

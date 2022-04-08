@@ -7,7 +7,7 @@ using Domain.Interfaces.Gateways;
 
 namespace Domain.Implementation.Gateways
 {
-    public class DispatcherGateway : IDispatcherGateway
+    public class DroneToDispatcherGateway : IDispatcherGateway
     {
         private static HttpClient _httpClient = new HttpClient();
         public async Task<bool> PutDroneState(UpdateStatusDto status)

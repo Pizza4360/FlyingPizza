@@ -26,7 +26,7 @@ namespace Domain.Implementation
                     "Fleet");
             });
             services.AddScoped<IDroneGateway>(services => new DroneGateway());
-            services.AddScoped<IDispatcherGateway>(services => new DispatcherGateway());
+            services.AddScoped<IDispatcherGateway>(services => new DroneToDispatcherGateway());
             #endregion repositories
         }
     }
