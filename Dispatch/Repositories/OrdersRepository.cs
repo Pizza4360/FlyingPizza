@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Interfaces.Repositories;
 
-namespace Domain.Implementation.Repositories
+namespace Dispatch.Repositories
 {
     public class OrdersRepository: IOrdersRepository
     {

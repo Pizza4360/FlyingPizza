@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using Domain.Interfaces;
 using Domain.Interfaces.Repositories;
 using MongoDB.Driver;
 
-namespace Domain.Implementation.Repositories
+namespace Dispatch.Repositories
 {
     public abstract class MongoRepository<DomainEntity> : IBaseRepository<DomainEntity>
         where DomainEntity : IBaseEntity

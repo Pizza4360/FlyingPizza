@@ -4,8 +4,8 @@ namespace Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher
 {
     public class AddOrderDTO
     {
-        public string Id;
+        public string DroneId;
         public GeoLocation DeliveryLocaion;
-        public override string ToString() => $"AddOrderDto:{{Id:{Id},DeliveryLocation:{DeliveryLocaion}}}";
+        public override string ToString() => $"{{Id:{DroneId},DeliveryLocation:{DeliveryLocaion}}}";
     }
 }

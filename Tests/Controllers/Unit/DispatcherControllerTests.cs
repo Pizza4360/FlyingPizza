@@ -5,7 +5,6 @@ using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
 using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
 using Domain.Entities;
-using Domain.Implementation.Repositories;
 using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
 using DroneDispatcher.Controllers;
@@ -181,7 +180,7 @@ namespace Tests.Controllers.Unit
             var testOrderDto = new AddOrderDTO
             {
                 DeliveryLocaion = testDestination,
-                Id = "some stuff"
+                DroneId = "some stuff"
             };
             
             // calling method
@@ -315,7 +314,7 @@ namespace Tests.Controllers.Unit
             var testOrderDto = new AddOrderDTO
             {
                 DeliveryLocaion = testLocation,
-                Id = testGuidString
+                DroneId = testGuidString
             };
   
             //_ordersRepository.GetByIdAsync
@@ -373,7 +372,7 @@ namespace Tests.Controllers.Unit
             var testOrderDto = new AddOrderDTO
             {
                 DeliveryLocaion = testLocation,
-                Id = testGuidString
+                DroneId = testGuidString
             };
             
             

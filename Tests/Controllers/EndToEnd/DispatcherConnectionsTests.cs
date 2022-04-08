@@ -115,7 +115,7 @@ namespace Tests.Controllers.EndToEnd
                     Latitude = 39.74273568191456m,
                     Longitude = -105.00771026053671m
                 },
-                Id = "testOrderID"
+                DroneId = "testOrderID"
             };
          
             var testDispatcherController = new DispatcherController(mockedDroneRepo,mockedOrdersRepo,testDroneGateway);
