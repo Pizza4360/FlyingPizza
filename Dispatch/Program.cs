@@ -1,8 +1,7 @@
 using Dispatch.Gateways;
 using Dispatch.Repositories;
 using Domain.Interfaces.Gateways;
-using Domain.Interfaces.Repositories;
-using MongoDB.Driver;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,34 +13,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Get path to file holding connection string
-var path = $@"{Directory.GetCurrentDirectory()}\{Environment.GetEnvironmentVariable("ConnStrPath")}";
-var connectionString = File.ReadAllText($"{path}");
-Console.WriteLine(connectionString);
-#region database connection
-/*builder.Services.AddSingleton<IMongoClient>(_ =>
-{
-    return new MongoClient("mongodb://root:FlyingPizza1Here@147.182.238.228:27017");
-});*/
-builder.Services.AddSingleton<IMongoClient>(_ => 
-    new MongoClient($"{connectionString}"));
-#endregion database connection
+Console.WriteLine(DateTime.Now);
 
 #region repositories
-builder.Services.AddScoped<IDronesRepository>(_ => new DronesRepository(
-    _.GetService<IMongoClient>().GetDatabase("restheart"),
-    "Fleet"));
-builder.Services.AddScoped<IDronesRepository>(_ => new DronesRepository(
-    _.GetService<IMongoClient>().GetDatabase("restheart"),
-    "Orders"));
+
+Console.WriteLine($"{builder.Configuration.GetSection("FleetDb")}");
+builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
+builder.Services.AddSingleton<OrdersService>();
+builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
+builder.Services.AddSingleton<FleetService>();
+builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+
 builder.Services.AddScoped<IDroneGateway>(_ => new DroneGateway());
 #endregion repositories
-
-/*
-
-builder.Services.AddScoped<IDronesRepository>(builder.Services => 
-    new DronesRepository(builder.Services.GetService<IMongoClient>()?.GetDatabase("restheart"),"Fleet"));
-
-builder.Services.AddScoped<IDroneGateway>(_ => new DroneGateway());*/
 
 var app = builder.Build();
 

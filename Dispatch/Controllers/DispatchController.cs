@@ -1,3 +1,4 @@
+using Dispatch.Repositories;
 using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
 using Domain.Entities;
 using Domain.Interfaces.Gateways;
@@ -10,70 +11,83 @@ namespace Dispatch.Controllers;
 [Route("[controller]")]
 public class DispatchController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
+    private readonly FleetService _service;
+    private readonly OrdersService _ordersService;
     private readonly ILogger<DispatchController> _logger;
-    private readonly IDronesRepository _dronesRepository;
-    private readonly IOrdersRepository _ordersRepository;
-    private readonly IDroneGateway _droneGateway;
-    private readonly Queue<Order> _unfilledOrders;
-    private readonly GeoLocation _home;
+  
 
-    public DispatchController(
-        IDronesRepository droneRepository,
-        IOrdersRepository ordersRepository,
-        IDroneGateway droneGateway,
-        GeoLocation home
-        )
+    public DispatchController(FleetService service, OrdersService ordersService)
     {
-        Console.WriteLine("Hello world, from dispatch!");
-        _unfilledOrders = new Queue<Order>();
-        _dronesRepository = droneRepository;
-        _ordersRepository = ordersRepository;
-        _droneGateway = droneGateway;
-        _home = /*home*/ new GeoLocation
+        Console.WriteLine(DateTime.Now);
+        _service = service;
+        _ordersService = ordersService;
+        /*Order o = new Order()
         {
-            Latitude = 39.74364421910773m,
-            Longitude = -105.00561147600774m
-        };
-    }
-
-    [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
-    {
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            CustomerName = "malc",
+            DeliveryAddress = "444 some place",
+            DeliveryLocation = new GeoLocation()
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+                Latitude = 39.743787586026905m,
+                Longitude = -105.00333787196135m
+            },
+            Id = "myId",
+            Items = new object[2],
+            TimeOrdered = DateTime.Now,
+            URL = "https://blah",
+        };
+        Console.WriteLine("putting order!!!!!!");
+        _ordersService.AddOrder(o);*/
+        
     }
-    
-    [HttpPost("add_order")]
-    public async Task<IActionResult> AddNewOrder(AddOrderDTO order)
-    {
-        Console.WriteLine("adding a new order");
-        bool didSucceed;
-        var availableDrones = await _dronesRepository.GetAllAvailableDronesAsync();
-            
-        var newOrder = await _ordersRepository.GetByIdAsync(order.DroneId);
-        if (availableDrones.Any())
-        {
-            didSucceed = await _droneGateway.AssignDelivery(availableDrones.First().IpAddress, newOrder.Id,
-                newOrder.DeliveryLocation);
-        }
-        else
-        {
-            _unfilledOrders.Enqueue(newOrder);
-            didSucceed = true;
-        }
 
-        // TODO: unhappy path
-        Console.WriteLine($"DispatcherController.AddNewOrder({order}) - Order Complete"); // Debug
-        return Ok(didSucceed);
+    [HttpPut]
+    public async Task<bool> Put()
+    {
+        Order o = new Order()
+        {
+            CustomerName = "malc",
+            DeliveryAddress = "444 some place",
+            DeliveryLocation = new GeoLocation
+            {
+                Latitude = 39.743787586026905m,
+                Longitude = -105.00333787196135m
+            },
+            Id = "myId",
+            Items = new object[2],
+            TimeOrdered = DateTime.Now,
+            URL = "https://blah"
+        };
+        return _ordersService.AddOrder(o).Result;
     }
+    // [HttpGet]
+    // public async Task<List<Order>> Get() => await _service.GetAsync();
+    [HttpGet("{id:length(24)}")]
+    public async Task<ActionResult<Order>> Get(string id)
+    {
+        var droneRecord = await _ordersService.GetAsync(id);
+
+        if (droneRecord is null)
+        {
+            return NotFound();
+        }
+        return droneRecord;
+    }
+    /*[HttpGet("{id:length(24)}")]
+    public async Task<ActionResult<DroneRecord>> Get(string id)
+    {
+        var droneRecord = await _service.GetAsync(id);
+
+        if (droneRecord is null)
+        {
+            return NotFound();
+        }
+        return droneRecord;
+    }*/
+    [HttpPost("ping")]
+    public async Task<string> Ping(string s)
+    {
+        return $"hello, {s}";
+    }
+
+   
 }

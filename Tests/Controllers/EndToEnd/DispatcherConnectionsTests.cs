@@ -3,18 +3,18 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Dispatch.Gateways;
 using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
 using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
 using Domain.Entities;
 using Domain.Implementation.Gateways;
 using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
-using DroneDispatcher.Controllers;
-using DroneSimulator.Controllers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Moq.Protected;
+using SimDrone.Controllers;
 using Xunit;
 
 namespace Tests.Controllers.EndToEnd
@@ -31,7 +31,7 @@ namespace Tests.Controllers.EndToEnd
             var testDispatcherGateway = new DroneToDispatcherGateway();
             //testDispatcherGateway.changeHandler(mockedDispatcherHandler);
             // Mocking http server
-            var testDroneController = new DroneController(mockedDronesRepository, testDispatcherGateway);
+            var testDroneController = new SimDroneController(new DroneToDispatcherGateway());
             var response = await testDroneController.CompleteRegistration();
 
             var expected = new OkResult();
@@ -52,7 +52,7 @@ namespace Tests.Controllers.EndToEnd
             var mockedDronesRepo = new Mock<IDronesRepository>().Object;
             var mockedDispatcherGateway = new Mock<IDispatcherGateway>().Object;
             var testDroneGateway = new DroneGateway();
-            var testDroneController = new DroneController(mockedDronesRepo, mockedDispatcherGateway);
+            var testDroneController = new SimDroneController(new DroneToDispatcherGateway());
             var testDispatcherController = new DispatcherController(mockedDronesRepo,mockedOrdersRepo,testDroneGateway);
             var mockedDroneHandlerSetup = new Mock<HttpMessageHandler>();
             var mockedDispatcherHandlerSetup = new Mock<HttpMessageHandler>();

@@ -9,7 +9,7 @@ namespace SimDrone.Controllers;
 [Route("[controller]")]
 public class SimDroneController : ControllerBase
 {
-    private readonly Drone _drone;
+    private Drone _drone;
 
     public SimDroneController(DroneToDispatcherGateway droneToDispatcherGateway)
     {
@@ -37,23 +37,23 @@ public class SimDroneController : ControllerBase
         return $"hello, {s}";
     }
     
-    //
-    // [HttpPost("initregistration")]
-    // public async Task<IActionResult> InitializeRegistration()
-    // {
-    //     Console.WriteLine($"Initializing{_drone}");
-    //     // Todo, add logic to verify legitimacy of adding a drone.
-    //     return Ok("SimDrone successfully initialized");
-    // }
-    //
-    // [HttpPost("completeregistration")]
-    // public async Task<IActionResult> CompleteRegistration()
-    // {
-    //     return Ok();
-    // }
-    //
-    // public void changeDrone(SimDrone drone)
-    // {
-    //     _drone = drone;
-    // }
+    
+    [HttpPost("initregistration")]
+    public async Task<IActionResult> InitializeRegistration()
+    {
+        Console.WriteLine($"Initializing{_drone}");
+        // Todo, add logic to verify legitimacy of adding a drone.
+        return Ok("SimDrone successfully initialized");
+    }
+    
+    [HttpPost("completeregistration")]
+    public async Task<IActionResult> CompleteRegistration()
+    {
+        return Ok();
+    }
+    
+    public void changeDrone(Drone drone)
+    {
+        _drone = drone;
+    }
 }

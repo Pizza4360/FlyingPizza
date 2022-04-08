@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Text.Json.Serialization;
 using Domain.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -7,33 +7,40 @@ namespace Domain.Entities
 {
     public class DroneRecord : IBaseEntity
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        [BsonId, BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
 
+        [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
         public int BadgeNumber { get; set; }
-
+        
+        [BsonElement("OrderId"), JsonPropertyName("OrderId")]
         public string OrderId { get; set; }
-
-        public GeoLocation HomeLocation { get; set; }
-
-        [BsonElement("Location")]
+        
+        [BsonElement("Destination"), JsonPropertyName("Destination")]
+        public GeoLocation Destination { get; set; }
+        
+        [BsonElement("CurrentLocation"), JsonPropertyName("CurrentLocation")]
         public GeoLocation CurrentLocation { get; set; }
 
-        public GeoLocation Destination { get; set; }
+        [BsonElement("HomeLocation"), JsonPropertyName("HomeLocation")]
+        public GeoLocation HomeLocation { get; set; }
 
+        [BsonElement("State"), JsonPropertyName("State")]
         public string State { get; set; }
 
+        
+        [BsonElement("IpAddress"), JsonPropertyName("IpAddress")]
         public string IpAddress { get; set; }
 
+        [BsonElement("DispatcherUrl"), JsonPropertyName("DispatcherUrl")]
         public string DispatcherUrl { get; set; }
 
-        // String for debugging GetDronepurposes
+
         public override string ToString()
         {
-            return $"ID:{BadgeNumber}\n" +
+            return $"ID:{Id}" +
                    $"Currentlocation:{CurrentLocation}\n" +
-                   $"Destination:{Destination}\n" +
+                   $"Destination:{Destination}\n" + 
                    $"Status:{State}";
         }
 

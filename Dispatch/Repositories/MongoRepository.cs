@@ -10,9 +10,9 @@ namespace Dispatch.Repositories
     {
         private readonly IMongoCollection<DomainEntity> _collection;
 
-        public MongoRepository(IMongoDatabase database, string collectionName)
+        public MongoRepository(/*IMongoDatabase database, string collectionName*/)
         {
-            _collection = database.GetCollection<DomainEntity>(collectionName);
+            // _collection = database.GetCollection<DomainEntity>(collectionName);
         }
 
         public async Task<DomainEntity> CreateAsync(DomainEntity entity)
