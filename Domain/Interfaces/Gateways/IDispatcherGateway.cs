@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
+using Domain.DTO.DroneDispatchCommunication;
 
 namespace Domain.Interfaces.Gateways
 {
     public interface IDispatcherGateway
     {
-        public Task<bool> PutDroneState(UpdateStatusDto status);
+        public Task<bool> PatchDroneStatus(DroneStatusPatch state);
     }
 }

@@ -1,8 +1,9 @@
-﻿using Domain.Entities;
+﻿using System.Collections;
+using Domain.Entities;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace Dispatch.Repositories;
+namespace Dispatch.Services;
 public class FleetDatabaseSettings
 {
     public string ConnectionString { get; set; } = null!;
@@ -46,4 +47,22 @@ public class FleetService
     // {
     //     return await GetAllWhereAsync(drone => drone.State == DroneState.Ready);
     // }
+    public async Task<Dictionary<string, string>> GetAllIpAddresses()
+    {
+        var t = _collection.FindAsync(_ => true);
+        t.Wait();
+        var myList = new List<DictionaryEntry>();
+        var idIpMap = new Dictionary<string, string>();
+
+        while (await t.Result.MoveNextAsync())
+        {
+            t.Wait();
+            foreach (var item in t.Result.ToList())
+            {
+                if (item.Id == null) throw new Exception("old drones should always have an id...");
+               idIpMap.Add(item.Id, item.IpAddress);
+            }
+        }
+        return idIpMap;
+    }
 }

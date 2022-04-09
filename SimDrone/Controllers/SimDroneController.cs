@@ -1,7 +1,7 @@
-using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
+using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Domain.Implementation.Gateways;
 using Microsoft.AspNetCore.Mvc;
+using SimDrone.Gateways;
 
 namespace SimDrone.Controllers;
 
@@ -11,45 +11,57 @@ public class SimDroneController : ControllerBase
 {
     private Drone _drone;
 
-    public SimDroneController(DroneToDispatcherGateway droneToDispatcherGateway)
-    {
-        Console.WriteLine("made it \n\n\n\n!!!!!!!!!!!!!");
-        _drone = new Drone("123", new GeoLocation
-            {
-                Latitude = 39.74364421910773m,
-                Longitude = -105.00561147600774m
-            }, droneToDispatcherGateway,
-            5, "1", "something"); // TODO: initialize this from the drones repository, based on a drone id from environment variables
-        Console.WriteLine(_drone);
-    }
-
+    /// <summary>
+    /// Command a drone to deliver an order.
+    /// </summary>
+    /// <param name="order"></param>
+    /// <returns></returns>
     [HttpPost("deliver")]
-    public async Task<IActionResult> Deliver(DeliverOrderDto order)
+    public async Task<IActionResult> DeliverOrder(Delivery order)
     {
         Console.WriteLine($"Delivering {order}");
         _drone.DeliverOrder(order.OrderLocation);
         return Ok();
     }
     
+    /// <summary>
+    /// For testing purposes.
+    /// </summary>
+    /// <returns>"hello, world"</returns>
     [HttpPost("ping")]
-    public async Task<string> Ping(string s)
+    public async Task<string> Ping()
     {
-        return $"hello, {s}";
+        return "hello, world";
     }
     
-    
+    /// <summary>
+    /// This method is called when a drone has been pinged to be
+    /// initialized into a fleet. SimDroneController is idle until
+    /// this method is called.
+    /// </summary>
+    /// <returns></returns>
     [HttpPost("initregistration")]
     public async Task<IActionResult> InitializeRegistration()
     {
         Console.WriteLine($"Initializing{_drone}");
-        // Todo, add logic to verify legitimacy of adding a drone.
-        return Ok("SimDrone successfully initialized");
+        return Ok();
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="record"></param>
+    /// <param name="gateway"></param>
+    /// <returns></returns>
     [HttpPost("completeregistration")]
-    public async Task<IActionResult> CompleteRegistration()
+    public async Task<IActionResult> CompleteRegistration(DroneRecord record, DispatcherGateway gateway)
     {
-        return Ok();
+        Console.WriteLine("Generating simulated drone...");
+        _drone = new Drone(record, gateway);
+        // TODO: initialize this from the drones repository, based on a drone id from environment variables
+        var doneString = $"SimDrone successfully initialized.\nDrone -->{_drone}";
+        Console.WriteLine(doneString);
+        return Ok(doneString);
     }
     
     public void changeDrone(Drone drone)

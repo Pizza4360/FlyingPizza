@@ -10,7 +10,7 @@ namespace Domain.Interfaces.Repositories
         /// </summary>
         /// <param name="entity"></param>
         /// <returns>The domain entity, as it was created</returns>
-        public Task<DomainEntity> CreateAsync(DomainEntity entity);
+        public Task<bool> CreateAsync(DomainEntity entity);
 
         /// <summary>
         /// Retrieves a domain entity based on id
@@ -38,6 +38,6 @@ namespace Domain.Interfaces.Repositories
         /// </summary>
         /// <param name="entity"></param>
         /// <returns>The entity, as it was updated</returns>
-        public Task<DomainEntity> Update(DomainEntity entity);
+        public Task<bool> Update(DomainEntity entity);
     }
 }

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
-using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
-using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
+using Domain.DTO.DroneDispatchCommunication;
+using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
@@ -47,7 +46,7 @@ namespace Tests.Controllers.Unit
             var mockedDroneGateway = new Mock<IDroneGateway>().Object;
             var controller =
                 new DispatcherController(new DronesRepository(mockedDatabase, "bogus"), mockedOrdersRepo, mockedDroneGateway);
-            var result = await controller.UpdateStatus(new UpdateStatusDto());
+            var result = await controller.UpdateStatus(new DroneStatusPatch());
             var expected = new OkResult();
             result.Should().BeEquivalentTo(expected);
 

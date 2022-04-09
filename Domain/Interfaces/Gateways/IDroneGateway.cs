@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using Domain.Entities;
 using System.Threading.Tasks;
 
@@ -6,11 +7,18 @@ namespace Domain.Interfaces.Gateways
 {
     public interface IDroneGateway
     {
-        public Task<bool> StartRegistration(string droneIpAddress, int badgeNumber, string 
-        dispatcherUrl, GeoLocation homeLocation);
+        public Task<HttpResponseMessage> StartRegistration(
+            string droneIpAddress);
 
-        public Task<bool> AssignDelivery(string droneIpAddress, string orderNumber, GeoLocation orderLocation);
+        public Task<bool> AssignDelivery(
+            string droneId,
+            string orderNumber,
+            GeoLocation orderLocation);
 
-        public Task<bool> OKToSendStatus(string droneIpAddress);
+        public Task<HttpResponseMessage> AssignToFleet(
+            string droneIpAddress,
+            int badgeNumber,
+            string dispatcherUrl,
+            GeoLocation homeLocation);
     }
 }

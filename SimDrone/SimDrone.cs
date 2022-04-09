@@ -1,43 +1,45 @@
 using Domain;
-using Domain.DTO.DroneCommunicationDto.DroneToDispatcher;
+using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Domain.Implementation.Gateways;
-using Domain.Interfaces.Gateways;
+using SimDrone.Gateways;
 using static System.Decimal;
 
 namespace SimDrone;
 
 public class Drone : DroneRecord
 {
-    // Radius of the Earth used in calculating distance 
+    /// Radius of the Earth used in calculating distance 
     private const int EarthRadius = 6371;
 
-    // 20 MPH as meters per second
+    /// 20 MPH as meters per second
     private const double DroneSpeed = 0.0089408;
 
-    // Number of milliseconds to wait before updating SimDrone status
+    /// Number of milliseconds to wait before updating SimDrone status
     private const int DroneUpdateInterval = 2000;
 
-    // I don't think this makes sense but it's working...
+    /// I don't think this makes sense but it's working...
     private const decimal StepSize = DroneUpdateInterval / 1000.0m * (decimal) DroneSpeed;
 
-    private readonly DroneToDispatcherGateway _droneToDispatcher;
+    /// Allows the simulation to communicate with the dispatcher.
+    public DispatcherGateway DispatcherGateway { get; set; }
 
-    public Drone(string id, GeoLocation homeLocation, DroneToDispatcherGateway gateway, int badgeNumber, string ipAddress,
-        string url)
+    public Drone(DroneRecord record, DispatcherGateway gateway)
     {
-        Id = id;
-        HomeLocation = homeLocation;
-        _droneToDispatcher = gateway;
+        Id = record.Id;
+        HomeLocation = record.HomeLocation;
+        BadgeNumber = record.BadgeNumber;
+        IpAddress = record.IpAddress;
+        DispatcherGateway = gateway;
+        State = DroneState.Ready;
         CurrentLocation = HomeLocation;
         Destination = HomeLocation;
-        BadgeNumber = badgeNumber;
-        State = DroneState.Ready;
-        IpAddress = ipAddress;
-        DispatcherUrl = url;
     }
 
-    // Return an array of Geolocations representing a drone's delivery route
+    /// <summary>
+    ///  Return an array of Geolocations representing a drone's delivery route.
+    /// </summary>
+    /// <returns>The GeoLocations which will simulate drone movement over time.</returns>
+    /// <exception cref="ArgumentException"></exception>
     public GeoLocation[] GetRoute()
     {
         if (HomeLocation.Equals(Destination))
@@ -69,12 +71,13 @@ public class Drone : DroneRecord
 
         return route.ToArray();
     }
+    
 
     // Tell SimDrone to deliver an order
     public void DeliverOrder(GeoLocation customerLocation)
     {
         Destination = customerLocation;
-        UpdateDroneState(DroneState.Delivering);
+        UpdateStatus(DroneState.Delivering);
         var route = GetRoute();
         var s = string.Join(",", route.Select(x => $"{{{x.Latitude},{x.Longitude}}}").ToArray());
         Console.WriteLine($"{this},route:{s}"); // Debug
@@ -87,7 +90,7 @@ public class Drone : DroneRecord
         }
 
         Console.WriteLine("Order Delivered! Returning to Home...");
-        UpdateDroneState(DroneState.Returning);
+        UpdateStatus(DroneState.Returning);
         foreach (var location in route.Reverse())
         {
             UpdateLocation(location);
@@ -95,32 +98,35 @@ public class Drone : DroneRecord
             Thread.Sleep(DroneUpdateInterval);
         }
 
-        UpdateDroneState(DroneState.Ready);
+        UpdateStatus(DroneState.Ready);
         Console.WriteLine("Back home!"); // Debug
     }
+    
 
     // Send an DroneState update to DispatcherGateway
-    private void UpdateDroneState(string state)
+    private bool UpdateStatus(string state)
     {
         State = state;
-        _droneToDispatcher.PutDroneState(
-            new UpdateStatusDto
-            {
-                Id = Id,
-                State = $"{state}"
-            });
+        return PatchDroneStatus();
     }
 
+    private bool PatchDroneStatus()
+    {
+        var t = DispatcherGateway.PatchDroneStatus(
+            new DroneStatusPatch
+            {
+                Id = Id,
+                State = $"{State}"
+            });
+        t.Wait();
+        return t.IsCompletedSuccessfully;
+    }
+    
     // Send an Location update to DispatcherGateway
     private void UpdateLocation(GeoLocation location)
     {
         CurrentLocation = location;
-        _droneToDispatcher.PutDroneState(
-            new UpdateStatusDto
-            {
-                Id = Id,
-                Location = CurrentLocation
-            });
+        PatchDroneStatus();
     }
 
     public override string ToString()

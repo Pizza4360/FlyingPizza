@@ -1,6 +1,6 @@
 using System;
 
-namespace Domain.DTO.FrontEndDispatchCommunication.DispatcherToFrontEnd
+namespace Domain.DTO.FrontEndDispatchCommunication
 {
     public class RegistrationResult
     {

@@ -1,6 +1,6 @@
 using Domain.Entities;
 
-namespace Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher
+namespace Domain.DTO.FrontEndDispatchCommunication
 {
     public class AddOrderDTO
     {

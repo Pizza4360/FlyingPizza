@@ -4,8 +4,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Dispatch.Gateways;
-using Domain.DTO.DroneCommunicationDto.DispatcherToDrone;
-using Domain.DTO.FrontEndDispatchCommunication.FrontEndToDispatcher;
+using Domain.DTO.DroneDispatchCommunication;
+using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using Domain.Implementation.Gateways;
 using Domain.Interfaces.Gateways;
@@ -74,12 +74,12 @@ namespace Tests.Controllers.EndToEnd
             mockedDispatcherHandlerSetup.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x => x.RequestUri == new Uri($"http://test_ip/drone/register")), ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage {
                     StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(testDroneGateway.OKToSendStatus(testDroneInfo.IpAddress).IsCompletedSuccessfully.ToString()
+                    Content = new StringContent(testDroneGateway.AssignToFleet(testDroneInfo.IpAddress).IsCompletedSuccessfully.ToString()
                     )
                     // Assumed ok only for now
                 });
             var mockedDispatcherHandler = mockedDispatcherHandlerSetup.Object;
-            testDroneGateway.changeHandler(mockedDroneHandler);
+            DroneGateway.ChangeHandler(mockedDroneHandler);
             var testDispatcherGateway = new DroneToDispatcherGateway();
             testDispatcherGateway.ChangeHandler(mockedDispatcherHandler);
             // Mocking http server
@@ -99,7 +99,7 @@ namespace Tests.Controllers.EndToEnd
             var testDroneController = new DroneController(mockedDroneRepo, mockedDispatcherGateway);
             var testDroneGateway = new DroneGateway();
 
-            var testDeliverOrderDto = new DeliverOrderDto
+            var testDeliverOrderDto = new Delivery
             {
                OrderId = "testOrderId",
                OrderLocation = new GeoLocation
@@ -134,7 +134,7 @@ namespace Tests.Controllers.EndToEnd
                     // Assumed ok only for now
                 });
             var mockedHandler = mockedHandlerSetup.Object;
-            testDroneGateway.changeHandler(mockedHandler);
+            DroneGateway.ChangeHandler(mockedHandler);
             var testDrone = new DroneSimulator.Drone("test_badge", testDeliverOrderDto.OrderLocation, mockedDispatcherGateway,
                 Constants.BadgeNumber, "777 heaven circle", "localhost:5001");
             testDroneController.changeDrone(testDrone);

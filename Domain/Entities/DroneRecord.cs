@@ -1,17 +1,15 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Interfaces;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities
 {
-    public class DroneRecord : IBaseEntity
+    public class DroneRecord : BaseEntity
     {
-        [BsonId, BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
 
         [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
         public int BadgeNumber { get; set; }
+        
         
         [BsonElement("OrderId"), JsonPropertyName("OrderId")]
         public string OrderId { get; set; }

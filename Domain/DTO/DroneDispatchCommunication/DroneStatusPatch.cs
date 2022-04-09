@@ -1,8 +1,8 @@
 ﻿using Domain.Entities;
 
-namespace Domain.DTO.DroneCommunicationDto.DroneToDispatcher
+namespace Domain.DTO.DroneDispatchCommunication
 {
-    public class UpdateStatusDto
+    public class DroneStatusPatch
     {
         public GeoLocation Location { get; set; }
         public string State { get; set; }

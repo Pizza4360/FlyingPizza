@@ -1,7 +1,4 @@
-﻿using System;
-using Domain.Entities;
-
-namespace Domain.DTO.DroneCommunicationDto.DispatcherToDrone
+﻿namespace Domain.DTO.DroneDispatchCommunication
 {
     public class DroneRegistrationInfo
     {

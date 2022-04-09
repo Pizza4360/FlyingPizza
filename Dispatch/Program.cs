@@ -1,5 +1,5 @@
 using Dispatch.Gateways;
-using Dispatch.Repositories;
+using Dispatch.Services;
 using Domain.Interfaces.Gateways;
 
 
