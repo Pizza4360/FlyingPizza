@@ -1,8 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
-using Domain.DTO.DroneDispatchCommunication;
+﻿using Domain.DTO.DroneDispatchCommunication;
 using Domain.Interfaces.Gateways;
 
 namespace SimDrone.Gateways
@@ -17,6 +13,11 @@ namespace SimDrone.Gateways
             _httpClient = new HttpClient(handler);
         }
 
+        /// <summary>
+        /// This method gets called when a drone updates its status.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public async Task<bool> PatchDroneStatus(DroneStatusPatch state)
         {
             Console.WriteLine($"DispatcherGateway.UpdateDroneStatus({state})");

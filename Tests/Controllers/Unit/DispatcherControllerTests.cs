@@ -30,7 +30,7 @@ namespace Tests.Controllers.Unit
             {
                 DeliveryAddress = "yo mama",
                 TimeDelivered = DateTimeOffset.UtcNow,
-                Id = "some stuff",
+                ID = "some stuff",
                 TimeOrdered = DateTimeOffset.UtcNow,
                 DeliveryLocation = testLocation,
                 CustomerName = "bobby"
@@ -157,7 +157,7 @@ namespace Tests.Controllers.Unit
                 State = "on fire",
                 OrderId = "good enough",
                 DispatcherUrl = "test_url",
-                Id = "some stuff",
+                ID = "some stuff",
                 HomeLocation = testLocation
             }} as IEnumerable<Domain.Entities.DroneRecord>));
             var mockedDroneGatewaySetup = new Mock<IDroneGateway>();
@@ -224,7 +224,7 @@ namespace Tests.Controllers.Unit
             var testOrderNumber = "35";
             var testOrder = new Order
             {
-                Id = testOrderNumber,
+                ID = testOrderNumber,
                 CustomerName = "testee",
                 DeliveryLocation = new GeoLocation
                 {
@@ -260,7 +260,7 @@ namespace Tests.Controllers.Unit
             var testOrderNumber = "35";
             var testOrder = new Order
             {
-                Id = testOrderNumber,
+                ID = testOrderNumber,
                 CustomerName = "testee",
                 DeliveryLocation = new GeoLocation
                 {
@@ -322,7 +322,7 @@ namespace Tests.Controllers.Unit
             {
                 DeliveryAddress = "yo mama",
                 TimeDelivered = DateTimeOffset.UtcNow,
-                Id = testGuidString,
+                ID = testGuidString,
                 TimeOrdered = DateTimeOffset.UtcNow,
                 DeliveryLocation = testLocation,
                 CustomerName = "bobby"
@@ -387,7 +387,7 @@ namespace Tests.Controllers.Unit
             {
                 DeliveryAddress = "yo mama",
                 TimeDelivered = DateTimeOffset.UtcNow,
-                Id = testGuidString,
+                ID = testGuidString,
                 TimeOrdered = DateTimeOffset.UtcNow,
                 DeliveryLocation = testLocation,
                 CustomerName = "bobby"

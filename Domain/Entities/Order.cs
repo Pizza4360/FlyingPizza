@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.Json.Serialization;
 using Domain.Interfaces;
 using MongoDB.Bson;
@@ -9,9 +10,24 @@ using MongoDB.Bson.Serialization.IdGenerators;
 namespace Domain.Entities
 {
     [BsonDiscriminator("Order")]
-    public class Order : BaseEntity
+    public class Order
     {
+        [BsonElement("Id")]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string ID;
         
+        private static Random _random = new Random();
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        private const int IdLength = 24;
+            
+          
+        // https://stackoverflow.com/questions/1344221/how-can-i-generate-random-alphanumeric-strings
+        public static string GenerateNewID()
+        {
+            return new string(Enumerable.Repeat(chars, IdLength)
+                .Select(s => s[_random.Next(s.Length)]).ToArray());
+        }
         
         [BsonElement("Items")]
         [JsonPropertyName("Items")]
@@ -54,43 +70,5 @@ namespace Domain.Entities
         [BsonIgnoreIfNull]
         public bool HasBeenDelivered => TimeDelivered != null;
     }
-    [BsonDiscriminator("user")]
-    public class BrdUser
-    {
-        [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
-        public string ID { get; set; }
-
-        [BsonElement("username")]
-        public string UserNm { get; set; }
-
-        [BsonElement("email")]
-        public string EmailAdrs { get; set; }
-
-        public void get()
-        {
-            var o = new Order
-            {
-                CustomerName = "malc",
-                DeliveryAddress = "444 some place",
-                DeliveryLocation = new GeoLocation
-                {
-                    Latitude = 39.743787586026905m,
-                    Longitude = -105.00333787196135m
-                },
-                Id = BaseEntity.GenerateNewID(),
-                Items = new object[2],
-                TimeOrdered = DateTime.Now,
-                URL = "https://blah",
-                BadgeNumber = -1,
-                TimeDelivered = null
-            };
-
-            var bsonDocument = o.ToBsonDocument();
-            var jsonDocument = bsonDocument.ToJson();
-
-            Console.WriteLine ($"{bsonDocument}\n\n{jsonDocument}");
-        }
-    }
-    
 }
 

@@ -25,7 +25,7 @@ public class Drone : DroneRecord
 
     public Drone(DroneRecord record, DispatcherGateway gateway)
     {
-        Id = record.Id;
+        ID = record.ID;
         HomeLocation = record.HomeLocation;
         BadgeNumber = record.BadgeNumber;
         IpAddress = record.IpAddress;
@@ -115,7 +115,7 @@ public class Drone : DroneRecord
         var t = DispatcherGateway.PatchDroneStatus(
             new DroneStatusPatch
             {
-                Id = Id,
+                Id = ID,
                 State = $"{State}"
             });
         t.Wait();
@@ -131,7 +131,7 @@ public class Drone : DroneRecord
 
     public override string ToString()
     {
-        return $"SimDrone:{{Id:{Id},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
+        return $"SimDrone:{{Id:{ID},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
     }
 
     // Helper function for Haversine formula readability

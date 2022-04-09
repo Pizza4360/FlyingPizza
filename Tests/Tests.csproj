@@ -30,7 +30,6 @@
     <ProjectReference Include="..\Dispatcher\Dispatcher.csproj" />
     <ProjectReference Include="..\Dispatch\Dispatch.csproj" />
     <ProjectReference Include="..\SimDrone\SimDrone.csproj" />
-    <ProjectReference Include="..\SimulatedDrone\SimulatedDrone.csproj" />
     <ProjectReference Include="..\FrontEnd\FrontEnd.csproj" />
   </ItemGroup>
 

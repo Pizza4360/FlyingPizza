@@ -1,12 +1,10 @@
-﻿using System.Linq.Expressions;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Entities;
-using Order = Domain.Entities.Order;
+using Domain.Entities;
 
 namespace Dispatch.Services;
 public class OrdersDatabaseSettings
@@ -33,7 +31,7 @@ public class OrdersService: IOrdersRepository
     }
 
     public async Task<Order?> GetAsync(string id) =>
-        await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+        await _collection.Find(x => x.ID == id).FirstOrDefaultAsync();
 
     public async Task<bool>
         CreateAsync(Order newOrder)
@@ -50,7 +48,7 @@ public class OrdersService: IOrdersRepository
 
     public async Task<Order> 
         GetByIdAsync(string id) 
-        => _collection.FindAsync(x => x.Id.Equals(id)).Result.First();
+        => _collection.FindAsync(x => x.ID.Equals(id)).Result.First();
 
 
     public Task<IEnumerable<Order>> 
@@ -61,14 +59,14 @@ public class OrdersService: IOrdersRepository
         Delete(string id)
     {
         
-        return Task.FromResult(_collection.DeleteOne(x => x.Id.Equals(id)).IsAcknowledged);
+        return Task.FromResult(_collection.DeleteOne(x => x.ID.Equals(id)).IsAcknowledged);
     }
 
     public Task<bool> 
         Update(Order order)
     {
         var result = _collection.ReplaceOneAsync(
-            new BsonDocument("_id", order.Id),
+            new BsonDocument("_id", order.ID),
             options: new ReplaceOptions { IsUpsert = true },
             replacement: order);
         result.Wait();

@@ -28,41 +28,19 @@ public class FleetService
         await _collection.Find(_ => true).ToListAsync();
 
     public async Task<DroneRecord?> GetAsync(string id) =>
-        await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+        await _collection.Find(x => x.ID == id).FirstOrDefaultAsync();
 
     public async Task CreateAsync(DroneRecord newDroneRecord) =>
         await _collection.InsertOneAsync(newDroneRecord);
 
     public async Task UpdateAsync(string id, DroneRecord updatedDroneRecord) =>
-        await _collection.ReplaceOneAsync(x => x.Id == id, updatedDroneRecord);
+        await _collection.ReplaceOneAsync(x => x.ID == id, updatedDroneRecord);
 
     public async Task RemoveAsync(string id) =>
-        await _collection.DeleteOneAsync(x => x.Id == id);
-    // public async Task<DroneRecord> GetDroneOnOrderAsync(string orderNumber)
-    // {
-    //      return _collection.Find(drone => drone.OrderId == orderNumber).FirstOrDefault();
-    // }
-    //
-    // public async Task<IEnumerable<DroneRecord>> GetAllAvailableDronesAsync()
-    // {
-    //     return await GetAllWhereAsync(drone => drone.State == DroneState.Ready);
-    // }
-    public async Task<Dictionary<string, string>> GetAllIpAddresses()
-    {
-        var t = _collection.FindAsync(_ => true);
-        t.Wait();
-        var myList = new List<DictionaryEntry>();
-        var idIpMap = new Dictionary<string, string>();
-
-        while (await t.Result.MoveNextAsync())
-        {
-            t.Wait();
-            foreach (var item in t.Result.ToList())
-            {
-                if (item.Id == null) throw new Exception("old drones should always have an id...");
-               idIpMap.Add(item.Id, item.IpAddress);
-            }
-        }
-        return idIpMap;
-    }
+        await _collection.DeleteOneAsync(x => x.ID == id);
+   
+    public async Task<Dictionary<string, string>> GetAllIpAddresses() 
+        => (await _collection.Find(_ => true)
+                .ToListAsync())
+            .ToDictionary(droneRecord => droneRecord.ID, droneRecord => droneRecord.IpAddress);
 }

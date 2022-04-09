@@ -15,8 +15,8 @@ public class DispatchController : ControllerBase
     private readonly FleetService _droneRepo;
     private readonly OrdersService _orderRepo;
     private readonly DroneGateway _droneGateway;
-    private readonly ILogger<DispatchController> _logger;
-    private readonly GeoLocation HomeLocation;
+    // private readonly ILogger<DispatchController> _logger;
+    private readonly GeoLocation _homeLocation;
     private readonly Queue<Delivery> _unfilledOrders;
 
     /// <summary>
@@ -27,13 +27,24 @@ public class DispatchController : ControllerBase
     [HttpPost("ping")]
     public string Ping() => "I'm alive!";
 
-    public DispatchController(FleetService droneRepo, OrdersService orderRepo, GeoLocation homeLocation, DroneGateway droneGateway)
+    public DispatchController(
+        FleetService droneRepo,
+        // DroneGateway droneGateway,
+        OrdersService orderRepo
+        // GeoLocation homeLocation,
+        // Queue<Delivery> unfilledOrders
+        )
     {
         _droneRepo = droneRepo;
         _orderRepo = orderRepo;
-        _droneGateway = droneGateway;
+        _droneGateway = new DroneGateway();
+        _unfilledOrders = new Queue<Delivery>();
         _droneGateway.IdToIpMap = _droneRepo.GetAllIpAddresses().Result;
-        HomeLocation = homeLocation;
+        _homeLocation = new GeoLocation
+        {
+            Latitude = 39.74364421910773m,
+            Longitude = -105.00858710385576m
+        };
     }
     
 
@@ -46,7 +57,7 @@ public class DispatchController : ControllerBase
     [HttpPatch("complete_order")]
     public async Task<bool> 
         PatchDeliveryTime(Order order) 
-        => _orderRepo.PatchTimeCompleted(order.Id).Result;
+        => _orderRepo.PatchTimeCompleted(order.ID).Result;
 
     /// <summary>
      /// This method is invoked from the front to add a new drone to the fleet.
@@ -56,7 +67,6 @@ public class DispatchController : ControllerBase
      [HttpPost("register")]
      public async Task<bool> StartFleetRegistration(GetInitDroneResponse dto)
      {
-         
          Console.WriteLine("Attempting to initialize communication with drone...");
          var canBeInitialized = _droneGateway.StartRegistration($"{dto.IpAddress}/Drone/init_registration");
          if (!canBeInitialized.IsCompletedSuccessfully)
@@ -69,13 +79,13 @@ public class DispatchController : ControllerBase
          {
              BadgeNumber = dto.BadgeNumber,
              IpAddress = dto.IpAddress,
-             HomeLocation = HomeLocation,
+             HomeLocation = _homeLocation,
              DispatcherUrl = "//172.18.0.0:4000",
-             Destination = HomeLocation,
-             CurrentLocation = HomeLocation,
+             Destination = _homeLocation,
+             CurrentLocation = _homeLocation,
              OrderId = "",
              State = DroneState.Charging,
-             Id = "abcdefg"
+             ID = "abcdefg"
          };
 
          var response = await _droneGateway.AssignToFleet(newDrone.IpAddress, newDrone.BadgeNumber,

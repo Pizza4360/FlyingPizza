@@ -1,11 +1,16 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities
 {
-    public class DroneRecord : BaseEntity
+    public class DroneRecord
     {
+        [BsonId]
+        [BsonElement("Id")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string ID;
 
         [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
         public int BadgeNumber { get; set; }
@@ -36,7 +41,7 @@ namespace Domain.Entities
 
         public override string ToString()
         {
-            return $"ID:{Id}" +
+            return $"ID:{ID}" +
                    $"Currentlocation:{CurrentLocation}\n" +
                    $"Destination:{Destination}\n" + 
                    $"Status:{State}";
