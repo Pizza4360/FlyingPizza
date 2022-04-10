@@ -13,7 +13,7 @@ RUN dotnet restore "SimDrone/SimDrone.csproj"
 COPY . .
 WORKDIR "/src/SimDrone"
 RUN dotnet build "SimDrone.csproj" -c Release -o /app/build
-
+WORKDIR "../"
 FROM build AS publish
 RUN dotnet publish "SimDrone.csproj" -c Release -o /app/publish
 

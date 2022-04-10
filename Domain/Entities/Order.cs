@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.Json.Serialization;
 using Domain.DTO;
+using Domain.DTO.Shared;
 using Domain.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -13,10 +14,10 @@ namespace Domain.Entities
     [BsonDiscriminator("Order")]
     public class Order : BaseDTO
     {
-        [BsonElement("Id")]
         [BsonId]
+        [BsonElement("Id")]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string ID;
+        public string Id;
         
         private static Random _random = new Random();
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

@@ -1,18 +1,18 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.DTO;
-using Domain.Interfaces;
+using Domain.DTO.Shared;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities
 {
     
-    public class DroneRecord : BaseDTO
+    public class DroneRecord : BaseDTO, IBaseEntity
     {
         [BsonId]
         [BsonElement("Id")]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string ID;
+        public string Id { get; set; }
 
         [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
         public int BadgeNumber { get; set; }
@@ -43,7 +43,7 @@ namespace Domain.Entities
 
         public override string ToString()
         {
-            return $"ID:{ID}" +
+            return $"Id:{Id}" +
                    $"Currentlocation:{CurrentLocation}\n" +
                    $"Destination:{Destination}\n" + 
                    $"Status:{State}";
@@ -58,6 +58,6 @@ namespace Domain.Entities
                    oo.Destination.Equals(Destination) &&
                    oo.State.Equals(State) &&
                    oo.DispatcherUrl.Equals(DispatcherUrl);
-        }
+        } 
     }
 }

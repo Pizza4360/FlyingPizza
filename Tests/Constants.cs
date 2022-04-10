@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Domain.DTO.Shared;
+using Domain.Entities;
 
 namespace Tests
 {

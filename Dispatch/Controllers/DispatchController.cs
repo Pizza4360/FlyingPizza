@@ -2,8 +2,10 @@ using Dispatch.Services;
 using Domain;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
+using Domain.DTO.Shared;
 using Domain.Entities;
-using Domain.Gateways;
+using Domain.InterfaceImplementations.Gateways;
+using Domain.InterfaceImplementations.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Order = Domain.Entities.Order;
 
@@ -15,14 +17,14 @@ namespace Dispatch.Controllers
     {
         // Step 1, use use DispatchToDroneGateway to init registration
         [HttpPost("add_drone")]
-        public async Task<bool> AddDrone(GatewayDto dto)
+        public Task<bool> AddDrone(GatewayDto dto)
         {
             Console.WriteLine($"{dto.Url}");
-            return _dispatchToDroneGateway.InitRegistration(
+            return Task.FromResult(_dispatchToDroneGateway.InitRegistration(
                     dto.Url
                     , dto.Url
                     , GetNewBadgeNumber())
-                .Result;
+                .Result);
         }
 
         private int GetNewBadgeNumber()
@@ -38,7 +40,7 @@ namespace Dispatch.Controllers
         public async Task<bool> CompleteRegistration(InitDrone dto)
         {
             Console.WriteLine($"{dto}");
-            await PatchDroneStatus(dto.FistStatusUpdate);
+            await PatchDroneStatus(dto.FistStatusUpdateRequestUpdate);
             return _dispatchToDroneGateway.CompleteRegistration(dto.Record)
                 .Result.Content.Headers.ToString()
                 .Contains("hello, world");
@@ -46,20 +48,20 @@ namespace Dispatch.Controllers
 
 
         [HttpGet("badge_request")]
-        public async Task<int> BadgeResponse()
+        public Task<int> BadgeResponse()
         {
-            return 0;
+            return Task.FromResult(0);
         }
 
 
-        private readonly FleetService _droneRepo;
-        private readonly OrdersService _orderRepo;
+        private readonly FleetRepository _droneRepo;
+        private readonly OrderRepository _orderRepo;
 
-        private DispatchToDroneGateway _dispatchToDroneGateway;
+        private readonly DispatchToDroneGateway _dispatchToDroneGateway;
 
         // private readonly ILogger<DispatchController> _logger;
         private readonly GeoLocation _homeLocation;
-        private readonly Queue<Delivery> _unfilledOrders;
+        private readonly Queue<AssignDeliveryRequest> _unfilledOrders;
 
         /// <summary>
         /// Call this method for debugging and testing if the dispatcher
@@ -70,19 +72,18 @@ namespace Dispatch.Controllers
         public string Ping() => "I'm alive!";
 
         public DispatchController(
-        FleetService droneRepo,
+        FleetRepository droneRepo,
         // DroneGateway droneGateway,
-        OrdersService orderRepo
+        OrderRepository orderRepo
         // GeoLocation homeLocation,
-        // Queue<Delivery> unfilledOrders
+        // Queue<AssignDeliveryRequest> unfilledOrders
         )
         {
             _droneRepo = droneRepo;
             _orderRepo = orderRepo;
             _dispatchToDroneGateway = new DispatchToDroneGateway();
-            _unfilledOrders = new Queue<Delivery>();
-            _dispatchToDroneGateway.IdToIpMap = _droneRepo.GetAllIpAddresses()
-                .Result;
+            _unfilledOrders = new Queue<AssignDeliveryRequest>();
+            _dispatchToDroneGateway.IdToIpMap = _droneRepo.GetAllAddresses().Result;
             _homeLocation = new GeoLocation
             {
                 Latitude = 39.74364421910773m
@@ -98,24 +99,24 @@ namespace Dispatch.Controllers
         /// <param name="order"></param>
         /// <returns></returns>
         [HttpPatch("complete_order")]
-        public async Task<bool>
+        public Task<bool>
             PatchDeliveryTime(Order order)
-            => _orderRepo.PatchTimeCompleted(order.ID)
-                .Result;
+            => Task.FromResult(_orderRepo.PatchTimeCompleted(order.Id)
+                .Result);
 
         /// <summary>
         /// This method is invoked from the front to add a new drone to the fleet.
         /// </summary>
-        /// <param name="dto"></param>
+        /// <param name="request"></param>
         /// <returns>`true` only if the handshake is completed and the drone is initialized.</returns>
         [HttpPost("register")]
-        public async Task<bool> StartFleetRegistration(InitGatewayPost dto)
+        public async Task<bool> StartFleetRegistration(InitDroneRequest request)
         {
-            Console.WriteLine($"received \"{dto}\"" +
+            Console.WriteLine($"received \"{request}\"" +
                 "Attempting to initialize communication with drone...");
             var canBeInitialized
                 = _dispatchToDroneGateway.StartRegistration(
-                    $"{dto.Url}/Drone/init_registration");
+                    $"{request.Url}/Drone/init_registration");
             if (!canBeInitialized.IsCompletedSuccessfully)
             {
                 Console.WriteLine("The drone could not be initialized...");
@@ -125,15 +126,15 @@ namespace Dispatch.Controllers
             // Todo make a new guid and make sure it is different from all other drones
             var newDrone = new DroneRecord
             {
-                BadgeNumber = dto.BadgeNumber
-                , IpAddress = dto.Url
+                BadgeNumber = request.BadgeNumber
+                , IpAddress = request.Url
                 , HomeLocation = _homeLocation
                 , DispatcherUrl = "//172.18.0.0:4000"
                 , Destination = _homeLocation
                 , CurrentLocation = _homeLocation
                 , OrderId = ""
                 , State = DroneState.Charging
-                , ID = "abcdefg"
+                , Id = "abcdefg"
             };
 
             var response = await _dispatchToDroneGateway.AssignToFleet(
@@ -155,12 +156,12 @@ namespace Dispatch.Controllers
 
 
         [HttpPost("first_status")]
-        public async Task<bool>
-            Post(DroneStatusPatch stateDto)
+        public Task<bool>
+            Post(DroneStatusUpdateRequest stateDto)
         {
             bool firstStatusOk = PatchDroneStatus(stateDto)
                 .Result;
-            return firstStatusOk;
+            return Task.FromResult(firstStatusOk);
         }
 
         /// If a drone updates its status, patch its status.
@@ -168,17 +169,19 @@ namespace Dispatch.Controllers
         /// it should be assigned to this drone.
         [HttpPatch("update_status")]
         public async Task<bool>
-            PatchDroneStatus(DroneStatusPatch stateDto)
+            PatchDroneStatus(DroneStatusUpdateRequest stateDto)
         {
-            if (stateDto.State == DroneState.Ready &&
-                _unfilledOrders.Count > 0)
+            if (stateDto.State != DroneState.Ready ||
+                _unfilledOrders.Count <= 0)
             {
-                var orderDto = _unfilledOrders.Dequeue();
-                _dispatchToDroneGateway.AssignDelivery(
-                    stateDto.Id
-                    , orderDto.OrderId
-                    , orderDto.OrderLocation);
+                return _orderRepo.PatchDroneStatus(stateDto)
+                    .Result;
             }
+            var orderDto = _unfilledOrders.Dequeue();
+            await _dispatchToDroneGateway.AssignDelivery(
+                stateDto.Id
+                , orderDto.OrderId
+                , orderDto.OrderLocation);
 
             return _orderRepo.PatchDroneStatus(stateDto)
                 .Result;
@@ -205,19 +208,3 @@ namespace Dispatch.Controllers
     }
 }
 
-namespace Domain.DTO
-{
-    public class GatewayDto
-    {
-        public string Url { get; set; }
-        public override string ToString() => $"{{Url: {Url}}}";
-    }
-
-    public class InitDrone
-    {
-        public DroneRecord Record { get; set; }
-        public DroneStatusPatch FistStatusUpdate { get; set; }
-        public override string ToString() => $"{{Record: {Record},FistStatusUpdate:{FistStatusUpdate}}}";
-
-    }
-}

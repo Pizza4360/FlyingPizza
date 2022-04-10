@@ -1,6 +1,6 @@
+using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
-using Domain.Entities;
-using Domain.Gateways;
+using Domain.InterfaceImplementations.Gateways;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SimDrone.Controllers
@@ -20,7 +20,7 @@ namespace SimDrone.Controllers
         /// <param name="order"></param>
         /// <returns></returns>
         [HttpPost("deliver")]
-        public async Task<IActionResult> DeliverOrder(Delivery order)
+        public async Task<IActionResult> DeliverOrder(AssignDeliveryRequest order)
         {
             Console.WriteLine($"Delivering {order}");
             _drone.DeliverOrder(order.OrderLocation);
@@ -36,8 +36,8 @@ namespace SimDrone.Controllers
         // Step 3, drone saves the incoming url in a new
         // DroneToDispatcherGateway object, then uses it
         // to give initial state and location back
-        [HttpPost("initregistration")]
-        public async Task<bool> InitializeRegistration(InitGatewayPost initInfo)
+        [HttpPost("init_registration")]
+        public async Task<bool> InitializeRegistration(InitDroneRequest initInfo)
         {
             _gateway = new DroneToDispatchGateway
             {
@@ -81,20 +81,5 @@ namespace SimDrone.Controllers
             Console.WriteLine(doneString);
             return Ok(doneString);
         }
-    }
-}
-
-namespace Domain.DTO.DroneDispatchCommunication
-{
-
-    public class CompleteRegistrationPost
-    {
-       public DroneRecord Record { get; set; }
-       public DroneToDispatchGateway Gateway { get; set; }
-    }
-    public class OkToCompletePost
-    {
-        public Task<HttpContent> Message { get; set; }
-        public bool DoComplete { get; set; }
     }
 }

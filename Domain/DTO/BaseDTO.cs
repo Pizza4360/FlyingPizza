@@ -1,8 +1,15 @@
-﻿namespace Domain.DTO
+﻿using System.Runtime.Serialization;
+
+namespace Domain.DTO
 {
-    public class BaseDTO
+    public class BaseDTO : IJsonString
     {
-        public override string ToString()
+        public string ToJsonString()
             => Newtonsoft.Json.JsonConvert.SerializeObject(this);
+    }
+
+    public interface IJsonString
+    {
+        public string ToJsonString();
     }
 }

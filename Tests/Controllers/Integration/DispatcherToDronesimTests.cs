@@ -20,7 +20,7 @@ namespace Tests.Controllers.Integration
         public async Task dispatcher_gateway_should_update_status_with_dispatcher()
         {
             var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
-            var testUpdateDto = new DroneStatusPatch
+            var testUpdateDto = new DroneStatusUpdateRequest
             {
                 Id = "something",
                 Location = new GeoLocation
@@ -48,7 +48,7 @@ namespace Tests.Controllers.Integration
 
           
             
-            var response = await testDispatcherGateway.PatchDroneStatus(testUpdateDto);
+            var response = await testDispatcherGateway.DroneStatusUpdateRequest(testUpdateDto);
             response.Should().BeTrue();
         }
         

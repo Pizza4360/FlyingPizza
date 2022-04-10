@@ -30,10 +30,10 @@ public class FleetRepositoryServiceTest
         #region repositories
 
         Console.WriteLine($"{builder.Configuration.GetSection("FleetDb")}");
-        builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-        builder.Services.AddSingleton<OrdersService>();
-        builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
-        builder.Services.AddSingleton<FleetService>();
+        builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
+        builder.Services.AddSingleton<FleetRepository>();
+        builder.Services.Configure<RepositorySettings>(builder.Configuration.GetSection("FleetDb"));
+        builder.Services.AddSingleton<FleetRepository>();
         builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
         builder.Services.AddScoped<IDroneGateway>(_ => new DispatchToDroneGateway());
@@ -58,7 +58,7 @@ public class FleetRepositoryServiceTest
     [Fact]
     public void TestAddDroneHandshake()
     {
-        var dotNetObj = new InitGatewayPost
+        var dotNetObj = new InitDroneRequest
         {
             Url = "localhost:7100"
             , BadgeNumber = 1

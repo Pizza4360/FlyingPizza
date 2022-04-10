@@ -1,7 +1,8 @@
 using Domain;
 using Domain.DTO.DroneDispatchCommunication;
+using Domain.DTO.Shared;
 using Domain.Entities;
-using Domain.Gateways;
+using Domain.InterfaceImplementations.Gateways;
 using static System.Decimal;
 
 namespace SimDrone;
@@ -25,7 +26,7 @@ public class Drone : DroneRecord
 
     public Drone(DroneRecord record, DroneToDispatchGateway gateway)
     {
-        ID = record.ID;
+        Id = record.Id;
         HomeLocation = record.HomeLocation;
         BadgeNumber = record.BadgeNumber;
         IpAddress = record.IpAddress;
@@ -44,7 +45,7 @@ public class Drone : DroneRecord
     {
         if (HomeLocation.Equals(Destination))
             throw new ArgumentException(
-                "Destination cannot be the same as the Delivery station!");
+                "Destination cannot be the same as the AssignDeliveryRequest station!");
 
         var distance = Haversine(ToDouble(HomeLocation.Latitude), ToDouble(HomeLocation.Longitude),
             ToDouble(Destination.Latitude), ToDouble(Destination.Longitude));
@@ -113,9 +114,9 @@ public class Drone : DroneRecord
     private bool PatchDroneStatus()
     {
         var t = DroneToDispatchGateway.PatchDroneStatus(
-            new DroneStatusPatch
+            new DroneStatusUpdateRequest
             {
-                Id = ID,
+                Id = Id,
                 State = $"{State}"
             });
         t.Wait();
@@ -131,7 +132,7 @@ public class Drone : DroneRecord
 
     public override string ToString()
     {
-        return $"SimDrone:{{Id:{ID},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
+        return $"SimDrone:{{Id:{Id},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
     }
 
     // Helper function for Haversine formula readability

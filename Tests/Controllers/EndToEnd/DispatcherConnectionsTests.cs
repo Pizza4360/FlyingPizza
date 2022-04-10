@@ -99,7 +99,7 @@ namespace Tests.Controllers.EndToEnd
             var testDroneController = new DroneController(mockedDroneRepo, mockedDispatcherGateway);
             var testDroneGateway = new DispatchToDroneGateway();
 
-            var testDeliverOrderDto = new Delivery
+            var testDeliverOrderDto = new AssignDeliveryRequest
             {
                OrderId = "testOrderId",
                OrderLocation = new GeoLocation
@@ -108,7 +108,7 @@ namespace Tests.Controllers.EndToEnd
                    Longitude = -105.0010m
                }
             };
-            var testOrderDto = new AddOrderDTO
+            var testOrderDto = new AddOrderRequestDTO
             {
                 DeliveryLocation = new GeoLocation
                 {

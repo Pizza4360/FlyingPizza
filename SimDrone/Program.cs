@@ -1,4 +1,4 @@
-using Domain.Gateways;
+using Domain.InterfaceImplementations.Gateways;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
