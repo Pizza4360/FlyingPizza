@@ -33,6 +33,17 @@ namespace Domain.Gateways
             return ressponse.Content.Headers.ToString()
                 .Contains("true");
         }
+        
+        // Step 6, use the incoming DroneRecord to create a SimDrone.Drone
+        // object, and use DispatchToDroneGateway to POST it to the
+        // DroneController
+        public async Task<HttpResponseMessage> CompleteRegistration(DroneRecord record)
+        {
+            var body = JsonContent.Create(record);
+            var requestUri = new Uri($"http://{_droneUrl}/drone/start_drone");
+            // response should be good
+            return await client.PostAsync(requestUri, body);
+        }
 
         /// <summary>
         /// This method is called to begin the delivery process.
@@ -103,22 +114,12 @@ namespace Domain.Gateways
             return await client.PostAsync(requestUri, body);
         }
 
+
         // public static void ChangeHandler(HttpMessageHandler handler)
         // {
         //     // Added for mocking reasons, no way around it
         //     HttpClient = new HttpClient(handler);
         // }
-
-        // Step 6, use the incoming DroneRecord to create a SimDrone.Drone
-        // object, and use DispatchToDroneGateway to POST it to the
-        // DroneController
-        public async Task<HttpResponseMessage> CompleteRegistration(DroneRecord record)
-        {
-            var body = JsonContent.Create(record);
-            var requestUri = new Uri($"http://{_droneUrl}/drone/complete_registration");
-            // response should be good
-            return await client.PostAsync(requestUri, body);
-        }
     }
 }
 

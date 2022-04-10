@@ -53,8 +53,8 @@ namespace SimDrone.Controllers
         /// </summary>
         /// <returns>"hello, world"</returns>
         // Step 7, receive the BadgeNumberAndHome through a drone object
-        [HttpPost("complete_registration")]
-        public async Task<OkObjectResult> CompleteRegistration(SimDrone.Drone drone)
+        [HttpPost("start_drone")]
+        public async Task<OkObjectResult> StartDrone(Drone drone)
         {
             _drone = drone;
             return Ok("hello, world");
