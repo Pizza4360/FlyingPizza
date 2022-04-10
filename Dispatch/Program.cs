@@ -1,5 +1,5 @@
-using Dispatch.Gateways;
 using Dispatch.Services;
+using Domain.Gateways;
 using Domain.Interfaces.Gateways;
 
 
@@ -24,7 +24,7 @@ builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSecti
 builder.Services.AddSingleton<FleetService>();
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
-builder.Services.AddScoped<IDroneGateway>(_ => new DroneGateway());
+builder.Services.AddScoped<IDroneGateway>(_ => new DispatchToDroneGateway());
 #endregion repositories
 
 var app = builder.Build();

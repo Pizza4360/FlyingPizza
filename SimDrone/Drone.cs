@@ -1,7 +1,7 @@
 using Domain;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using SimDrone.Gateways;
+using Domain.Gateways;
 using static System.Decimal;
 
 namespace SimDrone;
@@ -21,15 +21,15 @@ public class Drone : DroneRecord
     private const decimal StepSize = DroneUpdateInterval / 1000.0m * (decimal) DroneSpeed;
 
     /// Allows the simulation to communicate with the dispatcher.
-    public DispatcherGateway DispatcherGateway { get; set; }
+    public DroneToDispatchGateway DroneToDispatchGateway { get; set; }
 
-    public Drone(DroneRecord record, DispatcherGateway gateway)
+    public Drone(DroneRecord record, DroneToDispatchGateway gateway)
     {
         ID = record.ID;
         HomeLocation = record.HomeLocation;
         BadgeNumber = record.BadgeNumber;
         IpAddress = record.IpAddress;
-        DispatcherGateway = gateway;
+        DroneToDispatchGateway = gateway;
         State = DroneState.Ready;
         CurrentLocation = HomeLocation;
         Destination = HomeLocation;
@@ -112,7 +112,7 @@ public class Drone : DroneRecord
 
     private bool PatchDroneStatus()
     {
-        var t = DispatcherGateway.PatchDroneStatus(
+        var t = DroneToDispatchGateway.PatchDroneStatus(
             new DroneStatusPatch
             {
                 Id = ID,

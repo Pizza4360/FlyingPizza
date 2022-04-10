@@ -1,13 +1,38 @@
-﻿using Domain.DTO.DroneDispatchCommunication;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+using Domain.DTO;
+using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
 using Domain.Interfaces.Gateways;
 
-namespace Dispatch.Gateways
+namespace Domain.Gateways
 {
-    public class DroneGateway : IDroneGateway
+    public class DispatchToDroneGateway : IDroneGateway
     {
-        private static HttpClient HttpClient = new();
-        public Dictionary<string, string> IdToIpMap { get; set; } = new();
+        private HttpClient client = new HttpClient();
+        private string _droneUrl;
+        public Dictionary<string, string> IdToIpMap { get; set; } = new Dictionary<string, string>();
+        
+        // Step 2, DispatchToDroneGateway saves the drone's url and
+        // sends a POST to the drone to give it a DroneToDispatherGateway
+        public async Task<bool> InitRegistration(
+        string droneUrl, DroneToDispatchGateway gateway, int badgeNumber)
+        {
+            _droneUrl = droneUrl;
+            var body = JsonContent.Create(new InitGatewayPost
+            {
+                Gateway = gateway
+                , BadgeNumber = badgeNumber
+            });
+            var requestUri = new Uri($"http://{droneUrl}/drone/initregistration");
+            // response should be good
+            var ressponse = await client.PostAsync(requestUri, body);
+            return ressponse.Content.Headers.ToString()
+                .Contains("true");
+        }
 
         /// <summary>
         /// This method is called to begin the delivery process.
@@ -28,7 +53,7 @@ namespace Dispatch.Gateways
 
             var requestUri = new Uri($"http://{droneIp}/Drone/deliver");
             Console.WriteLine($"DroneGateway.AssignDelivery - request uri={requestUri}"); // Debug
-            var response = await HttpClient.PostAsync(requestUri, body);
+            var response = await client.PostAsync(requestUri, body);
             Console.WriteLine($"DroneGateway.AssignDelivery - response={response}"); // Debug
             return response.IsSuccessStatusCode;
         }
@@ -45,7 +70,7 @@ namespace Dispatch.Gateways
             var body = JsonContent.Create("JOIN US!!!");
             var requestUri = new Uri($"http://{droneIpAddress}/drone/initregistration");
             // response should be good
-            var response = HttpClient.PostAsync(requestUri, body);
+            var response = client.PostAsync(requestUri, body);
             response.Wait();
             return response;
         }
@@ -75,13 +100,33 @@ namespace Dispatch.Gateways
                 HomeLocation = homeLocation
             });
             var requestUri = new Uri($"http://{droneIpAddress}/Drone/completeregistration");
-            return await HttpClient.PostAsync(requestUri, body);
+            return await client.PostAsync(requestUri, body);
         }
 
-        public static void ChangeHandler(HttpMessageHandler handler)
+        // public static void ChangeHandler(HttpMessageHandler handler)
+        // {
+        //     // Added for mocking reasons, no way around it
+        //     HttpClient = new HttpClient(handler);
+        // }
+
+        // Step 6, use the incoming DroneRecord to create a SimDrone.Drone
+        // object, and use DispatchToDroneGateway to POST it to the
+        // DroneController
+        public async Task<HttpResponseMessage> CompleteRegistration(DroneRecord record)
         {
-            // Added for mocking reasons, no way around it
-            HttpClient = new HttpClient(handler);
+            var body = JsonContent.Create(record);
+            var requestUri = new Uri($"http://{_droneUrl}/drone/complete_registration");
+            // response should be good
+            return await client.PostAsync(requestUri, body);
         }
+    }
+}
+
+namespace Domain.DTO
+{
+    public class BadgeNumberAndHome
+    {
+        public int BadgeNumber { get; set; } 
+        public GeoLocation HomeLocation { get; set; }
     }
 }
