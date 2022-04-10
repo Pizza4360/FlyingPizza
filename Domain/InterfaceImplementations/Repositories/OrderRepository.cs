@@ -26,6 +26,7 @@ public class OrderRepository
         _collection = mongoDatabase.GetCollection<Order>(
             ordersSettings.Value.CollectionName);
     }
+    
    public async Task<Order?> GetAsync(string id) =>
         await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
@@ -80,32 +81,5 @@ public class OrderRepository
         var token = CancellationToken.None;
         var result = await _collection.UpdateOneAsync( Builders<Order>.Filter.Eq("_id", id), updateDefinition,options, token);
         return result.IsAcknowledged;
-    }
-
-    public async Task<bool>
-        PatchDroneStatus(DroneStatusUpdateRequest dto)
-    {
-        var doc = ToBson($"{{Id: {dto.Id}, Id:{dto.Id}, CurrentLocation:{dto.Location}}}");
-        var updateDefinition = BsonDocumentUpdateDefinition(doc);
-        var options = new UpdateOptions();
-        var token = CancellationToken.None;
-        var result = await _collection.UpdateOneAsync( 
-            Filter(dto),
-            updateDefinition,options, token);
-        return result.IsAcknowledged;
-    }
-    
-    private static BsonDocument 
-        ToBson(string s) 
-        =>  JsonDocument.Parse(s).ToBsonDocument();
-
-    private static BsonDocumentUpdateDefinition<Order>
-        BsonDocumentUpdateDefinition(BsonValue doc) 
-        => new (new BsonDocument("$set", doc));
-
-    private static FilterDefinition<Order> 
-        Filter(DroneStatusUpdateRequest dto)
-    {
-        return Builders<Order>.Filter.Eq("_id", dto.Id);
     }
 }

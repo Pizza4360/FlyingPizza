@@ -19,7 +19,7 @@ namespace Domain.InterfaceImplementations.Gateways
         
         // Step 2, DispatchToDroneGateway saves the drone's url and
         // sends a POST to the drone to give it a DroneToDispatherGateway
-        public async Task<bool> InitRegistration(
+        public async Task<bool> InitializeRegistration(
         string droneUrl, string gatewayUrl, int badgeNumber)
         {
             Url = droneUrl;
@@ -28,7 +28,7 @@ namespace Domain.InterfaceImplementations.Gateways
                 Url = gatewayUrl
                 , BadgeNumber = badgeNumber
             });
-            var requestUri = new Uri($"http://{droneUrl}/Drone/init_registration");
+            var requestUri = new Uri($"http://{droneUrl}/Drone/InitializeRegistration");
             // response should be good
             var ressponse = await client.PostAsync(requestUri, body);
             return ressponse.Content.Headers.ToString()
@@ -41,7 +41,7 @@ namespace Domain.InterfaceImplementations.Gateways
         public async Task<HttpResponseMessage> CompleteRegistration(DroneRecord record)
         {
             var body = JsonContent.Create(record);
-            var requestUri = new Uri($"http://{Url}/drone/start_drone");
+            var requestUri = new Uri($"http://{Url}/drone/StartDrone");
             // response should be good
             return await client.PostAsync(requestUri, body);
         }
@@ -111,7 +111,7 @@ namespace Domain.InterfaceImplementations.Gateways
                 DispatcherUrl = dispatcherUrl,
                 HomeLocation = homeLocation
             });
-            var requestUri = new Uri($"http://{droneIpAddress}/Drone/completeregistration");
+            var requestUri = new Uri($"http://{droneIpAddress}/Drone/CompleteRegistration");
             return await client.PostAsync(requestUri, body);
         }
 

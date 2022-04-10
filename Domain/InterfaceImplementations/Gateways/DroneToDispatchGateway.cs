@@ -12,7 +12,7 @@ namespace Domain.InterfaceImplementations.Gateways
     {
         // Step 4, DroneToDispatchGateway takes in initial info
         // to create a GeoLocation and then POST its first status update 
-        public bool PostDroneStatus(int latitude, int longitude, string ready)
+        public bool PostFirstDroneStatus(int latitude, int longitude, string ready)
         {
             var patch
                 = new DroneStatusUpdateRequest
@@ -25,7 +25,7 @@ namespace Domain.InterfaceImplementations.Gateways
                     State = ready
                 };
             var body = JsonContent.Create($"{patch}");
-            return _httpClient.PostAsync($"http://{Url}/dispatch/send_init_status", body).Result.IsSuccessStatusCode;
+            return _httpClient.PostAsync($"http://{Url}/dispatch/SendInitialStatus", body).Result.IsSuccessStatusCode;
         }
         
         private static HttpClient _httpClient = new HttpClient();
@@ -39,16 +39,23 @@ namespace Domain.InterfaceImplementations.Gateways
             _httpClient = new HttpClient(handler);
         }
 
+        public async Task<Task<HttpResponseMessage>> CompleteOrder(string id)
+        {
+            var completedOrderDto = new CompleteOrderRequest
+            {
+               Time = DateTime.Now,
+               OrderId = id
+            };
+            return SendMessage("CompleteOrder", completedOrderDto);
+        }
         /// <summary>
         /// This method gets called when a drone updates its status.
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public async Task<bool> PatchDroneStatus(DroneStatusUpdateRequest state)
+        public async Task<Task<HttpResponseMessage>> PatchDroneStatus(DroneStatusUpdateRequest state)
         {
-            var response = SendMessage(Url, state);
-            Console.WriteLine($"DispatcherGateway.UpdateDroneStatus - response={response}"); // Debug
-            return response.Result.IsSuccessStatusCode;
+            return SendMessage(Url, state);
         }
     }
 }

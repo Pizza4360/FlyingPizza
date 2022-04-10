@@ -1,9 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
 using Domain.InterfaceImplementations.Repositories;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Dispatch.Services;
@@ -41,4 +46,31 @@ public class FleetRepository
         => (await _collection.Find(_ => true)
                 .ToListAsync())
             .ToDictionary(droneRecord => droneRecord.Id, droneRecord => droneRecord.IpAddress);
+
+    public async Task<bool> PatchDroneStatus(DroneStatusUpdateRequest stateDto)
+    {
+        // Todo : fixmee!!!
+        var doc = ToBson(stateDto.ToJsonString());
+        var updateDefinition = BsonDocumentUpdateDefinition(doc);
+        var options = new UpdateOptions();
+        var token = CancellationToken.None;
+        var result = await _collection.UpdateOneAsync( 
+            Filter(stateDto),
+            updateDefinition,options, token);
+        return result.IsAcknowledged;
+    }
+    
+    private static BsonDocumentUpdateDefinition<Order>
+        BsonDocumentUpdateDefinition(BsonValue doc) 
+        => new (new BsonDocument("$set", doc));
+    
+    private static BsonDocument 
+        ToBson(string s) 
+        =>  JsonDocument.Parse(s).ToBsonDocument();
+
+    private static FilterDefinition<Order> 
+        Filter(DroneStatusUpdateRequest dto)
+    {
+        return Builders<Order>.Filter.Eq("_id", dto.Id);
+    }
 }

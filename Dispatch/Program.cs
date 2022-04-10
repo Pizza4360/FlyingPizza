@@ -1,3 +1,4 @@
+using Dispatch.Services;
 using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceImplementations.Gateways;
 using Domain.InterfaceImplementations.Repositories;

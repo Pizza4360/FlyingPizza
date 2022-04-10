@@ -77,7 +77,7 @@ public class FleetRepositoryServiceTest
             Url = "localhost:"
         };
         var controller = new SimDroneController();
-        var result = dispatch2Drone.InitRegistration(
+        var result = dispatch2Drone.InitializeRegistration(
             "localhost:7100"
             , "localhost:7101"
             , 1).Result;

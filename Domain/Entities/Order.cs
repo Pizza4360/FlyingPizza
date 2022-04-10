@@ -3,11 +3,8 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using Domain.DTO;
 using Domain.DTO.Shared;
-using Domain.Interfaces;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Domain.Entities
 {

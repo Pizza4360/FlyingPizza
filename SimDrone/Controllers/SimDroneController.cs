@@ -36,7 +36,7 @@ namespace SimDrone.Controllers
         // Step 3, drone saves the incoming url in a new
         // DroneToDispatcherGateway object, then uses it
         // to give initial state and location back
-        [HttpPost("init_registration")]
+        [HttpPost("InitializeRegistration")]
         public async Task<bool> InitializeRegistration(InitDroneRequest initInfo)
         {
             _gateway = new DroneToDispatchGateway
@@ -45,7 +45,7 @@ namespace SimDrone.Controllers
             };
             Console.WriteLine();
             _badgeNumber = initInfo.BadgeNumber;
-            if(_gateway.PostDroneStatus(0,0,"Ready"))
+            if(_gateway.PostFirstDroneStatus(0,0,"Ready"))
             {
                 return true;
             }
@@ -57,7 +57,7 @@ namespace SimDrone.Controllers
         /// </summary>
         /// <returns>"hello, world"</returns>
         // Step 7, receive the BadgeNumberAndHome through a drone object
-        [HttpPost("start_drone")]
+        [HttpPost("StartDrone")]
         public async Task<OkObjectResult> StartDrone(Drone drone)
         {
             _drone = drone;
@@ -69,7 +69,7 @@ namespace SimDrone.Controllers
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        [HttpPost("completeregistration")]
+        [HttpPost("CompleteRegistration")]
         public async Task<IActionResult> CompleteRegistration(
         CompleteRegistrationPost post)
         {

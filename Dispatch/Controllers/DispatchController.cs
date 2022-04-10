@@ -16,11 +16,11 @@ namespace Dispatch.Controllers
     public class DispatchController : ControllerBase
     {
         // Step 1, use use DispatchToDroneGateway to init registration
-        [HttpPost("add_drone")]
+        [HttpPost("AddDrone")]
         public Task<bool> AddDrone(GatewayDto dto)
         {
             Console.WriteLine($"{dto.Url}");
-            return Task.FromResult(_dispatchToDroneGateway.InitRegistration(
+            return Task.FromResult(_dispatchToDroneGateway.InitializeRegistration(
                     dto.Url
                     , dto.Url
                     , GetNewBadgeNumber())
@@ -36,7 +36,7 @@ namespace Dispatch.Controllers
         // Step 5, receive the first POST status update, send it to the database,
         // then use DispatchToDroneGateway to supply a badge number and
         // home location to drone
-        [HttpPost("send_init_status")]
+        [HttpPost("SendInitialStatus")]
         public async Task<bool> CompleteRegistration(InitDrone dto)
         {
             Console.WriteLine($"{dto}");
@@ -98,18 +98,19 @@ namespace Dispatch.Controllers
         /// </summary>
         /// <param name="order"></param>
         /// <returns></returns>
-        [HttpPatch("complete_order")]
+        [HttpPatch("CompleteOrder")]
         public Task<bool>
-            PatchDeliveryTime(Order order)
-            => Task.FromResult(_orderRepo.PatchTimeCompleted(order.Id)
+            PatchDeliveryTime(CompleteOrderRequest completeOrder)
+            => Task.FromResult(_orderRepo.PatchTimeCompleted(completeOrder.OrderId)
                 .Result);
 
+        /*
         /// <summary>
         /// This method is invoked from the front to add a new drone to the fleet.
         /// </summary>
         /// <param name="request"></param>
         /// <returns>`true` only if the handshake is completed and the drone is initialized.</returns>
-        [HttpPost("register")]
+        [HttpPost("StartFleetRegistration")]
         public async Task<bool> StartFleetRegistration(InitDroneRequest request)
         {
             Console.WriteLine($"received \"{request}\"" +
@@ -153,9 +154,10 @@ namespace Dispatch.Controllers
             // Todo dispatcher saves handshake record to DB
             return true;
         }
+        */
 
 
-        [HttpPost("first_status")]
+        [HttpPost("PostDroneStatus")]
         public Task<bool>
             Post(DroneStatusUpdateRequest stateDto)
         {
@@ -174,8 +176,7 @@ namespace Dispatch.Controllers
             if (stateDto.State != DroneState.Ready ||
                 _unfilledOrders.Count <= 0)
             {
-                return _orderRepo.PatchDroneStatus(stateDto)
-                    .Result;
+                return _droneRepo.PatchDroneStatus(stateDto).Result;
             }
             var orderDto = _unfilledOrders.Dequeue();
             await _dispatchToDroneGateway.AssignDelivery(
@@ -183,7 +184,7 @@ namespace Dispatch.Controllers
                 , orderDto.OrderId
                 , orderDto.OrderLocation);
 
-            return _orderRepo.PatchDroneStatus(stateDto)
+            return _droneRepo.PatchDroneStatus(stateDto)
                 .Result;
         }
 
