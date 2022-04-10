@@ -1,16 +1,11 @@
-using System;
-using System.Net;
+/*using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Domain.Implementation.Gateways;
 using Domain.Interfaces.Gateways;
 using Domain.Interfaces.Repositories;
-using DroneDispatcher.Controllers;
-using DroneSimulator.Controllers;
-using FluentAssertions;
 using Moq;
 using Moq.Protected;
 using Xunit;
@@ -82,4 +77,4 @@ namespace Tests.Controllers.Integration
             response.Should().BeTrue();
         }
     }
-}
+}*/

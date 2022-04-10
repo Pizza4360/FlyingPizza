@@ -13,21 +13,21 @@ namespace Domain.Gateways
     public class DispatchToDroneGateway : IDroneGateway
     {
         private HttpClient client = new HttpClient();
-        private string _droneUrl;
+        public string Url;
         public Dictionary<string, string> IdToIpMap { get; set; } = new Dictionary<string, string>();
         
         // Step 2, DispatchToDroneGateway saves the drone's url and
         // sends a POST to the drone to give it a DroneToDispatherGateway
         public async Task<bool> InitRegistration(
-        string droneUrl, DroneToDispatchGateway gateway, int badgeNumber)
+        string droneUrl, string gatewayUrl, int badgeNumber)
         {
-            _droneUrl = droneUrl;
+            Url = droneUrl;
             var body = JsonContent.Create(new InitGatewayPost
             {
-                Gateway = gateway
+                Url = gatewayUrl
                 , BadgeNumber = badgeNumber
             });
-            var requestUri = new Uri($"http://{droneUrl}/drone/initregistration");
+            var requestUri = new Uri($"http://{droneUrl}/Drone/initregistration");
             // response should be good
             var ressponse = await client.PostAsync(requestUri, body);
             return ressponse.Content.Headers.ToString()
@@ -40,7 +40,7 @@ namespace Domain.Gateways
         public async Task<HttpResponseMessage> CompleteRegistration(DroneRecord record)
         {
             var body = JsonContent.Create(record);
-            var requestUri = new Uri($"http://{_droneUrl}/drone/start_drone");
+            var requestUri = new Uri($"http://{Url}/drone/start_drone");
             // response should be good
             return await client.PostAsync(requestUri, body);
         }
@@ -125,7 +125,7 @@ namespace Domain.Gateways
 
 namespace Domain.DTO
 {
-    public class BadgeNumberAndHome
+    public class BadgeNumberAndHome : BaseDTO
     {
         public int BadgeNumber { get; set; } 
         public GeoLocation HomeLocation { get; set; }

@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -110,12 +110,12 @@ namespace Tests.Controllers.EndToEnd
             };
             var testOrderDto = new AddOrderDTO
             {
-                DeliveryLocaion = new GeoLocation
+                DeliveryLocation = new GeoLocation
                 {
                     Latitude = 39.74273568191456m,
                     Longitude = -105.00771026053671m
                 },
-                DroneId = "testOrderID"
+                Id = "testOrderID"
             };
          
             var testDispatcherController = new DispatcherController(mockedDroneRepo,mockedOrdersRepo,testDroneGateway);
@@ -147,4 +147,4 @@ namespace Tests.Controllers.EndToEnd
             testDrone.CurrentLocation.Should().BeEquivalentTo(testDeliverOrderDto.OrderLocation);
         }
     }
-}
+}*/

@@ -21,7 +21,7 @@ public class Drone : DroneRecord
     private const decimal StepSize = DroneUpdateInterval / 1000.0m * (decimal) DroneSpeed;
 
     /// Allows the simulation to communicate with the dispatcher.
-    public DroneToDispatchGateway DroneToDispatchGateway { get; set; }
+    private DroneToDispatchGateway DroneToDispatchGateway { get; set; }
 
     public Drone(DroneRecord record, DroneToDispatchGateway gateway)
     {

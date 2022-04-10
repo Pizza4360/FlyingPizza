@@ -24,12 +24,12 @@ namespace Domain.Gateways
                     },
                     State = ready
                 };
-            var body = JsonContent.Create(patch);
-            return _httpClient.PostAsync($"http://{Uri}/dispatch/send_init_status", body).Result.IsSuccessStatusCode;
+            var body = JsonContent.Create($"{patch}");
+            return _httpClient.PostAsync($"http://{Url}/dispatch/send_init_status", body).Result.IsSuccessStatusCode;
         }
         
         private static HttpClient _httpClient = new HttpClient();
-        private string Uri;
+        public string Url { get; set; }
         public void ChangeHandler(HttpMessageHandler handler)
         {
             // Added for mocking reasons, no way around it

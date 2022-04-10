@@ -1,11 +1,13 @@
 ﻿using System.Text.Json.Serialization;
+using Domain.DTO;
 using Domain.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities
 {
-    public class DroneRecord
+    
+    public class DroneRecord : BaseDTO
     {
         [BsonId]
         [BsonElement("Id")]

@@ -1,11 +1,14 @@
-﻿using Domain.Entities;
+﻿using System.Text.Json.Serialization;
+using Domain.Entities;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.DroneDispatchCommunication
 {
-    public class Delivery
+    public class Delivery : BaseDTO
     {
-        public string OrderId { get; set; }
-
+        [BsonElement("OrderId"), JsonPropertyName("OrderId")]
+        public string OrderId { get; set; } 
+        [BsonElement("OrderLocation"), JsonPropertyName("OrderLocation")]
         public GeoLocation OrderLocation { get; set; }
     }
 }

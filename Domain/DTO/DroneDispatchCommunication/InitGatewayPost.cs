@@ -1,10 +1,15 @@
-﻿using Domain.Gateways;
+﻿using System.Text.Json.Serialization;
+using Domain.Gateways;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace Domain.DTO.DroneDispatchCommunication
 {
-    public class InitGatewayPost
+    public class InitGatewayPost : BaseDTO
     {
-        public DroneToDispatchGateway Gateway { get; set; }
+        [BsonElement("Url"), JsonPropertyName("Url")]
         public string Url { get; set; }
+        
+        [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
         public int BadgeNumber { get; set; }
     }
 }

@@ -1,15 +1,21 @@
-﻿using Domain.Entities;
+﻿using System.Text.Json.Serialization;
+using Domain.Entities;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.DroneDispatchCommunication
 {
-    public class DroneStatusPatch
+    public class DroneStatusPatch : BaseDTO
     {
-        public GeoLocation Location { get; set; }
-        public string State { get; set; }
-        public string Id { get; set; }
-        public override string ToString()
-        {
-            return $"UpdateStatusDto={{location:{Location}\tState:{State}\tId={Id}}}";
-        }
+        [BsonElement("Location"), JsonPropertyName("Location")]
+        public GeoLocation Location { get; set; } 
+        
+        [BsonElement("State"), JsonPropertyName("State")]
+        public string State { get; set; }       
+        
+        [BsonId]
+        [BsonElement("Id")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id;    
     }
 }

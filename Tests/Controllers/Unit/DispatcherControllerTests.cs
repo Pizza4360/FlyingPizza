@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain.DTO.DroneDispatchCommunication;
@@ -178,8 +178,8 @@ namespace Tests.Controllers.Unit
             var controller = new DispatcherController(mockedDronesRepository, mockedOrdersRepo,mockedDroneGateway);
             var testOrderDto = new AddOrderDTO
             {
-                DeliveryLocaion = testDestination,
-                DroneId = "some stuff"
+                DeliveryLocation = testDestination,
+                Id = "some stuff"
             };
             
             // calling method
@@ -312,8 +312,8 @@ namespace Tests.Controllers.Unit
             };
             var testOrderDto = new AddOrderDTO
             {
-                DeliveryLocaion = testLocation,
-                DroneId = testGuidString
+                DeliveryLocation = testLocation,
+                Id = testGuidString
             };
   
             //_ordersRepository.GetByIdAsync
@@ -370,8 +370,8 @@ namespace Tests.Controllers.Unit
             };
             var testOrderDto = new AddOrderDTO
             {
-                DeliveryLocaion = testLocation,
-                DroneId = testGuidString
+                DeliveryLocation = testLocation,
+                Id = testGuidString
             };
             
             
@@ -411,4 +411,4 @@ namespace Tests.Controllers.Unit
             mockedDroneGatewaySetup.VerifyAll();
         }
 }
-}
+}*/

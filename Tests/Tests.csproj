@@ -16,6 +16,7 @@
     <PackageReference Include="ReportGenerator" Version="5.1.3" />
     <PackageReference Include="xunit" Version="2.4.1" />
 	<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+	<PackageReference Include="Xunit.Microsoft.VisualStudio.TestTools.UnitTesting" Version="1.0.0-beta-1011" />
     <PackageReference Include="xunit.runner.console" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

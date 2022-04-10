@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimDrone", "SimDrone\SimDro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dispatch", "Dispatch\Dispatch.csproj", "{CDEF3460-5AE5-4368-8BC2-A01C4A976D1A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExploreSerialization", "ExploreSerialization\ExploreSerialization.csproj", "{CBD8A575-0421-424D-896F-A15EB70939C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{CDEF3460-5AE5-4368-8BC2-A01C4A976D1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDEF3460-5AE5-4368-8BC2-A01C4A976D1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDEF3460-5AE5-4368-8BC2-A01C4A976D1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBD8A575-0421-424D-896F-A15EB70939C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBD8A575-0421-424D-896F-A15EB70939C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBD8A575-0421-424D-896F-A15EB70939C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBD8A575-0421-424D-896F-A15EB70939C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

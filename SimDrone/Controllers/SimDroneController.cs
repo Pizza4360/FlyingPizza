@@ -10,7 +10,7 @@ namespace SimDrone.Controllers
     public class SimDroneController : ControllerBase
     {
         private Drone _drone;
-        private DroneToDispatchGateway _gateway;
+        private static DroneToDispatchGateway _gateway;
         private int _badgeNumber;
 
 
@@ -33,15 +33,19 @@ namespace SimDrone.Controllers
         /// this method is called.
         /// </summary>
         /// <returns></returns>
-        // Step 3, drone saves the incoming DroneToDispatherGateway then uses it
+        // Step 3, drone saves the incoming url in a new
+        // DroneToDispatcherGateway object, then uses it
         // to give initial state and location back
         [HttpPost("initregistration")]
         public async Task<bool> InitializeRegistration(InitGatewayPost initInfo)
         {
+            _gateway = new DroneToDispatchGateway
+            {
+                Url = initInfo.Url
+            };
             Console.WriteLine();
             _badgeNumber = initInfo.BadgeNumber;
-            _gateway = initInfo.Gateway;
-            if (_gateway.PostDroneStatus(0,0,"Ready"))
+            if(_gateway.PostDroneStatus(0,0,"Ready"))
             {
                 return true;
             }

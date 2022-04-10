@@ -1,11 +1,18 @@
+using System.Text.Json.Serialization;
 using Domain.Entities;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.FrontEndDispatchCommunication
 {
-    public class AddOrderDTO
+    public class AddOrderDTO : BaseDTO
     {
-        public string DroneId;
-        public GeoLocation DeliveryLocaion;
-        public override string ToString() => $"{{Id:{DroneId},DeliveryLocation:{DeliveryLocaion}}}";
+        [BsonId]
+        [BsonElement("Id")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string ID;
+        
+        [BsonElement("DeliveryLocaion"), JsonPropertyName("DeliveryLocaion")]
+        public GeoLocation DeliveryLocation { get; set; }
     }
 }

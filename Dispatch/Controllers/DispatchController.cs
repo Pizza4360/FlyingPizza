@@ -9,22 +9,19 @@ using Order = Domain.Entities.Order;
 
 namespace Dispatch.Controllers
 {
-
     [ApiController]
     [Route("[controller]")]
     public class DispatchController : ControllerBase
     {
-
-
         // Step 1, use use DispatchToDroneGateway to init registration
         [HttpPost("add_drone")]
-        public async Task<bool> AddDrone(GatewaysDto dto)
+        public async Task<bool> AddDrone(GatewayDto dto)
         {
-            _dispatchToDroneGateway = dto.DispatchToDroneGateway;
+            Console.WriteLine($"{dto.Url}");
             return _dispatchToDroneGateway.InitRegistration(
                     dto.Url
-                    , dto.DroneToDispatchGateway,
-                    GetNewBadgeNumber())
+                    , dto.Url
+                    , GetNewBadgeNumber())
                 .Result;
         }
 
@@ -38,14 +35,14 @@ namespace Dispatch.Controllers
         // then use DispatchToDroneGateway to supply a badge number and
         // home location to drone
         [HttpPost("send_init_status")]
-        public async Task<bool> CompleteRegistration(Domain.DTO.InitDrone dto)
+        public async Task<bool> CompleteRegistration(InitDrone dto)
         {
+            Console.WriteLine($"{dto}");
             await PatchDroneStatus(dto.FistStatusUpdate);
             return _dispatchToDroneGateway.CompleteRegistration(dto.Record)
                 .Result.Content.Headers.ToString()
                 .Contains("hello, world");
         }
-
 
 
         [HttpGet("badge_request")]
@@ -114,7 +111,7 @@ namespace Dispatch.Controllers
         [HttpPost("register")]
         public async Task<bool> StartFleetRegistration(InitGatewayPost dto)
         {
-            Console.WriteLine(
+            Console.WriteLine($"received \"{dto}\"" +
                 "Attempting to initialize communication with drone...");
             var canBeInitialized
                 = _dispatchToDroneGateway.StartRegistration(
@@ -210,16 +207,17 @@ namespace Dispatch.Controllers
 
 namespace Domain.DTO
 {
-    public class GatewaysDto
+    public class GatewayDto
     {
-        public DroneToDispatchGateway DroneToDispatchGateway { get; set; }
-        public DispatchToDroneGateway DispatchToDroneGateway { get; set; }
         public string Url { get; set; }
+        public override string ToString() => $"{{Url: {Url}}}";
     }
 
     public class InitDrone
     {
         public DroneRecord Record { get; set; }
-        public DroneStatusPatch FistStatusUpdate { get; set; } 
+        public DroneStatusPatch FistStatusUpdate { get; set; }
+        public override string ToString() => $"{{Record: {Record},FistStatusUpdate:{FistStatusUpdate}}}";
+
     }
 }

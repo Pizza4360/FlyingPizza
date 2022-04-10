@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿/*
+using Domain.Entities;
 using Domain.Interfaces.Gateways;
 using FluentAssertions;
 using Moq;
@@ -103,3 +104,4 @@ namespace Tests.Controllers.Unit
         }
     }
 }
+*/

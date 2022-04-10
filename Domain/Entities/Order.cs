@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text.Json.Serialization;
+using Domain.DTO;
 using Domain.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -10,7 +11,7 @@ using MongoDB.Bson.Serialization.IdGenerators;
 namespace Domain.Entities
 {
     [BsonDiscriminator("Order")]
-    public class Order
+    public class Order : BaseDTO
     {
         [BsonElement("Id")]
         [BsonId]
