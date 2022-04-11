@@ -15,12 +15,13 @@ namespace Dispatch.Controllers
     public class DispatchController : ControllerBase
     {
         [HttpPost("Ping")]
-        public async Task<string> Ping(string name)
+        public Task<string> Ping(GatewayDto name)
         {
-            Console.WriteLine("made it here");
-            var s = $"hello, {name}";
-            return s;
+            var format = $"Hello, {name} from Dispatch";
+            Console.WriteLine(format);
+            return Task.FromResult(format);
         }
+        
         // Step 1, use use DispatchToDroneGateway to init registration
         [HttpPost("AddDrone")]
         public Task<bool> AddDrone(GatewayDto dto)
