@@ -47,8 +47,12 @@ public class Drone : DroneRecord
             throw new ArgumentException(
                 "Destination cannot be the same as the AssignDeliveryRequest station!");
 
-        var distance = Haversine(ToDouble(HomeLocation.Latitude), ToDouble(HomeLocation.Longitude),
-            ToDouble(Destination.Latitude), ToDouble(Destination.Longitude));
+        var distance = Haversine(
+            ToDouble(HomeLocation.Latitude), 
+            ToDouble(HomeLocation.Longitude),
+            ToDouble(Destination.Latitude), 
+            ToDouble(Destination.Longitude)
+            );
 
         var numberOfLocations = (int) Math.Floor((decimal) distance / StepSize);
 
