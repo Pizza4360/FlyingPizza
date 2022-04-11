@@ -11,8 +11,6 @@ namespace SimDrone.Controllers
     {
         private Drone _drone;
         private static DroneToDispatchGateway _gateway;
-        private int _badgeNumber;
-
 
         /// <summary>
         /// Command a drone to deliver an order.
@@ -37,19 +35,15 @@ namespace SimDrone.Controllers
         // DroneToDispatcherGateway object, then uses it
         // to give initial state and location back
         [HttpPost("InitializeRegistration")]
-        public async Task<bool> InitializeRegistration(InitDroneRequest initInfo)
+        public async Task<HttpResponseMessage> InitializeRegistration(InitDroneRequest initInfo)
         {
             _gateway = new DroneToDispatchGateway
             {
                 Url = initInfo.Url
             };
             Console.WriteLine();
-            _badgeNumber = initInfo.BadgeNumber;
-            if(_gateway.PostFirstDroneStatus(0,0,"Ready"))
-            {
-                return true;
-            }
-            return false;
+            var _badgeNumber = initInfo.BadgeNumber;
+            return await _gateway.PostInitialStatus(0, 0, "Ready") ;
         }
         
         /// <summary>
@@ -58,10 +52,10 @@ namespace SimDrone.Controllers
         /// <returns>"hello, world"</returns>
         // Step 7, receive the BadgeNumberAndHome through a drone object
         [HttpPost("StartDrone")]
-        public async Task<OkObjectResult> StartDrone(Drone drone)
+        public Task<OkObjectResult> StartDrone(Drone drone)
         {
             _drone = drone;
-            return Ok("hello, world");
+            return Task.FromResult(Ok("hello, world"));
         }
 
         /// <summary>

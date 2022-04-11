@@ -12,50 +12,41 @@ namespace Domain.InterfaceImplementations.Gateways
     {
         // Step 4, DroneToDispatchGateway takes in initial info
         // to create a GeoLocation and then POST its first status update 
-        public bool PostFirstDroneStatus(int latitude, int longitude, string ready)
-        {
-            var patch
-                = new DroneStatusUpdateRequest
+        public Task<HttpResponseMessage> PostInitialStatus(
+        int latitude,
+        int longitude,
+        string ready) 
+            => SendMessage("PostInitialStatus", 
+                new DroneStatusUpdateRequest 
                 {
                     Location = new GeoLocation
                     {
-                        Latitude = latitude
-                        , Longitude = longitude
+                        Latitude = latitude,
+                        Longitude = longitude
                     },
                     State = ready
-                };
-            var body = JsonContent.Create($"{patch}");
-            return _httpClient.PostAsync($"http://{Url}/dispatch/SendInitialStatus", body).Result.IsSuccessStatusCode;
-        }
-        
-        private static HttpClient _httpClient = new HttpClient();
-        
-        // "http://172.18.0.0:4000/Dispatch"
-        // "http://172.18.0.0:4000/Drone"
-        public string Url { get; set; }
+                });
+
         public void ChangeHandler(HttpMessageHandler handler)
         {
             // Added for mocking reasons, no way around it
-            _httpClient = new HttpClient(handler);
+            HttpClient = new HttpClient(handler);
         }
 
         public async Task<Task<HttpResponseMessage>> CompleteOrder(string id)
-        {
-            var completedOrderDto = new CompleteOrderRequest
-            {
-               Time = DateTime.Now,
-               OrderId = id
-            };
-            return SendMessage("CompleteOrder", completedOrderDto);
-        }
+            => SendMessage("CompleteOrder",
+                new CompleteOrderRequest
+                {
+                   Time = DateTime.Now,
+                   OrderId = id
+                });
+
         /// <summary>
         /// This method gets called when a drone updates its status.
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public async Task<Task<HttpResponseMessage>> PatchDroneStatus(DroneStatusUpdateRequest state)
-        {
-            return SendMessage(Url, state);
-        }
+        public Task<Task<HttpResponseMessage>> PatchDroneStatus(DroneStatusUpdateRequest state)
+            => Task.FromResult(SendMessage(Url, state));
     }
 }

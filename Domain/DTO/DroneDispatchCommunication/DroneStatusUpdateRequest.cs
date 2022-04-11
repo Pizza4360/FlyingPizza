@@ -8,15 +8,16 @@ namespace Domain.DTO.DroneDispatchCommunication
 {
     public class DroneStatusUpdateRequest : BaseDTO
     {
+        [BsonId]
+        [BsonElement("Id")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id;    
+        
         [BsonElement("Location"), JsonPropertyName("Location")]
         public GeoLocation Location { get; set; } 
         
         [BsonElement("State"), JsonPropertyName("State")]
         public string State { get; set; }       
         
-        [BsonId]
-        [BsonElement("Id")]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id;    
     }
 }

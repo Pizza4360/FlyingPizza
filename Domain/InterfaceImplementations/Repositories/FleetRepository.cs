@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
 using Domain.InterfaceImplementations.Repositories;
@@ -47,30 +48,22 @@ public class FleetRepository
                 .ToListAsync())
             .ToDictionary(droneRecord => droneRecord.Id, droneRecord => droneRecord.IpAddress);
 
-    public async Task<bool> PatchDroneStatus(DroneStatusUpdateRequest stateDto)
-    {
-        // Todo : fixmee!!!
-        var doc = ToBson(stateDto.ToJsonString());
-        var updateDefinition = BsonDocumentUpdateDefinition(doc);
-        var options = new UpdateOptions();
-        var token = CancellationToken.None;
-        var result = await _collection.UpdateOneAsync( 
-            Filter(stateDto),
-            updateDefinition,options, token);
-        return result.IsAcknowledged;
-    }
-    
-    private static BsonDocumentUpdateDefinition<Order>
+    public async Task<UpdateResult> PatchDroneStatus(DroneStatusUpdateRequest dto)=>
+         await _collection.UpdateOneAsync( 
+            Filter(dto)
+            , BsonDocumentUpdateDefinition(ToBson(dto))
+            ,new UpdateOptions()
+            , CancellationToken.None);
+        
+    private static BsonDocumentUpdateDefinition<DroneRecord>
         BsonDocumentUpdateDefinition(BsonValue doc) 
         => new (new BsonDocument("$set", doc));
     
     private static BsonDocument 
-        ToBson(string s) 
-        =>  JsonDocument.Parse(s).ToBsonDocument();
+        ToBson(BaseDTO dto) 
+        =>  JsonDocument.Parse($"{dto}").ToBsonDocument();
 
-    private static FilterDefinition<Order> 
+    private static FilterDefinition<DroneRecord> 
         Filter(DroneStatusUpdateRequest dto)
-    {
-        return Builders<Order>.Filter.Eq("_id", dto.Id);
-    }
+    => Builders<DroneRecord>.Filter.Eq("_id", dto.Id);
 }

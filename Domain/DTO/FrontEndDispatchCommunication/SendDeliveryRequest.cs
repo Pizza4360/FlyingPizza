@@ -6,7 +6,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.FrontEndDispatchCommunication
 {
-    public class AddOrderRequest : BaseDTO
+    public class SendDeliveryRequest : BaseDTO
     {
         [BsonId]
         [BsonElement("Id")]

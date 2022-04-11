@@ -8,5 +8,5 @@ namespace Domain.InterfaceDefinitions.Gateways;
 
 public interface IBaseGateway<TJsonifiable>
 {
-    public Task<HttpResponseMessage> SendMessage(string endpoint, TJsonifiable jsonifiable);
+    public Task<HttpResponseMessage> SendMessage(string restCall, TJsonifiable jsonifiable);
 }

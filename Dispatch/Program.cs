@@ -3,10 +3,13 @@ using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceImplementations.Gateways;
 using Domain.InterfaceImplementations.Repositories;
 
+Console.WriteLine("hello world!!!");
 var builder = WebApplication.CreateBuilder(args);
 
-// Add builder.Services to the container.
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
+// Add builder.Services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -37,7 +40,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// turn off ssl: https://stackoverflow.com/questions/43809665/enable-disable-ssl-on-asp-net-core-projects-in-development
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

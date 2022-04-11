@@ -1,13 +1,12 @@
 using Dispatch.Services;
 using Domain;
-using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.Shared;
 using Domain.Entities;
 using Domain.InterfaceImplementations.Gateways;
 using Domain.InterfaceImplementations.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Order = Domain.Entities.Order;
+using MongoDB.Driver;
 
 namespace Dispatch.Controllers
 {
@@ -15,6 +14,13 @@ namespace Dispatch.Controllers
     [Route("[controller]")]
     public class DispatchController : ControllerBase
     {
+        [HttpPost("Ping")]
+        public async Task<string> Ping(string name)
+        {
+            Console.WriteLine("made it here");
+            var s = $"hello, {name}";
+            return s;
+        }
         // Step 1, use use DispatchToDroneGateway to init registration
         [HttpPost("AddDrone")]
         public Task<bool> AddDrone(GatewayDto dto)
@@ -63,14 +69,6 @@ namespace Dispatch.Controllers
         private readonly GeoLocation _homeLocation;
         private readonly Queue<AssignDeliveryRequest> _unfilledOrders;
 
-        /// <summary>
-        /// Call this method for debugging and testing if the dispatcher
-        /// is alive.
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("ping")]
-        public string Ping() => "I'm alive!";
-
         public DispatchController(
         FleetRepository droneRepo,
         // DroneGateway droneGateway,
@@ -101,7 +99,8 @@ namespace Dispatch.Controllers
         [HttpPatch("CompleteOrder")]
         public Task<bool>
             PatchDeliveryTime(CompleteOrderRequest completeOrder)
-            => Task.FromResult(_orderRepo.PatchTimeCompleted(completeOrder.OrderId)
+            => Task.FromResult(
+                _orderRepo.PatchTimeCompleted(completeOrder.OrderId)
                 .Result);
 
         /*
@@ -157,21 +156,16 @@ namespace Dispatch.Controllers
         */
 
 
-        [HttpPost("PostDroneStatus")]
-        public Task<bool>
-            Post(DroneStatusUpdateRequest stateDto)
-        {
-            bool firstStatusOk = PatchDroneStatus(stateDto)
-                .Result;
-            return Task.FromResult(firstStatusOk);
-        }
+        [HttpPost("PostInitialStatus")]
+        public UpdateResult
+            Post(DroneStatusUpdateRequest stateDto) 
+            => PatchDroneStatus(stateDto).Result;
 
         /// If a drone updates its status, patch its status.
         /// Then check if there is an enqueued order. If so,
         /// it should be assigned to this drone.
-        [HttpPatch("update_status")]
-        public async Task<bool>
-            PatchDroneStatus(DroneStatusUpdateRequest stateDto)
+        [HttpPatch("PatchDroneStatus")]
+        public async Task<UpdateResult> PatchDroneStatus(DroneStatusUpdateRequest stateDto)
         {
             if (stateDto.State != DroneState.Ready ||
                 _unfilledOrders.Count <= 0)
