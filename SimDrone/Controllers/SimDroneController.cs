@@ -18,13 +18,14 @@ namespace SimDrone.Controllers
         /// <param name="order"></param>
         /// <returns></returns>
         [HttpPost("deliver")]
-        public async Task<IActionResult> DeliverOrder(AssignDeliveryRequest order)
+        public async Task<IActionResult> DeliverOrder(
+        AssignDeliveryRequest order)
         {
             Console.WriteLine($"Delivering {order}");
             _drone.DeliverOrder(order.OrderLocation);
             return Ok();
         }
-        
+
         /// <summary>
         /// This method is called when a drone has been pinged to be
         /// initialized into a fleet. SimDroneController is idle until
@@ -35,21 +36,23 @@ namespace SimDrone.Controllers
         // DroneToDispatcherGateway object, then uses it
         // to give initial state and location back
         [HttpPost("InitializeRegistration")]
-        public async Task<string?> InitializeRegistration(InitDroneRequest initInfo)
+        public async Task<string?> InitializeRegistration(
+        InitDroneRequest initInfo)
         {
             _gateway = new DroneToDispatchGateway(initInfo.Url);
             Console.WriteLine();
             var _badgeNumber = initInfo.BadgeNumber;
-            return await _gateway.PostInitialStatus(0, 0, "Ready") ;
+            return await _gateway.PostInitialStatus(0, 0, "Ready");
         }
-        
+
         /// <summary>
         /// For testing purposes.
         /// </summary>
         /// <returns>"hello, world"</returns>
         // Step 7, receive the BadgeNumberAndHome through a drone object
         [HttpPost("StartDrone")]
-        public Task<OkObjectResult> StartDrone(Drone drone)
+        public Task<OkObjectResult> StartDrone(
+        Drone drone)
         {
             _drone = drone;
             return Task.FromResult(Ok("hello, world"));

@@ -4,6 +4,14 @@ using Domain.InterfaceImplementations.Repositories;
 
 Console.WriteLine("hello world!!!");
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "*",
+        _  =>
+        {
+            _.WithOrigins("*");
+        });
+});
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -30,17 +38,9 @@ builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializ
 builder.Services.AddScoped<IDroneGateway>(_ => new DispatchToDroneGateway());
 #endregion repositories
 
+
 var app = builder.Build();
 
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: "*",
-        _  =>
-        {
-            _.WithOrigins("*");
-        });
-});
 
 
 // Configure the HTTP request pipeline.
