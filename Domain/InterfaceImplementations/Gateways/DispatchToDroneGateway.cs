@@ -5,7 +5,6 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
-using Domain.DTO.Shared;
 using Domain.Entities;
 using Domain.InterfaceDefinitions.Gateways;
 

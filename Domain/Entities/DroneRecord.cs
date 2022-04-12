@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.DTO;
-using Domain.DTO.Shared;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 

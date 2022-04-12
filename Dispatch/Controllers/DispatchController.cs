@@ -1,6 +1,6 @@
 using Domain;
+using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
-using Domain.DTO.Shared;
 using Domain.Entities;
 using Domain.InterfaceImplementations.Gateways;
 using Domain.InterfaceImplementations.Repositories;

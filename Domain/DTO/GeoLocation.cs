@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Domain.DTO.Shared
+namespace Domain.DTO
 {
     public class GeoLocation : BaseDTO
     {

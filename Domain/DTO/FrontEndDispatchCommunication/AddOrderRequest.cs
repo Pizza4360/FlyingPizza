@@ -1,6 +1,4 @@
-﻿using Domain.DTO.Shared;
-
-namespace Domain.DTO.FrontEndDispatchCommunication;
+﻿namespace Domain.DTO.FrontEndDispatchCommunication;
 
 public class AddOrderRequest
     : BaseDTO

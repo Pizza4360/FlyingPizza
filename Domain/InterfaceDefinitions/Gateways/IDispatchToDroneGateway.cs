@@ -1,6 +1,6 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
-using Domain.DTO.Shared;
+using Domain.DTO;
 
 namespace Domain.InterfaceDefinitions.Gateways
 {

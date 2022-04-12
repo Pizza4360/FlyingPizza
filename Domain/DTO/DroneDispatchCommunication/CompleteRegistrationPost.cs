@@ -1,7 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.InterfaceImplementations.Gateways;
 
-namespace Domain.DTO;
+namespace Domain.DTO.DroneDispatchCommunication;
 
 public class CompleteRegistrationPost : BaseDTO
 {

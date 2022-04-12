@@ -13,8 +13,8 @@ public class FrontEndToDispatchGateway : BaseGateway
     PingDto ready)
     {
         return await SendMessage(
-            "Ping"
-            , new PingDto()
+            "Ping",
+            new PingDto()
             {
                 S = "Malc"
             });
@@ -26,22 +26,24 @@ public class FrontEndToDispatchGateway : BaseGateway
     public async Task<string?> AddOrder(
     AddOrderRequest ready)
     {
-        return await SendMessage(
-            "AddOrder"
-            , ready);
+        return await SendMessage("AddOrder", ready);
     }
 
-    public void RemoveDrone(HttpMessageHandler handler)
+    public void RemoveDrone(
+    HttpMessageHandler handler)
     {
         // Added for mocking reasons, no way around it
         HttpClient = new HttpClient(handler);
     }
 
-    public async Task<string?> SendDelivery(SendDeliveryRequest dto)
-        => await SendMessage("SendDelivery", dto);
-    
-    public async Task<string?> CancelDeliveryRequest(string id)
-        => await SendMessage("CancelDeliveryRequest",
+    public async Task<string?> SendDelivery(
+    SendDeliveryRequest dto) =>
+        await SendMessage("SendDelivery", dto);
+
+    public async Task<string?> CancelDeliveryRequest(
+    string id) =>
+        await SendMessage(
+            "CancelDeliveryRequest",
             new CancelDeliveryRequest
             {
                 OrderId = id
@@ -52,15 +54,12 @@ public class FrontEndToDispatchGateway : BaseGateway
     /// </summary>
     /// <param name="state"></param>
     /// <returns></returns>
-    public async Task<Task<Task<string?>>> PatchDroneStatus(DroneStatusUpdateRequest state)
-        => Task.FromResult(SendMessage(Url, state));
-
-    public FrontEndToDispatchGateway()
-    {
-    }
+    public async Task<string?> PatchDroneStatus(
+    DroneStatusUpdateRequest state) =>
+        SendMessage(Url, state).Result;
 }
 
-public class PingDto    
+public class PingDto
     : BaseDTO
 {
     public string S { get; set; }

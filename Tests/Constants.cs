@@ -1,4 +1,4 @@
-﻿using Domain.DTO.Shared;
+﻿using Domain.DTO;
 using Domain.Entities;
 
 namespace Tests
