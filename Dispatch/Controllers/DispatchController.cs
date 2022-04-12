@@ -1,10 +1,10 @@
-using Dispatch.Services;
 using Domain;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.Shared;
 using Domain.Entities;
 using Domain.InterfaceImplementations.Gateways;
 using Domain.InterfaceImplementations.Repositories;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 
@@ -14,12 +14,13 @@ namespace Dispatch.Controllers
     [Route("[controller]")]
     public class DispatchController : ControllerBase
     {
-        [HttpPost("Ping")]
         public Task<string> Ping(GatewayDto name)
         {
-            var format = $"Hello, {name} from Dispatch";
-            Console.WriteLine(format);
-            return Task.FromResult(format);
+            var greeting = $"Hello, {name} from Dispatch";
+            // Response.AppendHeader("Access-Control-Allow-Origin", "*");
+                // .WriteAsJsonAsync() 
+            Console.WriteLine(greeting);
+            return Task.FromResult(greeting);
         }
         
         // Step 1, use use DispatchToDroneGateway to init registration

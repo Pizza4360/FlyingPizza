@@ -50,7 +50,7 @@ namespace Domain.InterfaceImplementations.Gateways
             PatchDroneStatus(DroneStatusUpdateRequest state)
             => Task.FromResult(SendMessage(Url, state));
 
-        public DroneToDispatchGateway(string httpLocalhost) : base(httpLocalhost)
+        public DroneToDispatchGateway(string httpLocalhost)
         {
         }
     }

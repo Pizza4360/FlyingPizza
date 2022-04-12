@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -7,12 +6,11 @@ using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Domain.InterfaceImplementations.Repositories;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Dispatch.Services;
+namespace Domain.InterfaceImplementations.Repositories;
 
 public class FleetRepository
 {

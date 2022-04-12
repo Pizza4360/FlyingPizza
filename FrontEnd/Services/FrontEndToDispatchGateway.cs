@@ -1,14 +1,25 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.FrontEndDispatchCommunication;
-using Domain.DTO;
 using Domain.InterfaceDefinitions.Gateways;
 
-namespace Domain.InterfaceImplementations.Gateways;
+namespace FrontEnd.Services;
 
 public class FrontEndToDispatchGateway : BaseGateway
 {
+    public async Task<string?> Ping(
+    PingDto ready)
+    {
+        return await SendMessage(
+            "Ping"
+            , new PingDto()
+            {
+                S = "Malc"
+            });
+    }
+
 
     // Step 4, DroneToDispatchGateway takes in initial info
     // to create a GeoLocation and then POST its first status update 
@@ -44,7 +55,13 @@ public class FrontEndToDispatchGateway : BaseGateway
     public async Task<Task<Task<string?>>> PatchDroneStatus(DroneStatusUpdateRequest state)
         => Task.FromResult(SendMessage(Url, state));
 
-    public FrontEndToDispatchGateway(string httpLocalhost) : base(httpLocalhost)
+    public FrontEndToDispatchGateway()
     {
     }
+}
+
+public class PingDto    
+    : BaseDTO
+{
+    public string S { get; set; }
 }

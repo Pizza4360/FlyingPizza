@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Domain.DTO;
-using Domain.DTO.FrontEndDispatchCommunication;
-using Domain.DTO.Shared;
 using Domain.Entities;
-using Domain.InterfaceImplementations.Gateways;
+using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace FrontEnd.Pages.OrderPages
@@ -14,8 +11,6 @@ namespace FrontEnd.Pages.OrderPages
         Order custOrder;
 
         // = new ("http://localhost:80"); 
-        private static FrontEndToDispatchGateway _gateway; 
-
         protected override void OnInitialized()
         {
             // Make a new order for the customer to use when the page boots up
@@ -23,24 +18,31 @@ namespace FrontEnd.Pages.OrderPages
         
         }
 
+        public FrontEndToDispatchGateway GetGateway()
+            => new FrontEndToDispatchGateway
+            {
+                Url = "http://localhost:80"
+            };
+
         public async Task makeOrder()
         {
             // get time they ordered it
             custOrder.TimeOrdered = DateTime.Now;
 
+
             // upload final object to the server. 
             var r = await restpoint.Post<Order>("http://localhost:8080/Orders", custOrder);
             custOrder.URL = r.Headers.Location.AbsoluteUri;
             var response = await restpoint.Put<Order>(custOrder.URL,custOrder);
-            Console.WriteLine("made it here");
-            var dispatchResponse = await _gateway.AddOrder(
-                new AddOrderRequest()
-                {
-                    OrderId = custOrder.Id
-                    , DeliveryLocation = custOrder.DeliveryLocation
-                });
+
+            var dispatchResponse = _gateway.Ping(new PingDto
+            {
+                S = "Malc"
+            });
+            
+            Console.WriteLine(dispatchResponse);
             // Navigate to page to display users current order. 
-            // _navigationManager.NavigateTo("/userPage", false);
+            _navigationManager.NavigateTo("/userPage", false);
         }
     }
 

@@ -1,4 +1,3 @@
-using Dispatch.Services;
 using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceImplementations.Gateways;
 using Domain.InterfaceImplementations.Repositories;
@@ -32,6 +31,17 @@ builder.Services.AddScoped<IDroneGateway>(_ => new DispatchToDroneGateway());
 #endregion repositories
 
 var app = builder.Build();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "*",
+        _  =>
+        {
+            _.WithOrigins("*");
+        });
+});
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

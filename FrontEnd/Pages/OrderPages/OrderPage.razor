@@ -1,5 +1,8 @@
 ﻿@page "/order"
-@inject Services.RestDbSvc restpoint
+@using Domain.InterfaceImplementations.Gateways
+@using FrontEnd.Services
+@inject RestDbSvc restpoint
+@inject FrontEndToDispatchGateway _gateway 
 @inject NavigationManager _navigationManager
 
 
