@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using Domain.InterfaceDefinitions.Repositories;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -25,6 +26,11 @@ public class OrderRepository
 
         _collection = mongoDatabase.GetCollection<Order>(
             ordersSettings.Value.CollectionName);
+    }
+    // Once again a testing version
+    public OrderRepository(IMongoCollection<Order> mockedCollection) //: Domain.InterfaceDefinitions.Repositories
+    {
+        _collection = mockedCollection;
     }
     
    public async Task<Order?> GetAsync(string id) =>

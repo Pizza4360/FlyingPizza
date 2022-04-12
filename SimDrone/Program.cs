@@ -6,7 +6,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add a gateway for drone to send status updates
-builder.Services.AddScoped(_ => new DroneToDispatchGateway("Http://localhost:80"));
+//TODO: changed since wouldn't compile, may need to add constructor later
+//builder.Services.AddScoped(_ => new DroneToDispatchGateway("Http://localhost:80"));
+builder.Services.AddScoped(_ => new DroneToDispatchGateway());
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())

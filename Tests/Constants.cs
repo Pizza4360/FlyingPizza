@@ -38,6 +38,7 @@ namespace Tests
             OrderId  = TestOrderId,
             State = DroneState.Ready
         };
+        
            private const string
             TestDeliveryAddress = "yo mama",
             TestCustomerName = "bobby",
@@ -59,7 +60,7 @@ namespace Tests
         private static readonly Guid TestGuid = new();
         private static readonly DateTime TestTimeDelivered = DateTime.UtcNow;
         
-        private static readonly Order TestOrder = new()
+        public static readonly Order TestOrder = new()
         {
             DeliveryAddress = TestDeliveryAddress,
             TimeDelivered = TestTimeDelivered,
