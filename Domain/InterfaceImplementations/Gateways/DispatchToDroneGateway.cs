@@ -12,7 +12,7 @@ namespace Domain.InterfaceImplementations.Gateways
 {
     public class DispatchToDroneGateway : IDroneGateway
     {
-        private HttpClient client = new HttpClient();
+        private static HttpClient client = new HttpClient();
         public string Url;
         public Dictionary<string, string> IdToIpMap { get; set; } = new Dictionary<string, string>();
         
@@ -115,11 +115,11 @@ namespace Domain.InterfaceImplementations.Gateways
         }
 
 
-        // public static void ChangeHandler(HttpMessageHandler handler)
-        // {
-        //     // Added for mocking reasons, no way around it
-        //     HttpClient = new HttpClient(handler);
-        // }
+        public static void ChangeHandler(HttpMessageHandler handler)
+        {
+            // Added for mocking reasons, no way around it
+            client = new HttpClient(handler);
+        }
         public JsonContent Serialize(BaseDTO dto)
         {
             throw new NotImplementedException();

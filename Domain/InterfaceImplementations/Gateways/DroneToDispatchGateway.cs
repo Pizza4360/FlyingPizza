@@ -15,7 +15,7 @@ namespace Domain.InterfaceImplementations.Gateways
         public async Task<string?> PostInitialStatus(
         int latitude,
         int longitude,
-        string ready) 
+        string ready)
             => await SendMessage("PostInitialStatus", 
                 new DroneStatusUpdateRequest 
                 {
@@ -46,12 +46,8 @@ namespace Domain.InterfaceImplementations.Gateways
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public async Task<Task<Task<string?>>> 
+        public async Task<string?> 
             PatchDroneStatus(DroneStatusUpdateRequest state)
-            => Task.FromResult(SendMessage(Url, state));
-
-        public DroneToDispatchGateway(string httpLocalhost)
-        {
-        }
+            => SendMessage(Url, state).Result;
     }
 }

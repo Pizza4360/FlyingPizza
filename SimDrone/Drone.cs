@@ -89,7 +89,7 @@ public class Drone : DroneRecord
     
 
     // Tell SimDrone to deliver an order
-    public void DeliverOrder(GeoLocation customerLocation)
+    public bool DeliverOrder(GeoLocation customerLocation)
     {
         Destination = customerLocation;
         UpdateStatus(DroneState.Delivering);
@@ -115,6 +115,7 @@ public class Drone : DroneRecord
 
         UpdateStatus(DroneState.Ready);
         Console.WriteLine("Back home!"); // Debug
+        return true;
     }
     
 

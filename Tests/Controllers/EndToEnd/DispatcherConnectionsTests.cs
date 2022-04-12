@@ -1,58 +1,123 @@
-/*using System;
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Dispatch.Controllers;
+using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
-using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
-using Domain.Gateways;
-using Domain.Implementation.Gateways;
-using Domain.Interfaces.Gateways;
-using Domain.Interfaces.Repositories;
+using Domain.InterfaceDefinitions.Gateways;
+using Domain.InterfaceDefinitions.Repositories;
+using Domain.InterfaceImplementations.Gateways;
 using FluentAssertions;
+using FrontEnd.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Moq.Protected;
+using SimDrone;
+
 using SimDrone.Controllers;
 using Xunit;
+using System.Linq;
 
 namespace Tests.Controllers.EndToEnd
 {
     public class DispatcherConnectionsTests
     {
-        
+        private void checkStuff()
+        {
+            var simDroneSetup = new Mock<SimDroneController>();
+            simDroneSetup.Setup(x 
+                => x.InitializeRegistration(
+                    It.IsAny<InitDroneRequest>())).Returns<Task<string?>>();
+        private Dictionary<string, IActionResult> methodMap =
+            new Dictionary<string, IActionResult>(
+                    "SimDrone.InitializeRegistration"  
+                );
+        }
+
+        /*private static void SetUpAll(out DispatchController controller, out Mock<IOrdersRepository> orders, out Mock<IDroneGateway> gateway, params  MethodSetups[] toggles)
+        {
+            var drones = new Mock<IDronesRepository>();
+            orders = new Mock<IOrdersRepository>();
+            gateway = new Mock<IDroneGateway>();
+            if(toggles.Contains(MethodSetups.DroneShouldCreateAsync)) 
+                drones.Setup(x => x.CreateAsync(It.IsAny<Drone>())).Returns<Drone>(Task.FromResult);
+            if(toggles.Contains(MethodSetups.DroneShouldGetByIdAsync)) 
+                drones.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns(Task.FromResult(Drone()));
+            if(toggles.Contains(MethodSetups.DroneShouldGetAllAvailableDronesAsync))
+                drones.Setup(x => x.GetAllAvailableDronesAsync()).ReturnsAsync(new List<Drone>{TestDroneRecord}.AsEnumerable());
+            if(toggles.Contains(MethodSetups.OrderShouldGetByIdAsync))
+                orders.Setup(x => x.GetByIdAsync(It.IsAny<string>())).ReturnsAsync(TestOrder).Verifiable();
+            if(toggles.Contains(MethodSetups.OrderShouldUpdate))
+                orders.Setup(x => x.Update(TestOrder)).ReturnsAsync(TestOrder).Verifiable();
+            if(toggles.Contains(MethodSetups.GatewayShouldStartRegistration))
+                gateway.Setup(x => x.StartRegistration(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<GeoLocation>())).ReturnsAsync(true).Verifiable();
+            if(toggles.Contains(MethodSetups.GatewayShouldAssignDelivery2))
+                gateway.Setup(x => x.AssignDelivery(It.IsAny<string>(),It.IsAny<string>(), It.IsAny<GeoLocation>())).Verifiable();
+            controller = new DispatcherController(drones.Object, orders.Object, gateway.Object);
+        }*/
             //completeRegistration
             [Fact]
         public async Task dispatcher_controller_should_finish_registration_to_drone()
         {
             var mockedDronesRepository = new Mock<IDronesRepository>().Object;
-            //testDroneGateway.changeHandler(mockedDroneHandler);
-            var testDispatcherGateway = new DroneToDispatcherGateway();
-            //testDispatcherGateway.changeHandler(mockedDispatcherHandler);
+            var testDroneGateway = new Mock<DroneToDispatchGateway>().Object;
+            testDroneGateway.changeHandler(mockedDroneHandler);
+            var testDispatcherGateway = new Mock<DroneToDispatchGateway>();
+            testDispatcherGateway.changeHandler(mockedDispatcherHandler);
             // Mocking http server
-            var testDroneController = new SimDroneController(new DroneToDispatcherGateway());
-            var response = await testDroneController.CompleteRegistration();
+            var testDroneControllerSetup = new Mock<SimDroneController>();
+            var response = await testDroneControllerSetup.Object.CompleteRegistration(
+                    new CompleteRegistrationPost{
+                            Gateway = testDispatcherGateway.Object,
+                            Record = TestDroneRecord
+                            
+                    });
 
             var expected = new OkResult();
             response.Should().BeEquivalentTo(expected);
         }
+      
+        private void GetHttpHandler(string entity, string endpoint)
+        {
             
-            
-            //initRegistration
+            var setup = new Mock<HttpMessageHandler>();
+            setup.Protected().Setup<Task<HttpResponseMessage>>(
+                    "SendAsync", 
+                    ItExpr.Is<HttpRequestMessage>(
+                        x => x.RequestUri == 
+                             new Uri($"http://{Constants.DispatcherIp}/{entity}/{endpoint}")), 
+                    ItExpr.IsAny<CancellationToken>()
+             )
+             .ReturnsAsync(new HttpResponseMessage {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent()
+                    // Assumed ok only for now
+                });
+        }
+
+        //initRegistration
         [Fact]
         public async Task dispatcher_controller_should_start_registration_to_drone()
         {
             var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
-            var testDroneInfo = new DroneRegistrationInfo
+            var testDroneInfo = new AssignFleetRequest
             {
                 BadgeNumber = 5,
-                IpAddress = "test_ip"
+                DispatcherUrl = Constants.Url,
+                HomeLocation = Constants.HomeLocation
             };
+            var frontToDispatch = new Mock<FrontEndToDispatchGateway>().Object;
+            
+            
+            
             var mockedDronesRepo = new Mock<IDronesRepository>().Object;
-            var mockedDispatcherGateway = new Mock<IDispatcherGateway>().Object;
+            var mockedDispatcherGateway = new Mock<DroneToDispatchGateway>().Object;
             var testDroneGateway = new DispatchToDroneGateway();
-            var testDroneController = new SimDroneController(new DroneToDispatcherGateway());
+            var testDroneController = new SimDroneController(new DroneToDispatchGateway());
             var testDispatcherController = new DispatcherController(mockedDronesRepo,mockedOrdersRepo,testDroneGateway);
             var mockedDroneHandlerSetup = new Mock<HttpMessageHandler>();
             var mockedDispatcherHandlerSetup = new Mock<HttpMessageHandler>();
@@ -80,7 +145,7 @@ namespace Tests.Controllers.EndToEnd
                 });
             var mockedDispatcherHandler = mockedDispatcherHandlerSetup.Object;
             DispatchToDroneGateway.ChangeHandler(mockedDroneHandler);
-            var testDispatcherGateway = new DroneToDispatcherGateway();
+            var testDispatcherGateway = new DroneToDispatchGateway();
             testDispatcherGateway.ChangeHandler(mockedDispatcherHandler);
             // Mocking http server
             var response = await testDispatcherController.RegisterNewDrone(testDroneInfo);
@@ -92,12 +157,13 @@ namespace Tests.Controllers.EndToEnd
         [Fact]
         public async Task dispatcher_controller_should_assign_delivery_to_drone()
         {
+            var testDroneController = new DroneController(mockedDroneRepo, droneToDispatchGateway);
+            var dispatchToDroneGateway = new DispatchToDroneGateway();
+            
             // This is accidentally end-to-end
             var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
             var mockedDroneRepo = new Mock<IDronesRepository>().Object;
-            var mockedDispatcherGateway = new Mock<IDispatcherGateway>().Object;
-            var testDroneController = new DroneController(mockedDroneRepo, mockedDispatcherGateway);
-            var testDroneGateway = new DispatchToDroneGateway();
+            var droneToDispatchGateway = new Mock<DroneToDispatchGateway>().Object;
 
             var testDeliverOrderDto = new AssignDeliveryRequest
             {
@@ -108,17 +174,8 @@ namespace Tests.Controllers.EndToEnd
                    Longitude = -105.0010m
                }
             };
-            var testOrderDto = new AddOrderRequestDTO
-            {
-                DeliveryLocation = new GeoLocation
-                {
-                    Latitude = 39.74273568191456m,
-                    Longitude = -105.00771026053671m
-                },
-                Id = "testOrderID"
-            };
-         
-            var testDispatcherController = new DispatcherController(mockedDroneRepo,mockedOrdersRepo,testDroneGateway);
+
+            var testDispatcherController = new Mock<DispatchController>().Object;
             var mockedDroneHandlerSetup = new Mock<HttpMessageHandler>();
             var mockedHandlerSetup = new Mock<HttpMessageHandler>();
             mockedHandlerSetup.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
@@ -135,16 +192,31 @@ namespace Tests.Controllers.EndToEnd
                 });
             var mockedHandler = mockedHandlerSetup.Object;
             DispatchToDroneGateway.ChangeHandler(mockedHandler);
-            var testDrone = new DroneSimulator.Drone("test_badge", testDeliverOrderDto.OrderLocation, mockedDispatcherGateway,
-                Constants.BadgeNumber, "777 heaven circle", "localhost:5001");
+            var testDrone = new Drone( Constants.TestRecord, droneToDispatchGateway);
+            
             testDroneController.changeDrone(testDrone);
-            var testDispatcherGateway = new DroneToDispatcherGateway();
-            testDispatcherGateway.ChangeHandler(mockedHandler);
+            var frontToDispatcher = new Mock<FrontEndToDispatchGateway>();
+            frontToDispatcher.
+            toDispatcher.ChangeHandler(mockedHandler);
             // Mocking http server
             var response = await testDispatcherController.AddNewOrder(testOrderDto);
             var expected = new OkResult();
             response.Should().BeEquivalentTo(expected);
             testDrone.CurrentLocation.Should().BeEquivalentTo(testDeliverOrderDto.OrderLocation);
+        private static readonly Drone TestDroneRecord = new Drone(
+        new DroneRecord(){
+            IpAddress = ValidTestIp,
+            Destination = TestDeliveryLocation,
+            // TestBadgeNumber = TestGuid,
+            CurrentLocation = TestHomeLocation,
+            // Status = Constants.DroneStatus.READY,
+            OrderId = TestOrderId,
+            DispatcherUrl = TestDispatcherUrl,
+            Id = "TestGuid",
+            HomeLocation = TestHomeLocation,
+            BadgeNumber = TestBadgeNumber
+            },ga
+        };
         }
     }
-}*/
+}
