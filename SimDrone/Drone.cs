@@ -47,33 +47,43 @@ public class Drone : DroneRecord
             throw new ArgumentException(
                 "Destination cannot be the same as the AssignDeliveryRequest station!");
 
-        var distance = Haversine(
+        var haversine = Haversine(
             ToDouble(HomeLocation.Latitude), 
             ToDouble(HomeLocation.Longitude),
             ToDouble(Destination.Latitude), 
             ToDouble(Destination.Longitude)
             );
 
-        var numberOfLocations = (int) Math.Floor((decimal) distance / StepSize);
-
-        Console.WriteLine($"need to travel {distance} km, step_size={StepSize}, num locations={numberOfLocations}");
-        // Latitude distance to get to destination
-        var xStep = (Destination.Longitude - HomeLocation.Longitude) / numberOfLocations;
-
-        // Longitude distance to get to destination
-        var yStep = (Destination.Latitude - HomeLocation.Latitude) / numberOfLocations;
-
-        // LINQ yields all the points (except possibly the last one) along the route, one unit apart.
-        var route = Enumerable.Range(0, numberOfLocations - 1)
-            .Select(i => new GeoLocation
+        var latMax  = (decimal)Haversine(
+                ToDouble(HomeLocation.Latitude), 
+                ToDouble(HomeLocation.Longitude),
+                ToDouble(Destination.Latitude), 
+                ToDouble(HomeLocation.Longitude)
+            );
+        var lonMax = (decimal)Haversine(
+                ToDouble(HomeLocation.Latitude), 
+                ToDouble(HomeLocation.Longitude),
+                ToDouble(HomeLocation.Latitude), 
+                ToDouble(Destination.Longitude)
+            );
+        var route = new List<GeoLocation>();
+        decimal latDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
+        decimal lonDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
+        var latStep = latMax / (decimal)haversine * StepSize;
+        var lonStep = lonMax / (decimal)haversine * StepSize;
+        var latSum = 0m;
+        var lonSum = 0m;
+        while (latSum > latMax ||
+               lonSum < lonMax)
+        {
+            latSum += lonDirection / latStep;
+            lonSum += lonDirection / lonStep;
+            route.Add(new GeoLocation
             {
-                Latitude = i * xStep,
-                Longitude = i * yStep
-            }).ToList();
-
-        // Add the Destination Point if needed.
-        if (!route.Last().Equals(Destination)) route.Add(Destination);
-
+                Latitude = latSum,
+                Longitude = lonSum
+            });
+        }
         return route.ToArray();
     }
     
