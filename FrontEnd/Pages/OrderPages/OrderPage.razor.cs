@@ -13,7 +13,8 @@ namespace FrontEnd.Pages.OrderPages
     {
         Order custOrder;
 
-        private static FrontEndToDispatchGateway _gateway = new ("http://localhost:80");
+        // = new ("http://localhost:80"); 
+        private static FrontEndToDispatchGateway _gateway; 
 
         protected override void OnInitialized()
         {
@@ -32,7 +33,7 @@ namespace FrontEnd.Pages.OrderPages
             custOrder.URL = r.Headers.Location.AbsoluteUri;
             var response = await restpoint.Put<Order>(custOrder.URL,custOrder);
             Console.WriteLine("made it here");
-            var dispatchResponse = await _gateway.AddDrone(
+            var dispatchResponse = await _gateway.AddOrder(
                 new AddOrderRequest()
                 {
                     OrderId = custOrder.Id

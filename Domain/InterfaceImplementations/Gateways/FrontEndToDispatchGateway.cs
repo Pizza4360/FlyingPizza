@@ -12,11 +12,11 @@ public class FrontEndToDispatchGateway : BaseGateway
 
     // Step 4, DroneToDispatchGateway takes in initial info
     // to create a GeoLocation and then POST its first status update 
-    public async Task<string?> AddDrone(
+    public async Task<string?> AddOrder(
     AddOrderRequest ready)
     {
         return await SendMessage(
-            "AddDrone"
+            "AddOrder"
             , ready);
     }
 

@@ -23,7 +23,7 @@ namespace Dispatch.Controllers
         }
         
         // Step 1, use use DispatchToDroneGateway to init registration
-        [HttpPost("AddDrone")]
+        [HttpPost("AddOrder")]
         public async Task<string> AddDrone(GatewayDto dto)
         {
             return "ok";
