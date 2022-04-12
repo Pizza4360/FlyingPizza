@@ -24,14 +24,15 @@ namespace Dispatch.Controllers
         
         // Step 1, use use DispatchToDroneGateway to init registration
         [HttpPost("AddDrone")]
-        public Task<bool> AddDrone(GatewayDto dto)
+        public async Task<string> AddDrone(GatewayDto dto)
         {
-            Console.WriteLine($"{dto.Url}");
-            return Task.FromResult(_dispatchToDroneGateway.InitializeRegistration(
-                    dto.Url
-                    , dto.Url
-                    , GetNewBadgeNumber())
-                .Result);
+            return "ok";
+            // Console.WriteLine($"{dto.Url}");
+            // return Task.FromResult(_dispatchToDroneGateway.InitializeRegistration(
+            //         dto.Url
+            //         , dto.Url
+            //         , GetNewBadgeNumber())
+            //     .Result);
         }
 
         private int GetNewBadgeNumber()

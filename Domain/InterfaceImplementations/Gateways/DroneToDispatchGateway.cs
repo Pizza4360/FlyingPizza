@@ -49,5 +49,9 @@ namespace Domain.InterfaceImplementations.Gateways
         public async Task<Task<Task<string?>>> 
             PatchDroneStatus(DroneStatusUpdateRequest state)
             => Task.FromResult(SendMessage(Url, state));
+
+        public DroneToDispatchGateway(string httpLocalhost) : base(httpLocalhost)
+        {
+        }
     }
 }

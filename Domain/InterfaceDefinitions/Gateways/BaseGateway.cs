@@ -7,6 +7,10 @@ using Domain.DTO;
 namespace Domain.InterfaceDefinitions.Gateways;
 public class BaseGateway : IBaseGateway<BaseDTO>
 {
+    public BaseGateway(string httpLocalhost)
+    {
+        string urlBase = httpLocalhost;
+    }
     protected HttpClient HttpClient = new();
         
     private string _url;

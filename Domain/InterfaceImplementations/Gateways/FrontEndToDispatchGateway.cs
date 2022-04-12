@@ -2,30 +2,24 @@
 using System.Threading.Tasks;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.FrontEndDispatchCommunication;
-using Domain.DTO.Shared;
+using Domain.DTO;
 using Domain.InterfaceDefinitions.Gateways;
 
 namespace Domain.InterfaceImplementations.Gateways;
 
 public class FrontEndToDispatchGateway : BaseGateway
 {
+
     // Step 4, DroneToDispatchGateway takes in initial info
     // to create a GeoLocation and then POST its first status update 
     public async Task<string?> AddDrone(
-    int latitude,
-    int longitude,
-    string ready) 
-        => await SendMessage("PostInitialStatus", 
-            new DroneStatusUpdateRequest 
-            {
-                Location = new GeoLocation
-                {
-                    Latitude = latitude,
-                    Longitude = longitude
-                },
-                State = ready
-            });
-    
+    AddOrderRequest ready)
+    {
+        return await SendMessage(
+            "AddDrone"
+            , ready);
+    }
+
     public void RemoveDrone(HttpMessageHandler handler)
     {
         // Added for mocking reasons, no way around it
@@ -49,4 +43,8 @@ public class FrontEndToDispatchGateway : BaseGateway
     /// <returns></returns>
     public async Task<Task<Task<string?>>> PatchDroneStatus(DroneStatusUpdateRequest state)
         => Task.FromResult(SendMessage(Url, state));
+
+    public FrontEndToDispatchGateway(string httpLocalhost) : base(httpLocalhost)
+    {
+    }
 }

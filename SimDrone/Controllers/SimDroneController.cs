@@ -37,10 +37,7 @@ namespace SimDrone.Controllers
         [HttpPost("InitializeRegistration")]
         public async Task<string?> InitializeRegistration(InitDroneRequest initInfo)
         {
-            _gateway = new DroneToDispatchGateway
-            {
-                Url = initInfo.Url
-            };
+            _gateway = new DroneToDispatchGateway(initInfo.Url);
             Console.WriteLine();
             var _badgeNumber = initInfo.BadgeNumber;
             return await _gateway.PostInitialStatus(0, 0, "Ready") ;
