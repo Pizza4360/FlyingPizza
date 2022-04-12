@@ -35,7 +35,7 @@ namespace SimDrone.Controllers
         // DroneToDispatcherGateway object, then uses it
         // to give initial state and location back
         [HttpPost("InitializeRegistration")]
-        public async Task<HttpResponseMessage> InitializeRegistration(InitDroneRequest initInfo)
+        public async Task<string?> InitializeRegistration(InitDroneRequest initInfo)
         {
             _gateway = new DroneToDispatchGateway
             {

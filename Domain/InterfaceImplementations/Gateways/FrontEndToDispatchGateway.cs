@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.FrontEndDispatchCommunication;
@@ -12,11 +11,11 @@ public class FrontEndToDispatchGateway : BaseGateway
 {
     // Step 4, DroneToDispatchGateway takes in initial info
     // to create a GeoLocation and then POST its first status update 
-    public Task<HttpResponseMessage> AddDrone(
+    public async Task<string?> AddDrone(
     int latitude,
     int longitude,
     string ready) 
-        => SendMessage("PostInitialStatus", 
+        => await SendMessage("PostInitialStatus", 
             new DroneStatusUpdateRequest 
             {
                 Location = new GeoLocation
@@ -33,11 +32,11 @@ public class FrontEndToDispatchGateway : BaseGateway
         HttpClient = new HttpClient(handler);
     }
 
-    public async Task<Task<HttpResponseMessage>> SendDelivery(SendDeliveryRequest dto)
-        => SendMessage("SendDelivery", dto);
+    public async Task<string?> SendDelivery(SendDeliveryRequest dto)
+        => await SendMessage("SendDelivery", dto);
     
-    public async Task<Task<HttpResponseMessage>> CancelDeliveryRequest(string id)
-        => SendMessage("CancelDeliveryRequest",
+    public async Task<string?> CancelDeliveryRequest(string id)
+        => await SendMessage("CancelDeliveryRequest",
             new CancelDeliveryRequest
             {
                 OrderId = id
@@ -48,6 +47,6 @@ public class FrontEndToDispatchGateway : BaseGateway
     /// </summary>
     /// <param name="state"></param>
     /// <returns></returns>
-    public Task<Task<HttpResponseMessage>> PatchDroneStatus(DroneStatusUpdateRequest state)
+    public async Task<Task<Task<string?>>> PatchDroneStatus(DroneStatusUpdateRequest state)
         => Task.FromResult(SendMessage(Url, state));
 }

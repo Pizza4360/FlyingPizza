@@ -19,10 +19,12 @@ public class BaseGateway : IBaseGateway<BaseDTO>
         get => _url + "/Dispatch";
     }
 
-    public async Task<HttpResponseMessage> SendMessage(string restCall, BaseDTO dto)
+    public Task<string?> SendMessage(string restCall, BaseDTO dto)
     {
         var body = JsonContent.Create($"{dto.ToJsonString()}");
         var requestUri = new Uri($"{Url}/{restCall}");
-        return await HttpClient.PostAsync(requestUri, body);
+        return Task.FromResult(HttpClient.PostAsync(requestUri, body)
+            .Result.Content.ReadAsStreamAsync()
+            .Result.ToString()!);
     }
 }

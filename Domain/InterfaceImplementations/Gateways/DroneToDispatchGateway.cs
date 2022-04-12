@@ -12,11 +12,11 @@ namespace Domain.InterfaceImplementations.Gateways
     {
         // Step 4, DroneToDispatchGateway takes in initial info
         // to create a GeoLocation and then POST its first status update 
-        public Task<HttpResponseMessage> PostInitialStatus(
+        public async Task<string?> PostInitialStatus(
         int latitude,
         int longitude,
         string ready) 
-            => SendMessage("PostInitialStatus", 
+            => await SendMessage("PostInitialStatus", 
                 new DroneStatusUpdateRequest 
                 {
                     Location = new GeoLocation
@@ -33,12 +33,12 @@ namespace Domain.InterfaceImplementations.Gateways
             HttpClient = new HttpClient(handler);
         }
 
-        public async Task<Task<HttpResponseMessage>> CompleteOrder(string id)
-            => SendMessage("CompleteOrder",
+        public async Task<string?> CompleteOrder(string id)
+            => await SendMessage("CompleteOrder",
                 new CompleteOrderRequest
                 {
-                   Time = DateTime.Now,
-                   OrderId = id
+                    Time = DateTime.Now,
+                    OrderId = id
                 });
 
         /// <summary>
@@ -46,7 +46,8 @@ namespace Domain.InterfaceImplementations.Gateways
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public Task<Task<HttpResponseMessage>> PatchDroneStatus(DroneStatusUpdateRequest state)
+        public async Task<Task<Task<string?>>> 
+            PatchDroneStatus(DroneStatusUpdateRequest state)
             => Task.FromResult(SendMessage(Url, state));
     }
 }
