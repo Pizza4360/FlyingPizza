@@ -1,10 +1,11 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Domain.DTO;
+using Domain.Entities;
 
 namespace Domain.InterfaceDefinitions.Gateways
 {
-    public interface IDroneGateway
+    public interface IDispatchToDroneGateway : IBaseGateway<BaseDTO>
     {
         public Task<HttpResponseMessage> StartRegistration(
             string droneIpAddress);
@@ -19,5 +20,7 @@ namespace Domain.InterfaceDefinitions.Gateways
             int badgeNumber,
             string dispatcherUrl,
             GeoLocation homeLocation);
+
+        Task<bool> InitializeRegistration(string droneIp, string httpsFlyingpizzaCom, int testBadgeNumber);
     }
 }

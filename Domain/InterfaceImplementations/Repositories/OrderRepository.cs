@@ -13,7 +13,7 @@ using MongoDB.Driver;
 
 namespace Domain.InterfaceImplementations.Repositories;
 
-public class OrderRepository
+public class OrderRepository : IOrdersRepository
 {
     private readonly IMongoCollection<Order> _collection;
     public OrderRepository(IOptions<DatabaseSettings> ordersSettings) //: Domain.InterfaceDefinitions.Repositories
@@ -27,13 +27,8 @@ public class OrderRepository
         _collection = mongoDatabase.GetCollection<Order>(
             ordersSettings.Value.CollectionName);
     }
-    // Once again a testing version
-    public OrderRepository(IMongoCollection<Order> mockedCollection) //: Domain.InterfaceDefinitions.Repositories
-    {
-        _collection = mockedCollection;
-    }
-    
-   public async Task<Order?> GetAsync(string id) =>
+
+    public async Task<Order?> GetAsync(string id) =>
         await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
     public async Task<bool>

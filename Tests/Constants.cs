@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using Dispatch.Controllers;
 using Domain.DTO;
 using Domain.Entities;
 using SimDrone;
@@ -45,7 +49,18 @@ namespace Tests
             InvalidTestIp = "test_ip",
             ValidTestIp = "172.18.0.0",
             TestDispatcherUrl = "http://" + ValidTestIp + ":4000";
-            
+
+           public static readonly Dictionary<string, string> TestStringDict = new()
+           {
+               ["something"] = "something"
+           };
+
+           public static readonly HttpResponseMessage Httpok = new()
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("")
+        };
+        
         private static readonly GeoLocation 
             TestDeliveryLocation = new() 
             {
@@ -59,6 +74,11 @@ namespace Tests
         
         private static readonly Guid TestGuid = new();
         private static readonly DateTime TestTimeDelivered = DateTime.UtcNow;
+        
+        public static readonly GatewayDto TestGatewayDto = new ()
+        {
+            
+        };
         
         public static readonly Order TestOrder = new()
         {
