@@ -25,32 +25,24 @@ namespace SimDrone.Controllers
             return _drone.DeliverOrder(order.OrderLocation).ToString();
         }
 
-        /// <summary>
-        /// This method is called when a drone has been pinged to be
-        /// initialized into a fleet. SimDroneController is idle until
-        /// this method is called.
-        /// </summary>
-        /// <returns></returns>
-        // Step 3, drone saves the incoming url in a new
-        // DroneToDispatcherGateway object, then uses it
-        // to give initial state and location back
+        
         [HttpPost("InitializeRegistration")]
-        public async Task<string?> InitializeRegistration(
+        public Task<InitDroneResponse> InitializeRegistration(
         InitDroneRequest initInfo)
         {
-            _gateway = new DroneToDispatchGateway{
-                Url = initInfo.Url
-            };
-            Console.WriteLine();
-            var _badgeNumber = initInfo.BadgeNumber;
-            return await _gateway.PostInitialStatus(0, 0, "Ready");
+            Console.WriteLine(initInfo.ToJsonString());
+            var okay = _drone.Id == null;
+            if(okay)
+            {
+                _gateway = new DroneToDispatchGateway{ Url = initInfo.DroneIp };
+            }
+            return Task.FromResult(new InitDroneResponse
+            {
+                Id = initInfo.Id,
+                Okay = okay
+            });
         }
-
-        /// <summary>
-        /// For testing purposes.
-        /// </summary>
-        /// <returns>"hello, world"</returns>
-        // Step 7, receive the BadgeNumberAndHome through a drone object
+        
         [HttpPost("StartDrone")]
         public Task<OkObjectResult> StartDrone(
         Drone drone)
@@ -65,16 +57,22 @@ namespace SimDrone.Controllers
         /// <param name="post"></param>
         /// <returns></returns>
         [HttpPost("CompleteRegistration")]
-        public async Task<IActionResult> CompleteRegistration(
-        CompleteRegistrationPost post)
+        public async Task<CompleteRegistrationResponse> AssignToFleet(
+        CompleteRegistrationRequest post)
         {
             Console.WriteLine("Generating simulated drone...");
-            _drone = new Drone(post.Record, post.Gateway);
-            // TODO: initialize this from the drones repository, based on a drone id from environment variables
+            _drone = new Drone(post.Record, new DroneToDispatchGateway
+            {
+                Url = post.DispatchIpAddress
+            });
             var doneString
                 = $"SimDrone successfully initialized.\nDrone -->{_drone}";
             Console.WriteLine(doneString);
-            return Ok(doneString);
+            return new CompleteRegistrationResponse
+            {
+                Record = post.Record,
+                Okay = true
+            };
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using MongoDB.Bson;
+﻿using System.Data;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Domain;
 
 namespace Domain.DTO.DroneDispatchCommunication
 {
@@ -10,7 +12,9 @@ namespace Domain.DTO.DroneDispatchCommunication
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id;
 
-        [BsonElement("Ok")]
-        public bool Ok;
+        [BsonElement("Okay")]
+        public bool Okay;
+        
+        public DroneState FirstState { get; set; }
     }
 }

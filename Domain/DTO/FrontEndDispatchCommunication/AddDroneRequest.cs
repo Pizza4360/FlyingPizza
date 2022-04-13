@@ -6,9 +6,21 @@ namespace Domain.DTO.FrontEndDispatchCommunication
 {
     public class AddDroneRequest : BaseDTO
     {
-        [BsonElement("IpAddress"), JsonPropertyName("IpAddress")]
-        public string IpAddress { get; set; }        
+        [BsonElement("Id"), JsonPropertyName("Id")]
+        public string Id { get; set; }
         
         [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
-        public int BadgeNumber { get; set; }    }
+        public Guid BadgeNumber { get; set; }    
+        
+        [BsonElement("HomeLocation"), JsonPropertyName("HomeLocation")]
+        public GeoLocation HomeLocation { get; set; }
+        
+        [BsonElement("DroneIp"), JsonPropertyName("DroneIp")]
+        public string DroneIp { get; set; }
+        
+        [BsonElement("DispatchIp"), JsonPropertyName("DispatchIp")]
+        public string DispatchIp { get; set; }        
+        
+    
+    }
 }

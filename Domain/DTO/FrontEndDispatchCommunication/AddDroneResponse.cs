@@ -8,6 +8,9 @@ namespace Domain.DTO.FrontEndDispatchCommunication
         [BsonElement("Success"), JsonPropertyName("Success")]
         public bool Success { get; set; }
 
-        [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
-        public int BadgeNumber { get; set; }    }
+        [BsonId]
+        [BsonElement("Id")]
+        [JsonPropertyName("Id")]
+        public int Id { get; set; }    
+    }
 }

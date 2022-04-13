@@ -120,7 +120,7 @@ public class Drone : DroneRecord
     
 
     // Send an DroneState update to DispatcherGateway
-    private bool UpdateStatus(string state)
+    private bool UpdateStatus(DroneState state)
     {
         State = state;
         return PatchDroneStatus();
@@ -132,7 +132,7 @@ public class Drone : DroneRecord
             new DroneStatusUpdateRequest
             {
                 Id = Id,
-                State = $"{State}"
+                State = State
             });
         t.Wait();
         return t.IsCompletedSuccessfully;

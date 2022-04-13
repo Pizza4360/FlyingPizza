@@ -8,6 +8,9 @@ namespace Domain.DTO.DroneDispatchCommunication
         [BsonId]
         [BsonElement("Id")]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id;
+        public string Id { get; set; }
+        
+        [BsonElement("Okay")]
+        public bool Okay { get; set; }
     }
 }

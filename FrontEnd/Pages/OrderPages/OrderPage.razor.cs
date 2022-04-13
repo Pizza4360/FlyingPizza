@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
@@ -35,7 +36,7 @@ namespace FrontEnd.Pages.OrderPages
             custOrder.URL = r.Headers.Location.AbsoluteUri;
             var response = await restpoint.Put<Order>(custOrder.URL,custOrder);
 
-            var dispatchResponse = _gateway.Ping(new PingDto
+            var dispatchResponse = _gateway.Ping(new Ping
             {
                 S = "Malc"
             });

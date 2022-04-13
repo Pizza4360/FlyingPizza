@@ -51,6 +51,12 @@ public class FleetRepository
         => (await _collection.Find(_ => true)
                 .ToListAsync())
             .ToDictionary(droneRecord => droneRecord.Id, droneRecord => droneRecord.IpAddress);
+    
+    public async Task<List<DroneRecord>> GetAllAvailable() 
+        => await _collection.Find(_ => _.State == DroneState.Ready)
+            .ToListAsync();
+    
+    
 
     public async Task<UpdateResult> PatchDroneStatus(DroneStatusUpdateRequest dto)=>
          await _collection.UpdateOneAsync( 

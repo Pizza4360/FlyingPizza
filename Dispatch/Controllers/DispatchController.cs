@@ -1,6 +1,7 @@
 using Domain;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
+using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using Domain.InterfaceImplementations.Gateways;
 using Domain.InterfaceImplementations.Repositories;
@@ -14,6 +15,13 @@ namespace Dispatch.Controllers
     [Route("[controller]")]
     public class DispatchController : ControllerBase
     {
+        // private readonly ILogger<DispatchController> _logger;
+        private readonly GeoLocation _homeLocation;
+        private readonly Queue<AssignDeliveryRequest> _unfilledOrders;
+        private readonly FleetRepository _droneRepo;
+        private readonly OrderRepository _orderRepo;
+        private readonly DispatchToDroneGateway _dispatchToDroneGateway;
+        
         public Task<string> Ping(GatewayDto name)
         {
             var greeting = $"Hello, {name} from Dispatch";
@@ -24,53 +32,48 @@ namespace Dispatch.Controllers
         }
         
         // Step 1, use use DispatchToDroneGateway to init registration
-        [HttpPost("AddOrder")]
-        public async Task<string> AddDrone(GatewayDto dto)
+        [HttpPost("AddDrone")]
+        public AssignFleetResponse AddDrone(AddDroneRequest dto)
         {
-            return "ok";
-            // Console.WriteLine($"{dto.Url}");
-            // return Task.FromResult(_dispatchToDroneGateway.InitializeRegistration(
-            //         dto.Url
-            //         , dto.Url
-            //         , GetNewBadgeNumber())
-            //     .Result);
+            var initResponse = _dispatchToDroneGateway
+                .InitializeRegistration(
+                    new InitDroneRequest
+                    {
+                        Id = dto.Id,
+                        DroneIp = dto.DroneIp
+                    }
+                ).Result;
+            
+            if (!initResponse.Okay)
+            {
+                return new AssignFleetResponse{Id = dto.Id, Okay = false};
+            }
+
+            var assignFleetResponse = _dispatchToDroneGateway.CompleteRegistration(new AssignFleetRequest
+            {
+                BadgeNumber = dto.BadgeNumber,
+                DispatcherIp = dto.DispatchIp,
+                DroneIp = dto.DroneIp,
+                HomeLocation = dto.HomeLocation,
+                Id = dto.Id
+            });
+            _droneRepo.CreateAsync(
+                new DroneRecord
+                {
+                    OrderId = null,
+                    Id = dto.Id,
+                    IpAddress = dto.DroneIp,
+                    BadgeNumber = dto.BadgeNumber,
+                    Destination = dto.HomeLocation,
+                    CurrentLocation = dto.HomeLocation,
+                    HomeLocation = dto.HomeLocation,
+                    DispatcherUrl = dto.DispatchIp,
+                    State = assignFleetResponse.FirstState
+                });
+            return assignFleetResponse;
         }
 
-        private int GetNewBadgeNumber()
-        {
-            return 5;
-            // Todo, look in the database and get the next badgenumber
-        }
 
-        // Step 5, receive the first POST status update, send it to the database,
-        // then use DispatchToDroneGateway to supply a badge number and
-        // home location to drone
-        [HttpPost("SendInitialStatus")]
-        public async Task<bool> CompleteRegistration(InitDrone dto)
-        {
-            Console.WriteLine($"{dto}");
-            await PatchDroneStatus(dto.FistStatusUpdateRequestUpdate);
-            return _dispatchToDroneGateway.CompleteRegistration(dto.Record)
-                .Result.Content.Headers.ToString()
-                .Contains("hello, world");
-        }
-
-
-        [HttpGet("badge_request")]
-        public Task<int> BadgeResponse()
-        {
-            return Task.FromResult(0);
-        }
-
-
-        private readonly FleetRepository _droneRepo;
-        private readonly OrderRepository _orderRepo;
-
-        private readonly DispatchToDroneGateway _dispatchToDroneGateway;
-
-        // private readonly ILogger<DispatchController> _logger;
-        private readonly GeoLocation _homeLocation;
-        private readonly Queue<AssignDeliveryRequest> _unfilledOrders;
 
         public DispatchController(
         FleetRepository droneRepo,
@@ -106,58 +109,21 @@ namespace Dispatch.Controllers
                 _orderRepo.PatchTimeCompleted(completeOrder.OrderId)
                 .Result);
 
-        /*
-        /// <summary>
-        /// This method is invoked from the front to add a new drone to the fleet.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns>`true` only if the handshake is completed and the drone is initialized.</returns>
-        [HttpPost("StartFleetRegistration")]
-        public async Task<bool> StartFleetRegistration(InitDroneRequest request)
+        public AssignDeliveryResponse AssignDelivery(AssignDeliveryRequest request)
         {
-            Console.WriteLine($"received \"{request}\"" +
-                "Attempting to initialize communication with drone...");
-            var canBeInitialized
-                = _dispatchToDroneGateway.StartRegistration(
-                    $"{request.Url}/Drone/init_registration");
-            if (!canBeInitialized.IsCompletedSuccessfully)
+            List<DroneRecord> availableDrones;
+            do
             {
-                Console.WriteLine("The drone could not be initialized...");
-                return false;
+                Thread.Sleep(3000);
+                availableDrones = _droneRepo.GetAllAvailable()
+                    .Result;
             }
+            while (availableDrones.Count == 0);
+            
 
-            // Todo make a new guid and make sure it is different from all other drones
-            var newDrone = new DroneRecord
-            {
-                BadgeNumber = request.BadgeNumber
-                , IpAddress = request.Url
-                , HomeLocation = _homeLocation
-                , DispatcherUrl = "//172.18.0.0:4000"
-                , Destination = _homeLocation
-                , CurrentLocation = _homeLocation
-                , OrderId = ""
-                , State = DroneState.Charging
-                , Id = "abcdefg"
-            };
-
-            var response = await _dispatchToDroneGateway.AssignToFleet(
-                newDrone.IpAddress
-                , newDrone.BadgeNumber
-                , newDrone.DispatcherUrl
-                , newDrone.HomeLocation);
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine(
-                    "Drone is online, but there was a problem assigning to fleet. either the drone is not ready to be initialized or is already part of a fleet.");
-                return false;
-            }
-
-            await _droneRepo.CreateAsync(newDrone);
-            // Todo dispatcher saves handshake record to DB
-            return true;
+            request.DroneId = availableDrones.First().Id;
+            return _dispatchToDroneGateway.AssignDelivery(request).Result;
         }
-        */
-
 
         [HttpPost("PostInitialStatus")]
         public UpdateResult
@@ -176,11 +142,6 @@ namespace Dispatch.Controllers
                 return _droneRepo.PatchDroneStatus(stateDto).Result;
             }
             var orderDto = _unfilledOrders.Dequeue();
-            await _dispatchToDroneGateway.AssignDelivery(
-                stateDto.Id
-                , orderDto.OrderId
-                , orderDto.OrderLocation);
-
             return _droneRepo.PatchDroneStatus(stateDto)
                 .Result;
         }

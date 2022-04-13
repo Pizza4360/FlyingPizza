@@ -72,7 +72,7 @@ namespace Tests.Controllers.Unit
             var testInfo = new DroneRegistrationInfo
             {
                 BadgeNumber = testGuid,
-                IpAddress = "test_ip"
+                DispatchIp = "test_ip"
             };
             var mockedDroneRepositorySetup = new Mock<IDronesRepository>();
             mockedDroneRepositorySetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns<Domain.Entities.DroneRecord>(x =>Task.FromResult(x));
@@ -94,7 +94,7 @@ namespace Tests.Controllers.Unit
             var testInfo = new DroneRegistrationInfo
             {
                 BadgeNumber = testGuid,
-                IpAddress = "test_ip"
+                DispatchIp = "test_ip"
             };
             var controller =
                 new DispatcherController(new DronesRepository(mockedDatabase, "bogus"), mockedOrdersRepo,mockedDroneGateway);
@@ -124,7 +124,7 @@ namespace Tests.Controllers.Unit
             var testInfo = new DroneRegistrationInfo
             {
                 BadgeNumber = testGuid,
-                IpAddress = "test_ip"
+                DispatchIp = "test_ip"
             };
             var controller = new DispatcherController(mockedDronesRepository,mockedOrdersRepo, mockedDroneGateway);
             var result = await controller.RegisterNewDrone(testInfo);
@@ -150,7 +150,7 @@ namespace Tests.Controllers.Unit
             var testGuid = 5;
             mockedDronesRepositorySetup.Setup(x => x.GetAllAvailableDronesAsync()).Returns(Task.FromResult(new List<Domain.Entities.DroneRecord>(1){new()
             {
-                IpAddress = "test_ip",
+                DispatchIp = "test_ip",
                 Destination = testDestination,
                 BadgeNumber = Constants.BadgeNumber,
                 CurrentLocation = testLocation,
@@ -173,7 +173,7 @@ namespace Tests.Controllers.Unit
             var testInfo = new DroneRegistrationInfo
             {
                 BadgeNumber = testGuid,
-                IpAddress = "test_ip"
+                DispatchIp = "test_ip"
             };
             var controller = new DispatcherController(mockedDronesRepository, mockedOrdersRepo,mockedDroneGateway);
             var testOrderDto = new AddOrderRequestDTO
@@ -202,7 +202,7 @@ namespace Tests.Controllers.Unit
             var testInfo = new DroneRegistrationInfo
             {
                 BadgeNumber = testGuid,
-                IpAddress = "test_ip"
+                DispatchIp = "test_ip"
             };
             var controller = new DispatcherController(mockedDronesRepository,mockedOrdersRepo, mockedDroneGateway);
             var testOrderDto = new AddOrderRequestDTO();

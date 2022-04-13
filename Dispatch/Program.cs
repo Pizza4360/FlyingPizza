@@ -35,7 +35,7 @@ builder.Services.AddSingleton<FleetRepository>();
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
-builder.Services.AddScoped<IDroneGateway>(_ => new DispatchToDroneGateway());
+builder.Services.AddScoped(_ => new DispatchToDroneGateway());
 #endregion repositories
 
 

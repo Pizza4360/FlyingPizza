@@ -1,12 +1,18 @@
-﻿namespace Domain.DTO
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.IdGenerators;
+
+namespace Domain.DTO
 {
-    public class DroneState
+    public enum DroneState
     {
-        public const string
-        Ready = "Ready",
-        Delivering = "Delivering",
-        Returning = "Returning",
-        Dead = "Dead",
-        Charging = "Charging";
+        Ready,
+        Delivering,
+        Returning,
+        Dead,
+        Charging
     }
 }

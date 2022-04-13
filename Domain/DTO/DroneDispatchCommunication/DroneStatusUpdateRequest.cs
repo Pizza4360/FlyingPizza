@@ -16,7 +16,7 @@ namespace Domain.DTO.DroneDispatchCommunication
         public GeoLocation Location { get; set; } 
         
         [BsonElement("State"), JsonPropertyName("State")]
-        public string State { get; set; }       
+        public DroneState State { get; set; }       
         
     }
 }
