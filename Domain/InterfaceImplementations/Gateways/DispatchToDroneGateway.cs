@@ -37,10 +37,10 @@ namespace Domain.InterfaceImplementations.Gateways
         }
         
         
-        public async Task<AssignDeliveryResponse> AssignDelivery(AssignDeliveryRequest request)
+        public async Task<AddOrderResponse> AssignDelivery(AssignDeliveryRequest request)
         {
             var droneIp = IdToIpMap[request.DroneId];
-            return (AssignDeliveryResponse) SendMessage(
+            return (AddOrderResponse) SendMessage(
                 "AssignDelivery",
                 new SendDeliveryRequest
                 {
@@ -50,7 +50,7 @@ namespace Domain.InterfaceImplementations.Gateways
         }
         
 
-        public static void ChangeHandler(HttpMessageHandler handler)
+        public void ChangeHandler(HttpMessageHandler handler)
         {
             // Added for mocking reasons, no way around it
             client = new HttpClient(handler);

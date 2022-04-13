@@ -20,7 +20,7 @@ namespace Dispatch.Controllers
         private readonly Queue<AssignDeliveryRequest> _unfilledOrders;
         private readonly FleetRepository _droneRepo;
         private readonly OrderRepository _orderRepo;
-        private readonly DispatchToDroneGateway _dispatchToDroneGateway;
+        private DispatchToDroneGateway _dispatchToDroneGateway;
         
         public Task<string> Ping(GatewayDto name)
         {
@@ -72,8 +72,7 @@ namespace Dispatch.Controllers
                 });
             return assignFleetResponse;
         }
-
-
+        
 
         public DispatchController(
         FleetRepository droneRepo,
@@ -109,7 +108,7 @@ namespace Dispatch.Controllers
                 _orderRepo.PatchTimeCompleted(completeOrder.OrderId)
                 .Result);
 
-        public AssignDeliveryResponse AssignDelivery(AssignDeliveryRequest request)
+        public AddOrderResponse AssignDelivery(AssignDeliveryRequest request)
         {
             List<DroneRecord> availableDrones;
             do
@@ -164,6 +163,48 @@ namespace Dispatch.Controllers
 
             return droneRecord;
         }
+        
+        // Testing mock replacement for gateway
+        public void changeGateway(DispatchToDroneGateway mockedGateway)
+        {
+            _dispatchToDroneGateway = mockedGateway;
+        }
+        
+        
+        private Guid GetNewBadgeNumber()
+        {
+            return Guid.NewGuid();
+            // Todo, look in the database and get the next badgenumber
+        }
+        
+        
+        [HttpGet("badge_request")]
+        public Task<int> BadgeResponse()
+        {
+            return Task.FromResult(0);
+        }
+        
+        // home location to drone
+        [HttpPost("SendInitialStatus")]
+        public async Task<bool> CompleteRegistration(InitDrone dto)
+        {
+            Console.WriteLine($"{dto}");
+            await PatchDroneStatus(dto.FistStatusUpdateRequestUpdate);
+            return _dispatchToDroneGateway.CompleteRegistration(
+                    new AssignFleetRequest
+                    {
+                        BadgeNumber = Guid.NewGuid(),
+                        DispatcherIp = dto.Record.DispatcherUrl,
+                        DroneIp = dto.Record.IpAddress,
+                        HomeLocation = dto.Record.HomeLocation,
+                        Id = dto.Record.Id
+                    }
+                    ).Okay;
+            // .Result.Content.Headers.ToString()
+            // .Contains("hello, world");
+
+        }
+        
     }
 }
 

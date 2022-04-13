@@ -83,6 +83,7 @@ public class Drone : DroneRecord
                 Latitude = latSum,
                 Longitude = lonSum
             });
+            //TODO: BUG #4 I am unsure if haversine is supposed to have this behavior but a trip between 0.0 and 3.0 is passing -2574.833, -55345.217
         }
         return route.ToArray();
     }
