@@ -1,6 +1,9 @@
 using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceImplementations.Gateways;
 using Domain.InterfaceImplementations.Repositories;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 
 Console.WriteLine("hello world!!!");
 var builder = WebApplication.CreateBuilder(args);
@@ -38,7 +41,7 @@ builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializ
 builder.Services.AddScoped(_ => new DispatchToDroneGateway());
 #endregion repositories
 
-
+BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.Int32));
 var app = builder.Build();
 
 

@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Dispatch.Controllers;
 using Domain.DTO;
-using Domain.DTO.DroneDispatchCommunication;
-using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using SimDrone;
 
@@ -17,7 +10,7 @@ namespace Tests
         public const string DroneIp = "localhost:5000";
         public const string DispatcherIp = "localhost:4000";
         public const string Url = "https://FlyingPizza.com";
-        public static readonly Guid TestBadgeNumber = Guid.NewGuid();
+        public const int TestBadgeNumber = 1;
         public const string DroneId = "abcdefg";
         public const string TestOrderId = "123456";
         
@@ -53,26 +46,7 @@ namespace Tests
             ValidTestIp = "172.18.0.0",
             TestDispatcherUrl = "http://" + ValidTestIp + ":4000";
             
-           
-           
-           public static readonly Dictionary<string, string> TestStringDict = new()
-           {
-               ["something"] = "something"
-           };
-           
-           public static readonly InitDrone TestInitDroneDto = new()
-           {
-               FistStatusUpdateRequestUpdate = TestDroneStatusUpdateRequest,
-               Record = TestRecord
-           };
-
-           public static readonly HttpResponseMessage Httpok = new()
-           {
-               StatusCode = HttpStatusCode.OK,
-               Content = new StringContent("")
-           };
-           
-        public static readonly GeoLocation 
+        private static readonly GeoLocation 
             TestDeliveryLocation = new() 
             {
                 Latitude = 39.74362771992734m, Longitude = -105.00549345883957m
@@ -83,8 +57,8 @@ namespace Tests
                 Longitude = -105.00561147600774m
             };
         
-        public static readonly Guid TestGuid = new();
-        public static readonly DateTime TestTimeDelivered = DateTime.UtcNow;
+        private static readonly Guid TestGuid = new();
+        private static readonly DateTime TestTimeDelivered = DateTime.UtcNow;
         
         public static readonly Order TestOrder = new()
         {
@@ -95,57 +69,23 @@ namespace Tests
             DeliveryLocation = TestDeliveryLocation,
             CustomerName = TestCustomerName
         };
-
-        public static readonly
-            Domain.DTO.FrontEndDispatchCommunication.AddDroneRequest
-            BadDroneRequest = new()
+        private static readonly Domain.DTO.FrontEndDispatchCommunication.AddDroneRequest 
+            BadDroneInfo = new()
             {
                 BadgeNumber = TestBadgeNumber,
                 DispatchIp = InvalidTestIp
-            },
-            DroneRegistrationInfo = new()
-            {
+            }, 
+            DroneRegistrationInfo = new() {
                 BadgeNumber = TestBadgeNumber,
-                DispatchIp = ValidTestIp,
-                Id = DroneId,
-                DroneIp = DroneIp,
-                HomeLocation = HomeLocation
+                DispatchIp = ValidTestIp
             };
 
-        public static AddOrderResponse AddOrderResponse = new()
-        {
-            
-        };
-        public static Domain.DTO.FrontEndDispatchCommunication.AddOrderRequest
+        private static Domain.DTO.FrontEndDispatchCommunication.AddOrderRequest
         addOrderRequest= new()
         {
             OrderId = TestOrderId,
             
         };
-        public static readonly GatewayDto TestGatewayDto = new ();
-        
-        public static readonly CompleteOrderRequest TestCompleteOrderRequest = new()
-        {
-            OrderId = TestOrderId,
-            Time = TestTimeDelivered
-        };
-        public static readonly DroneStatusUpdateRequest TestDroneStatusUpdateRequest = new()
-        {
-            Id = TestGuid.ToString(),
-            Location = TestDeliveryLocation,
-            State = DroneState.Ready
-        };
-
-        public static InitDroneResponse TestInitRegistrationResponse
-        {
-            get;
-            set;
-        } = new ()
-        {
-            Id = DroneId,
-            Okay = true
-        };
-
     }
 }
         

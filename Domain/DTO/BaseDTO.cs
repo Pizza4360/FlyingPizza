@@ -1,4 +1,7 @@
 ﻿using System.Runtime.Serialization;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace Domain.DTO
 {

@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Domain.Entities;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Domain.DTO.DroneDispatchCommunication
 {
@@ -17,6 +18,7 @@ namespace Domain.DTO.DroneDispatchCommunication
             public string DroneIp { get; set; }
             
             [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
+            [BsonId(IdGenerator = typeof(CombGuidGenerator))]
             public Guid BadgeNumber { get; set; }           
             
             [BsonElement("HomeLocation"), JsonPropertyName("HomeLocation")]

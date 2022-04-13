@@ -12,6 +12,20 @@ namespace SimDrone.Controllers
         private Drone _drone;
         private static DroneToDispatchGateway _gateway;
 
+        /// <summary>
+        /// Command a drone to deliver an order.
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        [HttpPost("deliver")]
+        public async Task<string> DeliverOrder(
+        AssignDeliveryRequest order)
+        {
+            Console.WriteLine($"Delivering {order}");
+            return _drone.DeliverOrder(order.OrderLocation).ToString();
+        }
+
+        
         [HttpPost("InitializeRegistration")]
         public Task<InitDroneResponse> InitializeRegistration(
         InitDroneRequest initInfo)
@@ -29,7 +43,19 @@ namespace SimDrone.Controllers
             });
         }
         
-        
+        [HttpPost("StartDrone")]
+        public Task<OkObjectResult> StartDrone(
+        Drone drone)
+        {
+            _drone = drone;
+            return Task.FromResult(Ok("hello, world"));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="post"></param>
+        /// <returns></returns>
         [HttpPost("CompleteRegistration")]
         public async Task<CompleteRegistrationResponse> AssignToFleet(
         CompleteRegistrationRequest post)
@@ -47,16 +73,6 @@ namespace SimDrone.Controllers
                 Record = post.Record,
                 Okay = true
             };
-        }
-
-        
-        [HttpPost("AssignDelivery")]
-        public async Task<string> DeliverOrder(
-        AssignDeliveryRequest order)
-        {
-            Console.WriteLine($"Delivering {order}");
-            return _drone.DeliverOrder(order.OrderLocation)
-                .ToString();
         }
     }
 }

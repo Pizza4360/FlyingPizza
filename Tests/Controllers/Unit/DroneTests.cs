@@ -1,5 +1,4 @@
-﻿using System;
-using Domain.DTO;
+﻿using Domain.DTO;
 using Domain.Entities;
 using Domain.InterfaceImplementations.Gateways;
 using FluentAssertions;
@@ -31,7 +30,7 @@ namespace Tests.Controllers.Unit
                     HomeLocation = Constants.HomeLocation,
                     IpAddress = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
-                    BadgeNumber = Constants.TestBadgeNumber
+                    BadgeNumber = 1
                 },
                 mockedDispatcher);
 
@@ -63,7 +62,7 @@ namespace Tests.Controllers.Unit
                     HomeLocation = Constants.HomeLocation,
                     IpAddress = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
-                    BadgeNumber = Constants.TestBadgeNumber
+                    BadgeNumber = 1
                 },
                 mockedDispatcher);
             drone.Destination = dest;
@@ -73,7 +72,6 @@ namespace Tests.Controllers.Unit
                 .NotBeNull();
             route.Should()
                 .Contain(home);
-            //TODO: BUG #4 I am unsure if haversine is supposed to have this behavior but a trip between 0.0 and 3.0 is passing -2574.833, -55345.217
         }
 
         [Fact]
@@ -97,7 +95,7 @@ namespace Tests.Controllers.Unit
                     HomeLocation = Constants.HomeLocation,
                     IpAddress = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
-                    BadgeNumber = Constants.TestBadgeNumber
+                    BadgeNumber = 1
                 },
                 mockedDispatcher);
             drone.Destination = dest;
@@ -135,7 +133,7 @@ namespace Tests.Controllers.Unit
                     HomeLocation = Constants.HomeLocation,
                     IpAddress = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
-                    BadgeNumber = Constants.TestBadgeNumber
+                    BadgeNumber = 1
                 },
                 mockedDispatcher);
             drone.Destination = dest;

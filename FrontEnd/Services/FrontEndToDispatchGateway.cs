@@ -10,9 +10,11 @@ namespace FrontEnd.Services;
 public class FrontEndToDispatchGateway : BaseGateway
 {
     public async Task Ping( Ping ready)
-    => SendMessage("Ping", new Ping { S = "Malc" });
-    
-    
+    => SendMessage("Ping", new Ping() { S = "Malc" });
+
+
+    // Step 4, DroneToDispatchGateway takes in initial info
+    // to create a GeoLocation and then POST its first status update 
     public async Task<AddOrderResponse> AddOrder(AddOrderRequest ready)
     => (AddOrderResponse)SendMessage("AddOrder", ready);
     
@@ -20,7 +22,6 @@ public class FrontEndToDispatchGateway : BaseGateway
     public async Task<AddDroneResponse> AddDrone(AddDroneRequest request)
     =>  (AddDroneResponse)SendMessage("InitDrone", request);
 
-    
     public void RemoveDrone(
     HttpMessageHandler handler)
     {
@@ -29,7 +30,6 @@ public class FrontEndToDispatchGateway : BaseGateway
         HttpClient = new HttpClient(handler);
     }
 
-    
     public async Task<CancelDeliveryResponse> CancelDeliveryRequest(
     string id) => (CancelDeliveryResponse)SendMessage(
         "CancelDeliveryRequest",

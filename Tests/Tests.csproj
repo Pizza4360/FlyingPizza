@@ -35,9 +35,4 @@
     <ProjectReference Include="..\FrontEnd\FrontEnd.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\EndToEnd" />
-    <Folder Include="Controllers\Integration" />
-  </ItemGroup>
-
 </Project>

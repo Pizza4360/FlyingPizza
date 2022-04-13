@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Domain.InterfaceDefinitions.Repositories;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Domain.InterfaceImplementations.Repositories;
 
-public class FleetRepository: IFleetRepository
+public class FleetRepository
 {
     private readonly IMongoCollection<DroneRecord> _collection;
-    public FleetRepository(IOptions<DatabaseSettings> fleetSettings) 
+    public FleetRepository(IOptions<DatabaseSettings> fleetSettings)
     {
         var mongoClient = new MongoClient(
             fleetSettings.Value.ConnectionString);
@@ -27,6 +26,12 @@ public class FleetRepository: IFleetRepository
         _collection = mongoDatabase.GetCollection<DroneRecord>(
             fleetSettings.Value.CollectionName);
     }
+    // Overloaded constructor for testing, can't find another way
+    public FleetRepository(IMongoCollection<DroneRecord> mockedCollection)
+    {
+        _collection = mockedCollection;
+    }
+    
     public async Task<List<DroneRecord>> GetAsync() =>
         await _collection.Find(_ => true).ToListAsync();
 
@@ -35,26 +40,6 @@ public class FleetRepository: IFleetRepository
 
     public async Task CreateAsync(DroneRecord newDroneRecord) =>
         await _collection.InsertOneAsync(newDroneRecord);
-
-    public Task<DroneRecord> GetByIdAsync(string id)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<IEnumerable<DroneRecord>> GetByIdsAsync(IEnumerable<string> ids)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<bool> Delete(string id)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<bool> Update(DroneRecord entity)
-    {
-        throw new System.NotImplementedException();
-    }
 
     public async Task UpdateAsync(string id, DroneRecord updatedDroneRecord) =>
         await _collection.ReplaceOneAsync(x => x.Id == id, updatedDroneRecord);
@@ -91,9 +76,4 @@ public class FleetRepository: IFleetRepository
     private static FilterDefinition<DroneRecord> 
         Filter(DroneStatusUpdateRequest dto)
     => Builders<DroneRecord>.Filter.Eq("_id", dto.Id);
-
-    Task<bool> IBaseRepository<DroneRecord>.CreateAsync(DroneRecord entity)
-    {
-        throw new System.NotImplementedException();
-    }
 }

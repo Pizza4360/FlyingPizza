@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Domain.DTO.FrontEndDispatchCommunication
 {
@@ -10,6 +13,7 @@ namespace Domain.DTO.FrontEndDispatchCommunication
         public string Id { get; set; }
         
         [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
+        [BsonId(IdGenerator = typeof(Guid))]
         public Guid BadgeNumber { get; set; }    
         
         [BsonElement("HomeLocation"), JsonPropertyName("HomeLocation")]
