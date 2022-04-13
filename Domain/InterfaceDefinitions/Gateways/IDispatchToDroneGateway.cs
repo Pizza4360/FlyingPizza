@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.Entities;
@@ -22,5 +23,8 @@ namespace Domain.InterfaceDefinitions.Gateways
             GeoLocation homeLocation);
 
         Task<bool> InitializeRegistration(string droneIp, string httpsFlyingpizzaCom, int testBadgeNumber);
+
+        public Task<HttpResponseMessage> CompleteRegistration(DroneRecord record);
+        
     }
 }

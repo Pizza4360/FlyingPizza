@@ -4,7 +4,9 @@ using System.Net;
 using System.Net.Http;
 using Dispatch.Controllers;
 using Domain.DTO;
+using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using MongoDB.Driver;
 using SimDrone;
 
 namespace Tests
@@ -75,10 +77,7 @@ namespace Tests
         private static readonly Guid TestGuid = new();
         private static readonly DateTime TestTimeDelivered = DateTime.UtcNow;
         
-        public static readonly GatewayDto TestGatewayDto = new ()
-        {
-            
-        };
+        public static readonly GatewayDto TestGatewayDto = new ();
         
         public static readonly Order TestOrder = new()
         {
@@ -89,6 +88,24 @@ namespace Tests
             DeliveryLocation = TestDeliveryLocation,
             CustomerName = TestCustomerName
         };
+        
+        public static readonly CompleteOrderRequest TestCompleteOrderRequest = new()
+        {
+            OrderId = TestOrderId,
+            Time = TestTimeDelivered
+        };
+        public static readonly DroneStatusUpdateRequest TestDroneStatusUpdateRequest = new()
+        {
+            Id = TestGuid.ToString(),
+            Location = TestDeliveryLocation,
+            State = DroneState.Ready
+        };
+        public static readonly InitDrone TestInitDroneDto = new()
+        {
+            FistStatusUpdateRequestUpdate = TestDroneStatusUpdateRequest,
+            Record = TestRecord
+        };
+        
         private static readonly Domain.DTO.FrontEndDispatchCommunication.AddDroneRequest 
             BadDroneInfo = new()
             {

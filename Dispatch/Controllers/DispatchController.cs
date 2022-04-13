@@ -2,6 +2,7 @@ using Domain;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceDefinitions.Repositories;
 using Domain.InterfaceImplementations.Gateways;
 using Domain.InterfaceImplementations.Repositories;
@@ -60,9 +61,10 @@ namespace Dispatch.Controllers
         {
             Console.WriteLine($"{dto}");
             await PatchDroneStatus(dto.FistStatusUpdateRequestUpdate);
-            return _dispatchToDroneGateway.CompleteRegistration(dto.Record)
-                .Result.Content.Headers.ToString()
-                .Contains("hello, world");
+            return _dispatchToDroneGateway.CompleteRegistration(dto.Record).IsCompletedSuccessfully;
+            // .Result.Content.Headers.ToString()
+            // .Contains("hello, world");
+
         }
 
 
@@ -74,7 +76,7 @@ namespace Dispatch.Controllers
 
 
         private readonly IFleetRepository _droneRepo;
-        private readonly OrderRepository _orderRepo;
+        private readonly IOrdersRepository _orderRepo;
 
         private DispatchToDroneGateway _dispatchToDroneGateway;
 
@@ -85,7 +87,7 @@ namespace Dispatch.Controllers
         public DispatchController(
         IFleetRepository droneRepo,
         // DroneGateway droneGateway,
-        OrderRepository orderRepo
+        IOrdersRepository orderRepo
         // GeoLocation homeLocation,
         // Queue<AssignDeliveryRequest> unfilledOrders
         )

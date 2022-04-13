@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Domain.InterfaceImplementations.Gateways
         private static HttpClient client = new HttpClient();
         public string Url;
         public Dictionary<string, string> IdToIpMap { get; set; } = new Dictionary<string, string>();
+        
         
         // Step 2, DispatchToDroneGateway saves the drone's url and
         // sends a POST to the drone to give it a DroneToDispatherGateway
@@ -113,7 +115,7 @@ namespace Domain.InterfaceImplementations.Gateways
         }
 
 
-        public static void ChangeHandler(HttpMessageHandler handler)
+        public void ChangeHandler(HttpMessageHandler handler)
         {
             // Added for mocking reasons, no way around it
             client = new HttpClient(handler);
