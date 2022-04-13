@@ -26,6 +26,12 @@ public class FleetRepository
         _collection = mongoDatabase.GetCollection<DroneRecord>(
             fleetSettings.Value.CollectionName);
     }
+    // Overloaded constructor for testing, can't find another way
+    public FleetRepository(IMongoCollection<DroneRecord> mockedCollection)
+    {
+        _collection = mockedCollection;
+    }
+    
     public async Task<List<DroneRecord>> GetAsync() =>
         await _collection.Find(_ => true).ToListAsync();
 

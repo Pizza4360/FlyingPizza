@@ -33,6 +33,7 @@ public class FrontEndToDispatchGateway : BaseGateway
     HttpMessageHandler handler)
     {
         // Added for mocking reasons, no way around it
+        // TODO: what why?
         HttpClient = new HttpClient(handler);
     }
 

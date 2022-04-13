@@ -120,6 +120,7 @@ namespace Domain.InterfaceImplementations.Gateways
             // Added for mocking reasons, no way around it
             client = new HttpClient(handler);
         }
+        
         public JsonContent Serialize(BaseDTO dto)
         {
             throw new NotImplementedException();
