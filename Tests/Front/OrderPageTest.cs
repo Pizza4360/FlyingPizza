@@ -17,6 +17,7 @@ namespace Tests.Front;
 
 public class OrderPageTest
 {
+    public static RestDbSvc respoint;
     [Fact]
     public static void TestOrderPage()
     {
