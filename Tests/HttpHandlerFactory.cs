@@ -61,5 +61,33 @@ public class HttpHandlerFactory
                 Content = new StringContent(destinationFunc(entity).IsCompletedSuccessfully.ToString())
             });
     }
-    
+
+    public void SetupHttpMethod(string targetURIString)
+    {
+        var setup = new Mock<HttpMessageHandler>();
+        setup.Protected().Setup<Task<HttpResponseMessage>>(
+                "SendAsync", 
+                ItExpr.Is<HttpRequestMessage>(
+                    x => x.RequestUri == 
+                         new Uri(targetURIString)), 
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ReturnsAsync(new HttpResponseMessage {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("ok")
+            });
+    }
+    public void OkAllHttp()
+    {
+        var setup = new Mock<HttpMessageHandler>();
+        setup.Protected().Setup<Task<HttpResponseMessage>>(
+                "SendAsync", 
+                ItExpr.IsAny<HttpRequestMessage>(), 
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ReturnsAsync(new HttpResponseMessage {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("ok")
+            });
+    }
 }

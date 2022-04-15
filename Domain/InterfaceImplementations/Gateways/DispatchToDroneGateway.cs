@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -10,22 +11,22 @@ using Domain.InterfaceDefinitions.Gateways;
 
 namespace Domain.InterfaceImplementations.Gateways
 {
-    public class DispatchToDroneGateway : IDroneGateway
+    public class DispatchToDroneGateway : IDispatchToDroneGateway
     {
         private static HttpClient client = new HttpClient();
         public string Url;
         public Dictionary<string, string> IdToIpMap { get; set; } = new Dictionary<string, string>();
         
+        
         // Step 2, DispatchToDroneGateway saves the drone's url and
         // sends a POST to the drone to give it a DroneToDispatherGateway
         public async Task<bool> InitializeRegistration(
-        string droneUrl, string gatewayUrl, int badgeNumber)
+            string droneUrl, string gatewayUrl, int badgeNumber)
         {
             Url = droneUrl;
             var body = JsonContent.Create(new InitDroneRequest
             {
-                Url = gatewayUrl
-                , BadgeNumber = badgeNumber
+                Url = gatewayUrl, BadgeNumber = badgeNumber
             });
             var requestUri = new Uri($"http://{droneUrl}/Drone/InitializeRegistration");
             // response should be good
@@ -33,7 +34,7 @@ namespace Domain.InterfaceImplementations.Gateways
             return ressponse.Content.Headers.ToString()
                 .Contains("true");
         }
-        
+
         // Step 6, use the incoming DroneRecord to create a SimDrone.Drone
         // object, and use DispatchToDroneGateway to POST it to the
         // DroneController
@@ -69,7 +70,6 @@ namespace Domain.InterfaceImplementations.Gateways
             return response.IsSuccessStatusCode;
         }
 
-   
 
         /// <summary>
         /// This method pings a drone to begin initiation to a fleet.
@@ -115,18 +115,23 @@ namespace Domain.InterfaceImplementations.Gateways
         }
 
 
-        public static void ChangeHandler(HttpMessageHandler handler)
+        public void ChangeHandler(HttpMessageHandler handler)
         {
             // Added for mocking reasons, no way around it
             client = new HttpClient(handler);
         }
-        
+
         public JsonContent Serialize(BaseDTO dto)
         {
             throw new NotImplementedException();
         }
 
         public BaseDTO SendMessage(HttpResponseMessage response)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string?> SendMessage(string restCall, BaseDTO jsonifiable)
         {
             throw new NotImplementedException();
         }

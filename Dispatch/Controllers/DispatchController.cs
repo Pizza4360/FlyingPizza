@@ -2,6 +2,8 @@ using Domain;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using Domain.InterfaceDefinitions.Gateways;
+using Domain.InterfaceDefinitions.Repositories;
 using Domain.InterfaceImplementations.Gateways;
 using Domain.InterfaceImplementations.Repositories;
 using Microsoft.AspNetCore.Cors;
@@ -10,10 +12,19 @@ using MongoDB.Driver;
 
 namespace Dispatch.Controllers
 {
+    
     [ApiController]
     [Route("[controller]")]
     public class DispatchController : ControllerBase
     {
+        
+        
+        // Testing mock replacement for gateway
+        public void changeGateway(DispatchToDroneGateway mockedGateway)
+        {
+            _dispatchToDroneGateway = mockedGateway;
+        }
+        
         public Task<string> Ping(GatewayDto name)
         {
             var greeting = $"Hello, {name} from Dispatch";
@@ -50,9 +61,10 @@ namespace Dispatch.Controllers
         {
             Console.WriteLine($"{dto}");
             await PatchDroneStatus(dto.FistStatusUpdateRequestUpdate);
-            return _dispatchToDroneGateway.CompleteRegistration(dto.Record)
-                .Result.Content.Headers.ToString()
-                .Contains("hello, world");
+            return _dispatchToDroneGateway.CompleteRegistration(dto.Record).IsCompletedSuccessfully;
+            // .Result.Content.Headers.ToString()
+            // .Contains("hello, world");
+
         }
 
 
@@ -63,19 +75,19 @@ namespace Dispatch.Controllers
         }
 
 
-        private readonly FleetRepository _droneRepo;
-        private readonly OrderRepository _orderRepo;
+        private readonly IFleetRepository _droneRepo;
+        private readonly IOrdersRepository _orderRepo;
 
-        private readonly DispatchToDroneGateway _dispatchToDroneGateway;
+        private DispatchToDroneGateway _dispatchToDroneGateway;
 
         // private readonly ILogger<DispatchController> _logger;
         private readonly GeoLocation _homeLocation;
         private readonly Queue<AssignDeliveryRequest> _unfilledOrders;
 
         public DispatchController(
-        FleetRepository droneRepo,
+        IFleetRepository droneRepo,
         // DroneGateway droneGateway,
-        OrderRepository orderRepo
+        IOrdersRepository orderRepo
         // GeoLocation homeLocation,
         // Queue<AssignDeliveryRequest> unfilledOrders
         )
@@ -181,8 +193,7 @@ namespace Dispatch.Controllers
                 , orderDto.OrderId
                 , orderDto.OrderLocation);
 
-            return _droneRepo.PatchDroneStatus(stateDto)
-                .Result;
+            return _droneRepo.PatchDroneStatus(stateDto).Result;
         }
 
         /// <summary>
