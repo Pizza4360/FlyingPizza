@@ -1,6 +1,8 @@
 ﻿using System;
 using Domain.DTO;
+using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using MongoDB.Bson;
 using SimDrone;
 
 namespace Tests
@@ -10,7 +12,7 @@ namespace Tests
         public const string DroneIp = "localhost:5000";
         public const string DispatcherIp = "localhost:4000";
         public const string Url = "https://FlyingPizza.com";
-        public const int TestBadgeNumber = 1;
+        public static readonly Guid TestBadgeNumber = new Guid();
         public const string DroneId = "abcdefg";
         public const string TestOrderId = "123456";
         
@@ -19,11 +21,22 @@ namespace Tests
             Latitude = 0.00001m,
             Longitude = 0.00001m
         };
+        public static readonly GeoLocation NegativeHomeLocation = new()
+        {
+            Latitude = 0.00000m,
+            Longitude = 0.00000m
+        };
         public static readonly GeoLocation Destination = new()
         {
             Latitude = 0.00008m,
             Longitude = 0.00001m
         };
+        public static readonly GeoLocation NegativeDestination = new()
+        {
+            Latitude = -0.00008m,
+            Longitude = -0.00001m
+        };
+
         public const string CHARGING = "Charging";
 
         public static DroneRecord TestRecord = new()
@@ -85,6 +98,25 @@ namespace Tests
         {
             OrderId = TestOrderId,
             
+        };
+
+        public static readonly AssignDeliveryRequest TestAssignDeliveryRequest = new()
+        {
+            DroneId = TestRecord.Id,
+            OrderId = TestOrder.Id,
+            OrderLocation = TestDeliveryLocation
+        };
+
+        public static readonly InitDroneRequest TestInitDroneRequest = new()
+        {
+            DroneIp = TestRecord.IpAddress,
+            Id = TestRecord.Id
+        };
+
+        public static CompleteRegistrationRequest TestCompleteRegistrationResponse = new()
+        {
+            DispatchIpAddress = TestRecord.DispatcherUrl,
+            Record = TestRecord
         };
     }
 }

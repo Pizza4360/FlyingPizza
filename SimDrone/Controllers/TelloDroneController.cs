@@ -7,17 +7,11 @@ namespace SimDrone.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class SimDroneController : ControllerBase
+    public class TelloDroneController : SimDroneController
     {
-        public Drone _drone;
+        private TelloDrone _drone;
         private static DroneToDispatchGateway _gateway;
 
-
-        public SimDroneController(Drone drone)
-        {
-            _drone = drone;
-        }
-        
         /// <summary>
         /// Command a drone to deliver an order.
         /// </summary>
@@ -51,7 +45,7 @@ namespace SimDrone.Controllers
         
         [HttpPost("StartDrone")]
         public Task<OkObjectResult> StartDrone(
-        Drone drone)
+        TelloDrone drone)
         {
             _drone = drone;
             return Task.FromResult(Ok("hello, world"));
@@ -67,7 +61,7 @@ namespace SimDrone.Controllers
         CompleteRegistrationRequest post)
         {
             Console.WriteLine("Generating simulated drone...");
-            _drone = new Drone(post.Record, new DroneToDispatchGateway
+            _drone = new TelloDrone(post.Record, new DroneToDispatchGateway
             {
                 Url = post.DispatchIpAddress
             });
@@ -79,6 +73,11 @@ namespace SimDrone.Controllers
                 Record = post.Record,
                 Okay = true
             };
+        }
+
+        public TelloDroneController(TelloDrone drone) : base(drone)
+        {
+            _drone = drone;
         }
     }
 }
