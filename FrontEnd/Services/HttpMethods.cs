@@ -12,17 +12,16 @@ namespace FrontEnd.Services
 
     // this service is called by any and all methods and classes that need to make a request to the rest database
 
-    public class RestDbSvc
+    public static class HttpMethods
     {
         // create http client initialized null
-        private static HttpClient http = null;
+        private static HttpClient http = new();
 
 
         // this method submits a put request taking in an object of type T and returning an http response containing
         // the associated information
-        public async Task<HttpResponseMessage> Put<T>(string url, T item)
+        public static async Task<HttpResponseMessage> Put<T>(string url, T item)
         {
-            if (http == null) http = new HttpClient();
 
             http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
                 "Basic",
@@ -40,7 +39,7 @@ namespace FrontEnd.Services
 
         // this method submits a post request taking in an object of type T and returning an http response containing
         // the associated information
-        public async Task<HttpResponseMessage> Post<T>(string url, T item)
+        public static async Task<HttpResponseMessage> Post<T>(string url, T item)
         {
             if (http == null) http = new HttpClient();
 
@@ -57,7 +56,7 @@ namespace FrontEnd.Services
             return r;
         }
 
-        public async Task<HttpResponseMessage> Patch<T>(string url, T item)
+        public static async Task<HttpResponseMessage> Patch<T>(string url, T item)
         {
             using (var client = new HttpClient())
             {
@@ -103,7 +102,7 @@ namespace FrontEnd.Services
 
         // this method submits a get request taking in an object of type T and returning an http response containing
         // the associated information
-        public async Task<T> Get<T>(string url, bool no_cache = false)
+        public static async Task<T> Get<T>(string url, bool no_cache = false)
         {
             var r = await MakeRequest(HttpMethod.Get, url, no_cache);
 
@@ -116,12 +115,11 @@ namespace FrontEnd.Services
                 var error = await r.Content.ReadFromJsonAsync<Dictionary<string, string>>();
                 return default(T);
             }
-
             return await r.Content.ReadFromJsonAsync<T>();
         }
 
         // this method is called by get to actually get the information by making a request
-        public async Task<HttpResponseMessage> MakeRequest(HttpMethod method, string url, bool no_cache)
+        private static async Task<HttpResponseMessage> MakeRequest(HttpMethod method, string url, bool no_cache)
         {
             if (http == null) http = new HttpClient();
 

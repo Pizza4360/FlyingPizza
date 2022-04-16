@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain.Entities;
-using Domain.InterfaceImplementations.Repositories;
 using Microsoft.Extensions.Options;
 
 namespace Domain.InterfaceDefinitions.Repositories

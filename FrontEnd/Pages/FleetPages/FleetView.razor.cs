@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Domain.Entities;
+using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace FrontEnd.Pages.FleetPages
@@ -14,12 +18,18 @@ namespace FrontEnd.Pages.FleetPages
         {
             try
             {
-                Fleet = await restPoint.Get<DroneRecord[]>("http://localhost:8080/Fleet/?sort={badgeNumber:1}");
+                Console.WriteLine("Hello, world");
+                var response = new HttpClient().GetAsync(
+                        "http://localhost:5127/DatabaseAccess/GetFleet")
+                    .Result.Content.ReadAsStringAsync().Result;
+                Console.WriteLine(response);
+                Fleet = HttpMethods.Get<List<DroneRecord>>( "http://localhost:5127/DatabaseAccess/GetFleet", true).Result.ToArray();
                 size = Fleet.Length;
                 connection = true;
             }
-            catch { 
-            }         
+            catch {
+                
+            }
         }
 
         public async Task GoToDrone(DroneRecord drone)
@@ -27,6 +37,5 @@ namespace FrontEnd.Pages.FleetPages
             globalData.currDrone = drone;
             await dialogService.OpenAsync<DetailedDrone>("View SimDrone");           
         }
-      
     }
 }

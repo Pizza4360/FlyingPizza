@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Domain.DTO.DroneDispatchCommunication;
+﻿using System.Text.Json;
 using Domain.Entities;
 using Domain.InterfaceDefinitions.Repositories;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Domain.InterfaceImplementations.Repositories;
+namespace DatabaseAccess.Repositories;
 
-public class OrderRepository : IOrdersRepository
+public class OrderRepository
 {
     private readonly IMongoCollection<Order> _collection;
     public OrderRepository(IOptions<DatabaseSettings> ordersSettings) //: Domain.InterfaceDefinitions.Repositories

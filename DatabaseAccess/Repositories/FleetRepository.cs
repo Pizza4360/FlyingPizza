@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
@@ -11,9 +7,9 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Domain.InterfaceImplementations.Repositories;
+namespace DatabaseAccess.Repositories;
 
-public class FleetRepository: IFleetRepository
+public class FleetRepository
 {
     private readonly IMongoCollection<DroneRecord> _collection;
     public FleetRepository(IOptions<DatabaseSettings> fleetSettings) 
@@ -33,18 +29,12 @@ public class FleetRepository: IFleetRepository
     public async Task<DroneRecord?> GetAsync(string id) =>
         await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-    public async Task CreateAsync(DroneRecord newDroneRecord) =>
-        await _collection.InsertOneAsync(newDroneRecord);
+    public async Task<DroneRecord> GetByIdAsync(string id)=>_collection.Find(_ => true)
+        .First();
 
-    public Task<DroneRecord> GetByIdAsync(string id)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<IEnumerable<DroneRecord>> GetByIdsAsync(IEnumerable<string> ids)
-    {
-        throw new System.NotImplementedException();
-    }
+    public Task<IEnumerable<DroneRecord>> 
+        GetByIdsAsync(IEnumerable<string> ids) 
+        => Task.FromResult<IEnumerable<DroneRecord>>(ids.Select(id => GetByIdAsync(id).Result).ToList());
 
     public Task<bool> Delete(string id)
     {
@@ -86,8 +76,11 @@ public class FleetRepository: IFleetRepository
         Filter(DroneStatusUpdateRequest dto)
     => Builders<DroneRecord>.Filter.Eq("_id", dto.Id);
 
-    Task<bool> IBaseRepository<DroneRecord>.CreateAsync(DroneRecord entity)
+    Task<bool> CreateAsync(DroneRecord newDroneRecord)
     {
-        throw new System.NotImplementedException();
+        return  Task.FromResult(_collection.InsertOneAsync(newDroneRecord).IsCompletedSuccessfully);
     }
+
+    public async Task<List<DroneRecord>> GetAll() => await _collection.Find(_ => true)
+        .ToListAsync();
 }

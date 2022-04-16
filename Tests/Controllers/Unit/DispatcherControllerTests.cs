@@ -10,7 +10,6 @@ using Domain.Entities;
 using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceDefinitions.Repositories;
 using Domain.InterfaceImplementations.Gateways;
-using Domain.InterfaceImplementations.Repositories;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;

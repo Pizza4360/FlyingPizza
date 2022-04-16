@@ -31,7 +31,7 @@ namespace FrontEnd
                     Url = "http://localhost:80"
                 });
             
-            builder.Services.AddSingleton( new RestDbSvc() );
+            builder.Services.AddSingleton( new HttpClient() );
 
             builder.Services.AddScoped<DialogService>();
 

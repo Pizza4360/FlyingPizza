@@ -1,6 +1,5 @@
 using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceImplementations.Gateways;
-using Domain.InterfaceImplementations.Repositories;
 
 Console.WriteLine("hello world!!!");
 var builder = WebApplication.CreateBuilder(args);
@@ -25,18 +24,7 @@ builder.Services.AddSwaggerGen();
 // Get path to file holding connection string
 Console.WriteLine(DateTime.Now);
 
-#region repositories
 
-builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton<OrderRepository>();
-
-builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
-builder.Services.AddSingleton<FleetRepository>();
-
-builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
-
-builder.Services.AddScoped<IDispatchToDroneGateway>(_ => new DispatchToDroneGateway());
-#endregion repositories
 
 
 var app = builder.Build();

@@ -5,7 +5,6 @@ using Domain.Entities;
 using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceDefinitions.Repositories;
 using Domain.InterfaceImplementations.Gateways;
-using Domain.InterfaceImplementations.Repositories;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;

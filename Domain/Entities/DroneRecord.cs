@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 using Domain.DTO;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -14,7 +15,8 @@ namespace Domain.Entities
 
         [BsonElement("BadgeNumber")]
         [JsonPropertyName("BadgeNumber")]
-        public int BadgeNumber { get; set; }
+        [BsonRepresentation(BsonType.String)]
+        public Guid BadgeNumber { get; set; }
 
 
         [BsonElement("OrderId")]

@@ -1,4 +1,4 @@
-﻿namespace Domain.InterfaceImplementations.Repositories;
+﻿namespace DatabaseAccess.Repositories;
 
 public class DatabaseSettings
 {
