@@ -6,7 +6,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities
 {
-    public class DroneRecord : BaseDto, IBaseEntity
+    public class DroneRecord : BaseDto
     {
         // [BsonId]
         // [BsonElement("Id")]

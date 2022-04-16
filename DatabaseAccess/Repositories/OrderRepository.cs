@@ -21,26 +21,31 @@ public class OrderRepository
         _collection = mongoDatabase.GetCollection<Order>(
             ordersSettings.Value.CollectionName);
     }
-    // Once again a testing version
-    public OrderRepository(IMongoCollection<Order> mockedCollection) //: Domain.InterfaceDefinitions.Repositories
-    {
-        _collection = mockedCollection;
-    }
     
-   public async Task<Order?> GetAsync(string id) =>
+    public OrderRepository(string connectionString, string databaseName, string collctionName) //: Domain.InterfaceDefinitions.Repositories
+    {
+        var mongoClient = new MongoClient(connectionString);
+        var mongoDatabase = mongoClient.GetDatabase(databaseName);
+        _collection = mongoDatabase.GetCollection<Order>(collctionName);
+    }
+
+    public async Task<Order?> GetAsync(string id) =>
         await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-    public async Task<bool>
-        CreateAsync(Order newOrder)
+    public async Task<string?> CreateAsync(Order newOrder)
     {
-        var t = _collection.InsertOneAsync(newOrder);
-        t.Wait();
-        if (t.IsCompletedSuccessfully)
-        {
-            return true;
-        }
-        if (t.Exception != null) Console.WriteLine(t.Exception.Message);
-        return false;
+        var updateDefinition = Builders<Order>.Update
+                .Set(order => order.BadgeNumber, newOrder.BadgeNumber)
+                .Set(order => order.Id, newOrder.Id)
+                .Set(order => order.CustomerName, newOrder.CustomerName)
+                .Set(order => order.DeliveryAddress, newOrder.DeliveryAddress)
+                .Set(order => order.Items, newOrder.Items)
+                .Set(order => order.DeliveryLocation, newOrder.DeliveryLocation)
+                .Set(order => order.TimeDelivered, newOrder.TimeDelivered)
+                .Set(order => order.TimeOrdered, newOrder.TimeOrdered)
+                .Set(order => order.URL, newOrder.URL)
+                .Set(order => order.HasBeenDelivered, newOrder.HasBeenDelivered);
+            return _collection.UpdateOneAsync(_ => false, updateDefinition, new UpdateOptions { IsUpsert = true }).Result.UpsertedId.ToString();
     }
 
     public async Task<Order> 
@@ -75,7 +80,7 @@ public class OrderRepository
     public async Task<bool> 
         PatchTimeCompleted(string id)
     {
-        var doc = JsonDocument.Parse($"{{TimeDelivered:{DateTime.Now}}}").ToBsonDocument();
+        var doc = JsonDocument.Parse($"{{\"TimeDelivered\":\"{DateTime.Now}\"}}").ToBsonDocument();
         var updateDefinition = new BsonDocumentUpdateDefinition<Order>(new BsonDocument("$set", doc));
         var options = new UpdateOptions();
         var token = CancellationToken.None;
