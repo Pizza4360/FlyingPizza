@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-<!--    <ProjectReference Include="..\DatabaseAccess\DatabaseAccess.csproj" />-->
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
