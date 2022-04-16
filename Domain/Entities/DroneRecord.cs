@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 using Domain.DTO;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities
@@ -16,6 +15,7 @@ namespace Domain.Entities
 
         [BsonElement("BadgeNumber")]
         [JsonPropertyName("BadgeNumber")]
+        [BsonRepresentation(BsonType.String)]
         public Guid BadgeNumber { get; set; }
 
 
@@ -37,11 +37,11 @@ namespace Domain.Entities
 
         [BsonElement("State")]
         [JsonPropertyName("State")]
-        public DroneState State { get; set; }
+        public string State { get; set; }
 
 
-        [BsonElement("DispatchIp")]
-        [JsonPropertyName("DispatchIp")]
+        [BsonElement("IpAddress")]
+        [JsonPropertyName("IpAddress")]
         public string IpAddress { get; set; }
 
         [BsonElement("DispatcherUrl")]
@@ -67,11 +67,6 @@ namespace Domain.Entities
                    oo.Destination.Equals(Destination) &&
                    oo.State.Equals(State) &&
                    oo.DispatcherUrl.Equals(DispatcherUrl);
-        }
-
-        public static string NewId()
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

@@ -1,21 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using Domain.InterfaceDefinitions.Repositories;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Domain.InterfaceImplementations.Repositories;
+namespace DatabaseAccess.Repositories;
 
 public class FleetRepository
 {
     private readonly IMongoCollection<DroneRecord> _collection;
-    public FleetRepository(IOptions<DatabaseSettings> fleetSettings)
+    public FleetRepository(IOptions<DatabaseSettings> fleetSettings) 
     {
         var mongoClient = new MongoClient(
             fleetSettings.Value.ConnectionString);
@@ -26,20 +23,28 @@ public class FleetRepository
         _collection = mongoDatabase.GetCollection<DroneRecord>(
             fleetSettings.Value.CollectionName);
     }
-    // Overloaded constructor for testing, can't find another way
-    public FleetRepository(IMongoCollection<DroneRecord> mockedCollection)
-    {
-        _collection = mockedCollection;
-    }
-    
     public async Task<List<DroneRecord>> GetAsync() =>
         await _collection.Find(_ => true).ToListAsync();
 
     public async Task<DroneRecord?> GetAsync(string id) =>
         await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-    public async Task CreateAsync(DroneRecord newDroneRecord) =>
-        await _collection.InsertOneAsync(newDroneRecord);
+    public async Task<DroneRecord> GetByIdAsync(string id)=>_collection.Find(_ => true)
+        .First();
+
+    public Task<IEnumerable<DroneRecord>> 
+        GetByIdsAsync(IEnumerable<string> ids) 
+        => Task.FromResult<IEnumerable<DroneRecord>>(ids.Select(id => GetByIdAsync(id).Result).ToList());
+
+    public Task<bool> Delete(string id)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public Task<bool> Update(DroneRecord entity)
+    {
+        throw new System.NotImplementedException();
+    }
 
     public async Task UpdateAsync(string id, DroneRecord updatedDroneRecord) =>
         await _collection.ReplaceOneAsync(x => x.Id == id, updatedDroneRecord);
@@ -51,12 +56,6 @@ public class FleetRepository
         => (await _collection.Find(_ => true)
                 .ToListAsync())
             .ToDictionary(droneRecord => droneRecord.Id, droneRecord => droneRecord.IpAddress);
-    
-    public async Task<List<DroneRecord>> GetAllAvailable() 
-        => await _collection.Find(_ => _.State == DroneState.Ready)
-            .ToListAsync();
-    
-    
 
     public async Task<UpdateResult> PatchDroneStatus(DroneStatusUpdateRequest dto)=>
          await _collection.UpdateOneAsync( 
@@ -76,4 +75,12 @@ public class FleetRepository
     private static FilterDefinition<DroneRecord> 
         Filter(DroneStatusUpdateRequest dto)
     => Builders<DroneRecord>.Filter.Eq("_id", dto.Id);
+
+    Task<bool> CreateAsync(DroneRecord newDroneRecord)
+    {
+        return  Task.FromResult(_collection.InsertOneAsync(newDroneRecord).IsCompletedSuccessfully);
+    }
+
+    public async Task<List<DroneRecord>> GetAll() => await _collection.Find(_ => true)
+        .ToListAsync();
 }

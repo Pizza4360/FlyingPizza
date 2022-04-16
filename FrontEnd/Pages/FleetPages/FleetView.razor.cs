@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Domain.DTO;
-using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
+using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace FrontEnd.Pages.FleetPages
@@ -16,12 +18,18 @@ namespace FrontEnd.Pages.FleetPages
         {
             try
             {
-                Fleet = await restPoint.Get<DroneRecord[]>("http://localhost:8080/Fleet/?sort={badgeNumber:1}");
+                Console.WriteLine("Hello, world");
+                var response = new HttpClient().GetAsync(
+                        "http://localhost:5127/DatabaseAccess/GetFleet")
+                    .Result.Content.ReadAsStringAsync().Result;
+                Console.WriteLine(response);
+                Fleet = HttpMethods.Get<List<DroneRecord>>( "http://localhost:5127/DatabaseAccess/GetFleet", true).Result.ToArray();
                 size = Fleet.Length;
                 connection = true;
             }
-            catch { 
-            }         
+            catch {
+                
+            }
         }
 
         public async Task GoToDrone(DroneRecord drone)
@@ -29,35 +37,5 @@ namespace FrontEnd.Pages.FleetPages
             globalData.currDrone = drone;
             await dialogService.OpenAsync<DetailedDrone>("View SimDrone");           
         }
-    }
-
-    partial class AddDroneView : ComponentBase
-    {
-        public Guid BadgeNumber;
-        public string DroneId;
-        public string DroneIpAddress;
-        public string DispatchIpAddress;
-        public GeoLocation HomeLocation;
-        public async Task<AddDroneResponse> AddDrone()
-        {
-            var request = new AddDroneRequest
-            {
-                BadgeNumber = Guid.NewGuid(),
-                DispatchIp = DispatchIpAddress,
-                DroneIp = DroneIpAddress,
-                HomeLocation = HomeLocation,
-                Id = DroneRecord.NewId()
-            };
-            //Todo: add a FrontEndToDispatchGateway so this works
-            /*
-            AddDroneResponse response = _dispatch.AddDrone(request);
-            if (response.Success)
-            {
-                // restPoint.put_the_drone_record_in_the_database
-            }
-            return response;
-            */
-            throw new NotImplementedException();
-        }  
     }
 }

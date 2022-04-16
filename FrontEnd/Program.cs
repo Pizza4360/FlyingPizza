@@ -7,34 +7,35 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Radzen;
 
-namespace FrontEnd;
-
-public class Program
+namespace FrontEnd
 {
-    public static async Task Main(string[] args)
+    public class Program
     {
-        var builder = WebAssemblyHostBuilder.CreateDefault(args);
-        builder.RootComponents.Add<App>("#app");
-
-        builder.Services.AddScoped(
-            _ => new HttpClient
-            {
-                BaseAddress = new Uri(builder
-                    .HostEnvironment
-                    .BaseAddress)
-            });
-
-        builder.Services.AddSingleton( new GlobalDataSvc() );
-            
-        builder.Services.AddSingleton( new FrontEndToDispatchGateway
+        public static async Task Main(string[] args)
         {
-            Url = "http://localhost:80"
-        });
+            var builder = WebAssemblyHostBuilder.CreateDefault(args);
+            builder.RootComponents.Add<App>("#app");
+
+            builder.Services.AddScoped(
+                _ => new HttpClient
+                {
+                    BaseAddress = new Uri(builder
+                        .HostEnvironment
+                        .BaseAddress)
+                });
+
+            builder.Services.AddSingleton( new GlobalDataSvc() );
             
-        builder.Services.AddSingleton( new HttpClient() );
+            builder.Services.AddSingleton( new FrontEndToDispatchGateway
+                {
+                    Url = "http://localhost:80"
+                });
+            
+            builder.Services.AddSingleton( new HttpClient() );
 
-        builder.Services.AddScoped<DialogService>();
+            builder.Services.AddScoped<DialogService>();
 
-        await builder.Build().RunAsync();
+            await builder.Build().RunAsync();
+        }
     }
 }
