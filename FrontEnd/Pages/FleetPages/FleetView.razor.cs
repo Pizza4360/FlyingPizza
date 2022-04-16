@@ -18,12 +18,8 @@ partial class FleetView : ComponentBase
     {
         try
         {
-            Console.WriteLine("Hello, world");
-            var response = new HttpClient().GetAsync(
-                    "http://35.173.218.215:80/DatabaseAccess/GetFleet")
-                .Result.Content.ReadAsStringAsync().Result;
-            Console.WriteLine(response);
-            Fleet = HttpMethods.Get<List<DroneRecord>>( "http://35.173.218.215:80/DatabaseAccess/GetFleet", true).Result.ToArray();
+            Fleet = (await HttpMethods.Get<List<DroneRecord>>("http://35.173.218.215:80/DatabaseAccess/GetFleet")).ToArray();
+            
             size = Fleet.Length;
             connection = true;
         }
