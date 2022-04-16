@@ -6,7 +6,7 @@ using Domain.Entities;
 
 namespace Domain.InterfaceDefinitions.Gateways
 {
-    public interface IDispatchToDroneGateway : IBaseGateway<BaseDTO>
+    public interface IDispatchToDroneGateway : IBaseGateway<BaseDto>
     {
         public Task<HttpResponseMessage> StartRegistration(
             string droneIpAddress);

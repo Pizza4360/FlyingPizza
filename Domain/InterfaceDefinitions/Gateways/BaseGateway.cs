@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Domain.DTO;
 
 namespace Domain.InterfaceDefinitions.Gateways;
-public class BaseGateway : IBaseGateway<BaseDTO>
+public class BaseGateway : IBaseGateway<BaseDto>
 {
     /*
     public BaseGateway(string httpLocalhost)
@@ -25,7 +25,7 @@ public class BaseGateway : IBaseGateway<BaseDTO>
         get => _url + "/Dispatch";
     }
 
-    public Task<string?> SendMessage(string restCall, BaseDTO dto)
+    public Task<string?> SendMessage(string restCall, BaseDto dto)
     {
         var body = JsonContent.Create($"{dto.ToJsonString()}");
         var requestUri = new Uri($"{Url}/{restCall}");

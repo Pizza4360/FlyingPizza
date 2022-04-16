@@ -4,7 +4,7 @@ using Domain.DTO.DroneDispatchCommunication;
 
 namespace Domain.InterfaceDefinitions.Gateways
 {
-    public interface IDroneToDispatcherGateway: IBaseGateway<BaseDTO>
+    public interface IDroneToDispatcherGateway: IBaseGateway<BaseDto>
     {
         public Task<bool> PatchDroneStatus(DroneStatusUpdateRequest state);
     }

@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.DroneDispatchCommunication
 {
-    public class AssignFleetRequest : BaseDTO
+    public class AssignFleetRequest : BaseDto
         {
             [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
             public int BadgeNumber { get; set; }           

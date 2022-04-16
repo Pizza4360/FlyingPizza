@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.FrontEndDispatchCommunication
 {
-    public class AddDroneRequest : BaseDTO
+    public class AddDroneRequest : BaseDto
     {
         [BsonElement("IpAddress"), JsonPropertyName("IpAddress")]
         public string IpAddress { get; set; }        

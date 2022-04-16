@@ -121,17 +121,17 @@ namespace Domain.InterfaceImplementations.Gateways
             client = new HttpClient(handler);
         }
 
-        public JsonContent Serialize(BaseDTO dto)
+        public JsonContent Serialize(BaseDto dto)
         {
             throw new NotImplementedException();
         }
 
-        public BaseDTO SendMessage(HttpResponseMessage response)
+        public BaseDto SendMessage(HttpResponseMessage response)
         {
             throw new NotImplementedException();
         }
 
-        public Task<string?> SendMessage(string restCall, BaseDTO jsonifiable)
+        public Task<string?> SendMessage(string restCall, BaseDto jsonifiable)
         {
             throw new NotImplementedException();
         }

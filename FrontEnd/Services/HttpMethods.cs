@@ -22,8 +22,7 @@ namespace FrontEnd.Services
         // the associated information
         public static async Task<HttpResponseMessage> Put<T>(string url, T item)
         {
-
-            http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+            http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                 "Basic",
                 Convert.ToBase64String(
                     System.Text.Encoding.ASCII.GetBytes("admin:secret")));
@@ -43,7 +42,7 @@ namespace FrontEnd.Services
         {
             if (http == null) http = new HttpClient();
 
-            http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+            http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                 "Basic",
                 Convert.ToBase64String(
                     System.Text.Encoding.ASCII.GetBytes("admin:secret")));
@@ -62,29 +61,15 @@ namespace FrontEnd.Services
             {
                 var request = new HttpRequestMessage(new HttpMethod("PATCH"), url);
 
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                     "Basic",
                     Convert.ToBase64String(
                         System.Text.Encoding.ASCII.GetBytes("admin:secret")));
 
 
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                //var writer = new StringWriter();
-                //Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-                //serializer.Serialize(writer, item);
-                //// var json = writer.ToString();
-
-                //string json = "{\"test\":\"test\"}";
-
-                //StringContent s = new StringContent(json, Encoding.UTF8, "application/json");
-
-                //request.Content = s;
-
-
-
+                
                 // deserialize item the json
-
                 string json = JsonSerializer.Serialize<T>(item);
 
                 StringContent s = new StringContent(json, Encoding.UTF8, "application/json");

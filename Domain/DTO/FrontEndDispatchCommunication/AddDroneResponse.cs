@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.FrontEndDispatchCommunication
 {
-    public class AddDroneResponse : BaseDTO
+    public class AddDroneResponse : BaseDto
     {
         [BsonElement("Success"), JsonPropertyName("Success")]
         public bool Success { get; set; }

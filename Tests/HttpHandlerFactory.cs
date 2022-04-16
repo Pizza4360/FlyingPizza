@@ -30,7 +30,7 @@ public class HttpHandlerFactory
     {
         return _handler.Object;
     }
-    public void SetupHttpMethod(string targetURIString, Func<BaseDTO,Task<OkObjectResult>> destinationFunc, BaseDTO dto)
+    public void SetupHttpMethod(string targetURIString, Func<BaseDto,Task<OkObjectResult>> destinationFunc, BaseDto dto)
     {
         var setup = new Mock<HttpMessageHandler>();
         setup.Protected().Setup<Task<HttpResponseMessage>>(

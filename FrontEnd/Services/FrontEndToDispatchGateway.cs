@@ -61,7 +61,7 @@ public class FrontEndToDispatchGateway : BaseGateway
 }
 
 public class PingDto
-    : BaseDTO
+    : BaseDto
 {
     public string S { get; set; }
 }

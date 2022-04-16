@@ -5,7 +5,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO
 {
-    public class GeoLocation : BaseDTO
+    public class GeoLocation : BaseDto
     {
         private const decimal Tolerance = 0.0000001m;
 

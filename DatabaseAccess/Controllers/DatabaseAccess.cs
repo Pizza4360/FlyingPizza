@@ -12,7 +12,7 @@ public class DatabaseAccess : ControllerBase
 
     private readonly ILogger<DatabaseAccess> _logger;
     private FleetRepository _fleet;
-    // private OrderRepository _orders;
+    private OrderRepository _orders;
     
     public DatabaseAccess(
     ILogger<DatabaseAccess> logger, FleetRepository fleet/*, OrderRepository orders*/)
@@ -26,10 +26,10 @@ public class DatabaseAccess : ControllerBase
     {
         return _fleet.GetAll().Result.ToArray();
     }
-    //
-    // [HttpPost("AddOrder")]
-    // public OkObjectResult AddOrder(
-    // Order order) => Ok( _orders.CreateAsync(order) .Result);
+    
+    [HttpPost("AddOrder")]
+    public OkObjectResult AddOrder(
+    Order order) => Ok( _orders.CreateAsync(order) .Result);
     
     [HttpGet("GetDrone")]
     public DroneRecord GetDrone(string id)
@@ -37,9 +37,9 @@ public class DatabaseAccess : ControllerBase
         return _fleet.GetByIdAsync(id).Result;
     }
 
-    // [HttpGet("GetOrder")]
-    // public Order GetOrder(string id)
-    // {
-    //     return _orders.GetByIdAsync(id).Result;
-    // }
+    [HttpGet("GetOrder")]
+    public Order GetOrder(string id)
+    {
+        return _orders.GetByIdAsync(id).Result;
+    }
 }
