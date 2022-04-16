@@ -5,8 +5,6 @@ using Domain.InterfaceImplementations.Gateways;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddCors(options =>
-    options.AddPolicy(name: "CORS", policy => policy.WithOrigins("https://localhost:44364","http://localhost:5001").AllowAnyHeader().AllowAnyMethod()));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -15,8 +13,8 @@ builder.Services.AddSwaggerGen();
 
 #region repositories
 
-builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton<OrderRepository>();
+// builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
+// builder.Services.AddSingleton<OrderRepository>();
 
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
 builder.Services.AddSingleton<FleetRepository>();
@@ -36,8 +34,6 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection();
-
-app.UseCors("CORS");
 
 app.UseAuthorization();
 
