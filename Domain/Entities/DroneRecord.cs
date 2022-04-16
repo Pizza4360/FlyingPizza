@@ -6,18 +6,17 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities
 {
-    public class DroneRecord : BaseDTO, IBaseEntity
+    public class DroneRecord : BaseDto, IBaseEntity
     {
-        [BsonId]
-        [BsonElement("Id")]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        // [BsonId]
+        // [BsonElement("Id")]
+        // [BsonRepresentation(BsonType.ObjectId)]
+        // public string Id { get; set; }
 
         [BsonElement("BadgeNumber")]
         [JsonPropertyName("BadgeNumber")]
         [BsonRepresentation(BsonType.String)]
         public Guid BadgeNumber { get; set; }
-
 
         [BsonElement("OrderId")]
         [JsonPropertyName("OrderId")]

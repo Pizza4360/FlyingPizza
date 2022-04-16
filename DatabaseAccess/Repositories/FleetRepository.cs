@@ -23,7 +23,16 @@ public class FleetRepository
         _collection = mongoDatabase.GetCollection<DroneRecord>(
             fleetSettings.Value.CollectionName);
     }
-    public async Task<List<DroneRecord>> GetAsync() =>
+
+    public FleetRepository(string connectionString, string databaseName, string collectionName)
+    {
+        var mongoClient = new MongoClient(connectionString);
+
+        var mongoDatabase = mongoClient.GetDatabase(databaseName);
+
+        _collection = mongoDatabase.GetCollection<DroneRecord>(collectionName);
+    }
+    public async Task<List<DroneRecord>> GetAllAsync() =>
         await _collection.Find(_ => true).ToListAsync();
 
     public async Task<DroneRecord?> GetAsync(string id) =>
@@ -69,16 +78,26 @@ public class FleetRepository
         => new (new BsonDocument("$set", doc));
     
     private static BsonDocument 
-        ToBson(BaseDTO dto) 
+        ToBson(BaseDto dto) 
         =>  JsonDocument.Parse($"{dto}").ToBsonDocument();
 
     private static FilterDefinition<DroneRecord> 
         Filter(DroneStatusUpdateRequest dto)
     => Builders<DroneRecord>.Filter.Eq("_id", dto.Id);
 
-    Task<bool> CreateAsync(DroneRecord newDroneRecord)
+    public async Task<BsonValue> CreateAsync(DroneRecord newDroneRecord)
     {
-        return  Task.FromResult(_collection.InsertOneAsync(newDroneRecord).IsCompletedSuccessfully);
+        var updateDefinition = Builders<DroneRecord>.Update
+        .Set(drone => drone.BadgeNumber, newDroneRecord.BadgeNumber)
+        .Set(drone => drone.OrderId, newDroneRecord.OrderId)
+        .Set(drone => drone.Destination, newDroneRecord.Destination)
+        .Set(drone => drone.CurrentLocation, newDroneRecord.CurrentLocation)
+        .Set(drone => drone.HomeLocation, newDroneRecord.HomeLocation)
+        .Set(drone => drone.State, newDroneRecord.State)
+        .Set(drone => drone.IpAddress, newDroneRecord.IpAddress)
+        .Set(drone => drone.DispatcherUrl, newDroneRecord.DispatcherUrl)
+                ;
+            return _collection.UpdateOneAsync(_ => false, updateDefinition, new UpdateOptions { IsUpsert = true }).Result.UpsertedId.ToString();
     }
 
     public async Task<List<DroneRecord>> GetAll() => await _collection.Find(_ => true)

@@ -10,10 +10,10 @@ namespace Domain.Entities
     [BsonDiscriminator("Order")]
     public class Order : BaseDto
     {
-        // [BsonId]
-        // [BsonElement("Id")]
-        // [BsonRepresentation(BsonType.ObjectId)]
-        // public string Id;
+        [BsonId]
+        [BsonElement("Id")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id;
 
         [BsonElement("Items")]
         [JsonPropertyName("Items")]
@@ -46,11 +46,10 @@ namespace Domain.Entities
         [BsonElement("Url")]
         [JsonPropertyName("Url")]
         public string URL { get; set; }
-        // cqTFuSE656EQTy1jl8rqwiVB
+
         [BsonElement("BadgeNumber")]
         [JsonPropertyName("BadgeNumber")]
-        [BsonRepresentation(BsonType.String)]
-        public Guid BadgeNumber { get; set; }
+        public int BadgeNumber { get; set; }
 
         [BsonElement("HasBeenDelivered")]
         [JsonPropertyName("HasBeenDelivered")]
