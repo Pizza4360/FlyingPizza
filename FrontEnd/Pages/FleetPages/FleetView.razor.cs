@@ -20,10 +20,10 @@ namespace FrontEnd.Pages.FleetPages
             {
                 Console.WriteLine("Hello, world");
                 var response = new HttpClient().GetAsync(
-                        "http://localhost:5127/DatabaseAccess/GetFleet")
+                        "http://35.173.218.215:80/DatabaseAccess/GetFleet")
                     .Result.Content.ReadAsStringAsync().Result;
                 Console.WriteLine(response);
-                Fleet = HttpMethods.Get<List<DroneRecord>>( "http://localhost:5127/DatabaseAccess/GetFleet", true).Result.ToArray();
+                Fleet = HttpMethods.Get<List<DroneRecord>>( "http://35.173.218.215:80/DatabaseAccess/GetFleet", true).Result.ToArray();
                 size = Fleet.Length;
                 connection = true;
             }
