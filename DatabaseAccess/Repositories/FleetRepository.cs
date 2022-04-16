@@ -95,8 +95,7 @@ public class FleetRepository
         .Set(drone => drone.HomeLocation, newDroneRecord.HomeLocation)
         .Set(drone => drone.State, newDroneRecord.State)
         .Set(drone => drone.IpAddress, newDroneRecord.IpAddress)
-        .Set(drone => drone.DispatcherUrl, newDroneRecord.DispatcherUrl)
-                ;
+        .Set(drone => drone.DispatcherUrl, newDroneRecord.DispatcherUrl);
             return _collection.UpdateOneAsync(_ => false, updateDefinition, new UpdateOptions { IsUpsert = true }).Result.UpsertedId.ToString();
     }
 
