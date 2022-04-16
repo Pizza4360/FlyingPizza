@@ -87,9 +87,10 @@ namespace FrontEnd.Services
 
         // this method submits a get request taking in an object of type T and returning an http response containing
         // the associated information
-        public static async Task<T> Get<T>(string url, bool no_cache = false)
+        public static async Task<T> Get<T>(string url)
         {
-            var r = await MakeRequest(HttpMethod.Get, url, no_cache);
+            if (http == null) http = new HttpClient();
+            var r = await http.GetAsync(url);
 
             // auto logout on 401 response
             if (r.StatusCode == System.Net.HttpStatusCode.Unauthorized) return default(T);
@@ -100,25 +101,8 @@ namespace FrontEnd.Services
                 var error = await r.Content.ReadFromJsonAsync<Dictionary<string, string>>();
                 return default(T);
             }
+
             return await r.Content.ReadFromJsonAsync<T>();
-        }
-
-        // this method is called by get to actually get the information by making a request
-        private static async Task<HttpResponseMessage> MakeRequest(HttpMethod method, string url, bool no_cache)
-        {
-            if (http == null) http = new HttpClient();
-
-            var request = new HttpRequestMessage(method, url);
-            if (no_cache)
-            {
-                request.Headers.CacheControl.NoCache = true;
-            }
-            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
-                "Basic",
-                Convert.ToBase64String(
-                    System.Text.Encoding.ASCII.GetBytes("admin:secret")));
-
-            return await http.SendAsync(request);
         }
     }
 }
