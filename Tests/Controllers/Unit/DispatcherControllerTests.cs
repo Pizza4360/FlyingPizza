@@ -63,9 +63,7 @@ namespace Tests.Controllers.Unit
         [Fact]
         public void drone_should_have_destination_in_route()
         {
-            var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
             var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
-
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
@@ -76,10 +74,7 @@ namespace Tests.Controllers.Unit
         [Fact]
         public void drone_should_have_start_in_route()
         {
-            var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-
             var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
-
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
@@ -91,9 +86,7 @@ namespace Tests.Controllers.Unit
         public void TestGetRouteAllPositiveNumbers()
         {
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-           
             var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
-
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
@@ -110,9 +103,11 @@ namespace Tests.Controllers.Unit
         public void TestGetRouteAllNegativeNumbers()
         {
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            
-            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
-
+            var mockedDroneGatewaySetup = new Mock<IDroneToDispatcherGateway>();
+            mockedDroneGatewaySetup.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>()))
+                .Returns(Task.FromResult(Constants.TestRecord.ToString()));
+            var mockedDroneGateway = mockedDroneGatewaySetup.Object;
+            var drone = new Drone(Constants.TestRecord, mockedDroneGateway as DroneToDispatchGateway);
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
