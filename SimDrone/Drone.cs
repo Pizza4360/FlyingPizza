@@ -33,7 +33,7 @@ public class Drone : DroneRecord
         DroneToDispatchGateway = gateway;
         State = DroneState.Ready;
         CurrentLocation = HomeLocation;
-        Destination = HomeLocation;
+        Destination = record.Destination;
     }
 
     /// <summary>

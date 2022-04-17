@@ -15,151 +15,114 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Moq;
+using SimDrone;
 using Xunit;
 
 namespace Tests.Controllers.Unit
 {
-
-
     public class DispatcherControllerTests
     {
-        // Badge Response
         [Fact]
-        public async Task dispatcher_should_return_badge_equal_to_number_of_badges_on_badge_response()
+        public async Task DroneSimShouldReturnTrue()
         {
-            var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
-            var mockedFleetRepoSetup = new Mock<IFleetRepository>();
-            var mockedDispatchToDroneGatewaySetup = new Mock<IDispatchToDroneGateway>();
-            mockedDispatchToDroneGatewaySetup.Setup(x => x.InitializeRegistration(Constants.DroneIp, Constants.Url, Constants.TestBadgeNumber)).Returns(Task.FromResult(true)).Verifiable();
-            var mockedDispatchToDroneGateway = mockedDispatchToDroneGatewaySetup.Object as DispatchToDroneGateway;
-            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(true));
-            mockedFleetRepoSetup.Setup(x => x.GetAllAddresses())
-                .Returns(Task.FromResult(Constants.TestStringDict));
-
-            var mockedFleetRepo = mockedFleetRepoSetup.Object;
-            var controller =
-                new DispatchController(mockedFleetRepo, mockedOrdersRepo);
-            controller.changeGateway(mockedDispatchToDroneGateway);
-            var response = await controller.BadgeResponse();
-            response.Should().Be(mockedFleetRepo.GetAllAddresses().Result.Count);
-        }
-        
-        // Complete registration
-        [Fact]
-        public async Task dispatcher_should_return_true_on_complete_registration()
-        {
-            var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
-            var mockedFleetRepoSetup = new Mock<IFleetRepository>();
-            var mockedDispatchToDroneGateway = new DispatchToDroneGateway();
-            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(true));
-            mockedFleetRepoSetup.Setup(x => x.GetAllAddresses())
-                .Returns(Task.FromResult(Constants.TestStringDict));
-
-            var mockedFleetRepo = mockedFleetRepoSetup.Object;
-            var controller =
-                new DispatchController(mockedFleetRepo, mockedOrdersRepo);
-            var handlerFactory = new HttpHandlerFactory();
-            handlerFactory.OkAllHttp();
-            var handle = handlerFactory.GetHttpMessageHandler();
-            mockedDispatchToDroneGateway.ChangeHandler(handle);
-            mockedDispatchToDroneGateway.Url = Constants.DispatcherIp;
-            controller.changeGateway(mockedDispatchToDroneGateway);
-            var response = await controller.CompleteRegistration(Constants.TestInitDroneDto);
-            response.Should().Be(true);
-        }
-        
-        // patch delivery time
-        [Fact]
-        public async Task dispatcher_should_return_true_on_patch_delivery_time()
-        {
-            var mockedOrdersRepoSetup = new Mock<IOrdersRepository>();
-            mockedOrdersRepoSetup.Setup(x => x.PatchTimeCompleted(It.IsAny<string>())).Returns(Task.FromResult(true));
-            var mockedOrdersRepo = mockedOrdersRepoSetup.Object;
-            var mockedFleetRepoSetup = new Mock<IFleetRepository>();
-            var mockedDispatchToDroneGateway = new DispatchToDroneGateway();
-            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(true));
-            mockedFleetRepoSetup.Setup(x => x.GetAllAddresses())
-                .Returns(Task.FromResult(Constants.TestStringDict));
-
-            var mockedFleetRepo = mockedFleetRepoSetup.Object;
-            var controller =
-                new DispatchController(mockedFleetRepo, mockedOrdersRepo);
-            var handlerFactory = new HttpHandlerFactory();
-            handlerFactory.OkAllHttp();
-            var handle = handlerFactory.GetHttpMessageHandler();
-            mockedDispatchToDroneGateway.ChangeHandler(handle);
-            mockedDispatchToDroneGateway.Url = Constants.DispatcherIp;
-            controller.changeGateway(mockedDispatchToDroneGateway);
-            var response = await controller.PatchDeliveryTime(Constants.TestCompleteOrderRequest);
-            response.Should().Be(true);
-        }
-        
-        
-        // patch drone status
-        [Fact]
-        public async Task dispatcher_should_return_ok_on_patch_status()
-        {
-            var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
-            var mockedFleetRepoSetup = new Mock<IFleetRepository>();
-            var mockedDispatchToDroneGatewaySetup = new Mock<IDispatchToDroneGateway>();
-            mockedDispatchToDroneGatewaySetup.Setup(x => x.InitializeRegistration(Constants.DroneIp, Constants.Url, Constants.TestBadgeNumber)).Returns(Task.FromResult(true)).Verifiable();
-            var mockedDispatchToDroneGateway = mockedDispatchToDroneGatewaySetup.Object as DispatchToDroneGateway;
-            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(true));
-            mockedFleetRepoSetup.Setup(x => x.GetAllAddresses())
-                .Returns(Task.FromResult(Constants.TestStringDict));
-
-            var mockedFleetRepo = mockedFleetRepoSetup.Object;
-            var controller =
-                new DispatchController(mockedFleetRepo, mockedOrdersRepo);
-            controller.changeGateway(mockedDispatchToDroneGateway);
-            var response = await controller.PatchDroneStatus(Constants.TestDroneStatusUpdateRequest);
-            response.Should().NotBeNull();
-            response.Should().Be("ok");
+            // Assumed to return an ok object result with ok as arg
+            var adapter = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
+            var response = adapter.DeliverOrder(Constants.TestOrder.DeliveryLocation);
+            response.Should().BeTrue();
         }
 
-        // ADDNewDrone
+        // TODO: functions on sim, not drones
+        // [Fact]
+        // public async Task TelloAdapterShouldReturnOkInitRegistration()
+        // {
+        //     var adapter = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
+        //     var response = await adapter.InitializeRegistration(Constants.TestInitDroneRequest);
+        //     response.Should().NotBeNull();
+        //     response.Should().NotBeEquivalentTo(ExpectedHttp);
+        // }
+
+        // [Fact]
+        // public async Task TelloAdapterShouldReturnOkStartDrone()
+        // {
+        //     var adapter = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
+        //     var response = await adapter.StartDrone(new TelloDrone(Constants.TestRecord, new DroneToDispatchGateway()));
+        //     response.Should().NotBeNull();
+        //     response.Should().NotBeEquivalentTo(ExpectedHttp);
+        // }
+
+        // [Fact]
+        // public async Task TelloAdapterShouldReturnOkAssignToFleet()
+        // {
+        //     var adapter = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
+        //     adapter._drone = new TelloDrone(Constants.TestRecord, new DroneToDispatchGateway());
+        //     var response = await adapter.AssignToFleet(Constants.TestCompleteRegistrationResponse);
+        //     response.Should().NotBeNull();
+        //     response.Should().NotBeEquivalentTo(ExpectedHttp);
+        // }
+
         [Fact]
-        public async Task dispatcher_controller_register_should_send_proper_data_to_gateway()
+        public void drone_should_have_destination_in_route()
         {
-            var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
-            var mockedFleetRepoSetup = new Mock<IFleetRepository>();
-            var mockedDispatchToDroneGatewaySetup = new Mock<IDispatchToDroneGateway>();
-            mockedDispatchToDroneGatewaySetup.Setup(x => x.InitializeRegistration(Constants.DroneIp, Constants.Url, Constants.TestBadgeNumber)).Returns(Task.FromResult(true)).Verifiable();
-            var mockedDispatchToDroneGateway = mockedDispatchToDroneGatewaySetup.Object as DispatchToDroneGateway;
-            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(true));
-            mockedFleetRepoSetup.Setup(x => x.GetAllAddresses())
-                .Returns(Task.FromResult(Constants.TestStringDict));
+            var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
+            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
 
-        var mockedFleetRepo = mockedFleetRepoSetup.Object;
-            var controller =
-                new DispatchController(mockedFleetRepo, mockedOrdersRepo);
-            controller.changeGateway(mockedDispatchToDroneGateway);
-            await controller.AddDrone(Constants.TestGatewayDto);
-            mockedDispatchToDroneGatewaySetup.VerifyAll();
+            var route = drone.GetRoute();
+            route.Should()
+                .NotBeNull();
+            route.Should()
+                .ContainEquivalentOf(Constants.Destination);
         }
-        
 
         [Fact]
-        public async Task dispatcher_should_return_ok_on_valid_drone_info()
+        public void drone_should_have_start_in_route()
         {
-            var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
-            var mockedFleetRepoSetup = new Mock<IFleetRepository>();
-            var mockedDispatchToDroneGatewaySetup = new Mock<IDispatchToDroneGateway>();
-            mockedDispatchToDroneGatewaySetup.Setup(x => x.InitializeRegistration(Constants.DroneIp, Constants.Url, Constants.TestBadgeNumber)).Returns(Task.FromResult(true)).Verifiable();
-            var mockedDispatchToDroneGateway = mockedDispatchToDroneGatewaySetup.Object as DispatchToDroneGateway;
-            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(true));
-            mockedFleetRepoSetup.Setup(x => x.GetAllAddresses())
-                .Returns(Task.FromResult(Constants.TestStringDict));
+            var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
 
-            var mockedFleetRepo = mockedFleetRepoSetup.Object;
-            var controller =
-                new DispatchController(mockedFleetRepo, mockedOrdersRepo);
-            controller.changeGateway(mockedDispatchToDroneGateway);
-            var result = await controller.AddDrone(Constants.TestGatewayDto);
-            result.Should().NotBeNull();
-            result.Should().BeEquivalentTo("ok");
+            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
+
+            var route = drone.GetRoute();
+            route.Should()
+                .NotBeNull();
+            route.Should()
+                .ContainEquivalentOf(Constants.HomeLocation);
         }
 
+        [Fact]
+        public void TestGetRouteAllPositiveNumbers()
+        {
+            var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
+           
+            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
 
-}
+            var route = drone.GetRoute();
+            route.Should()
+                .NotBeNull();
+            foreach (var geoLocation in route)
+            {
+                geoLocation.Latitude.Should()
+                    .BeGreaterThanOrEqualTo(0m);
+                geoLocation.Longitude.Should()
+                    .BeGreaterThanOrEqualTo(0m);
+            }
+        }
+
+        [Fact]
+        public void TestGetRouteAllNegativeNumbers()
+        {
+            var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
+            
+            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
+
+            var route = drone.GetRoute();
+            route.Should()
+                .NotBeNull();
+            foreach (var geoLocation in route)
+            {
+                geoLocation.Latitude.Should()
+                    .BeLessThanOrEqualTo(0.0m);
+                geoLocation.Longitude.Should()
+                    .BeLessThanOrEqualTo(0.0m);
+            }
+        }
+    }
 }

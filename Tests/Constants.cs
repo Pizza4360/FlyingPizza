@@ -28,8 +28,8 @@ namespace Tests
         };
         public static readonly GeoLocation Destination = new()
         {
-            Latitude = 0.00008m,
-            Longitude = 0.00001m
+            Latitude = 0.00018m,
+            Longitude = 0.00011m
         };
         public static readonly GeoLocation NegativeDestination = new()
         {
