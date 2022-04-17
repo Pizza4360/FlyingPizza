@@ -1,7 +1,8 @@
 ﻿@page "/"
 
-@inject Services.RestDbSvc restPoint
+@* @inject Services.HttpMethods restPoint *@
 @inject Services.GlobalDataSvc globalData
+@inject HttpClient _client
 @inject Radzen.DialogService dialogService
 
 <!--Quick info about various fleet metrics at top of page-->
@@ -34,7 +35,7 @@
                 <!--Creates a block for each drone with id, status, more info button and a drone img-->
                 <li style="background-image: url('../images/drone.jpg')">
                     <div class="drone-status">
-                        <span class="title">ID: @drone.BadgeNumber</span>
+                        <span class="title">Id: @drone.BadgeNumber</span>
                         <span class="price">@drone.State</span>
                         <span class="more">
                             <RadzenButton style="background-color: #3b3b3b" Icon="add_circle_outline" Click=@(args => GoToDrone(drone)) />

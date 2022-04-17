@@ -1,28 +1,40 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Domain.InterfaceImplementations.Gateways;
+using FrontEnd.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Radzen;
 
-namespace FrontEnd
+namespace FrontEnd;
+
+public class Program
 {
-    public class Program
+    public static async Task Main(string[] args)
     {
-        public static async Task Main(string[] args)
+        var builder = WebAssemblyHostBuilder.CreateDefault(args);
+        builder.RootComponents.Add<App>("#app");
+
+        builder.Services.AddScoped(
+            _ => new HttpClient
+            {
+                BaseAddress = new Uri(builder
+                    .HostEnvironment
+                    .BaseAddress)
+            });
+
+        builder.Services.AddSingleton( new GlobalDataSvc() );
+            
+        builder.Services.AddSingleton( new FrontEndToDispatchGateway
         {
-            var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.RootComponents.Add<App>("#app");
+            Url = "http://localhost:80"
+        });
+            
+        builder.Services.AddSingleton( new HttpClient() );
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+        builder.Services.AddScoped<DialogService>();
 
-            builder.Services.AddSingleton<Services.GlobalDataSvc>(new Services.GlobalDataSvc());
-
-            builder.Services.AddSingleton<Services.RestDbSvc>(new Services.RestDbSvc());
-
-            builder.Services.AddScoped<DialogService>();
-
-            await builder.Build().RunAsync();
-        }
+        await builder.Build().RunAsync();
     }
 }

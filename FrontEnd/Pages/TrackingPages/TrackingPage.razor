@@ -4,15 +4,15 @@
 
 <div class="status-bar">
     <div class="noBorder">
-        <input class="checkBox" type="checkbox"  onclick="@onBoxClick">
+        <input class="checkBox" type="checkbox"  id="home_btn" onclick="@onBoxClick">
         <b>Home</b>
     </div>
     <div class="noBorder">
-        <input class="checkBox" type="checkbox" onclick="@onBoxClick">
-        <b>Drones</b>
+        <input class="checkBox" type="checkbox" id="drone_btn" onclick="@onBoxClick">
+        <b>SimDrones</b>
     </div>
      <div class="noBorder">
-        <RadzenCheckBox style="height: 24px; width: 24px; margin-bottom:4px"@bind-Value=@showMSU Name="showMarker" />
+        <RadzenCheckBox style="height: 24px; width: 24px; margin-bottom:4px"@bind-Value=@showMSU Name="showMarker" id="dest_btn"/>
         <b>Destination</b>
     </div>
 </div>
@@ -23,7 +23,7 @@
             <Markers>
                 @if (showMSU)
                 {
-                    <RadzenGoogleMapMarker Title="MSU Denver " Label="Home" Position=@(new GoogleMapPosition() { Lat = 39.745918, Lng = -105.007492 }) />
+                    <RadzenGoogleMapMarker id="home_icon" Title="MSU Denver " Label="Home" Position=@(new GoogleMapPosition() { Lat = 39.745918, Lng = -105.007492 }) />
                 }
             </Markers>
         </RadzenGoogleMap>
