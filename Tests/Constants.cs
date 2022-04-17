@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Resources;
+using Dispatch.Controllers;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using MongoDB.Bson;
+using MongoDB.Driver;
 using SimDrone;
 
 namespace Tests
@@ -21,22 +26,11 @@ namespace Tests
             Latitude = 0.00001m,
             Longitude = 0.00001m
         };
-        public static readonly GeoLocation NegativeHomeLocation = new()
-        {
-            Latitude = 0.00000m,
-            Longitude = 0.00000m
-        };
         public static readonly GeoLocation Destination = new()
         {
             Latitude = 0.00018m,
             Longitude = 0.00011m
         };
-        public static readonly GeoLocation NegativeDestination = new()
-        {
-            Latitude = -0.00008m,
-            Longitude = -0.00001m
-        };
-
         public const string CHARGING = "Charging";
 
         public static DroneRecord TestRecord = new()
@@ -58,7 +52,18 @@ namespace Tests
             InvalidTestIp = "test_ip",
             ValidTestIp = "172.18.0.0",
             TestDispatcherUrl = "http://" + ValidTestIp + ":4000";
-            
+
+           public static readonly Dictionary<string, string> TestStringDict = new()
+           {
+               ["something"] = "something"
+           };
+
+           public static readonly HttpResponseMessage Httpok = new()
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("")
+        };
+        
         private static readonly GeoLocation 
             TestDeliveryLocation = new() 
             {
@@ -73,6 +78,8 @@ namespace Tests
         private static readonly Guid TestGuid = new();
         private static readonly DateTime TestTimeDelivered = DateTime.UtcNow;
         
+        public static readonly GatewayDto TestGatewayDto = new ();
+        
         public static readonly Order TestOrder = new()
         {
             DeliveryAddress = TestDeliveryAddress,
@@ -82,15 +89,33 @@ namespace Tests
             DeliveryLocation = TestDeliveryLocation,
             CustomerName = TestCustomerName
         };
+        
+        public static readonly CompleteOrderRequest TestCompleteOrderRequest = new()
+        {
+            OrderId = TestOrderId,
+            Time = TestTimeDelivered
+        };
+        public static readonly DroneStatusUpdateRequest TestDroneStatusUpdateRequest = new()
+        {
+            Id = TestGuid.ToString(),
+            Location = TestDeliveryLocation,
+            State = DroneState.Ready
+        };
+        public static readonly InitDrone TestInitDroneDto = new()
+        {
+            FistStatusUpdateRequestUpdate = TestDroneStatusUpdateRequest,
+            Record = TestRecord
+        };
+        
         private static readonly Domain.DTO.FrontEndDispatchCommunication.AddDroneRequest 
             BadDroneInfo = new()
             {
                 BadgeNumber = TestBadgeNumber,
-                DispatchIp = InvalidTestIp
+                IpAddress = InvalidTestIp
             }, 
             DroneRegistrationInfo = new() {
                 BadgeNumber = TestBadgeNumber,
-                DispatchIp = ValidTestIp
+                IpAddress = ValidTestIp
             };
 
         private static Domain.DTO.FrontEndDispatchCommunication.AddOrderRequest
@@ -100,24 +125,13 @@ namespace Tests
             
         };
 
-        public static readonly AssignDeliveryRequest TestAssignDeliveryRequest = new()
+        public static InitDroneRequest TestInitDroneRequest = new()
         {
-            DroneId = TestRecord.Id,
-            OrderId = TestOrder.Id,
-            OrderLocation = TestDeliveryLocation
+            BadgeNumber = TestBadgeNumber,
+            Id = DroneId,
+            Url = Url
         };
-
-        public static readonly InitDroneRequest TestInitDroneRequest = new()
-        {
-            DroneIp = TestRecord.IpAddress,
-            Id = TestRecord.Id
-        };
-
-        public static CompleteRegistrationRequest TestCompleteRegistrationResponse = new()
-        {
-            DispatchIpAddress = TestRecord.DispatcherUrl,
-            Record = TestRecord
-        };
+        
     }
 }
         

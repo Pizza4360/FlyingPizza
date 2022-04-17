@@ -1,66 +1,29 @@
-using System.Threading.Tasks;
+﻿using Domain.DTO;
 using Domain.Entities;
 using Domain.InterfaceImplementations.Gateways;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
-using SimDrone;
-using SimDrone.Controllers;
 using Xunit;
+using Xunit.Abstractions;
 
-namespace Tests.Controllers.Unit;
-
-public class TelloTests
+namespace Tests.Controllers.Unit
 {
+    public class DroneTests
+    {
+        // Helper method for console output during testing.
+        private readonly ITestOutputHelper _testOutputHelper;
 
-    public readonly static OkObjectResult ExpectedHttp = new OkObjectResult("ok");
-    
-    
-    
-    [Fact]
-    public async Task TelloAdapterShouldReturnOkDeliverOrder()
-    {
-        // Assumed to return an ok object result with ok as arg
-        var adapter = new TelloDroneController(new TelloDrone(Constants.TestRecord, new DroneToDispatchGateway()));
-        var response = await adapter.DeliverOrder(Constants.TestAssignDeliveryRequest);
-        response.Should().NotBeNull();
-        response.Should().NotBeEquivalentTo("ok");
-    }
-    [Fact]
-    public async Task TelloAdapterShouldReturnOkInitRegistration()
-    {
-        var adapter = new TelloDroneController(new TelloDrone(Constants.TestRecord, new DroneToDispatchGateway()));
-        adapter._drone = new TelloDrone(Constants.TestRecord, new DroneToDispatchGateway());
-        var response = await adapter.InitializeRegistration(Constants.TestInitDroneRequest);
-        response.Should().NotBeNull();
-        response.Should().NotBeEquivalentTo(ExpectedHttp);
-    }
-    
-    [Fact]
-    public async Task TelloAdapterShouldReturnOkStartDrone()
-    {
-        var adapter = new TelloDroneController(new TelloDrone(Constants.TestRecord, new DroneToDispatchGateway()));
-        adapter._drone = new TelloDrone(Constants.TestRecord, new DroneToDispatchGateway());
-        var response = await adapter.StartDrone(new TelloDrone(Constants.TestRecord, new DroneToDispatchGateway()));
-        response.Should().NotBeNull();
-        response.Should().NotBeEquivalentTo(ExpectedHttp);
+        public DroneTests(
+        ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
 
-    }
-    [Fact]
-    public async Task TelloAdapterShouldReturnOkAssignToFleet()
-    {
-        var adapter = new TelloDroneController(new TelloDrone(Constants.TestRecord, new DroneToDispatchGateway()));
-        adapter._drone = new TelloDrone(Constants.TestRecord, new DroneToDispatchGateway());
-            var response = await adapter.AssignToFleet(Constants.TestCompleteRegistrationResponse);
-        response.Should().NotBeNull();
-        response.Should().NotBeEquivalentTo(ExpectedHttp);
-
-    }
-    [Fact]
+        [Fact]
         public void drone_should_have_destination_in_route()
         {
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            var drone = new TelloDrone(
+            var drone = new SimDrone.Drone(
                 new DroneRecord
                 {
                     OrderId = Constants.DroneId,
@@ -69,23 +32,30 @@ public class TelloTests
                     DispatcherUrl = Constants.Url,
                     BadgeNumber = Constants.TestBadgeNumber
                 },
-                mockedDispatcher){
-                Destination = Constants.Destination
-            };
+                mockedDispatcher);
 
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
             route.Should()
-                .ContainEquivalentOf(Constants.Destination);
+                .Contain(Constants.Destination);
         }
 
         [Fact]
         public void drone_should_have_start_in_route()
         {
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            
-            var drone = new TelloDrone(
+            var home = new GeoLocation
+            {
+                Latitude = 0.0m,
+                Longitude = 0.0m
+            };
+            var dest = new GeoLocation
+            {
+                Latitude = 3.0m,
+                Longitude = 4.0m
+            };
+            var drone = new SimDrone.Drone(
                 new DroneRecord
                 {
                     OrderId = Constants.DroneId,
@@ -94,23 +64,31 @@ public class TelloTests
                     DispatcherUrl = Constants.Url,
                     BadgeNumber = Constants.TestBadgeNumber
                 },
-                mockedDispatcher)
-            {
-                Destination = Constants.Destination
-            };
+                mockedDispatcher);
+            drone.Destination = dest;
 
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
             route.Should()
-                .ContainEquivalentOf(Constants.HomeLocation);
+                .Contain(home);
         }
 
         [Fact]
         public void TestGetRouteAllPositiveNumbers()
         {
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            var drone = new TelloDrone(
+            var home = new GeoLocation
+            {
+                Latitude = 0.0m,
+                Longitude = 0.0m
+            };
+            var dest = new GeoLocation
+            {
+                Latitude = 3.0m,
+                Longitude = 4.0m
+            };
+            var drone = new SimDrone.Drone(
                 new DroneRecord
                 {
                     OrderId = Constants.DroneId,
@@ -119,10 +97,8 @@ public class TelloTests
                     DispatcherUrl = Constants.Url,
                     BadgeNumber = Constants.TestBadgeNumber
                 },
-                mockedDispatcher)
-            {
-                Destination = Constants.Destination
-            };
+                mockedDispatcher);
+            drone.Destination = dest;
 
             var route = drone.GetRoute();
             route.Should()
@@ -140,19 +116,27 @@ public class TelloTests
         public void TestGetRouteAllNegativeNumbers()
         {
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            var drone = new TelloDrone(
+            var home = new GeoLocation
+            {
+                Latitude = 0.0m,
+                Longitude = 0.0m
+            };
+            var dest = new GeoLocation
+            {
+                Latitude = -3.0m,
+                Longitude = -4.0m
+            };
+            var drone = new SimDrone.Drone(
                 new DroneRecord
                 {
                     OrderId = Constants.DroneId,
-                    HomeLocation = Constants.NegativeHomeLocation,
+                    HomeLocation = Constants.HomeLocation,
                     IpAddress = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
                     BadgeNumber = Constants.TestBadgeNumber
                 },
-                mockedDispatcher)
-            {
-                Destination = Constants.NegativeDestination
-            };
+                mockedDispatcher);
+            drone.Destination = dest;
 
             var route = drone.GetRoute();
             route.Should()
@@ -166,3 +150,4 @@ public class TelloTests
             }
         }
     }
+}
