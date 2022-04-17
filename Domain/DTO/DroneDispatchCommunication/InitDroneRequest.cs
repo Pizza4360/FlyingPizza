@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.DroneDispatchCommunication
@@ -9,6 +10,6 @@ namespace Domain.DTO.DroneDispatchCommunication
         public string Url { get; set; }
         
         [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
-        public int BadgeNumber { get; set; }
+        public Guid BadgeNumber { get; set; }
     }
 }

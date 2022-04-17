@@ -10,5 +10,5 @@ namespace Domain.DTO.FrontEndDispatchCommunication
         public string IpAddress { get; set; }        
         
         [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
-        public int BadgeNumber { get; set; }    }
+        public Guid BadgeNumber { get; set; }    }
 }

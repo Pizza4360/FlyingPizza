@@ -17,14 +17,15 @@ namespace Tests.Front;
 
 public class OrderPageTest
 {
-    public static HttpMethods respoint;
-    [Fact]
-    public static void TestOrderPage()
-    {
-        using var cxt = new Bunit.TestContext();
-        //var respoint = cxt.Services.AddSingleton(new HttpMethods());
-        var check = cxt.RenderComponent<OrderPage>();
-
-    }
+    // TODO: Incomplete test, will be done in Frontend testing branch soon
+    // public static HttpMethods respoint;
+    // [Fact]
+    // public static void TestOrderPage()
+    // {
+    //     using var cxt = new Bunit.TestContext();
+    //     //var respoint = cxt.Services.AddSingleton(new HttpMethods());
+    //     var check = cxt.RenderComponent<OrderPage>();
+    //
+    // }
 
 }

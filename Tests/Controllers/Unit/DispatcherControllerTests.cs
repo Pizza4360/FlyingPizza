@@ -32,7 +32,7 @@ namespace Tests.Controllers.Unit
             var mockedDispatchToDroneGatewaySetup = new Mock<IDispatchToDroneGateway>();
             mockedDispatchToDroneGatewaySetup.Setup(x => x.InitializeRegistration(Constants.DroneIp, Constants.Url, Constants.TestBadgeNumber)).Returns(Task.FromResult(true)).Verifiable();
             var mockedDispatchToDroneGateway = mockedDispatchToDroneGatewaySetup.Object as DispatchToDroneGateway;
-            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(true));
+            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(BsonValue.Create(true)));
             mockedFleetRepoSetup.Setup(x => x.GetAllAddresses())
                 .Returns(Task.FromResult(Constants.TestStringDict));
 
@@ -51,7 +51,7 @@ namespace Tests.Controllers.Unit
             var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
             var mockedFleetRepoSetup = new Mock<IFleetRepository>();
             var mockedDispatchToDroneGateway = new DispatchToDroneGateway();
-            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(true));
+            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(BsonValue.Create(true)));
             mockedFleetRepoSetup.Setup(x => x.GetAllAddresses())
                 .Returns(Task.FromResult(Constants.TestStringDict));
 
@@ -77,7 +77,7 @@ namespace Tests.Controllers.Unit
             var mockedOrdersRepo = mockedOrdersRepoSetup.Object;
             var mockedFleetRepoSetup = new Mock<IFleetRepository>();
             var mockedDispatchToDroneGateway = new DispatchToDroneGateway();
-            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(true));
+            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(BsonValue.Create(true)));
             mockedFleetRepoSetup.Setup(x => x.GetAllAddresses())
                 .Returns(Task.FromResult(Constants.TestStringDict));
 
@@ -104,7 +104,7 @@ namespace Tests.Controllers.Unit
             var mockedDispatchToDroneGatewaySetup = new Mock<IDispatchToDroneGateway>();
             mockedDispatchToDroneGatewaySetup.Setup(x => x.InitializeRegistration(Constants.DroneIp, Constants.Url, Constants.TestBadgeNumber)).Returns(Task.FromResult(true)).Verifiable();
             var mockedDispatchToDroneGateway = mockedDispatchToDroneGatewaySetup.Object as DispatchToDroneGateway;
-            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(true));
+            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(BsonValue.Create(true)));
             mockedFleetRepoSetup.Setup(x => x.GetAllAddresses())
                 .Returns(Task.FromResult(Constants.TestStringDict));
 
@@ -126,7 +126,7 @@ namespace Tests.Controllers.Unit
             var mockedDispatchToDroneGatewaySetup = new Mock<IDispatchToDroneGateway>();
             mockedDispatchToDroneGatewaySetup.Setup(x => x.InitializeRegistration(Constants.DroneIp, Constants.Url, Constants.TestBadgeNumber)).Returns(Task.FromResult(true)).Verifiable();
             var mockedDispatchToDroneGateway = mockedDispatchToDroneGatewaySetup.Object as DispatchToDroneGateway;
-            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(true));
+            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(BsonValue.Create(true)));
             mockedFleetRepoSetup.Setup(x => x.GetAllAddresses())
                 .Returns(Task.FromResult(Constants.TestStringDict));
 
@@ -147,7 +147,7 @@ namespace Tests.Controllers.Unit
             var mockedDispatchToDroneGatewaySetup = new Mock<IDispatchToDroneGateway>();
             mockedDispatchToDroneGatewaySetup.Setup(x => x.InitializeRegistration(Constants.DroneIp, Constants.Url, Constants.TestBadgeNumber)).Returns(Task.FromResult(true)).Verifiable();
             var mockedDispatchToDroneGateway = mockedDispatchToDroneGatewaySetup.Object as DispatchToDroneGateway;
-            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(true));
+            mockedFleetRepoSetup.Setup(x => x.CreateAsync(It.IsAny<Domain.Entities.DroneRecord>())).Returns(Task.FromResult(BsonValue.Create(true)));
             mockedFleetRepoSetup.Setup(x => x.GetAllAddresses())
                 .Returns(Task.FromResult(Constants.TestStringDict));
 

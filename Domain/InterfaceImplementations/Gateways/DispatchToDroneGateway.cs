@@ -16,12 +16,12 @@ namespace Domain.InterfaceImplementations.Gateways
         private static HttpClient client = new HttpClient();
         public string Url;
         public Dictionary<string, string> IdToIpMap { get; set; } = new Dictionary<string, string>();
-        
-        
+
+
         // Step 2, DispatchToDroneGateway saves the drone's url and
         // sends a POST to the drone to give it a DroneToDispatherGateway
         public async Task<bool> InitializeRegistration(
-            string droneUrl, string gatewayUrl, int badgeNumber)
+            string droneUrl, string gatewayUrl, Guid badgeNumber)
         {
             Url = droneUrl;
             var body = JsonContent.Create(new InitDroneRequest
@@ -38,6 +38,7 @@ namespace Domain.InterfaceImplementations.Gateways
         // Step 6, use the incoming DroneRecord to create a SimDrone.Drone
         // object, and use DispatchToDroneGateway to POST it to the
         // DroneController
+
         public async Task<HttpResponseMessage> CompleteRegistration(DroneRecord record)
         {
             var body = JsonContent.Create(record);
@@ -70,6 +71,11 @@ namespace Domain.InterfaceImplementations.Gateways
             return response.IsSuccessStatusCode;
         }
 
+        public Task<HttpResponseMessage> AssignToFleet(string droneIpAddress, int badgeNumber, string dispatcherUrl, GeoLocation homeLocation)
+        {
+            throw new NotImplementedException();
+        }
+
 
         /// <summary>
         /// This method pings a drone to begin initiation to a fleet.
@@ -100,7 +106,7 @@ namespace Domain.InterfaceImplementations.Gateways
         /// <returns></returns>
         public async Task<HttpResponseMessage> AssignToFleet(
             string droneIpAddress,
-            int badgeNumber,
+            Guid badgeNumber,
             string dispatcherUrl,
             GeoLocation homeLocation)
         {

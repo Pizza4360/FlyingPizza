@@ -25,8 +25,7 @@ namespace Domain.InterfaceDefinitions.Repositories
         /// </summary>
         /// <param name="ids"></param>
         /// <returns>all matching entities (will be empty if no matches)</returns>
-        public Task<List<DroneRecord>> GetByIdsAsync(
-        IEnumerable<string> ids);
+        public Task<IEnumerable<DroneRecord>> GetByIdsAsync(IEnumerable<string> ids);
 
         /// <summary>
         /// Deletes the domain entity with the provided id

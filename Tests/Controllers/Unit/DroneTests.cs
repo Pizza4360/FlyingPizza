@@ -30,7 +30,7 @@ namespace Tests.Controllers.Unit
                     HomeLocation = Constants.HomeLocation,
                     IpAddress = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
-                    BadgeNumber = 1
+                    BadgeNumber = Constants.TestBadgeNumber
                 },
                 mockedDispatcher);
 
@@ -62,7 +62,7 @@ namespace Tests.Controllers.Unit
                     HomeLocation = Constants.HomeLocation,
                     IpAddress = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
-                    BadgeNumber = 1
+                    BadgeNumber = Constants.TestBadgeNumber
                 },
                 mockedDispatcher);
             drone.Destination = dest;
@@ -96,7 +96,7 @@ namespace Tests.Controllers.Unit
                     HomeLocation = Constants.HomeLocation,
                     IpAddress = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
-                    BadgeNumber = 1
+                    BadgeNumber = Constants.TestBadgeNumber
                 },
                 mockedDispatcher);
             drone.Destination = dest;
@@ -134,7 +134,7 @@ namespace Tests.Controllers.Unit
                     HomeLocation = Constants.HomeLocation,
                     IpAddress = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
-                    BadgeNumber = 1
+                    BadgeNumber = Constants.TestBadgeNumber
                 },
                 mockedDispatcher);
             drone.Destination = dest;

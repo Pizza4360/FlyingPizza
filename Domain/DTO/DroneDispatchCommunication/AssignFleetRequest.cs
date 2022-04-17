@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 using Domain.Entities;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -7,7 +8,7 @@ namespace Domain.DTO.DroneDispatchCommunication
     public class AssignFleetRequest : BaseDto
         {
             [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
-            public int BadgeNumber { get; set; }           
+            public Guid BadgeNumber { get; set; }           
             
             [BsonElement("DispatcherUrl"), JsonPropertyName("DispatcherUrl")]
             public string DispatcherUrl;

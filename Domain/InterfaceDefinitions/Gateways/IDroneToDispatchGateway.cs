@@ -6,6 +6,6 @@ namespace Domain.InterfaceDefinitions.Gateways
 {
     public interface IDroneToDispatcherGateway: IBaseGateway<BaseDto>
     {
-        public Task<bool> PatchDroneStatus(DroneStatusUpdateRequest state);
+        public Task<string?> PatchDroneStatus(DroneStatusUpdateRequest state);
     }
 }

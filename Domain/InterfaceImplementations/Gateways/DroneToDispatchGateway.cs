@@ -8,7 +8,7 @@ using Domain.InterfaceDefinitions.Gateways;
 
 namespace Domain.InterfaceImplementations.Gateways
 {
-    public class DroneToDispatchGateway : BaseGateway
+    public class DroneToDispatchGateway : BaseGateway, IDroneToDispatcherGateway
     {
         // Step 4, DroneToDispatchGateway takes in initial info
         // to create a GeoLocation and then POST its first status update 
@@ -49,5 +49,7 @@ namespace Domain.InterfaceImplementations.Gateways
         public async Task<string?> 
             PatchDroneStatus(DroneStatusUpdateRequest state)
             => SendMessage(Url, state).Result;
+        
+       
     }
 }

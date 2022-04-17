@@ -7,7 +7,7 @@ using MongoDB.Driver;
 
 namespace DatabaseAccess.Repositories;
 
-public class OrderRepository
+public class OrderRepository : IOrdersRepository
 {
     private readonly IMongoCollection<Order> _collection;
     public OrderRepository(IOptions<DatabaseSettings> ordersSettings) //: Domain.InterfaceDefinitions.Repositories
@@ -32,6 +32,11 @@ public class OrderRepository
     public async Task<Order?> GetAsync(string id) =>
         await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
+    Task<bool> IOrdersRepository.CreateAsync(Order newOrder)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<string?> CreateAsync(Order newOrder)
     {
         var updateDefinition = Builders<Order>.Update
@@ -48,9 +53,19 @@ public class OrderRepository
             return _collection.UpdateOneAsync(_ => false, updateDefinition, new UpdateOptions { IsUpsert = true }).Result.UpsertedId.ToString();
     }
 
+    Task<bool> IBaseRepository<Order>.CreateAsync(Order entity)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Order> 
         GetByIdAsync(string id) 
         => _collection.FindAsync(x => x.Id.Equals(id)).Result.First();
+
+    Task<IEnumerable<DroneRecord>> IBaseRepository<Order>.GetByIdsAsync(IEnumerable<string> ids)
+    {
+        throw new NotImplementedException();
+    }
 
 
     public Task<IEnumerable<Order>> 

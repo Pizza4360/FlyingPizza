@@ -9,7 +9,7 @@ using MongoDB.Driver;
 
 namespace DatabaseAccess.Repositories;
 
-public class FleetRepository
+public class FleetRepository : IFleetRepository
 {
     private readonly IMongoCollection<DroneRecord> _collection;
     public FleetRepository(IOptions<DatabaseSettings> fleetSettings) 
@@ -38,11 +38,16 @@ public class FleetRepository
     public async Task<DroneRecord?> GetAsync(string id) =>
         await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
+    Task<bool> IBaseRepository<DroneRecord>.CreateAsync(DroneRecord entity)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<DroneRecord> GetByIdAsync(string id)=>_collection.Find(_ => true)
         .First();
 
-    public Task<IEnumerable<DroneRecord>> 
-        GetByIdsAsync(IEnumerable<string> ids) 
+
+    public Task<IEnumerable<DroneRecord>> GetByIdsAsync(IEnumerable<string> ids) 
         => Task.FromResult<IEnumerable<DroneRecord>>(ids.Select(id => GetByIdAsync(id).Result).ToList());
 
     public Task<bool> Delete(string id)
@@ -98,6 +103,7 @@ public class FleetRepository
         .Set(drone => drone.DispatcherUrl, newDroneRecord.DispatcherUrl);
             return _collection.UpdateOneAsync(_ => false, updateDefinition, new UpdateOptions { IsUpsert = true }).Result.UpsertedId.ToString();
     }
+    
 
     public async Task<List<DroneRecord>> GetAll() => await _collection.Find(_ => true)
         .ToListAsync();
