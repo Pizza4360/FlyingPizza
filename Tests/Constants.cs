@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Resources;
 using Dispatch.Controllers;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
@@ -123,6 +124,14 @@ namespace Tests
             OrderId = TestOrderId,
             
         };
+
+        public static InitDroneRequest TestInitDroneRequest = new()
+        {
+            BadgeNumber = TestBadgeNumber,
+            Id = DroneId,
+            Url = Url
+        };
+        
     }
 }
         
