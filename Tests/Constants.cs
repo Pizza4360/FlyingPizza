@@ -111,11 +111,11 @@ namespace Tests
             BadDroneInfo = new()
             {
                 BadgeNumber = TestBadgeNumber,
-                IpAddress = InvalidTestIp
+                DroneIp = InvalidTestIp
             }, 
             DroneRegistrationInfo = new() {
                 BadgeNumber = TestBadgeNumber,
-                IpAddress = ValidTestIp
+                DroneIp = ValidTestIp
             };
 
         private static Domain.DTO.FrontEndDispatchCommunication.AddOrderRequest
@@ -127,9 +127,8 @@ namespace Tests
 
         public static InitDroneRequest TestInitDroneRequest = new()
         {
-            BadgeNumber = TestBadgeNumber,
             Id = DroneId,
-            Url = Url
+            DroneIp = Url
         };
         
     }

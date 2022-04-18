@@ -75,7 +75,7 @@ namespace SimDrone.Controllers
             };
         }
 
-        public TelloDroneController(TelloDrone drone) : base(drone)
+        public TelloDroneController(TelloDrone drone)
         {
             _drone = drone;
         }
