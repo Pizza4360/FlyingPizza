@@ -16,7 +16,7 @@ namespace Domain.InterfaceImplementations.Gateways
             HttpClient = new HttpClient(handler);
         }
 
-        public Task<BaseDTO> CompleteOrder(string id)
+        public Task<BaseDto> CompleteOrder(string id)
             => Task.FromResult(SendMessage("CompleteOrder",
                 new CompleteOrderRequest
                 {
@@ -29,7 +29,7 @@ namespace Domain.InterfaceImplementations.Gateways
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public Task<BaseDTO> 
+        public Task<BaseDto> 
             PatchDroneStatus(DroneStatusUpdateRequest state)
             => Task.FromResult(SendMessage(Url, state));
     }

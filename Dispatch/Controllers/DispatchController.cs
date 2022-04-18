@@ -116,14 +116,14 @@ namespace Dispatch.Controllers
             do
             {
                 Thread.Sleep(3000);
-                availableDrones = _droneRepo.GetAllAvailable()
+                availableDrones = _droneRepo.GetAll()
                     .Result;
             }
             while (availableDrones.Count == 0);
             
 
             request.DroneId = availableDrones.First().Id;
-            return _dispatchToDroneGateway.AssignDelivery(request).Result;
+            return _dispatchToDroneGateway.AssignDelivery(request);
         }
 
         [HttpPost("PostInitialStatus")]

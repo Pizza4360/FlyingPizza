@@ -23,7 +23,7 @@ builder.Services.AddSingleton<FleetRepository>();
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
-builder.Services.AddScoped<IDispatchToDroneGateway>(_ => new DispatchToDroneGateway());
+builder.Services.AddScoped<IDispatchToDroneGateway>();
 #endregion repositories
 
 var app = builder.Build();

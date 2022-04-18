@@ -3,8 +3,8 @@ using Domain.InterfaceImplementations.Gateways;
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
-public class CompleteRegistrationPost : BaseDto
+public class CompleteRegistrationRequest : BaseDto
 {
     public DroneRecord Record { get; set; }
-    public DroneToDispatchGateway Gateway { get; set; }
+    public string DispatchIpAddress { get; set; }
 }
