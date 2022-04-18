@@ -15,16 +15,16 @@ namespace Domain.InterfaceImplementations.Repositories;
 public class FleetRepository
 {
     private readonly IMongoCollection<DroneRecord> _collection;
-    public FleetRepository(IOptions<DatabaseSettings> fleetSettings) 
+    public FleetRepository(DatabaseSettings fleetSettings) 
     {
         var mongoClient = new MongoClient(
-            fleetSettings.Value.ConnectionString);
+            fleetSettings.ConnectionString);
 
         var mongoDatabase = mongoClient.GetDatabase(
-            fleetSettings.Value.DatabaseName);
+            fleetSettings.DatabaseName);
 
         _collection = mongoDatabase.GetCollection<DroneRecord>(
-            fleetSettings.Value.CollectionName);
+            fleetSettings.CollectionName);
     }
 
     public FleetRepository(string connectionString, string databaseName, string collectionName)
@@ -67,7 +67,7 @@ public class FleetRepository
     public async Task<Dictionary<string, string>> GetAllAddresses() 
         => (await _collection.Find(_ => true)
                 .ToListAsync())
-            .ToDictionary(droneRecord => droneRecord.Id, droneRecord => droneRecord.IpAddress);
+            .ToDictionary(droneRecord => droneRecord.Id, droneRecord => droneRecord.DroneIp);
 
     public async Task<UpdateResult> PatchDroneStatus(DroneStatusUpdateRequest dto)=>
          await _collection.UpdateOneAsync( 
@@ -97,7 +97,7 @@ public class FleetRepository
         .Set(drone => drone.CurrentLocation, newDroneRecord.CurrentLocation)
         .Set(drone => drone.HomeLocation, newDroneRecord.HomeLocation)
         .Set(drone => drone.State, newDroneRecord.State)
-        .Set(drone => drone.IpAddress, newDroneRecord.IpAddress)
+        .Set(drone => drone.DroneIp, newDroneRecord.DroneIp)
         .Set(drone => drone.DispatcherUrl, newDroneRecord.DispatcherUrl);
             return _collection.UpdateOneAsync(_ => false, updateDefinition, new UpdateOptions { IsUpsert = true }).Result.UpsertedId.ToString();
     }

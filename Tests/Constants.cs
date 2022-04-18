@@ -38,7 +38,7 @@ namespace Tests
             BadgeNumber = TestBadgeNumber,
             DispatcherUrl = Url,
             Id = DroneId,
-            IpAddress = DispatcherIp,
+            DroneIp = DispatcherIp,
             HomeLocation = HomeLocation,
             Destination = Destination,
             CurrentLocation = HomeLocation,

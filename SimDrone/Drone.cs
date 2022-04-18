@@ -29,7 +29,7 @@ public class Drone : DroneRecord
         Id = record.Id;
         HomeLocation = record.HomeLocation;
         BadgeNumber = record.BadgeNumber;
-        IpAddress = record.IpAddress;
+        DroneIp = record.DroneIp;
         DroneToDispatchGateway = gateway;
         State = DroneState.Ready;
         CurrentLocation = HomeLocation;

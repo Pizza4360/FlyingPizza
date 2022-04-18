@@ -9,10 +9,6 @@ namespace Domain.Entities
 {
     public class DroneRecord : BaseDto, IBaseEntity
     {
-        [BsonId]
-        [BsonElement("Id")]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
 
         [BsonElement("BadgeNumber")]
         [JsonPropertyName("BadgeNumber")]
@@ -40,9 +36,9 @@ namespace Domain.Entities
         public DroneState State { get; set; }
 
 
-        [BsonElement("DispatchIp")]
-        [JsonPropertyName("DispatchIp")]
-        public string IpAddress { get; set; }
+        [BsonElement("DroneIp")]
+        [JsonPropertyName("DroneIp")]
+        public string DroneIp { get; set; }
 
         [BsonElement("DispatcherUrl")]
         [JsonPropertyName("DispatcherUrl")]

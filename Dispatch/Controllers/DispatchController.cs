@@ -84,7 +84,7 @@ namespace Dispatch.Controllers
                 {
                     OrderId = null,
                     Id = dto.Id,
-                    IpAddress = dto.DroneIp,
+                    DroneIp = dto.DroneIp,
                     BadgeNumber = dto.BadgeNumber,
                     Destination = dto.HomeLocation,
                     CurrentLocation = dto.HomeLocation,

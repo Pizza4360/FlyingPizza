@@ -28,7 +28,7 @@ namespace Tests.Controllers.Unit
                 {
                     OrderId = Constants.DroneId,
                     HomeLocation = Constants.HomeLocation,
-                    IpAddress = Constants.DroneIp,
+                    DroneIp = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
                     BadgeNumber = Constants.TestBadgeNumber
                 },
@@ -60,7 +60,7 @@ namespace Tests.Controllers.Unit
                 {
                     OrderId = Constants.DroneId,
                     HomeLocation = Constants.HomeLocation,
-                    IpAddress = Constants.DroneIp,
+                    DroneIp = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
                     BadgeNumber = Constants.TestBadgeNumber
                 },
@@ -93,7 +93,7 @@ namespace Tests.Controllers.Unit
                 {
                     OrderId = Constants.DroneId,
                     HomeLocation = Constants.HomeLocation,
-                    IpAddress = Constants.DroneIp,
+                    DroneIp = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
                     BadgeNumber = Constants.TestBadgeNumber
                 },
@@ -131,7 +131,7 @@ namespace Tests.Controllers.Unit
                 {
                     OrderId = Constants.DroneId,
                     HomeLocation = Constants.HomeLocation,
-                    IpAddress = Constants.DroneIp,
+                    DroneIp = Constants.DroneIp,
                     DispatcherUrl = Constants.Url,
                     BadgeNumber = Constants.TestBadgeNumber
                 },

@@ -23,7 +23,6 @@ builder.Services.AddSingleton<FleetRepository>();
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
-builder.Services.AddScoped<IDispatchToDroneGateway>();
 #endregion repositories
 
 var app = builder.Build();
@@ -32,7 +31,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI():;
+    app.UseSwaggerUI();
 }
 
 // app.UseHttpsRedirection();

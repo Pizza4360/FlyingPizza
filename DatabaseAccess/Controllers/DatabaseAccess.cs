@@ -15,11 +15,11 @@ public class DatabaseAccess : ControllerBase
     private OrderRepository _orders;
     
     public DatabaseAccess(
-    ILogger<DatabaseAccess> logger, FleetRepository fleet/*, OrderRepository orders*/)
+    ILogger<DatabaseAccess> logger, FleetRepository fleet, OrderRepository orders)
     {
         _logger = logger;
         _fleet = fleet;
-        // _orders = orders;
+        _orders = orders;
     }
     [HttpGet("GetFleet")]
     public DroneRecord[] GetFleet()
@@ -29,7 +29,7 @@ public class DatabaseAccess : ControllerBase
     
     [HttpPost("AddOrder")]
     public OkObjectResult AddOrder(
-    Order order) => Ok( _orders.CreateAsync(order) .Result);
+    Order order) => Ok( _orders.CreateAsync(order).Result);
     
     [HttpGet("GetDrone")]
     public DroneRecord GetDrone(string id)

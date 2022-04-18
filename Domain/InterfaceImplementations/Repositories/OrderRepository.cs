@@ -24,6 +24,7 @@ public class OrderRepository
 
         _collection = mongoDatabase.GetCollection<Order>(
             ordersSettings.Value.CollectionName);
+        Console.WriteLine($"this should be 'Orders'>>>{ordersSettings.Value.CollectionName}<<<");
     }
     
     public OrderRepository(string connectionString, string databaseName, string collctionName) //: Domain.InterfaceDefinitions.Repositories
@@ -47,7 +48,6 @@ public class OrderRepository
                 .Set(order => order.DeliveryLocation, newOrder.DeliveryLocation)
                 .Set(order => order.TimeDelivered, newOrder.TimeDelivered)
                 .Set(order => order.TimeOrdered, newOrder.TimeOrdered)
-                .Set(order => order.URL, newOrder.URL)
                 .Set(order => order.HasBeenDelivered, newOrder.HasBeenDelivered);
             return _collection.UpdateOneAsync(_ => false, updateDefinition, new UpdateOptions { IsUpsert = true }).Result.UpsertedId.ToString();
     }
