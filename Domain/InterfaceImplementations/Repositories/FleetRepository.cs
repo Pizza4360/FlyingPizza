@@ -15,16 +15,16 @@ namespace Domain.InterfaceImplementations.Repositories;
 public class FleetRepository
 {
     private readonly IMongoCollection<DroneRecord> _collection;
-    public FleetRepository(DatabaseSettings fleetSettings) 
+    public FleetRepository(IOptions<FleetDatabaseSettings> fleetSettings) 
     {
         var mongoClient = new MongoClient(
-            fleetSettings.ConnectionString);
+            fleetSettings.Value.ConnectionString);
 
         var mongoDatabase = mongoClient.GetDatabase(
-            fleetSettings.DatabaseName);
+            fleetSettings.Value.DatabaseName);
 
         _collection = mongoDatabase.GetCollection<DroneRecord>(
-            fleetSettings.CollectionName);
+            fleetSettings.Value.CollectionName);
     }
 
     public FleetRepository(string connectionString, string databaseName, string collectionName)

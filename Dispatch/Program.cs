@@ -1,5 +1,6 @@
 using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceImplementations.Gateways;
+using Domain.InterfaceImplementations.Repositories;
 
 Console.WriteLine("hello world!!!");
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,19 @@ builder.Services.AddCors(options =>
             _.WithOrigins("*");
         });
 });
+
+
+#region repositories
+
+builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
+builder.Services.AddSingleton<OrderRepository>();
+
+builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
+builder.Services.AddSingleton<FleetRepository>();
+
+builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+
+#endregion repositories
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

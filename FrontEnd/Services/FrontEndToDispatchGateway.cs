@@ -9,18 +9,26 @@ namespace FrontEnd.Services;
 
 public class FrontEndToDispatchGateway : BaseGateway
 {
-    public async Task Ping( Ping ready)
-        => SendMessage("Ping", new Ping { S = "Malc" });
-    
-    
-    public async Task<AddOrderResponse> AddOrder(AddOrderRequest ready)
-        => (AddOrderResponse)SendMessage("AddOrder", ready);
-    
+    public async Task<string?> Ping(
+    PingDto ready)
+    {
+        return await SendMessage(
+            "Ping",
+            new PingDto()
+            {
+                S = "Malc"
+            });
+    }
 
-    public async Task<AddDroneResponse> AddDrone(AddDroneRequest request)
-        =>  (AddDroneResponse)SendMessage("InitDrone", request);
 
-    
+    // Step 4, DroneToDispatchGateway takes in initial info
+    // to create a GeoLocation and then POST its first status update 
+    public async Task<string?> AddOrder(
+    AddOrderRequest ready)
+    {
+        return await SendMessage("AddOrder", ready);
+    }
+
     public void RemoveDrone(
     HttpMessageHandler handler)
     {
@@ -29,9 +37,31 @@ public class FrontEndToDispatchGateway : BaseGateway
         HttpClient = new HttpClient(handler);
     }
 
-    
-    public async Task<CancelDeliveryResponse> CancelDeliveryRequest(
-    string id) => (CancelDeliveryResponse)SendMessage(
-        "CancelDeliveryRequest",
-        new CancelDeliveryRequest { OrderId = id });
+    public async Task<string?> SendDelivery(
+    SendDeliveryRequest dto) =>
+        await SendMessage("SendDelivery", dto);
+
+    public async Task<string?> CancelDeliveryRequest(
+    string id) =>
+        await SendMessage(
+            "CancelDeliveryRequest",
+            new CancelDeliveryRequest
+            {
+                OrderId = id
+            });
+
+    /// <summary>
+    /// This method gets called when a drone updates its status.
+    /// </summary>
+    /// <param name="state"></param>
+    /// <returns></returns>
+    public async Task<string?> PatchDroneStatus(
+    DroneStatusUpdateRequest state) =>
+        SendMessage(Url, state).Result;
+}
+
+public class PingDto
+    : BaseDto
+{
+    public string S { get; set; }
 }

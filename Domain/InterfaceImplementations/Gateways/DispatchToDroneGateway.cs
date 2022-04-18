@@ -21,7 +21,7 @@ namespace Domain.InterfaceImplementations.Gateways
         public async Task<InitDroneResponse> 
             InitializeRegistration(InitDroneRequest addDroneDto)
         {
-            var uri = $"http://{addDroneDto.DroneIp}/Drone/InitializeRegistration";
+            var uri = $"http://{addDroneDto.DroneIp}";
             return (InitDroneResponse)SendMessage("InitializeRegistration", addDroneDto);
         }
         

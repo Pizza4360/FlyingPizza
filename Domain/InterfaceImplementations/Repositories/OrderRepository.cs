@@ -14,7 +14,7 @@ namespace Domain.InterfaceImplementations.Repositories;
 public class OrderRepository
 {
     private readonly IMongoCollection<Order> _collection;
-    public OrderRepository(IOptions<DatabaseSettings> ordersSettings) //: Domain.InterfaceDefinitions.Repositories
+    public OrderRepository(IOptions<OrdersDatabaseSettings> ordersSettings) //: Domain.InterfaceDefinitions.Repositories
     {
         var mongoClient = new MongoClient(
             ordersSettings.Value.ConnectionString);

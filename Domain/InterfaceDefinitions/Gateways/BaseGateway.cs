@@ -25,10 +25,10 @@ namespace Domain.InterfaceDefinitions.Gateways
             get => _url + "/Dispatch";
         }
 
-        public BaseDto? SendMessage( string restCall, BaseDto dto)
+        public BaseDto? SendMessage(string baseUri, string restCall, BaseDto dto)
         {
             var body = JsonContent.Create($"{dto.ToJsonString()}");
-            var requestUri = new Uri($"{Url}/{restCall}");
+            var requestUri = new Uri($"{baseUri}{Url}/{restCall}");
             var result = HttpClient.PostAsync(requestUri, body).Result.Content.ReadAsStreamAsync().Result;
             return Newtonsoft.Json.JsonConvert
                 .DeserializeObject<BaseDto>(result.ToString() ?? string.Empty);
