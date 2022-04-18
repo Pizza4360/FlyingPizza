@@ -1,6 +1,6 @@
-using DatabaseAccess.Repositories;
 using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceImplementations.Gateways;
+using Domain.InterfaceImplementations.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

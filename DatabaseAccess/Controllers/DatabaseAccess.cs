@@ -1,5 +1,5 @@
-using DatabaseAccess.Repositories;
 using Domain.Entities;
+using Domain.InterfaceImplementations.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DatabaseAccess.Controllers;
