@@ -8,23 +8,29 @@ using Domain.InterfaceDefinitions.Gateways;
 
 namespace Domain.InterfaceImplementations.Gateways
 {
-    public class DroneToDispatchGateway : BaseGateway, IDroneToDispatcherGateway
+    public class DroneToDispatchGateway :IDroneToDispatcherGateway
     {
-        // Step 4, DroneToDispatchGateway takes in initial info
-        // to create a GeoLocation and then POST its first status update 
-        public async Task<string?> PostInitialStatus(
-        int latitude,
-        int longitude,
-        string ready)
+        
+        protected HttpClient HttpClient = new();
+                
+            private string _url;
+            
+            public new string Url
+            {
+                // "http://172.18.0.0:4000/Dispatch"
+                // "http://172.18.0.0:4000/Drone"
+                set => _url = value;
+                get => _url + "/Dispatch";
+            }
+            
+            // to create a GeoLocation and then POST its first status update 
+        public async Task<string?> PostInitialStatus(DroneStatusUpdateRequest state)
             => await SendMessage("PostInitialStatus", 
                 new DroneStatusUpdateRequest 
                 {
-                    Location = new GeoLocation
-                    {
-                        Latitude = latitude,
-                        Longitude = longitude
-                    },
-                    State = ready
+                    Id = state.Id,
+                    Location = state.Location,
+                    State = state.State
                 });
 
         public void ChangeHandler(HttpMessageHandler handler)
@@ -49,7 +55,16 @@ namespace Domain.InterfaceImplementations.Gateways
         public async Task<string?> 
             PatchDroneStatus(DroneStatusUpdateRequest state)
             => SendMessage(Url, state).Result;
-        
-       
+
+
+
+        public Task<string?> SendMessage(string restCall, BaseDto dto)
+        {
+            var body = JsonContent.Create($"{dto.ToJsonString()}");
+            var requestUri = new Uri($"{Url}/{restCall}");
+            return Task.FromResult(HttpClient.PostAsync(requestUri, body)
+                .Result.Content.ReadAsStreamAsync()
+                .Result.ToString()!);
+        }
     }
 }

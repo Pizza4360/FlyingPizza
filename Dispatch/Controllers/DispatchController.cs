@@ -19,7 +19,7 @@ namespace Dispatch.Controllers
         
         
         // Testing mock replacement for gateway
-        public void changeGateway(DispatchToDroneGateway mockedGateway)
+        public void changeGateway(IDispatchToDroneGateway mockedGateway)
         {
             _dispatchToDroneGateway = mockedGateway;
         }
@@ -77,7 +77,7 @@ namespace Dispatch.Controllers
         private readonly IFleetRepository _droneRepo;
         private readonly IOrdersRepository _orderRepo;
 
-        private DispatchToDroneGateway _dispatchToDroneGateway;
+        private IDispatchToDroneGateway _dispatchToDroneGateway;
 
         // private readonly ILogger<DispatchController> _logger;
         private readonly GeoLocation _homeLocation;

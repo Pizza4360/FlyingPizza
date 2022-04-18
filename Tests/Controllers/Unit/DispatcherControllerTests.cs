@@ -27,7 +27,10 @@ namespace Tests.Controllers.Unit
         public async Task DroneSimShouldReturnTrue()
         {
             // Assumed to return an ok object result with ok as arg
-            var adapter = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
+            
+            var mockedGateway = new Mock<IDroneToDispatcherGateway>();
+            mockedGateway.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>())).Returns(Task.FromResult(Constants.TestRecord.ToString()));
+            var adapter = new Drone(Constants.TestRecord, mockedGateway.Object);
             var response = adapter.DeliverOrder(Constants.TestOrder.DeliveryLocation);
             response.Should().BeTrue();
         }
@@ -35,6 +38,9 @@ namespace Tests.Controllers.Unit
         public async Task DroneSimReturnDroneRecordStringInitRegistration()
         {
             var sim = new SimDroneController();
+            var mockedGateway = new Mock<IDroneToDispatcherGateway>();
+            mockedGateway.Setup(x => x.PostInitialStatus(It.IsAny<DroneStatusUpdateRequest>())).Returns(Task.FromResult(Constants.TestRecord.ToString()));
+            sim.ChangeGateway(mockedGateway.Object);
             var response = await sim.InitializeRegistration(Constants.TestInitDroneRequest);
             response.Should().NotBeNull();
             response.Should().NotBeEquivalentTo(Constants.TestRecord.ToString());

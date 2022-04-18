@@ -137,9 +137,13 @@ namespace Domain.InterfaceImplementations.Gateways
             throw new NotImplementedException();
         }
 
-        public Task<string?> SendMessage(string restCall, BaseDto jsonifiable)
+        public Task<string?> SendMessage(string restCall, BaseDto dto)
         {
-            throw new NotImplementedException();
+            var body = JsonContent.Create($"{dto.ToJsonString()}");
+            var requestUri = new Uri($"{Url}/{restCall}");
+            return Task.FromResult(client.PostAsync(requestUri, body)
+                .Result.Content.ReadAsStreamAsync()
+                .Result.ToString()!);
         }
     }
 }

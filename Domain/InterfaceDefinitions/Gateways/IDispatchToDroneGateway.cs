@@ -26,6 +26,7 @@ namespace Domain.InterfaceDefinitions.Gateways
         Task<bool> InitializeRegistration(string droneIp, string httpsFlyingpizzaCom, Guid testBadgeNumber);
 
         public Task<HttpResponseMessage> CompleteRegistration(DroneRecord record);
-        
+
+        Dictionary<string, string> IdToIpMap { get; set; }
     }
 }

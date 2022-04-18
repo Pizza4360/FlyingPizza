@@ -1,5 +1,6 @@
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
+using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceImplementations.Gateways;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,7 @@ namespace SimDrone.Controllers
     public class SimDroneController : ControllerBase
     {
         private Drone _drone;
-        private static DroneToDispatchGateway _gateway;
+        private static IDroneToDispatcherGateway _gateway;
 
         /// <summary>
         /// Command a drone to deliver an order.
@@ -43,7 +44,16 @@ namespace SimDrone.Controllers
             };
             Console.WriteLine();
             var _badgeNumber = initInfo.BadgeNumber;
-            return await _gateway.PostInitialStatus(0, 0, "Ready");
+            return await _gateway.PostInitialStatus(new DroneStatusUpdateRequest
+            {
+                Id = initInfo.Id,
+                Location = new GeoLocation
+                {
+                    Latitude = 0,
+                    Longitude = 0
+                },
+                State = DroneState.Ready
+            });
         }
 
         /// <summary>
@@ -75,6 +85,11 @@ namespace SimDrone.Controllers
                 = $"SimDrone successfully initialized.\nDrone -->{_drone}";
             Console.WriteLine(doneString);
             return Ok(doneString);
+        }
+
+        public void ChangeGateway(IDroneToDispatcherGateway gateway)
+        {
+            _gateway = gateway;
         }
     }
 }
