@@ -127,7 +127,7 @@ namespace Tests
 
         public static InitDroneRequest TestInitDroneRequest = new()
         {
-            Id = DroneId,
+            DroneId = DroneId,
             DroneIp = Url
         };
         

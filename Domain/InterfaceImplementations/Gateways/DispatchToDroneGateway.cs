@@ -14,21 +14,23 @@ namespace Domain.InterfaceImplementations.Gateways
     {
         private static HttpClient client = new HttpClient();
         public string Url;
-        public Dictionary<string, string> IdToIpMap { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> IdToIpMap { get; set; } = new();
         
-        // Step 2, DispatchToDroneGateway saves the drone's url and
-        // sends a POST to the drone to give it a DroneToDispatherGateway
-        public async Task<InitDroneResponse> 
-            InitializeRegistration(InitDroneRequest addDroneDto)
-        {
-            var uri = $"http://{addDroneDto.DroneIp}";
-            return (InitDroneResponse)SendMessage("InitializeRegistration", addDroneDto);
-        }
         
+        public InitDroneResponse 
+            InitializeRegistration(InitDroneRequest initDroneRequest)
+            => (InitDroneResponse)SendMessage(
+                initDroneRequest.DroneIp,
+                "InitDrone", 
+                initDroneRequest);
 
-        public AssignFleetResponse CompleteRegistration(AssignFleetRequest assignment)
+
+        public AssignFleetResponse AssignFleet(AssignFleetRequest assignment)
         {
-            return (AssignFleetResponse)SendMessage("CompleteRegistration", new AssignFleetRequest
+            return (AssignFleetResponse)SendMessage(
+                IdToIpMap[assignment.DroneId],
+                "AssignFleet", 
+                new AssignFleetRequest
             {
                 BadgeNumber = assignment.BadgeNumber,
                 DispatcherIp = assignment.DispatcherIp,
@@ -41,6 +43,7 @@ namespace Domain.InterfaceImplementations.Gateways
         {
             var droneIp = IdToIpMap[request.DroneId];
             return (AssignDeliveryResponse) SendMessage(
+                IdToIpMap[request.Id],
                 "AssignDelivery",
                 new SendDeliveryRequest
                 {
@@ -54,6 +57,11 @@ namespace Domain.InterfaceImplementations.Gateways
         {
             // Added for mocking reasons, no way around it
             client = new HttpClient(handler);
+        }
+
+        public void AddIdToIpMapping(string dtoDroneId, string dtoDroneIp)
+        {
+            IdToIpMap[dtoDroneId] = dtoDroneIp;
         }
     }
 }

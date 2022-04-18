@@ -55,35 +55,35 @@ namespace Dispatch.Controllers
         
         // Step 1, use use DispatchToDroneGateway to init registration
         [HttpPost("AddDrone")]
-        public AssignFleetResponse AddDrone(AddDroneRequest dto)
+        public AddDroneResponse AddDrone(AddDroneRequest dto)
         {
             var initResponse = _dispatchToDroneGateway
                 .InitializeRegistration(
                     new InitDroneRequest
                     {
-                        Id = dto.Id,
+                        DroneId = dto.DroneId,
                         DroneIp = dto.DroneIp
                     }
-                ).Result;
+                );
             
             if (!initResponse.Okay)
             {
-                return new AssignFleetResponse{Id = dto.Id, Okay = false};
+                return new AddDroneResponse { BadgeNumber = dto.BadgeNumber, Success = false };
             }
 
-            var assignFleetResponse = _dispatchToDroneGateway.CompleteRegistration(new AssignFleetRequest
+            var assignFleetResponse = _dispatchToDroneGateway.AssignFleet(new AssignFleetRequest
             {
                 BadgeNumber = dto.BadgeNumber,
                 DispatcherIp = dto.DispatchIp,
                 DroneIp = dto.DroneIp,
                 HomeLocation = dto.HomeLocation,
-                Id = dto.Id
+                DroneId = dto.DroneId
             });
             _droneRepo.CreateAsync(
                 new DroneRecord
                 {
                     OrderId = null,
-                    Id = dto.Id,
+                    Id = dto.DroneId,
                     DroneIp = dto.DroneIp,
                     BadgeNumber = dto.BadgeNumber,
                     Destination = dto.HomeLocation,
@@ -92,7 +92,15 @@ namespace Dispatch.Controllers
                     DispatcherUrl = dto.DispatchIp,
                     State = assignFleetResponse.FirstState
                 });
-            return assignFleetResponse;
+            if (assignFleetResponse.IsInitializedAndAssigned)
+            {
+                _dispatchToDroneGateway.AddIdToIpMapping(dto.DroneId, dto.DroneIp);
+            }
+            return new AddDroneResponse
+            {
+                BadgeNumber = dto.BadgeNumber,
+                Success = assignFleetResponse.IsInitializedAndAssigned
+            };
         }
 
 
@@ -109,8 +117,8 @@ namespace Dispatch.Controllers
                 _orderRepo.PatchTimeCompleted(completeOrder.OrderId)
                 .Result);
 
-        [HttpPost("AssignDelivery")]
-        public AssignDeliveryResponse AssignDelivery(AssignDeliveryRequest request)
+        [HttpPost("EnqueueOrder")]
+        public AssignDeliveryResponse EnqueueOrder(AssignDeliveryRequest request)
         {
             List<DroneRecord> availableDrones;
             do
@@ -120,10 +128,13 @@ namespace Dispatch.Controllers
                     .Result;
             }
             while (availableDrones.Count == 0);
-            
-
-            request.DroneId = availableDrones.First().Id;
-            return _dispatchToDroneGateway.AssignDelivery(request);
+            var id = availableDrones.First().Id;
+            return _dispatchToDroneGateway.AssignDelivery(new AssignDeliveryRequest
+            {
+                DroneId = id,
+                OrderId = request.OrderId,
+                OrderLocation = request.OrderLocation
+            });
         }
 
         [HttpPost("PostInitialStatus")]

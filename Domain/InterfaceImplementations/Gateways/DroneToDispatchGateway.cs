@@ -16,21 +16,19 @@ namespace Domain.InterfaceImplementations.Gateways
             HttpClient = new HttpClient(handler);
         }
 
-        public Task<BaseDto> CompleteOrder(string id)
-            => Task.FromResult(SendMessage("CompleteOrder",
+        public CompleteOrderResponse CompleteOrder(string id)
+            => (CompleteOrderResponse)SendMessage(
+                id,
+                "CompleteOrder",
                 new CompleteOrderRequest
                 {
                     Time = DateTime.Now,
                     OrderId = id
-                }));
+                });
 
-        /// <summary>
-        /// This method gets called when a drone updates its status.
-        /// </summary>
-        /// <param name="state"></param>
-        /// <returns></returns>
+
         public Task<BaseDto> 
             PatchDroneStatus(DroneStatusUpdateRequest state)
-            => Task.FromResult(SendMessage(Url, state));
+            => Task.FromResult(SendMessage(Url,"PatchDroneStatus", state));
     }
 }

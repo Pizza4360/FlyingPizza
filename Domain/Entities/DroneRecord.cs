@@ -47,7 +47,7 @@ namespace Domain.Entities
 
         public override string ToString()
         {
-            return $"Id:{Id}" +
+            return $"DroneId:{Id}" +
                    $"Currentlocation:{CurrentLocation}\n" +
                    $"Destination:{Destination}\n" +
                    $"Status:{State}";

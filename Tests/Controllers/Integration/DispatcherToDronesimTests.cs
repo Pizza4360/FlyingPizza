@@ -22,7 +22,7 @@ namespace Tests.Controllers.Integration
             var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
             var testUpdateDto = new DroneStatusUpdateRequest
             {
-                Id = "something",
+                DroneId = "something",
                 Location = new GeoLocation
                 {
                     Latitude = 69,
@@ -64,7 +64,7 @@ namespace Tests.Controllers.Integration
             mockedHandlerSetup.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage {
                     StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(testDroneController.InitializeRegistration().IsCompletedSuccessfully.ToString())
+                    Content = new StringContent(testDroneController.InitDrone().IsCompletedSuccessfully.ToString())
                     // Assumed ok only for now
                 });
             var mockedHandler = mockedHandlerSetup.Object;

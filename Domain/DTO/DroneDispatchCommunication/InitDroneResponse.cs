@@ -6,11 +6,11 @@ namespace Domain.DTO.DroneDispatchCommunication
     public class InitDroneResponse : BaseDto
     {
         [BsonId]
-        [BsonElement("Id")]
+        [BsonElement("DroneId")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
         
-        [BsonElement("Okay")]
+        [BsonElement("IsInitializedAndAssigned")]
         public bool Okay { get; set; }
     }
 }

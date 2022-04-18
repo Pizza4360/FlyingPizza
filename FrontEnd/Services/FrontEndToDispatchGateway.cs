@@ -9,55 +9,46 @@ namespace FrontEnd.Services;
 
 public class FrontEndToDispatchGateway : BaseGateway
 {
-    public async Task<string?> Ping(
-    PingDto ready)
+    public PingDto Ping(PingDto ready)
     {
-        return await SendMessage(
-            "Ping",
+        return (PingDto) SendMessage("", "Ping",
             new PingDto()
             {
                 S = "Malc"
             });
     }
 
+    public AddOrderResponse AddOrder(AddOrderRequest ready) => (AddOrderResponse) SendMessage("", "AddOrder", ready);
 
-    // Step 4, DroneToDispatchGateway takes in initial info
-    // to create a GeoLocation and then POST its first status update 
-    public async Task<string?> AddOrder(
-    AddOrderRequest ready)
-    {
-        return await SendMessage("AddOrder", ready);
-    }
-
-    public void RemoveDrone(
-    HttpMessageHandler handler)
+    public void RemoveDrone(HttpMessageHandler handler)
     {
         // Added for mocking reasons, no way around it
         // TODO: what why?
         HttpClient = new HttpClient(handler);
     }
 
-    public async Task<string?> SendDelivery(
-    SendDeliveryRequest dto) =>
-        await SendMessage("SendDelivery", dto);
 
-    public async Task<string?> CancelDeliveryRequest(
-    string id) =>
-        await SendMessage(
+    public AddDroneResponse AddDrone(AddDroneRequest request) 
+        => (AddDroneResponse)SendMessage("", "", new InitDroneRequest
+    {
+        DroneId = request.DroneIp,
+        DroneIp = request.DroneIp,
+        Id = request.Id
+    });
+
+
+    public CancelDeliveryResponse CancelDeliveryRequest(string id) =>
+        (CancelDeliveryResponse) SendMessage(
+            "",
             "CancelDeliveryRequest",
             new CancelDeliveryRequest
             {
                 OrderId = id
             });
 
-    /// <summary>
-    /// This method gets called when a drone updates its status.
-    /// </summary>
-    /// <param name="state"></param>
-    /// <returns></returns>
-    public async Task<string?> PatchDroneStatus(
-    DroneStatusUpdateRequest state) =>
-        SendMessage(Url, state).Result;
+    
+    public DroneStatusUpdateResponse PatchDroneStatus(DroneStatusUpdateRequest state) 
+        => (DroneStatusUpdateResponse)SendMessage("", Url, state);
 }
 
 public class PingDto

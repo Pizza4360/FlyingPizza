@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.FrontEndDispatchCommunication
@@ -9,8 +10,8 @@ namespace Domain.DTO.FrontEndDispatchCommunication
         public bool Success { get; set; }
 
         [BsonId]
-        [BsonElement("Id")]
-        [JsonPropertyName("Id")]
-        public int Id { get; set; }    
+        [BsonElement("DroneId")]
+        [JsonPropertyName("DroneId")]
+        public Guid BadgeNumber { get; set; }    
     }
 }

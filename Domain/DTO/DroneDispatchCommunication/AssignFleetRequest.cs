@@ -10,9 +10,9 @@ namespace Domain.DTO.DroneDispatchCommunication
     public class AssignFleetRequest : BaseDto
         {
             [BsonId]
-            [BsonElement("Id")]
+            [BsonElement("DroneId")]
             [BsonRepresentation(BsonType.ObjectId)]
-            public string Id { get; set; }
+            public string DroneId { get; set; }
 
             [BsonElement("DroneIp"), JsonPropertyName("DroneIp")]
             public string DroneIp { get; set; }

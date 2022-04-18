@@ -147,7 +147,7 @@ public class Drone : DroneRecord
 
     public override string ToString()
     {
-        return $"SimDrone:{{Id:{Id},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
+        return $"SimDrone:{{DroneId:{Id},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
     }
 
     // Helper function for Haversine formula readability

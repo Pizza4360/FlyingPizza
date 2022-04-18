@@ -35,7 +35,7 @@ namespace Tests.Controllers.Unit
         public async Task DroneSimReturnDroneRecordStringInitRegistration()
         {
             var sim = new SimDroneController();
-            var response = await sim.InitializeRegistration(Constants.TestInitDroneRequest);
+            var response = await sim.InitDrone(Constants.TestInitDroneRequest);
             response.Should().NotBeNull();
             response.Should().NotBeEquivalentTo(Constants.TestRecord.ToString());
         }
@@ -61,7 +61,7 @@ namespace Tests.Controllers.Unit
         //     mockedDroneGatewaySetup.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>()))
         //         .Returns(Task.FromResult(Constants.TestRecord.ToString()));
         //     var sim = new SimDroneController();
-        //     var response = await sim.AssignToFleet(Constants.TestCompleteRegistrationResponse);
+        //     var response = await sim.AssignFleet(Constants.TestCompleteRegistrationResponse);
         //     response.Should().NotBeNull();
         //     response.Should().NotBeEquivalentTo(ExpectedHttp);
         // } NO longer exists

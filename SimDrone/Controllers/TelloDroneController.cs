@@ -26,7 +26,7 @@ namespace SimDrone.Controllers
         }
 
         
-        [HttpPost("InitializeRegistration")]
+        [HttpPost("InitDrone")]
         public Task<InitDroneResponse> InitializeRegistration(
         InitDroneRequest initInfo)
         {
@@ -38,7 +38,7 @@ namespace SimDrone.Controllers
             }
             return Task.FromResult(new InitDroneResponse
             {
-                Id = initInfo.Id,
+                Id = initInfo.DroneId,
                 Okay = okay
             });
         }
@@ -56,7 +56,7 @@ namespace SimDrone.Controllers
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        [HttpPost("CompleteRegistration")]
+        [HttpPost("AssignFleet")]
         public async Task<CompleteRegistrationResponse> AssignToFleet(
         CompleteRegistrationRequest post)
         {

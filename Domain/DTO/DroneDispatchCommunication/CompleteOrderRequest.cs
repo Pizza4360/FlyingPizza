@@ -7,7 +7,7 @@ namespace Domain.DTO.DroneDispatchCommunication;
 public class CompleteOrderRequest : BaseDto
 {
     [BsonId]
-    [BsonElement("Id")]
+    [BsonElement("DroneId")]
     [JsonPropertyName("OrderId")]
     public string OrderId { get; set; }
     

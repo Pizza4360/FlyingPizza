@@ -77,7 +77,7 @@
 //             Url = "localhost:"
 //         };
 //         var controller = new SimDroneController();
-//         var result = dispatch2Drone.InitializeRegistration(
+//         var result = dispatch2Drone.InitDrone(
 //             "localhost:7100"
 //             , "localhost:7101"
 //             , 1).Result;
