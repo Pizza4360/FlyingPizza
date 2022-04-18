@@ -1,6 +1,6 @@
 ﻿namespace Domain.DTO.DroneDispatchCommunication
 {
-    public class AssignDeliveryResponse : BaseDTO
+    public class AssignDeliveryResponse : BaseDto
     {
         
     }

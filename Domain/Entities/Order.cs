@@ -8,25 +8,13 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace Domain.Entities
 {
     [BsonDiscriminator("Order")]
-    public class Order : BaseDTO
+    public class Order : BaseDto
     {
-        [BsonId]
-        [BsonElement("Id")]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id;
-        
-        private static Random _random = new Random();
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        private const int IdLength = 24;
-            
-          
-        // https://stackoverflow.com/questions/1344221/how-can-i-generate-random-alphanumeric-strings
-        public static string GenerateNewID()
-        {
-            return new string(Enumerable.Repeat(chars, IdLength)
-                .Select(s => s[_random.Next(s.Length)]).ToArray());
-        }
-        
+        // [BsonId]
+        // [BsonElement("Id")]
+        // [BsonRepresentation(BsonType.ObjectId)]
+        // public string Id;
+
         [BsonElement("Items")]
         [JsonPropertyName("Items")]
         public object[] Items { get; set; }
@@ -58,10 +46,11 @@ namespace Domain.Entities
         [BsonElement("Url")]
         [JsonPropertyName("Url")]
         public string URL { get; set; }
-
+        // cqTFuSE656EQTy1jl8rqwiVB
         [BsonElement("BadgeNumber")]
         [JsonPropertyName("BadgeNumber")]
-        public int BadgeNumber { get; set; }
+        [BsonRepresentation(BsonType.String)]
+        public Guid BadgeNumber { get; set; }
 
         [BsonElement("HasBeenDelivered")]
         [JsonPropertyName("HasBeenDelivered")]

@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Domain.DTO.DroneDispatchCommunication
 {
-    public class AssignFleetRequest : BaseDTO
+    public class AssignFleetRequest : BaseDto
         {
             [BsonId]
             [BsonElement("Id")]

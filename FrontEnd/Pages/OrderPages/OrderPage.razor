@@ -1,7 +1,6 @@
 ﻿@page "/order"
 @using Domain.InterfaceImplementations.Gateways
 @using FrontEnd.Services
-@inject RestDbSvc restpoint
 @inject FrontEndToDispatchGateway _gateway 
 @inject NavigationManager _navigationManager
 
@@ -12,10 +11,10 @@
 
 <div class="right">
     <b>Customer Name: </b>
-    <RadzenTextBox Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.CustomerName = e.Value.ToString()) />
+    <RadzenTextBox id="CUST_NAME" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.CustomerName = e.Value.ToString()) />
     <br />
     <b>Address: </b> 
-    <RadzenTextBox Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.DeliveryAddress = e.Value.ToString()) />
+    <RadzenTextBox id="ADDRESS" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.DeliveryAddress = e.Value.ToString()) />
     <br />
-    <RadzenButton Click=@(args => makeOrder()) Style="width: 200px" Text="Create Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
+    <RadzenButton id="ORDER_SUBMIT" Click=@(args => makeOrder()) Style="width: 200px" Text="Create Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
 </div>

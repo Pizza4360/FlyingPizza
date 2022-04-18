@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Domain.DTO.FrontEndDispatchCommunication
 {
-    public class AddDroneRequest : BaseDTO
+    public class AddDroneRequest : BaseDto
     {
         [BsonElement("Id"), JsonPropertyName("Id")]
         public string Id { get; set; }

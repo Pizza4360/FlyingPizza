@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
-public class CompleteOrderRequest : BaseDTO
+public class CompleteOrderRequest : BaseDto
 {
     [BsonId]
     [BsonElement("Id")]

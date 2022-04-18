@@ -1,7 +1,8 @@
 ﻿@page "/"
 
-@inject Services.RestDbSvc restPoint
+@* @inject Services.HttpMethods restPoint *@
 @inject Services.GlobalDataSvc globalData
+@inject HttpClient _client
 @inject Radzen.DialogService dialogService
 
 <!--Quick info about various fleet metrics at top of page-->

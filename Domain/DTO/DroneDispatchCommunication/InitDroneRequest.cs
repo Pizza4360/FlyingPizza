@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.DroneDispatchCommunication
 {
-    public class InitDroneRequest : BaseDTO
+    public class InitDroneRequest : BaseDto
     {
         [BsonId]
         [BsonElement("Id")]
