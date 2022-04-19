@@ -1,11 +1,9 @@
-using Domain;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
+using Domain.InterfaceDefinitions.Repositories;
 using Domain.InterfaceImplementations.Gateways;
-using Domain.InterfaceImplementations.Repositories;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 
@@ -18,14 +16,14 @@ namespace Dispatch.Controllers
         // private readonly ILogger<DispatchController> _logger;
         private readonly GeoLocation _homeLocation;
         private readonly Queue<AssignDeliveryRequest> _unfilledOrders;
-        private readonly FleetRepository _droneRepo;
-        private readonly OrderRepository _orderRepo;
+        private readonly IFleetRepository _droneRepo;
+        private readonly IOrdersRepository _orderRepo;
         private readonly DispatchToDroneGateway _dispatchToDroneGateway;
         
         public DispatchController(
-        FleetRepository droneRepo,
+        IFleetRepository droneRepo,
         // DroneGateway droneGateway,
-        OrderRepository orderRepo
+        IOrdersRepository orderRepo
         // GeoLocation homeLocation,
         // Queue<AssignDeliveryRequest> unfilledOrders
         )
@@ -55,7 +53,7 @@ namespace Dispatch.Controllers
         
         // Step 1, use use DispatchToDroneGateway to init registration
         [HttpPost("AddDrone")]
-        public AddDroneResponse AddDrone(AddDroneRequest dto)
+        public async Task<AddDroneResponse> AddDrone(AddDroneRequest dto)
         {
             var initResponse = _dispatchToDroneGateway
                 .InitializeRegistration(
@@ -79,7 +77,7 @@ namespace Dispatch.Controllers
                 HomeLocation = dto.HomeLocation,
                 DroneId = dto.DroneId
             });
-            _droneRepo.CreateAsync(
+            await _droneRepo.CreateAsync(
                 new DroneRecord
                 {
                     OrderId = null,
@@ -111,11 +109,16 @@ namespace Dispatch.Controllers
         /// <param name="order"></param>
         /// <returns></returns>
         [HttpPatch("CompleteOrder")]
-        public Task<bool>
-            PatchDeliveryTime(CompleteOrderRequest completeOrder)
-            => Task.FromResult(
-                _orderRepo.PatchTimeCompleted(completeOrder.OrderId)
-                .Result);
+        public async Task<bool> PatchDeliveryTime(CompleteOrderRequest completeOrder)
+        {
+            var order = new Order
+            {
+                Id = completeOrder.Id,
+                TimeDelivered = DateTime.Now
+            };
+
+            return await _orderRepo.UpdateAsync(order);
+        }
 
         [HttpPost("EnqueueOrder")]
         public AssignDeliveryResponse EnqueueOrder(AssignDeliveryRequest request)
@@ -124,7 +127,7 @@ namespace Dispatch.Controllers
             do
             {
                 Thread.Sleep(3000);
-                availableDrones = _droneRepo.GetAll()
+                availableDrones = _droneRepo.GetAllAsync()
                     .Result;
             }
             while (availableDrones.Count == 0);
@@ -138,24 +141,29 @@ namespace Dispatch.Controllers
         }
 
         [HttpPost("PostInitialStatus")]
-        public UpdateResult
-            Post(DroneStatusUpdateRequest stateDto) 
-            => PatchDroneStatus(stateDto).Result;
+        public async Task<bool> Post(DroneStatusUpdateRequest stateDto) =>
+            await PatchDroneStatus(stateDto);
 
         /// If a drone updates its status, patch its status.
         /// Then check if there is an enqueued order. If so,
         /// it should be assigned to this drone.
         [HttpPatch("PatchDroneStatus")]
-        public async Task<UpdateResult> PatchDroneStatus(DroneStatusUpdateRequest stateDto)
+        public async Task<bool> PatchDroneStatus(DroneStatusUpdateRequest stateDto)
         {
+            var droneRecord = new DroneRecord
+            {
+                Id = stateDto.Id,
+                CurrentLocation = stateDto.Location,
+                State = stateDto.State
+            };
+
             if (stateDto.State != DroneState.Ready ||
                 _unfilledOrders.Count <= 0)
             {
-                return _droneRepo.PatchDroneStatus(stateDto).Result;
+                return await _droneRepo.UpdateAsync(droneRecord);
             }
             var orderDto = _unfilledOrders.Dequeue();
-            return _droneRepo.PatchDroneStatus(stateDto)
-                .Result;
+            return await _droneRepo.UpdateAsync(droneRecord);
         }
 
         /// <summary>
@@ -167,7 +175,7 @@ namespace Dispatch.Controllers
         public async Task<ActionResult<DroneRecord>>
             Get(string id)
         {
-            var droneRecord = await _droneRepo.GetAsync(id);
+            var droneRecord = await _droneRepo.GetByIdAsync(id);
 
             if (droneRecord is null)
             {

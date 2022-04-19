@@ -1,18 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
-using Domain.DTO;
-using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using Domain.InterfaceDefinitions.Repositories;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Domain.InterfaceImplementations.Repositories;
 
-public class FleetRepository
+public class FleetRepository : IFleetRepository
 {
     private readonly IMongoCollection<DroneRecord> _collection;
     public FleetRepository(IOptions<FleetDatabaseSettings> fleetSettings) 
@@ -27,81 +23,50 @@ public class FleetRepository
             fleetSettings.Value.CollectionName);
     }
 
-    public FleetRepository(string connectionString, string databaseName, string collectionName)
+    public async Task CreateAsync(DroneRecord drone)
     {
-        var mongoClient = new MongoClient(connectionString);
-
-        var mongoDatabase = mongoClient.GetDatabase(databaseName);
-
-        _collection = mongoDatabase.GetCollection<DroneRecord>(collectionName);
+        await _collection.InsertOneAsync(drone);
     }
+
     public async Task<List<DroneRecord>> GetAllAsync() =>
         await _collection.Find(_ => true).ToListAsync();
 
-    public async Task<DroneRecord?> GetAsync(string id) =>
+    public async Task<DroneRecord> GetByIdAsync(string id) =>
         await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-    public async Task<DroneRecord> GetByIdAsync(string id)=>_collection.Find(_ => true)
-        .First();
+    public async Task<Dictionary<string, string>> GetAllAddresses() =>
+        (await _collection.Find(_ => true).ToListAsync())
+        .ToDictionary(droneRecord => droneRecord.Id, droneRecord => droneRecord.DroneIp);
 
-    public Task<IEnumerable<DroneRecord>> 
-        GetByIdsAsync(IEnumerable<string> ids) 
-        => Task.FromResult<IEnumerable<DroneRecord>>(ids.Select(id => GetByIdAsync(id).Result).ToList());
+    public async Task<bool> RemoveAsync(string id) =>
+        (await _collection.DeleteOneAsync(x => x.Id == id)).IsAcknowledged;
 
-    public Task<bool> Delete(string id)
+    public async Task<bool> UpdateAsync(DroneRecord drone)
     {
-        throw new System.NotImplementedException();
+        var result = await _collection.UpdateOneAsync(
+            record => record.Id == drone.Id,
+            GetUpdateDefinition(drone));
+        return result.IsAcknowledged;
     }
-
-    public Task<bool> Update(DroneRecord entity)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public async Task UpdateAsync(string id, DroneRecord updatedDroneRecord) =>
-        await _collection.ReplaceOneAsync(x => x.Id == id, updatedDroneRecord);
-
-    public async Task RemoveAsync(string id) =>
-        await _collection.DeleteOneAsync(x => x.Id == id);
-   
-    public async Task<Dictionary<string, string>> GetAllAddresses() 
-        => (await _collection.Find(_ => true)
-                .ToListAsync())
-            .ToDictionary(droneRecord => droneRecord.Id, droneRecord => droneRecord.DroneIp);
-
-    public async Task<UpdateResult> PatchDroneStatus(DroneStatusUpdateRequest dto)=>
-         await _collection.UpdateOneAsync( 
-            Filter(dto)
-            , BsonDocumentUpdateDefinition(ToBson(dto))
-            ,new UpdateOptions()
-            , CancellationToken.None);
         
-    private static BsonDocumentUpdateDefinition<DroneRecord>
-        BsonDocumentUpdateDefinition(BsonValue doc) 
-        => new (new BsonDocument("$set", doc));
-    
-    private static BsonDocument 
-        ToBson(BaseDto dto) 
-        =>  JsonDocument.Parse($"{dto}").ToBsonDocument();
-
-    private static FilterDefinition<DroneRecord> 
-        Filter(DroneStatusUpdateRequest dto)
-    => Builders<DroneRecord>.Filter.Eq("_id", dto.Id);
-
-    public async Task<BsonValue> CreateAsync(DroneRecord newDroneRecord)
+    private static UpdateDefinition<DroneRecord> GetUpdateDefinition(DroneRecord drone)
     {
-        var updateDefinition = Builders<DroneRecord>.Update
-        .Set(drone => drone.BadgeNumber, newDroneRecord.BadgeNumber)
-        .Set(drone => drone.OrderId, newDroneRecord.OrderId)
-        .Set(drone => drone.Destination, newDroneRecord.Destination)
-        .Set(drone => drone.CurrentLocation, newDroneRecord.CurrentLocation)
-        .Set(drone => drone.HomeLocation, newDroneRecord.HomeLocation)
-        .Set(drone => drone.State, newDroneRecord.State)
-        .Set(drone => drone.DroneIp, newDroneRecord.DroneIp)
-        .Set(drone => drone.DispatcherUrl, newDroneRecord.DispatcherUrl);
-            return _collection.UpdateOneAsync(_ => false, updateDefinition, new UpdateOptions { IsUpsert = true }).Result.UpsertedId.ToString();
-    }
+        var builder = new UpdateDefinitionBuilder<DroneRecord>();
+        UpdateDefinition<DroneRecord> updateDefinition = null;
+        foreach (var property in drone.GetType().GetProperties())
+        {
+            if (property != null) {
+                if (updateDefinition == null)
+                {
+                    updateDefinition = builder.Set(property.Name, property.GetValue(drone));
+                }
+                else
+                {
+                    updateDefinition = updateDefinition.Set(property.Name, property.GetValue(drone));
+                }
+            }
+        }
 
-    public async Task<List<DroneRecord>> GetAll() => await _collection.Find(_ => true)
-        .ToListAsync();
+        return updateDefinition;
+    }
 }

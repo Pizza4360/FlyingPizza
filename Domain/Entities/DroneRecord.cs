@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 using Domain.DTO;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities
@@ -43,7 +42,6 @@ namespace Domain.Entities
         [BsonElement("DispatcherUrl")]
         [JsonPropertyName("DispatcherUrl")]
         public string DispatcherUrl { get; set; }
-
 
         public override string ToString()
         {
