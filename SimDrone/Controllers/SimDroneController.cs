@@ -39,9 +39,8 @@ namespace SimDrone.Controllers
         public async Task<string?> InitializeRegistration(
         InitDroneRequest initInfo)
         {
-            _gateway = new DroneToDispatchGateway{
-                Url = initInfo.Url
-            };
+            _gateway = MakeGateway(initInfo.Url);
+            
             Console.WriteLine();
             var _badgeNumber = initInfo.BadgeNumber;
             return await _gateway.PostInitialStatus(new DroneStatusUpdateRequest
@@ -87,6 +86,13 @@ namespace SimDrone.Controllers
             return Ok(doneString);
         }
 
+        public IDroneToDispatcherGateway MakeGateway(string url)
+        {
+            return new DroneToDispatchGateway{
+                Url = url
+            };
+        }
+        
         public void ChangeGateway(IDroneToDispatcherGateway gateway)
         {
             _gateway = gateway;

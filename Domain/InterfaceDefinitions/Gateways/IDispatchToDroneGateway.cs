@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.Entities;
+using Domain.InterfaceImplementations.Gateways;
 
 namespace Domain.InterfaceDefinitions.Gateways
 {
@@ -28,5 +29,6 @@ namespace Domain.InterfaceDefinitions.Gateways
         public Task<HttpResponseMessage> CompleteRegistration(DroneRecord record);
 
         Dictionary<string, string> IdToIpMap { get; set; }
+        
     }
 }

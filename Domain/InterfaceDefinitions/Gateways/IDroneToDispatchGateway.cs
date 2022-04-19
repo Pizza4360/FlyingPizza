@@ -8,5 +8,6 @@ namespace Domain.InterfaceDefinitions.Gateways
     {
         public Task<string?> PatchDroneStatus(DroneStatusUpdateRequest state);
         public Task<string?> PostInitialStatus(DroneStatusUpdateRequest state);
+
     }
 }
