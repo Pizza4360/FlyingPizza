@@ -21,8 +21,8 @@
 
 <div class="row p-3">
     <div class="col">
-        <RadzenGoogleMap style="height: 550px" Zoom=@zoom Center=@(new GoogleMapPosition { Lat = 39.745918, Lng = -105.007492}) MapClick=@OnMapClick MarkerClick=@OnMarkerClick>
-            <Markers>
+        <RadzenGoogleMap  style="height: 550px" Data=@MarkerData Zoom=@(zoom) Center=@(new GoogleMapPosition { Lat = 39.745918, Lng = -105.007492}) MapClick=@OnMapClick MarkerClick=@OnMarkerClick>
+            @*<Markers>
                 @if (DroneRecords != null)
                 {
                     var i = 1;
@@ -40,7 +40,7 @@
                 {
                     <RadzenGoogleMapMarker id="home_icon" Title="MSU Denver " Label="Home" Position=@(new GoogleMapPosition() { Lat = 39.745918, Lng = -105.007492 })/>
                 }
-            </Markers>
+            </Markers>*@
         </RadzenGoogleMap>
     </div>
 </div>
