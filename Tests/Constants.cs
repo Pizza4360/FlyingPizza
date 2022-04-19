@@ -130,7 +130,11 @@ namespace Tests
             DroneId = DroneId,
             DroneIp = Url
         };
-        
+
+        public static DroneStatusUpdateResponse TestDroneStatusUpdateResponse = new()
+        {
+          Id  = DroneId
+        };
     }
 }
         

@@ -27,31 +27,40 @@ namespace Tests.Controllers.Unit
         public async Task DroneSimShouldReturnTrue()
         {
             // Assumed to return an ok object result with ok as arg
-            var adapter = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
+
+            var mockedGateway = new Mock<IDroneToDispatcherGateway>();
+            mockedGateway.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>()))
+                .Returns(Task.FromResult<BaseDto>(Constants.TestDroneStatusUpdateResponse));
+            var adapter = new Drone(Constants.TestRecord, mockedGateway.Object);
             var response = adapter.DeliverOrder(Constants.TestOrder.DeliveryLocation);
             response.Should().BeTrue();
         }
-        [Fact]
-        public async Task DroneSimReturnDroneRecordStringInitRegistration()
-        {
-            var sim = new SimDroneController();
-            var response = await sim.InitDrone(Constants.TestInitDroneRequest);
-            response.Should().NotBeNull();
-            response.Should().NotBeEquivalentTo(Constants.TestRecord.ToString());
-        }
 
-        [Fact]
-        public async Task DroneSimShouldReturnOkStartDrone()
-        {
-            var mockedDroneGatewaySetup = new Mock<IDroneToDispatcherGateway>();
-            mockedDroneGatewaySetup.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>()))
-                .Returns(Task.FromResult(Constants.TestRecord.ToString()));
-            var ExpectedHttp = new OkResult();
-            var sim = new SimDroneController();
-            var response = await sim.StartDrone(new Drone(Constants.TestRecord, mockedDroneGatewaySetup.Object as DroneToDispatchGateway));
-            response.Should().NotBeNull();
-            response.Should().NotBeEquivalentTo(ExpectedHttp);
-        }
+        // [Fact]
+        // public async Task DroneSimReturnDroneRecordStringInitRegistration()
+        // {
+        //     var mockedGateway = new Mock<IDroneToDispatcherGateway>();
+        //     mockedGateway.Setup(x => x.PostInitialStatus(It.IsAny<DroneStatusUpdateRequest>())).Returns(Task.FromResult(Constants.TestRecord.ToString()));
+        //     
+        //     var sim = new SimDroneController();
+        //     var response = await sim.InitializeRegistration(Constants.TestInitDroneRequest);
+        //     response.Should().NotBeNull();
+        //     response.Should().NotBeEquivalentTo(Constants.TestRecord.ToString());
+        // }
+        // TODO: untestable, instantiates a gateway and overwrites any mocking
+        // [Fact]
+        // public async Task DroneSimShouldReturnOkStartDrone()
+        // {
+        //     var mockedDroneGatewaySetup = new Mock<IDroneToDispatcherGateway>();
+        //     mockedDroneGatewaySetup.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>()))
+        //         .Returns(Task.FromResult(Constants.TestRecord.ToString()));
+        //     var ExpectedHttp = new OkResult();
+        //     var sim = new SimDroneController();
+        //     var response = await sim.StartDrone(new Drone(Constants.TestRecord,
+        //         mockedDroneGatewaySetup.Object as DroneToDispatchGateway));
+        //     response.Should().NotBeNull();
+        //     response.Should().NotBeEquivalentTo(ExpectedHttp);
+        // } No longer exists
 
         // [Fact]
         // public async Task TelloAdapterShouldReturnOkAssignToFleet()
@@ -61,7 +70,7 @@ namespace Tests.Controllers.Unit
         //     mockedDroneGatewaySetup.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>()))
         //         .Returns(Task.FromResult(Constants.TestRecord.ToString()));
         //     var sim = new SimDroneController();
-        //     var response = await sim.AssignFleet(Constants.TestCompleteRegistrationResponse);
+        //     var response = await sim.AssignToFleet(Constants.TestCompleteRegistrationResponse);
         //     response.Should().NotBeNull();
         //     response.Should().NotBeEquivalentTo(ExpectedHttp);
         // } NO longer exists
@@ -81,7 +90,7 @@ namespace Tests.Controllers.Unit
         [Fact]
         public void drone_should_have_start_in_route()
         {
-            
+
             //TODO: Bug #5 drone moves in Latitude and Longitude direction indefinitely
             var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
             var route = drone.GetRoute();
@@ -94,7 +103,7 @@ namespace Tests.Controllers.Unit
         [Fact]
         public void TestGetRouteAllPositiveNumbers()
         {
-            
+
             //TODO: Bug #5 drone moves in Latitude and Longitude direction indefinitely
             var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
             var route = drone.GetRoute();
@@ -112,11 +121,11 @@ namespace Tests.Controllers.Unit
         [Fact]
         public void TestGetRouteAllNegativeNumbers()
         {
-            
+
             // Bug #5 drone moves in Latitude and Longitude direction indefinitely
             var mockedDroneGatewaySetup = new Mock<IDroneToDispatcherGateway>();
             mockedDroneGatewaySetup.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>()))
-                .Returns(Task.FromResult(Constants.TestRecord.ToString()));
+                .Returns(Task.FromResult<BaseDto>(Constants.TestDroneStatusUpdateRequest));
             var mockedDroneGateway = mockedDroneGatewaySetup.Object;
             var drone = new Drone(Constants.TestRecord, mockedDroneGateway as DroneToDispatchGateway);
             var route = drone.GetRoute();

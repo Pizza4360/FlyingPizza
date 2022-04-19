@@ -1,30 +1,29 @@
-﻿using Domain.DTO;
+using Domain.DTO;
 using Domain.Entities;
 using Domain.InterfaceImplementations.Gateways;
 using FluentAssertions;
 using Moq;
-using SimDrone;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests.Controllers.Unit
+namespace Tests.Controllers.Unit;
+
+public class DroneTests
 {
-    public class TelloTests
-    {
-        // Helper method for console output during testing.
+    // Helper method for console output during testing.
         private readonly ITestOutputHelper _testOutputHelper;
 
-        public TelloTests(
+        public DroneTests(
         ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
         }
 
         [Fact]
-        public void tello_drone_should_have_destination_in_route()
+        public void drone_should_have_destination_in_route()
         {
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            var drone = new TelloDrone(
+            var drone = new SimDrone.Drone(
                 Constants.TestRecord,
                 mockedDispatcher);
 
@@ -36,23 +35,7 @@ namespace Tests.Controllers.Unit
         }
 
         [Fact]
-        public void tello_drone_should_have_start_in_route()
-        {
-            var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            var drone = new TelloDrone(
-                Constants.TestRecord,
-                mockedDispatcher);
-            drone.Destination = Constants.Destination;
-
-            var route = drone.GetRoute();
-            route.Should()
-                .NotBeNull();
-            route.Should()
-                .Contain(Constants.HomeLocation);
-        }
-
-        [Fact]
-        public void TestGetRouteAllPositiveNumbers()
+        public void drone_should_have_start_in_route()
         {
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
             var home = new GeoLocation
@@ -65,7 +48,33 @@ namespace Tests.Controllers.Unit
                 Latitude = 3.0m,
                 Longitude = 4.0m
             };
-            var drone = new TelloDrone(
+            var drone = new SimDrone.Drone(
+                Constants.TestRecord,
+                mockedDispatcher);
+            drone.Destination = dest;
+
+            var route = drone.GetRoute();
+            route.Should()
+                .NotBeNull();
+            route.Should()
+                .Contain(home);
+        }
+
+        [Fact]
+        public void TestDroneGetRouteAllPositiveNumbers()
+        {
+            var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
+            var home = new GeoLocation
+            {
+                Latitude = 0.0m,
+                Longitude = 0.0m
+            };
+            var dest = new GeoLocation
+            {
+                Latitude = 3.0m,
+                Longitude = 4.0m
+            };
+            var drone = new SimDrone.Drone(
                 Constants.TestRecord,
                 mockedDispatcher);
             drone.Destination = dest;
@@ -84,20 +93,20 @@ namespace Tests.Controllers.Unit
         }
 
         [Fact]
-        public void TestTelloGetRouteAllNegativeNumbers()
+        public void TestDroneGetRouteAllNegativeNumbers()
         {
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
             var home = new GeoLocation
             {
-                Latitude = -1.0m,
-                Longitude = -1.0m
+                Latitude = 0.0m,
+                Longitude = 0.0m
             };
             var dest = new GeoLocation
             {
                 Latitude = -3.0m,
                 Longitude = -4.0m
             };
-            var drone = new TelloDrone(
+            var drone = new SimDrone.Drone(
                 Constants.TestRecord,
                 mockedDispatcher);
             drone.Destination = dest;
@@ -113,6 +122,6 @@ namespace Tests.Controllers.Unit
                 geoLocation.Longitude.Should()
                     .BeLessThanOrEqualTo(0.0m);
             }
+
         }
-    }
 }

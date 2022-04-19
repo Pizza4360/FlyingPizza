@@ -2,6 +2,7 @@ using Domain;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceImplementations.Gateways;
 using static System.Decimal;
 
@@ -22,9 +23,9 @@ public class Drone : DroneRecord
     private const decimal StepSize = DroneUpdateInterval / 1000.0m * (decimal) DroneSpeed;
 
     /// Allows the simulation to communicate with the dispatcher.
-    private DroneToDispatchGateway DroneToDispatchGateway { get; set; }
+    private IDroneToDispatcherGateway DroneToDispatchGateway { get; set; }
 
-    public Drone(DroneRecord record, DroneToDispatchGateway gateway)
+    public Drone(DroneRecord record, IDroneToDispatcherGateway gateway)
     {
         Id = record.Id;
         HomeLocation = record.HomeLocation;
