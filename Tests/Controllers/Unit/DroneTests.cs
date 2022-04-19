@@ -1,8 +1,11 @@
+using System.Threading.Tasks;
 using Domain.DTO;
-using Domain.Entities;
+using Domain.DTO.DroneDispatchCommunication;
+using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceImplementations.Gateways;
 using FluentAssertions;
 using Moq;
+using SimDrone;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,67 +22,37 @@ public class DroneTests
             _testOutputHelper = testOutputHelper;
         }
 
-        [Fact]
+       [Fact]
         public void drone_should_have_destination_in_route()
         {
-            var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            var drone = new SimDrone.Drone(
-                Constants.TestRecord,
-                mockedDispatcher);
-
+            //TODO: Bug #5 drone moves in Latitude and Longitude direction indefinitely
+            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
             route.Should()
-                .Contain(Constants.Destination);
+                .ContainEquivalentOf(Constants.Destination);
         }
 
         [Fact]
         public void drone_should_have_start_in_route()
         {
-            var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            var home = new GeoLocation
-            {
-                Latitude = 0.0m,
-                Longitude = 0.0m
-            };
-            var dest = new GeoLocation
-            {
-                Latitude = 3.0m,
-                Longitude = 4.0m
-            };
-            var drone = new SimDrone.Drone(
-                Constants.TestRecord,
-                mockedDispatcher);
-            drone.Destination = dest;
 
+            //TODO: Bug #5 drone moves in Latitude and Longitude direction indefinitely
+            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
             route.Should()
-                .Contain(home);
+                .ContainEquivalentOf(Constants.HomeLocation);
         }
 
         [Fact]
-        public void TestDroneGetRouteAllPositiveNumbers()
+        public void TestGetRouteAllPositiveNumbers()
         {
-            var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            var home = new GeoLocation
-            {
-                Latitude = 0.0m,
-                Longitude = 0.0m
-            };
-            var dest = new GeoLocation
-            {
-                Latitude = 3.0m,
-                Longitude = 4.0m
-            };
-            var drone = new SimDrone.Drone(
-                Constants.TestRecord,
-                mockedDispatcher);
-            drone.Destination = dest;
-            drone.HomeLocation = home;
 
+            //TODO: Bug #5 drone moves in Latitude and Longitude direction indefinitely
+            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
@@ -93,25 +66,15 @@ public class DroneTests
         }
 
         [Fact]
-        public void TestDroneGetRouteAllNegativeNumbers()
+        public void TestGetRouteAllNegativeNumbers()
         {
-            var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            var home = new GeoLocation
-            {
-                Latitude = 0.0m,
-                Longitude = 0.0m
-            };
-            var dest = new GeoLocation
-            {
-                Latitude = -3.0m,
-                Longitude = -4.0m
-            };
-            var drone = new SimDrone.Drone(
-                Constants.TestRecord,
-                mockedDispatcher);
-            drone.Destination = dest;
-            drone.HomeLocation = home;
 
+            // Bug #5 drone moves in Latitude and Longitude direction indefinitely
+            var mockedDroneGatewaySetup = new Mock<IDroneToDispatcherGateway>();
+            mockedDroneGatewaySetup.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>()))
+                .Returns(Task.FromResult<BaseDto>(Constants.TestDroneStatusUpdateRequest));
+            var mockedDroneGateway = mockedDroneGatewaySetup.Object;
+            var drone = new Drone(Constants.TestRecord, mockedDroneGateway as DroneToDispatchGateway);
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
@@ -122,6 +85,5 @@ public class DroneTests
                 geoLocation.Longitude.Should()
                     .BeLessThanOrEqualTo(0.0m);
             }
-
         }
-}
+    }

@@ -86,6 +86,7 @@ namespace Tests.Controllers.Unit
         [Fact]
         public void TestTelloGetRouteAllNegativeNumbers()
         {
+            //TODO: bug #6 Tello drone passes through 0.1,0.0 regardless
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
             var home = new GeoLocation
             {
