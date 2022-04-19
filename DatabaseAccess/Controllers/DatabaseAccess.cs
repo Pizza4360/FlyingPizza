@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.InterfaceDefinitions.Repositories;
 using Domain.InterfaceImplementations.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +12,11 @@ public class DatabaseAccess : ControllerBase
     
 
     private readonly ILogger<DatabaseAccess> _logger;
-    private FleetRepository _fleet;
+    private IFleetRepository _fleet;
     private OrderRepository _orders;
     
     public DatabaseAccess(
-    ILogger<DatabaseAccess> logger, FleetRepository fleet, OrderRepository orders)
+    ILogger<DatabaseAccess> logger, IFleetRepository fleet, OrderRepository orders)
     {
         _logger = logger;
         _fleet = fleet;
@@ -24,7 +25,7 @@ public class DatabaseAccess : ControllerBase
     [HttpGet("GetFleet")]
     public DroneRecord[] GetFleet()
     {
-        return _fleet.GetAll().Result.ToArray();
+        return _fleet.GetAllAsync().Result.ToArray();
     }
     
     [HttpPost("AddOrder")]
