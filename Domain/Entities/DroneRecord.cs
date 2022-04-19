@@ -69,5 +69,14 @@ namespace Domain.Entities
         {
             throw new System.NotImplementedException();
         }
+
+        // public double Lat => (double) CurrentLocation.Latitude;
+        // public double Lng => (double) CurrentLocation.Longitude;
+
+        public class Coords
+        {
+            public double Lat { get; set; }
+            public double Lng { get; set; }
+        }
     }
 }
