@@ -2,8 +2,8 @@ using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
+using Domain.InterfaceDefinitions.Repositories;
 using Domain.InterfaceImplementations.Gateways;
-using Domain.InterfaceImplementations.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 
@@ -16,14 +16,14 @@ namespace Dispatch.Controllers
         // private readonly ILogger<DispatchController> _logger;
         private readonly GeoLocation _homeLocation;
         private readonly Queue<AssignDeliveryRequest> _unfilledOrders;
-        private readonly FleetRepository _droneRepo;
-        private readonly OrderRepository _orderRepo;
+        private readonly IFleetRepository _droneRepo;
+        private readonly IOrdersRepository _orderRepo;
         private readonly DispatchToDroneGateway _dispatchToDroneGateway;
         
         public DispatchController(
-        FleetRepository droneRepo,
+        IFleetRepository droneRepo,
         // DroneGateway droneGateway,
-        OrderRepository orderRepo
+        IOrdersRepository orderRepo
         // GeoLocation homeLocation,
         // Queue<AssignDeliveryRequest> unfilledOrders
         )
