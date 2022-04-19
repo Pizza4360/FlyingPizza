@@ -109,11 +109,16 @@ namespace Dispatch.Controllers
         /// <param name="order"></param>
         /// <returns></returns>
         [HttpPatch("CompleteOrder")]
-        public Task<bool>
-            PatchDeliveryTime(CompleteOrderRequest completeOrder)
-            => Task.FromResult(
-                _orderRepo.PatchTimeCompleted(completeOrder.OrderId)
-                .Result);
+        public async Task<bool> PatchDeliveryTime(CompleteOrderRequest completeOrder)
+        {
+            var order = new Order
+            {
+                Id = completeOrder.Id,
+                TimeDelivered = DateTime.Now
+            };
+
+            return await _orderRepo.UpdateAsync(order);
+        }
 
         [HttpPost("EnqueueOrder")]
         public AssignDeliveryResponse EnqueueOrder(AssignDeliveryRequest request)

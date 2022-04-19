@@ -16,7 +16,10 @@ builder.Services.AddSwaggerGen();
 #region repositories
 
 builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton<OrderRepository>();
+builder.Services.AddSingleton<IOrdersRepository>(provider =>
+{
+    return new OrderRepository(provider.GetService<IOptions<OrdersDatabaseSettings>>());
+});
 
 builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
 builder.Services.AddSingleton<IFleetRepository>(provider =>
