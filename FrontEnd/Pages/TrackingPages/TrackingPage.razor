@@ -29,21 +29,10 @@
     int test = 0;
     int zoom = 15;
     bool showMSU;
-    GoogleMapPosition clickPos;
     EventConsole console;
-    
-    void OnDrag(DragEventArgs args)
-    {
-        Console.WriteLine($"{args}");
-    }
 
-    void OnScroll(/*EventArgs args*/)
-    {
-        Console.WriteLine($"SCROLL===========");
-    }
     void OnMapClick(GoogleMapClickEventArgs args)
     {
-        clickPos = args.Position;
         console.Log($"Map clicked at Lat: {args.Position.Lat}, Lng: {args.Position.Lng}, Zoom:{zoom}");
     }
 
@@ -56,10 +45,5 @@
     {     
         showMSU = !showMSU;
     }
-
-            @*@ondrag="args => OnDrag(args)"
-            @onscroll="() => OnScroll()"*@
-            @*@(onwheel="args => { @(Console.WriteLine($"OnWheel:{{x:{args.DeltaX},y:{args.DeltaY}}}"))}" />*@
-            @*@ondrag="(args) => OnDrag(args.)"*@
 }
 

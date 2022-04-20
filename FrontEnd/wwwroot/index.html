@@ -29,7 +29,8 @@
 
 <script>
     var map
-    let markers = []
+    let markers = {}
+
     
     function initGoogleMap(obj) {
         map = new google.maps.Map(document.getElementById("map"), {
@@ -39,22 +40,56 @@
 
     }
 
-    function addMarker(id, lat, long) {
-
+    function addMarker(id, newMarker) {
         var marker = new google.maps.Marker({
-            position: {lat: lat, lng: long},
+            position: {lat: newMarker["lat"], lng: newMarker["lng"]},
             title: id
         });
 
         // To add the marker to the map, call setMap();
-        markers.push(marker);
+        markers[id] = marker;
         marker.setMap(map);
     }
     
-    function removeMarker(index){
-        markers.pop(index)
-        // markers[index].setMap(null)
-        // delete markers[index]
+    function getMarkers() {
+        return markers;
+    }
+    
+    function collectionContains(collection, x) {
+        collection.forEach(y => {
+           if (y === x){
+               return true;
+           }
+       })
+        return false;
+    }
+    
+    function updateAll(_temp){
+        for(key in markers){ // find out which markers are deleted, remove them
+            if(!(key in _temp)){
+                console.log(key + " is no longer a valid markers! removing " + markers[key])
+            }
+        }
+        for(var thing in _temp) { 
+            if(!(thing in markers)){ // find out which are new, add them
+                console.log(thing + " is not in known markers! inserting {" + _temp[thing])
+                addMarker(thing, _temp[thing])
+            } else { // must check if the marker is in a new location
+                newMarker = _temp[thing]
+                if(
+                    newMarker["lat"] !== markers[thing].lat ||
+                    newMarker["lng"] !== markers[thing].lng
+                ){
+                    console.log("drone " + thing + " has moved!")
+                    updateMarker(thing,  newMarker["lat"],  newMarker["lng"])
+                }
+            }
+        }
+    }
+    
+    function removeMarker(id){
+        markers[id].setMap(null)
+        delete markers[id]
     }
     
     function removeAllMarkers(){
@@ -65,12 +100,9 @@
     }
    
     
-    function updateMarker(index, lat, lng){
-        markers[index]["lat"] = lat
-        markers[index]["lng"] = lng
-        
-        // markers[index].lat = lat;
-        // markers[index].lng = lng;
+    function updateMarker(id, lat, lng){
+        markers[id].setMap(map)
+        markers[id].setPosition(new google.maps.LatLng(lat, lng))
     }
 
     window.initMap = initMap;
