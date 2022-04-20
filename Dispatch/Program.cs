@@ -17,7 +17,8 @@ builder.Services.AddCors(options =>
 
 #region repositories
 
-builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
+builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"),
+    System.Environment.GetEnvironmentVariable("ConnectionString"));
 builder.Services.AddSingleton<IOrdersRepository>(provider =>
 {
     return new OrderRepository(provider.GetService<IOptions<OrdersDatabaseSettings>>());

@@ -16,7 +16,8 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7127;http://localhost:5127",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionString": "mongodb+srv://capstone:Ms2KqQKc5U3gFydE@cluster0.rjlgf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
       }
     },
     "IIS Express": {

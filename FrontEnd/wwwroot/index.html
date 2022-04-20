@@ -2,27 +2,79 @@
 <html>
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>FlyingPizza</title>
-    <base href="/" />
-    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-    <link href="css/app.css" rel="stylesheet" />
-    <link href="FrontEnd.styles.css" rel="stylesheet" />
+    <base href="/"/>
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
+    <link href="css/app.css" rel="stylesheet"/>
+    <link href="FrontEnd.styles.css" rel="stylesheet"/>
 
     <link rel="stylesheet" href="_content/Radzen.Blazor/css/default-base.css">
 </head>
 
 <body>
-    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
-    <div id="app">Loading...</div>
+<script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABM05Ov28GgnvCE6fvNUT0hmPB7Ol6kuI&callback=initMap">
+</script>
+<script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+<div id="app">Loading...</div>
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
-    </div>
-    <script src="_framework/blazor.webassembly.js"></script>
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+<script src="_framework/blazor.webassembly.js"></script>
+
+<script>
+    var map
+    let markers = []
+    
+    function initGoogleMap(obj) {
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: {lat: obj.lat, lng: obj.lng},
+            zoom: 12,
+        });
+
+    }
+
+    function addMarker(id, lat, long) {
+
+        var marker = new google.maps.Marker({
+            position: {lat: lat, lng: long},
+            title: id
+        });
+
+        // To add the marker to the map, call setMap();
+        markers.push(marker);
+        marker.setMap(map);
+    }
+    
+    function removeMarker(index){
+        markers.pop(index)
+        // markers[index].setMap(null)
+        // delete markers[index]
+    }
+    
+    function removeAllMarkers(){
+        for (let i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);
+        }
+        markers = []
+    }
+   
+    
+    function updateMarker(index, lat, lng){
+        markers[index]["lat"] = lat
+        markers[index]["lng"] = lng
+        
+        // markers[index].lat = lat;
+        // markers[index].lng = lng;
+    }
+
+    window.initMap = initMap;
+</script>
 </body>
 
 </html>

@@ -8,6 +8,7 @@ using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using Radzen.Blazor;
+using Microsoft.JSInterop;
 
 
 namespace FrontEnd.Pages.TrackingPages;
@@ -15,11 +16,22 @@ namespace FrontEnd.Pages.TrackingPages;
 partial class TrackingPage : ComponentBase
 {
     private const double Tolerance = 0.0000000000001;
-    private static readonly Dictionary<string, RadzenGoogleMapMarker> MarkerDict = new();
+    private static readonly Dictionary<string, GoogleMapPosition> MarkerDict = new();
+    private static readonly Dictionary<string, int> indexToIdDict = new();
     private const int RefreshInterval = 2000;
     private Timer _timer;
-    private IEnumerable<RadzenGoogleMapMarker> _markerData;
+    private IEnumerable<GoogleMapPosition> _markerData;
+    [Inject]
+    public IJSRuntime JsRuntime {get;set; }
     private bool HasUpdatedMarkers { get; set; }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("initGoogleMap", new { Lat = 39.74386695629378, Lng = -105.00610500179027 });
+        }
+    }
     
     protected override Task OnInitializedAsync()
     {
@@ -31,92 +43,86 @@ partial class TrackingPage : ComponentBase
 
     private async Task UpdateDroneMarkers()
     {
-        var newMarkers = (await HttpMethods.Get<List<DroneRecord>>
-                             ("http://localhost:5127/DatabaseAccess/GetFleet"))
-            .Select((drone, i) => ToIdAndMarkerPair(i, drone))
-            .ToDictionary(pair => pair.Key, pair => pair.Value);
+        // for(int i = 0; i < MarkerDict.Count; i++)
+        // {
+            await JsRuntime.InvokeVoidAsync("removeAllMarkers");
+        // }
+        var droneRecords = (await HttpMethods.Get<List<DroneRecord>>
+             ("http://localhost:5127/DatabaseAccess/GetFleet")).Select((_, i) => (_, i));
 
-   
+         foreach(var (val, i) in droneRecords)
+        {
+            await JsRuntime.InvokeVoidAsync("addMarker", "drone" + i, val.CurrentLocation.Latitude, val.CurrentLocation.Longitude);
+        }
+        /*
+
+        Console.WriteLine("num drones: " + newMarkers.Count + ", " + string.Join("\n,", newMarkers.Select(x => $"lat:{x.Value.Lat}, Lng:{x.Value.Lng}").ToList()) + "\n\n");
         foreach (var (removalKey, _) in GetRemovalDict(newMarkers))
         {
-            DeleteMarker(removalKey);
+            await RemoveMarker(removalKey);
         }
 
         foreach (var (updatedKey, updatedMarker) in GetUpdateDict(newMarkers))
         {
-            UpdateMarker(updatedKey, updatedMarker);
+            await UpdateMarker(updatedKey, updatedMarker);
         }
 
         foreach (var (addedKey, addedMarker) in GetAddedKeyDict(newMarkers))
         {
-            AddMarker(addedKey, addedMarker);
-        }
-
-        _markerData = MarkerDict.Values;
-        if (HasUpdatedMarkers)
-        {
-            await InvokeAsync(StateHasChanged);
-        }
+            await AddMarker(addedKey, addedMarker);
+        }*/
     }
 
 
-    private static IEnumerable<KeyValuePair<string, RadzenGoogleMapMarker>> 
-        GetRemovalDict(Dictionary<string, RadzenGoogleMapMarker> newMarkers)
+    private static IEnumerable<KeyValuePair<string, GoogleMapPosition>> 
+        GetRemovalDict(Dictionary<string, GoogleMapPosition> newMarkers)
     => MarkerDict
            .Where(x => !newMarkers.ContainsKey(x.Key))
         .ToDictionary(pair => pair.Key, pair => pair.Value);
 
-    private static IEnumerable<KeyValuePair<string, RadzenGoogleMapMarker>> 
-        GetAddedKeyDict(Dictionary<string, RadzenGoogleMapMarker> newMarkers)
+    private static IEnumerable<KeyValuePair<string, GoogleMapPosition>> 
+        GetAddedKeyDict(Dictionary<string, GoogleMapPosition> newMarkers)
     => newMarkers.Where(x => !MarkerDict.ContainsKey(x.Key))
         .ToDictionary(pair => pair.Key, pair => pair.Value);
 
-
-    private static IEnumerable<KeyValuePair<string, RadzenGoogleMapMarker>> 
-        GetUpdateDict(Dictionary<string, RadzenGoogleMapMarker> newMarkers)
+    private static IEnumerable<KeyValuePair<string, GoogleMapPosition>> 
+        GetUpdateDict(Dictionary<string, GoogleMapPosition> newMarkers)
     => MarkerDict
       .Where(x => newMarkers.ContainsKey(x.Key) &&
-                             newMarkers[x.Key].Position != MarkerDict[x.Key].Position)
+                             newMarkers[x.Key] != MarkerDict[x.Key])
       .ToDictionary(pair => pair.Key, pair => pair.Value);
 
 
-    private void DeleteMarker(string removalKey)
+    private async Task RemoveMarker(string removalKey)
     {
-        HasUpdatedMarkers = true;
-        MarkerDict[removalKey].Dispose();
+        var index = indexToIdDict[removalKey];
+        await JsRuntime.InvokeVoidAsync("removeMarker", index);
+        indexToIdDict.Remove(removalKey);
         MarkerDict.Remove(removalKey);
     }
 
-
-    private void AddMarker(string addedKey, RadzenGoogleMapMarker addedMarker)
+    private async Task AddMarker(string addedKey, GoogleMapPosition addedMarker)
     {
-        HasUpdatedMarkers = true;
+        indexToIdDict[addedKey] = indexToIdDict.Count;
+        await JsRuntime.InvokeVoidAsync("addMarker", "drone" + indexToIdDict.Count, addedMarker.Lat, addedMarker.Lng);
         MarkerDict[addedKey] = addedMarker;
     }
 
 
-    private void UpdateMarker(string droneId, RadzenGoogleMapMarker droneMarker)
+    private async Task UpdateMarker(string droneId, GoogleMapPosition droneMarker)
     {
-        HasUpdatedMarkers = true;
-        MarkerDict[droneId].Visible = true;
-        MarkerDict[droneId].Position.Lat = droneMarker.Position.Lat;
-        MarkerDict[droneId].Position.Lng = droneMarker.Position.Lng;
-        MarkerDict[droneId].Visible = false;
+        var index = indexToIdDict[droneId];
+        await JsRuntime.InvokeVoidAsync("updateMarker", index, droneMarker.Lat, droneMarker.Lng);
+        MarkerDict[droneId].Lat = droneMarker.Lat;
+        MarkerDict[droneId].Lng = droneMarker.Lng;
     }
 
-    private static KeyValuePair<string, RadzenGoogleMapMarker> ToIdAndMarkerPair(int i, DroneRecord drone) =>
-        new(drone.Id, new RadzenGoogleMapMarker
-        {
-            Title = $"Drone #{i}",
-            Label = $"Drone #{i}",
-            Position = new GoogleMapPosition
+    private static KeyValuePair<string, GoogleMapPosition> ToIdAndMarkerPair(int i, DroneRecord drone) =>
+        new(drone.Id,
+            new GoogleMapPosition
             {
                 Lat = (double) drone.CurrentLocation.Latitude,
                 Lng = (double) drone.CurrentLocation.Longitude
-            },
-        });
-
-    private static bool HasNewMarkerPosition(string droneId, RadzenGoogleMapMarker newMarker) 
-        => MarkerDict[droneId].Position.Lat == newMarker.Position.Lat || 
-           MarkerDict[droneId].Position.Lng == newMarker.Position.Lng;
+            }
+      );
 }
