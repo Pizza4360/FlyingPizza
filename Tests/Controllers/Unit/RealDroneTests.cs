@@ -42,5 +42,5 @@ public class RealDroneTests
     //     var testTello = new TelloDrone(droneRecord, testGateway, false);
     //     var result = testTello.DeliverOrder(otherTable);
     //     result.Should().BeTrue();
-    }
+   // }
 }
