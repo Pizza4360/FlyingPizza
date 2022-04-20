@@ -3,35 +3,29 @@ using Domain.Entities;
 using Domain.InterfaceImplementations.Gateways;
 using FluentAssertions;
 using Moq;
+using SimDrone;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Tests.Controllers.Unit
 {
-    public class DroneTests
+    public class TelloTests
     {
         // Helper method for console output during testing.
         private readonly ITestOutputHelper _testOutputHelper;
 
-        public DroneTests(
+        public TelloTests(
         ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
         }
 
         [Fact]
-        public void drone_should_have_destination_in_route()
+        public void tello_drone_should_have_destination_in_route()
         {
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            var drone = new SimDrone.Drone(
-                new DroneRecord
-                {
-                    OrderId = Constants.DroneId,
-                    HomeLocation = Constants.HomeLocation,
-                    DroneIp = Constants.DroneIp,
-                    DispatcherUrl = Constants.Url,
-                    BadgeNumber = Constants.TestBadgeNumber
-                },
+            var drone = new TelloDrone(
+                Constants.TestRecord,
                 mockedDispatcher);
 
             var route = drone.GetRoute();
@@ -42,36 +36,19 @@ namespace Tests.Controllers.Unit
         }
 
         [Fact]
-        public void drone_should_have_start_in_route()
+        public void tello_drone_should_have_start_in_route()
         {
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
-            var home = new GeoLocation
-            {
-                Latitude = 0.0m,
-                Longitude = 0.0m
-            };
-            var dest = new GeoLocation
-            {
-                Latitude = 3.0m,
-                Longitude = 4.0m
-            };
-            var drone = new SimDrone.Drone(
-                new DroneRecord
-                {
-                    OrderId = Constants.DroneId,
-                    HomeLocation = Constants.HomeLocation,
-                    DroneIp = Constants.DroneIp,
-                    DispatcherUrl = Constants.Url,
-                    BadgeNumber = Constants.TestBadgeNumber
-                },
+            var drone = new TelloDrone(
+                Constants.TestRecord,
                 mockedDispatcher);
-            drone.Destination = dest;
+            drone.Destination = Constants.Destination;
 
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
             route.Should()
-                .Contain(home);
+                .Contain(Constants.HomeLocation);
         }
 
         [Fact]
@@ -88,17 +65,11 @@ namespace Tests.Controllers.Unit
                 Latitude = 3.0m,
                 Longitude = 4.0m
             };
-            var drone = new SimDrone.Drone(
-                new DroneRecord
-                {
-                    OrderId = Constants.DroneId,
-                    HomeLocation = Constants.HomeLocation,
-                    DroneIp = Constants.DroneIp,
-                    DispatcherUrl = Constants.Url,
-                    BadgeNumber = Constants.TestBadgeNumber
-                },
+            var drone = new TelloDrone(
+                Constants.TestRecord,
                 mockedDispatcher);
             drone.Destination = dest;
+            drone.HomeLocation = home;
 
             var route = drone.GetRoute();
             route.Should()
@@ -113,30 +84,25 @@ namespace Tests.Controllers.Unit
         }
 
         [Fact]
-        public void TestGetRouteAllNegativeNumbers()
+        public void TestTelloGetRouteAllNegativeNumbers()
         {
+            //TODO: bug #6 Tello drone passes through 0.1,0.0 regardless
             var mockedDispatcher = new Mock<DroneToDispatchGateway>().Object;
             var home = new GeoLocation
             {
-                Latitude = 0.0m,
-                Longitude = 0.0m
+                Latitude = -1.0m,
+                Longitude = -1.0m
             };
             var dest = new GeoLocation
             {
                 Latitude = -3.0m,
                 Longitude = -4.0m
             };
-            var drone = new SimDrone.Drone(
-                new DroneRecord
-                {
-                    OrderId = Constants.DroneId,
-                    HomeLocation = Constants.HomeLocation,
-                    DroneIp = Constants.DroneIp,
-                    DispatcherUrl = Constants.Url,
-                    BadgeNumber = Constants.TestBadgeNumber
-                },
+            var drone = new TelloDrone(
+                Constants.TestRecord,
                 mockedDispatcher);
             drone.Destination = dest;
+            drone.HomeLocation = home;
 
             var route = drone.GetRoute();
             route.Should()

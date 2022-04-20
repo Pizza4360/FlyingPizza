@@ -8,13 +8,27 @@ using Domain.InterfaceDefinitions.Gateways;
 
 namespace Domain.InterfaceImplementations.Gateways
 {
-    public class DroneToDispatchGateway : BaseGateway
+    public class DroneToDispatchGateway : IDroneToDispatcherGateway
     {
+        protected HttpClient HttpClient = new();
+        private string _url;
+        public string Url
+        {
+            // "http://172.18.0.0:4000/Dispatch"
+            // "http://172.18.0.0:4000/Drone"
+            set => _url = value;
+            get => _url + "/Dispatch";
+        }
+
+
         public void ChangeHandler(HttpMessageHandler handler)
         {
             // Added for mocking reasons, no way around it
             HttpClient = new HttpClient(handler);
         }
+
+
+        
 
         public CompleteOrderResponse CompleteOrder(string id)
             => (CompleteOrderResponse)SendMessage(
@@ -30,5 +44,14 @@ namespace Domain.InterfaceImplementations.Gateways
         public Task<BaseDto> 
             PatchDroneStatus(DroneStatusUpdateRequest state)
             => Task.FromResult(SendMessage(Url,"PatchDroneStatus", state));
+        
+        public BaseDto? SendMessage(string baseUri, string restCall, BaseDto dto)
+        {
+            var body = JsonContent.Create($"{dto.ToJsonString()}");
+            var requestUri = new Uri($"{baseUri}{Url}/{restCall}");
+            var result = HttpClient.PostAsync(requestUri, body).Result.Content.ReadAsStreamAsync().Result;
+            return Newtonsoft.Json.JsonConvert
+                .DeserializeObject<BaseDto>(result.ToString() ?? string.Empty);
+        }
     }
 }

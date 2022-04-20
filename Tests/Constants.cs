@@ -130,7 +130,13 @@ namespace Tests
             DroneId = DroneId,
             DroneIp = Url
         };
-        
+
+        public static DroneStatusUpdateResponse TestDroneStatusUpdateResponse = new()
+        {
+          Id  = DroneId
+        };
+
+        public static string TelloIp = "192.168.10.1";
     }
 }
         

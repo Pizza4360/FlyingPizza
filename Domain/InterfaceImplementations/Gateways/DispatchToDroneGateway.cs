@@ -6,26 +6,43 @@ using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.FrontEndDispatchCommunication;
+using Domain.Entities;
 using Domain.InterfaceDefinitions.Gateways;
 
 namespace Domain.InterfaceImplementations.Gateways
 {
-    public class DispatchToDroneGateway : BaseGateway
+    public class DispatchToDroneGateway : IDispatchToDroneGateway
     {
-        private static HttpClient client = new HttpClient();
-        public string Url;
+        protected static HttpClient HttpClient = new();
+        private string _url;
+
+        public string Url
+        {
+            // "http://172.18.0.0:4000/Dispatch"
+            // "http://172.18.0.0:4000/Drone"
+            set => _url = value;
+            get => _url + "/Dispatch";
+        }
+
         public Dictionary<string, string> IdToIpMap { get; set; } = new();
-        
-        
-        public InitDroneResponse 
+
+
+        public AssignFleetResponse AssignToFleet(AssignFleetRequest assignment)
+        {
+            throw new NotImplementedException();
+        }
+
+        public InitDroneResponse
             InitializeRegistration(InitDroneRequest initDroneRequest)
-            => (InitDroneResponse)SendMessage(
+            => (InitDroneResponse) SendMessage(
                 initDroneRequest.DroneIp,
-                "InitDrone", 
+                "InitDrone",
                 initDroneRequest);
 
+    
 
-        public AssignFleetResponse AssignFleet(AssignFleetRequest assignment)
+
+    public AssignFleetResponse AssignFleet(AssignFleetRequest assignment)
         {
             return (AssignFleetResponse)SendMessage(
                 IdToIpMap[assignment.DroneId],
@@ -37,9 +54,13 @@ namespace Domain.InterfaceImplementations.Gateways
                 HomeLocation = assignment.HomeLocation
             });
         }
-        
-        
-        public AssignDeliveryResponse AssignDelivery(AssignDeliveryRequest request)
+
+    public Task<HttpResponseMessage> StartRegistration(string droneIpAddress)
+    {
+        throw new NotImplementedException();
+    }
+
+    public AssignDeliveryResponse AssignDelivery(AssignDeliveryRequest request)
         {
             var droneIp = IdToIpMap[request.DroneId];
             return (AssignDeliveryResponse) SendMessage(
@@ -56,12 +77,20 @@ namespace Domain.InterfaceImplementations.Gateways
         public static void ChangeHandler(HttpMessageHandler handler)
         {
             // Added for mocking reasons, no way around it
-            client = new HttpClient(handler);
+            HttpClient = new HttpClient(handler);
         }
 
         public void AddIdToIpMapping(string dtoDroneId, string dtoDroneIp)
         {
             IdToIpMap[dtoDroneId] = dtoDroneIp;
+        }
+        public BaseDto? SendMessage(string baseUri, string restCall, BaseDto dto)
+        {
+            var body = JsonContent.Create($"{dto.ToJsonString()}");
+            var requestUri = new Uri($"{baseUri}{Url}/{restCall}");
+            var result = HttpClient.PostAsync(requestUri, body).Result.Content.ReadAsStreamAsync().Result;
+            return Newtonsoft.Json.JsonConvert
+                .DeserializeObject<BaseDto>(result.ToString() ?? string.Empty);
         }
     }
 }
