@@ -17,7 +17,7 @@ public class FleetViewTest
     [Fact]
     public static void TestFleetDrone()
     {
-        using var cxt = new Bunit.TestContext();
+        //using var cxt = new Bunit.TestContext();
         //var check = cxt.RenderComponent<FrontEnd.Pages.FleetPages.FleetView>();
         //Xunit.Assert.Equal("Fleet Size: 2", check.Find($"b").TextContent);
 

@@ -46,8 +46,7 @@ namespace Tests.Controllers.Unit
         //     var response = await sim.InitializeRegistration(Constants.TestInitDroneRequest);
         //     response.Should().NotBeNull();
         //     response.Should().NotBeEquivalentTo(Constants.TestRecord.ToString());
-        // } No longer exists
-        // TODO: untestable, instantiates a gateway and overwrites any mocking
+        // } untestable, instantiates a gateway and overwrites any mocking
         // [Fact]
         // public async Task DroneSimShouldReturnOkStartDrone()
         // {

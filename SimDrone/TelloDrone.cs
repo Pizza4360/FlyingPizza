@@ -2,7 +2,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Domain.DTO;
+using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using Domain.InterfaceDefinitions.Gateways;
 using Domain.InterfaceImplementations.Gateways;
 
 namespace SimDrone;
@@ -33,6 +35,7 @@ public class TelloDrone : Drone
     private GeoLocation? CalcDestination { get; set; }
     private GeoLocation? CalcDestinationCm { get; set; }
     private bool Offline { get; set; }
+    public IDroneToDispatcherGateway Gateway { get; set; }
 
     public List<GeoLocation> Route { get; set; }
 
@@ -42,7 +45,7 @@ public class TelloDrone : Drone
         return value / LongToCm;
     }
 
-    public TelloDrone(DroneRecord record, DroneToDispatchGateway gateway, bool offline = true) : base(record, gateway)
+    public TelloDrone(DroneRecord record, IDroneToDispatcherGateway gateway, bool offline = true) : base(record, gateway)
     {
         Route = new List<GeoLocation>();
         Id = record.Id;
@@ -52,6 +55,7 @@ public class TelloDrone : Drone
         Destination = record.Destination;
         HomeLocation = record.HomeLocation;
         Offline = offline;
+        Gateway = gateway;
         if (offline)
         {
             _battery = 100;
@@ -105,6 +109,11 @@ public class TelloDrone : Drone
             var task = send_command(command, Offline);
             task.Wait();
         }
+
+        if (!Offline)
+        {
+            PatchDroneStatus();
+        }
     }
 
     private void SendCommand(string command)
@@ -118,6 +127,18 @@ public class TelloDrone : Drone
             // Errors are considered in dead status for now
             State = DroneState.Dead;
         }
+    }
+    
+    private bool PatchDroneStatus()
+    {
+        var t = Gateway.PatchDroneStatus(
+            new DroneStatusUpdateRequest
+            {
+                Id = Id,
+                State = State
+            });
+        t.Wait();
+        return t.IsCompletedSuccessfully;
     }
 
     private static decimal ArcToCm(decimal value)

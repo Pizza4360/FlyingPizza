@@ -70,11 +70,7 @@ public class DroneTests
         {
 
             // Bug #5 drone moves in Latitude and Longitude direction indefinitely
-            var mockedDroneGatewaySetup = new Mock<IDroneToDispatcherGateway>();
-            mockedDroneGatewaySetup.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>()))
-                .Returns(Task.FromResult<BaseDto>(Constants.TestDroneStatusUpdateRequest));
-            var mockedDroneGateway = mockedDroneGatewaySetup.Object;
-            var drone = new Drone(Constants.TestRecord, mockedDroneGateway as DroneToDispatchGateway);
+            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();

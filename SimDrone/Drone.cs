@@ -67,9 +67,15 @@ public class Drone : DroneRecord
                 ToDouble(HomeLocation.Latitude), 
                 ToDouble(Destination.Longitude)
             );
+        // TODO: direction is determined incorrectly
+        // TODO: You may want behavior:
+        // TODO: latDirection = Destination.Latitude - HomeLocation.Lattitude < 0 ? 1 : -1
+        // TODO: longDirection = Destination.Longitude - HomeLocation.Longitude < 0 ? 1 : -1
+
         var route = new List<GeoLocation>();
         decimal latDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
         decimal lonDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
+        // TODO: latMax/stepSize is the behavior you want, but rolling a for loop will do better
         var latStep = latMax / (decimal)haversine * StepSize;
         var lonStep = lonMax / (decimal)haversine * StepSize;
         var latSum = 0m;
@@ -77,8 +83,10 @@ public class Drone : DroneRecord
         while (latSum > latMax ||
                lonSum < lonMax)
         {
-            latSum += lonDirection / latStep;
+            latSum += latDirection / latStep;
             lonSum += lonDirection / lonStep;
+            // TODO: incorrect use of haversine, converting kilometers to Arc Distance Geolocation
+            // TODO: options: discard haversine or make inverseHaversine to make Geolocation
             route.Add(new GeoLocation
             {
                 Latitude = latSum,
