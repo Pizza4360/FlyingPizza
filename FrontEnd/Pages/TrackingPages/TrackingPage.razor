@@ -21,27 +21,14 @@
 
 <div class="row p-3">
     <div class="col">
-        <RadzenGoogleMap  style="height: 550px" Data=@MarkerData Zoom=@(zoom) Center=@(new GoogleMapPosition { Lat = 39.745918, Lng = -105.007492}) MapClick=@OnMapClick MarkerClick=@OnMarkerClick>
-            @*<Markers>
-                @if (DroneRecords != null)
-                {
-                    var i = 1;
-                    @foreach (var drone in DroneRecords)
-                    {
-                        <RadzenGoogleMapMarker id=@(drone.BadgeNumber) 
-                           Title=@("Drone #" + i)
-                           Label=@("Drone #" + i++)
-                           Position=@(new GoogleMapPosition {
-                            Lat = (double) drone.CurrentLocation.Latitude, 
-                            Lng = (double) drone.CurrentLocation.Longitude })/>
-                    }
-                }
-                @if (showMSU)
-                {
-                    <RadzenGoogleMapMarker id="home_icon" Title="MSU Denver " Label="Home" Position=@(new GoogleMapPosition() { Lat = 39.745918, Lng = -105.007492 })/>
-                }
-            </Markers>*@
-        </RadzenGoogleMap>
+        <RadzenGoogleMap
+            style="height: 550px"
+            Data=@_markerData
+            Center=@(new GoogleMapPosition { Lat = 39.745918, Lng = -105.007492})
+            MapClick=@OnMapClick
+            MarkerClick=@OnMarkerClick
+            Zoom=@zoom
+             />
     </div>
 </div>
 
@@ -51,11 +38,22 @@
     int test = 0;
     int zoom = 15;
     bool showMSU;
+    GoogleMapPosition clickPos;
     EventConsole console;
+    
+    void OnDrag(DragEventArgs args)
+    {
+        Console.WriteLine($"{args}");
+    }
 
+    void OnScroll(/*EventArgs args*/)
+    {
+        Console.WriteLine($"SCROLL===========");
+    }
     void OnMapClick(GoogleMapClickEventArgs args)
     {
-        console.Log($"Map clicked at Lat: {args.Position.Lat}, Lng: {args.Position.Lng}");
+        clickPos = args.Position;
+        console.Log($"Map clicked at Lat: {args.Position.Lat}, Lng: {args.Position.Lng}, Zoom:{zoom}");
     }
 
     void OnMarkerClick(RadzenGoogleMapMarker marker)
@@ -68,4 +66,9 @@
         showMSU = !showMSU;
     }
 
+            @*@ondrag="args => OnDrag(args)"
+            @onscroll="() => OnScroll()"*@
+            @*@(onwheel="args => { @(Console.WriteLine($"OnWheel:{{x:{args.DeltaX},y:{args.DeltaY}}}"))}" />*@
+            @*@ondrag="(args) => OnDrag(args.)"*@
 }
+
