@@ -135,6 +135,8 @@ namespace Tests
         {
           Id  = DroneId
         };
+
+        public static string TelloIp = "192.168.10.1";
     }
 }
         

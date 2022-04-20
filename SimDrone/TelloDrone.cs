@@ -12,7 +12,7 @@ public class TelloDrone : Drone
     // Converted by hand from python code originally from Tello DJI
     // Adapter between FlyingPizza dispatcher and Tello SDK Drone
     private const decimal LongToCm = 1110000;
-    private const string Command = "command ";
+    private const string Command = "command";
     private const string Right = "right ";
     private const string Left = "left ";
     private const string Backward = "back ";
@@ -51,7 +51,7 @@ public class TelloDrone : Drone
         CurrentLocation = record.HomeLocation;
         Destination = record.Destination;
         HomeLocation = record.HomeLocation;
-        Offline = true;
+        Offline = offline;
         if (offline)
         {
             _battery = 100;
@@ -366,6 +366,7 @@ public class TelloDrone : Drone
         await _socket?.SendAsync(bytes, bytes.Length)!;
         var response = await _socket.ReceiveAsync();
         var telloResp = Encoding.ASCII.GetChars(response.Buffer);
+        Console.WriteLine(telloResp.ToString());
         if (telloResp.ToString() == "error")
         {
             return false;
