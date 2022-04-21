@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.Entities;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
-using Radzen;
-using Radzen.Blazor;
 using Microsoft.JSInterop;
-using MongoDB.Bson;
-using Domain.DTO;
 
 namespace FrontEnd.Pages.TrackingPages;
 
