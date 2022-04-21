@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Domain.Entities;
 using FrontEnd.Services;
@@ -11,9 +9,9 @@ namespace FrontEnd.Pages.FleetPages;
 
 partial class FleetView : ComponentBase
 {
-    public DroneRecord[] Fleet = null;
+    public DroneRecord[] Fleet;
     public int size;
-    public Boolean connection = false;
+    public Boolean connection;
     protected override async Task OnInitializedAsync()
     {
         try
