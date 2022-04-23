@@ -30,8 +30,19 @@ namespace Tests.Controllers.Unit
 
             var mockedGateway = new Mock<IDroneToDispatcherGateway>();
             mockedGateway.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>()))
-                .Returns(Task.FromResult<BaseDto>(Constants.TestDroneStatusUpdateResponse));
-            var adapter = new Drone(Constants.TestRecord, mockedGateway.Object);
+                .Returns(Task.FromResult(new BaseDto()));
+            var adapter = new Drone(new DroneRecord
+            {
+                BadgeNumber = Constants.TestBadgeNumber,
+                CurrentLocation = Constants.TestHomeLocation,
+                Destination = Constants.TestOrder.DeliveryLocation,
+                DispatcherUrl = Constants.Url,
+                DroneIp = Constants.DroneIp,
+                HomeLocation = Constants.TestHomeLocation,
+                Id = Constants.DroneId,
+                OrderId = Constants.TestOrderId,
+                State = DroneState.Ready
+            }, mockedGateway.Object);
             var response = adapter.DeliverOrder(Constants.TestOrder.DeliveryLocation);
             response.Should().BeTrue();
         }

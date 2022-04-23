@@ -25,7 +25,6 @@ public class DroneTests
        [Fact]
         public void drone_should_have_destination_in_route()
         {
-            //TODO: Bug #5 drone moves in Latitude and Longitude direction indefinitely
             var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
             var route = drone.GetRoute();
             route.Should()
@@ -37,8 +36,6 @@ public class DroneTests
         [Fact]
         public void drone_should_have_start_in_route()
         {
-
-            //TODO: Bug #5 drone moves in Latitude and Longitude direction indefinitely
             var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
             var route = drone.GetRoute();
             route.Should()
@@ -51,7 +48,6 @@ public class DroneTests
         public void TestGetRouteAllPositiveNumbers()
         {
 
-            //TODO: Bug #5 drone moves in Latitude and Longitude direction indefinitely
             var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
             var route = drone.GetRoute();
             route.Should()
@@ -68,9 +64,7 @@ public class DroneTests
         [Fact]
         public void TestGetRouteAllNegativeNumbers()
         {
-
-            // Bug #5 drone moves in Latitude and Longitude direction indefinitely
-            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
+            var drone = new Drone(Constants.TestRecordNegativeRoute, new DroneToDispatchGateway());
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();

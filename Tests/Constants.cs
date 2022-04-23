@@ -63,12 +63,14 @@ namespace Tests
             StatusCode = HttpStatusCode.OK,
             Content = new StringContent("")
         };
-        
-        private static readonly GeoLocation 
-            TestDeliveryLocation = new() 
+
+           private static readonly GeoLocation 
+               TestDeliveryLocation = new() 
             {
                 Latitude = 39.74362771992734m, Longitude = -105.00549345883957m
-            },
+            };
+
+           public static readonly GeoLocation 
             TestHomeLocation = new()
             {
                 Latitude = 39.74364421910773m,
@@ -137,6 +139,34 @@ namespace Tests
         };
 
         public static string TelloIp = "192.168.10.1";
+
+        public static readonly DroneRecord TestRecordNegativeRoute = new()
+        {
+            BadgeNumber = TestGuid,
+            CurrentLocation = new GeoLocation
+            {
+                Latitude = -0.001m,
+                Longitude = -0.001m,
+                Id = "why is this an Id?"
+            },
+            Destination = new GeoLocation
+            {
+              Latitude  = -0.1m,
+              Longitude = -0.1m,
+              Id = "for real why?"
+            },
+            DispatcherUrl = TestDispatcherUrl,
+            Id = TestOrderId,
+            DroneIp = DroneIp,
+            HomeLocation =  new GeoLocation
+            {
+                Latitude = -0.001m,
+                Longitude = -0.001m,
+                Id = "why is this an Id?"
+            },
+            OrderId = TestOrderId,
+            State = DroneState.Ready
+        };
     }
 }
         

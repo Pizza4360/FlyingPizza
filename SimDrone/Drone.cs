@@ -37,6 +37,48 @@ public class Drone : DroneRecord
         Destination = record.Destination;
     }
 
+    private GeoLocation[] GetSingleRoute(GeoLocation startNotInclusive, GeoLocation endNotInclusive)
+    {
+        var tempLat = HomeLocation.Latitude;
+        var tempLon = HomeLocation.Longitude; 
+        var nextLat = 0.0m;
+        var nextLon = 0.0m;
+        var route = new List<GeoLocation>();
+        while (tempLat != endNotInclusive.Latitude && tempLon != endNotInclusive.Longitude)
+        {
+            var latDiff = Math.Abs(endNotInclusive.Latitude - tempLat);
+            var lonDiff = Math.Abs(endNotInclusive.Longitude - tempLon);
+            var latDirection = endNotInclusive.Latitude - startNotInclusive.Latitude > 0 ? 1 : -1;
+            var lonDirection = endNotInclusive.Longitude - startNotInclusive.Longitude > 0 ? 1 : -1;
+           
+            if (lonDiff >= StepSize)
+            {
+                nextLon = StepSize * lonDirection;
+            }
+            if (latDiff >= StepSize)
+            {
+                nextLat = StepSize * latDirection;
+            }
+            if (latDiff < StepSize)
+            {
+                nextLat = latDiff * latDirection;
+            }
+            if (lonDiff < StepSize)
+            {
+                nextLon = lonDiff * lonDirection;
+            }
+            tempLat += nextLat;
+            tempLon += nextLon;
+            route.Add(new GeoLocation
+            {
+                Latitude = tempLat,
+                Longitude = tempLon
+            });
+       
+        }
+        return route.ToArray();
+    }
+    
     /// <summary>
     ///  Return an array of Geolocations representing a drone's delivery route.
     /// </summary>
@@ -47,53 +89,51 @@ public class Drone : DroneRecord
         if (HomeLocation.Equals(Destination))
             throw new ArgumentException(
                 "Destination cannot be the same as the AssignDeliveryRequest station!");
-
-        var haversine = Haversine(
-            ToDouble(HomeLocation.Latitude), 
-            ToDouble(HomeLocation.Longitude),
-            ToDouble(Destination.Latitude), 
-            ToDouble(Destination.Longitude)
-            );
-
-        var latMax  = (decimal)Haversine(
-                ToDouble(HomeLocation.Latitude), 
-                ToDouble(HomeLocation.Longitude),
-                ToDouble(Destination.Latitude), 
-                ToDouble(HomeLocation.Longitude)
-            );
-        var lonMax = (decimal)Haversine(
-                ToDouble(HomeLocation.Latitude), 
-                ToDouble(HomeLocation.Longitude),
-                ToDouble(HomeLocation.Latitude), 
-                ToDouble(Destination.Longitude)
-            );
-        // TODO: direction is determined incorrectly
-        // TODO: You may want behavior:
-        // TODO: latDirection = Destination.Latitude - HomeLocation.Lattitude < 0 ? 1 : -1
-        // TODO: longDirection = Destination.Longitude - HomeLocation.Longitude < 0 ? 1 : -1
-
         var route = new List<GeoLocation>();
-        decimal latDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
-        decimal lonDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
-        // TODO: latMax/stepSize is the behavior you want, but rolling a for loop will do better
-        var latStep = latMax / (decimal)haversine * StepSize;
-        var lonStep = lonMax / (decimal)haversine * StepSize;
-        var latSum = 0m;
-        var lonSum = 0m;
-        while (latSum > latMax ||
-               lonSum < lonMax)
-        {
-            latSum += latDirection / latStep;
-            lonSum += lonDirection / lonStep;
-            // TODO: incorrect use of haversine, converting kilometers to Arc Distance Geolocation
-            // TODO: options: discard haversine or make inverseHaversine to make Geolocation
-            route.Add(new GeoLocation
-            {
-                Latitude = latSum,
-                Longitude = lonSum
-            });
-        }
+        route.AddRange(GetSingleRoute(HomeLocation,Destination));
+        route.Add(Destination);
+        route.AddRange(GetSingleRoute(HomeLocation,Destination));
+        route.Add(HomeLocation);
+        // Assuming that home location is added to route
         return route.ToArray();
+        // var haversine = Haversine(
+        //     ToDouble(HomeLocation.Latitude), 
+        //     ToDouble(HomeLocation.Longitude),
+        //     ToDouble(Destination.Latitude), 
+        //     ToDouble(Destination.Longitude)
+        //     );
+        //
+        // var latMax  = (decimal)Haversine(
+        //         ToDouble(HomeLocation.Latitude), 
+        //         ToDouble(HomeLocation.Longitude),
+        //         ToDouble(Destination.Latitude), 
+        //         ToDouble(HomeLocation.Longitude)
+        //     );
+        // var lonMax = (decimal)Haversine(
+        //         ToDouble(HomeLocation.Latitude), 
+        //         ToDouble(HomeLocation.Longitude),
+        //         ToDouble(HomeLocation.Latitude), 
+        //         ToDouble(Destination.Longitude)
+        //     );
+        //var route = new List<GeoLocation>();
+        //decimal latDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
+        //decimal lonDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
+        // var latStep = latMax / (decimal)haversine * StepSize;
+        // var lonStep = lonMax / (decimal)haversine * StepSize;
+        // var latSum = 0m;
+        // var lonSum = 0m;
+        // while (latSum > latMax ||
+        //        lonSum < lonMax)
+        // {
+        //     latSum += latDirection / latStep;
+        //     lonSum += lonDirection / lonStep;
+        //     route.Add(new GeoLocation
+        //     {
+        //         Latitude = latSum,
+        //         Longitude = lonSum
+        //     });
+        // }
+        //return route.ToArray();
     }
     
 
