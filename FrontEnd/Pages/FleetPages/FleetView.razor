@@ -38,7 +38,7 @@
                         <span class="title" >ID: 
                             <br> @drone.BadgeNumber.ToString().Substring(0, 4)... <br>
                             </span>
-                        <span class="price" id="TEST">WOW</span>
+                        <span class="price" style="@DroneState(drone.State)">@drone.State</span>
                         <span class="more">
                             <RadzenButton style="background-color: #3b3b3b" Icon="add_circle_outline" Click=@(args => GoToDrone(drone)) />
                         </span>
@@ -49,8 +49,6 @@
         }
 
     </ul>
-          @DroneState()
-
 </div>
 
 

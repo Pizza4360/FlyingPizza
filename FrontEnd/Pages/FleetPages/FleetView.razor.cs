@@ -13,6 +13,7 @@ partial class FleetView : ComponentBase
     public DroneRecord[] Fleet;
     public int size;
     public Boolean connection;
+    public string color;
 
 
     [Inject]
@@ -36,13 +37,10 @@ partial class FleetView : ComponentBase
         globalData.currDrone = drone;
         await dialogService.OpenAsync<DetailedDrone>("View SimDrone");           
     }
-
-
    
-    public async Task DroneState()
+    public async Task DroneState(string state)
     {
-        await JsRuntime.InvokeVoidAsync("statusColor");
-
+        color = new( await JsRuntime.InvokeAsync<string>("statusColor", state) );
     }
 
     public async void CallJSMethod()

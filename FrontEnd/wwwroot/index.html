@@ -28,11 +28,13 @@
 <script src="_framework/blazor.webassembly.js"></script>
 <script>
 
-    function statusColor() {
-        //if (droneState == "Delivering") {
-        document.getElementById("TEST").style.backgroundColor = "red";
+    function statusColor(state) {
+        if (state == "Delivering") {
+
+            return "#FF0000";
+        }
+       // document.getElementById("TEST").style.backgroundColor = "red";
       
-        //}
     }
 </script>
 
