@@ -43,6 +43,10 @@ namespace Domain.Entities
         [JsonPropertyName("DispatcherUrl")]
         public string DispatcherUrl { get; set; }
 
+        [BsonElement("DispatchIp")]
+        [JsonPropertyName("DispatchIp")]
+        public string DispatchIp { get; set; }
+
         public override string ToString()
         {
             return $"DroneId:{Id}" +

@@ -4,7 +4,7 @@
     border-radius: 0.5rem;
     flex-grow: 1;
     overflow-y: auto;
-    background-color: rgb(5, 39, 103);
+    background-color: #3f7cac;
     padding: 1.5rem !important;
     color: white;
     text-shadow: 0 2px 2px rgba(0,0,0,0.5);
