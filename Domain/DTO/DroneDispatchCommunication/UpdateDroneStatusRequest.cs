@@ -6,7 +6,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
-public class UpdateDroneStatusRequest: BaseDto
+public class UpdateDroneStatusRequest
 {
     public string DroneId;    
         

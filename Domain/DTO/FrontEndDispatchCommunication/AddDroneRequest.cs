@@ -1,13 +1,8 @@
-﻿using System;
-using System.Text.Json.Serialization;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.IdGenerators;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain.DTO.FrontEndDispatchCommunication;
 
-public class AddDroneRequest: BaseDto
+public class AddDroneRequest
 {
     [JsonPropertyName("DroneId")]
     public string DroneId { get; set; }
@@ -23,9 +18,4 @@ public class AddDroneRequest: BaseDto
         
     [JsonPropertyName("DispatchIp")]
     public string DispatchIp { get; set; }
-}
-
-public class BaseDto
-{
-    // public override string ToString() =>  this.ToJson();
 }

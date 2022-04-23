@@ -5,10 +5,11 @@ namespace Domain.DTO.DroneDispatchCommunication;
 
 public class AssignDeliveryRequest
 {
-    [BsonElement("OrderId"), JsonPropertyName("OrderId")]
+    [JsonPropertyName("OrderId")]
     public string OrderId { get; set; } 
-    [BsonElement("OrderLocation"), JsonPropertyName("OrderLocation")]
+    [JsonPropertyName("OrderLocation")]
     public GeoLocation OrderLocation { get; set; }
         
+    [JsonPropertyName("DroneId")]
     public string DroneId { get; set; }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Domain.Entities;
+﻿using Domain.Entities;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 
@@ -17,13 +14,10 @@ partial class FleetView : ComponentBase
         try
         {
             Fleet = (await HttpMethods.Get<List<DroneRecord>>("http://localhost:5127/DatabaseAccess/GetFleet")).ToArray();
-            
             size = Fleet.Length;
             connection = true;
         }
-        catch {
-                
-        }
+        catch {}
     }
 
     public async Task GoToDrone(DroneRecord drone)

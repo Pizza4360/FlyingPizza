@@ -3,7 +3,7 @@ using Domain.DTO.FrontEndDispatchCommunication;
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
-public class InitDroneResponse: BaseDto
+public class InitDroneResponse
 {
     [JsonPropertyName("DroneId")]
     public string DroneId { get; set; }

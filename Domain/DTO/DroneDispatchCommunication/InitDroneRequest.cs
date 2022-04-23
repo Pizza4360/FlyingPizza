@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
-public class InitDroneRequest: BaseDto
+public class InitDroneRequest
 {
     [JsonPropertyName("DroneId")]
     public string DroneId { get; set; }

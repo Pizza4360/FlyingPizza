@@ -63,7 +63,6 @@ public class DispatchController : ControllerBase
 
         var initDroneResponse = _dispatchToSimDroneGateway
            .InitDrone( initDroneRequest );
-        //{"DroneId":"6262a69f30b68bca89360954", "DroneIp":"http://localhost:5103","DispatchIp":"http://localhost:5102","HomeLocation":,"DispatchIp":3fa85f64-5717-4562-b3fc-2c963f66afa6,
         Console.WriteLine($"Response from _dispatchToSimDroneGateway.InitDrone({initDroneRequest})\n\t->{{DroneId:{initDroneResponse.DroneId},Okay:{initDroneResponse.Okay}}}");
         if (!initDroneResponse.Okay)
         {
@@ -78,9 +77,7 @@ public class DispatchController : ControllerBase
             BadgeNumber = addDroneRequest.BadgeNumber,
             HomeLocation = addDroneRequest.HomeLocation
         };
-        /*
-         { "DroneId": "6262a69f30b68bca89360954", "BadgeNumber": "7fa8bdf7-cfb2-4b55-80e0-62790dd6d0a7", "HomeLocation": { "Latitude": 39.74386695629378, "Longitude": -105.00610500179027 }, "DroneIp": "http://localhost:5103", "DispatchIp": "http://localhost:5102" }
-         */
+
         Console.WriteLine($"Proceeding with _dispatchToSimDroneGateway.AssignFleet({assignFleetRequest.ToJson()}");
         var assignFleetResponse = _dispatchToSimDroneGateway.AssignFleet(assignFleetRequest);
         var responseString = assignFleetResponse != null ? assignFleetResponse.IsInitializedAndAssigned.ToString() : "null";

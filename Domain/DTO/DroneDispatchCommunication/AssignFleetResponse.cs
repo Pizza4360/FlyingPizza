@@ -8,13 +8,13 @@ namespace Domain.DTO.DroneDispatchCommunication
 {
     public class AssignFleetResponse
     {
-        // [JsonPropertyName("DroneId")]
-        public string DroneId;
+        [JsonPropertyName("DroneId")]
+        public string DroneId{get;set; }
 
-        // [JsonPropertyName("IsInitializedAndAssigned")]
-        public bool IsInitializedAndAssigned;
-        
-        // [JsonPropertyName("FirstState")]
+        [JsonPropertyName("IsInitializedAndAssigned")]
+        public bool IsInitializedAndAssigned{get;set;}
+
+        [JsonPropertyName("FirstState")]
         public DroneState FirstState { get; set; }
     }
 }

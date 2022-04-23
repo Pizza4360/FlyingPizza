@@ -5,7 +5,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
-public class CompleteOrderRequest : BaseDto
+public class CompleteOrderRequest 
 {
     [JsonPropertyName("OrderId")]
     public string OrderId { get; set; }

@@ -1,8 +1,6 @@
-﻿using Domain.DTO.FrontEndDispatchCommunication;
+﻿namespace Domain.DTO;
 
-namespace Domain.DTO;
-
-public class PingDto: BaseDto
+public class PingDto
 {
     public string S { get; set; }
 }

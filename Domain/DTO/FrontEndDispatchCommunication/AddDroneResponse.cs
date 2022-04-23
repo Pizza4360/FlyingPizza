@@ -1,10 +1,8 @@
-﻿using System;
-using System.Text.Json.Serialization;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain.DTO.FrontEndDispatchCommunication
 {
-    public class AddDroneResponse: BaseDto
+    public class AddDroneResponse
     {
         [JsonPropertyName("Success")]
         public bool Success { get; set; }

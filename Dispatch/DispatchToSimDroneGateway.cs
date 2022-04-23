@@ -5,11 +5,10 @@ using DispatchController = Dispatch.Controllers.DispatchController;
 namespace Dispatch;
 
 public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
-{
-    private string _currentDroneId{ get; set; }
+{ 
     private string Url(string currentDroneId) => IdToIpDictionary[currentDroneId] + "/SimDrone";
     
-    private Dictionary<string, string> IdToIpDictionary { get;set; }
+    private Dictionary<string, string> IdToIpDictionary { get; }
 
     public DispatchToSimDroneGateway(Dictionary<string, string> dictionary, int port) : base(port)
     {
@@ -22,11 +21,13 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
             $"{request.DroneIp}/SimDrone/InitDrone",
             request).Result;
 
+
     public AssignFleetResponse? AssignFleet(AssignFleetRequest assignFleetRequest)
     {
         if(assignFleetRequest.DispatchIp is null or "")
         {
             Console.WriteLine("A Dispatch Ip Address is requred!");
+
             return new AssignFleetResponse
             {
                 DroneId = assignFleetRequest.DroneId,
@@ -36,9 +37,14 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
 
         IdToIpDictionary[assignFleetRequest.DroneId] = assignFleetRequest.DroneIp;
 
-        var droneUrl = $"{assignFleetRequest.DroneIp}/AssignFleet";
+        var droneUrl = $"{assignFleetRequest.DroneIp}/SimDrone/AssignFleet";
+        Console.WriteLine($"Sending {assignFleetRequest.DispatchIp} to the drone so it can talk to us...");
+
+        Console.WriteLine($"\n\n\n\n\n!!!!!!!!!!!assignFleetRequest.DispatchIp = {assignFleetRequest.DispatchIp}\n\n\n\n\n");
+
         var response = SendMessage<AssignFleetRequest, AssignFleetResponse>(
             $"{droneUrl}", assignFleetRequest);
+
 
         response.Wait();
         return response.Result;

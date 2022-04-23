@@ -1,22 +1,21 @@
-﻿namespace Domain.DTO.DroneDispatchCommunication;
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.DTO.DroneDispatchCommunication;
 
 public class AssignFleetRequest
 {
-    // [JsonPropertyName("DroneId")]
+    [JsonPropertyName("DroneId")]
     public string DroneId { get; set; }
 
-    // [JsonPropertyName("DroneIp")]
+    [JsonPropertyName("DroneIp")]
     public string DroneIp {get;set;}
             
-    // [JsonPropertyName("DispatchIp")]
-    public string DispatchIp;
+    [JsonPropertyName("DispatchIp")]
+    public string DispatchIp{get;set;}
 
-    // [JsonPropertyName("BadgeNumber")]
-    public Guid BadgeNumber { get; set; }           
+    [JsonPropertyName("BadgeNumber")]
+    public Guid BadgeNumber { get; set; }    
             
-    // [JsonPropertyName("HomeLocation")]
+    [JsonPropertyName("HomeLocation")]
     public GeoLocation HomeLocation { get; set; }
-
-    // public override string ToString() => $"{{BadgeNumber:{BadgeNumber},DispatchIp:{DispatchIp},HomeLocation:{HomeLocation}}}";
-            
 }

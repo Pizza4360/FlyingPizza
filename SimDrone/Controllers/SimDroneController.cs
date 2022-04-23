@@ -2,6 +2,7 @@ using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace SimDrone.Controllers;
 
@@ -30,7 +31,8 @@ public class SimDroneController : ControllerBase
     [HttpPost("AssignFleet")]
     public AssignFleetResponse AssignFleet(AssignFleetRequest assignFleetRequest)
     {
-        Console.WriteLine($"SimDroneController.AssignFleet -> {assignFleetRequest}");
+        Console.WriteLine($"SimDroneController.AssignFleet -> {assignFleetRequest.ToJson()}");
+        Console.WriteLine($"{assignFleetRequest.DispatchIp}");
         _gateway = new DroneToDispatchGateway(assignFleetRequest.DispatchIp, 84);
         _drone = new Drone(new DroneRecord
             {
