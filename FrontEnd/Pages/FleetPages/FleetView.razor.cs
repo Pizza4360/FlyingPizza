@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Domain.DTO;
 using Domain.Entities;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
@@ -14,7 +15,6 @@ partial class FleetView : ComponentBase
     public int size;
     public Boolean connection;
     public string color;
-
 
     [Inject]
     public IJSRuntime JsRuntime { get; set; }
@@ -37,15 +37,16 @@ partial class FleetView : ComponentBase
         globalData.currDrone = drone;
         await dialogService.OpenAsync<DetailedDrone>("View SimDrone");           
     }
-   
-    public async Task DroneState(string state)
+
+    public string Color(DroneRecord drone)
     {
-        color = new( await JsRuntime.InvokeAsync<string>("statusColor", state) );
+        return drone.State.GetColor();
     }
 
-    public async void CallJSMethod()
-    {
-        await JsRuntime.InvokeAsync<string>("JSMethod");
-    }
+    /*  public async Task DroneState(string state)
+      {
+          color = new( await JsRuntime.InvokeAsync<string>("statusColor", state) );
+          Console.WriteLine("!!!!!!!!!!!!!this is color: " + color);
+      }*/
 
 }

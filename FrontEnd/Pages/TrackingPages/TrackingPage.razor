@@ -4,26 +4,42 @@
 @*https://www.radzen.com/documentation/blazor/googlemap/*@
 @*https://blazor.radzen.com/googlemap*@
 
-<div class="status-bar">
-    <div class="noBorder">
-        <input class="checkBox" type="checkbox"  id="home_btn" onclick="@onBoxClick">
-        <b>Home</b>
+<div class="quick-look">
+    <div class="status-bar" >
+        <b>Tracking Page</b>
     </div>
-    <div class="noBorder">
-        <input class="checkBox" type="checkbox" id="drone_btn" onclick="@onBoxClick">
-        <b>SimDrones</b>
-    </div>
-     <div class="noBorder">
-        <RadzenCheckBox style="height: 24px; width: 24px; margin-bottom:4px"@bind-Value=@showMSU Name="showMarker" id="dest_btn"/>
-        <b>Destination</b>
-    </div>
+    @if (connection)
+    {
+        <div class="connection-bar" data-hover="Database: Connected">
+            <span class="oi oi-circle-check" style="color: #08af08"></span>
+        </div>
+    }
+    else
+    {
+        <div class="connection-bar" data-hover="Database: No Connection">
+            <span class="oi oi-circle-x" style="color: #FC401E"></span>
+        </div>
+    }
+
 </div>
 
-<div class="row p-3">
-    <div id="map" style="height:500px;width:100%;border-radius: 0.5rem;"></div>
+<div class="content">
+    <div class="drone-bar">
+        <div class="selection">
+            <div class="dropdown"> Dropdown
+@*                <button class="dropbtn">Dropdown</button>
+*@                <div class="dropdown-content">
+                <a href="#">Delivering</a>
+                <a href="#">Returning</a>
+                <a href="#">Ready</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="map" id="map"></div>
+
 </div>
 
-@*<EventConsole @ref=@console Class="mt-4" />*@
 
 @code {
     int test = 0;

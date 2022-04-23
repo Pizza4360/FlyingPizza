@@ -14,7 +14,9 @@ partial class TrackingPage : ComponentBase
 {
     private const int RefreshInterval = 2000;
     private Timer _timer;
-    
+    public bool connection;
+
+
     [Inject]
     public IJSRuntime JsRuntime {get;set; }
     
