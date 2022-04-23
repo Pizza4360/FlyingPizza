@@ -1,8 +1,9 @@
+using Domain;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Domain.GatewayDefinitions;
-using SimDrone.Controllers;
+using Domain.InterfaceDefinitions.Gateways;
+using Domain.InterfaceImplementations.Gateways;
 using static System.Decimal;
 
 namespace SimDrone;
@@ -22,89 +23,124 @@ public class Drone : DroneRecord
     private const decimal StepSize = DroneUpdateInterval / 1000.0m * (decimal) DroneSpeed;
 
     /// Allows the simulation to communicate with the dispatcher.
-    private IBaseGateway<SimDroneController> DroneToDispatchGateway { get; set; }
+    private IDroneToDispatcherGateway DroneToDispatchGateway { get; set; }
 
-    private SimDroneController _controller;
-
-    public Drone(DroneRecord record, IBaseGateway<SimDroneController> gateway, SimDroneController controller)
+    public Drone(DroneRecord record, IDroneToDispatcherGateway gateway)
     {
-        DroneId = record.DroneId;
+        Id = record.Id;
         HomeLocation = record.HomeLocation;
         BadgeNumber = record.BadgeNumber;
         DroneIp = record.DroneIp;
         DroneToDispatchGateway = gateway;
-        _controller = controller;
         State = DroneState.Ready;
         CurrentLocation = HomeLocation;
         Destination = record.Destination;
     }
 
-
-    public GeoLocation[] GetRoute()
+    private GeoLocation[] GetSingleRoute(GeoLocation startNotInclusive, GeoLocation endNotInclusive)
     {
-        if (HomeLocation.Equals(Destination))
-            throw new ArgumentException(
-                "Destination cannot be the same as the AssignDelivery station!");
-
-        var haversine = Haversine(
-            ToDouble(HomeLocation.Latitude), 
-            ToDouble(HomeLocation.Longitude),
-            ToDouble(Destination.Latitude), 
-            ToDouble(Destination.Longitude)
-            );
-
-        var latMax  = (decimal)Haversine(
-                ToDouble(HomeLocation.Latitude), 
-                ToDouble(HomeLocation.Longitude),
-                ToDouble(Destination.Latitude), 
-                ToDouble(HomeLocation.Longitude)
-            );
-        var lonMax = (decimal)Haversine(
-                ToDouble(HomeLocation.Latitude), 
-                ToDouble(HomeLocation.Longitude),
-                ToDouble(HomeLocation.Latitude), 
-                ToDouble(Destination.Longitude)
-            );
-        // TODO: direction is determined incorrectly
-        // TODO: You may want behavior:
-        // TODO: latDirection = Destination.Latitude - HomeLocation.Lattitude < 0 ? 1 : -1
-        // TODO: longDirection = Destination.Longitude - HomeLocation.Longitude < 0 ? 1 : -1
-
+        var tempLat = HomeLocation.Latitude;
+        var tempLon = HomeLocation.Longitude; 
+        var nextLat = 0.0m;
+        var nextLon = 0.0m;
         var route = new List<GeoLocation>();
-        decimal latDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
-        decimal lonDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
-        // TODO: latMax/stepSize is the behavior you want, but rolling a for loop will do better
-        var latStep = latMax / (decimal)haversine * StepSize;
-        var lonStep = lonMax / (decimal)haversine * StepSize;
-        var latSum = 0m;
-        var lonSum = 0m;
-        while (latSum > latMax ||
-               lonSum < lonMax)
+        while (tempLat != endNotInclusive.Latitude && tempLon != endNotInclusive.Longitude)
         {
-            latSum += latDirection / latStep;
-            lonSum += lonDirection / lonStep;
-            // TODO: incorrect use of haversine, converting kilometers to Arc Distance Geolocation
-            // TODO: options: discard haversine or make inverseHaversine to make Geolocation
+            var latDiff = Math.Abs(endNotInclusive.Latitude - tempLat);
+            var lonDiff = Math.Abs(endNotInclusive.Longitude - tempLon);
+            var latDirection = endNotInclusive.Latitude - startNotInclusive.Latitude > 0 ? 1 : -1;
+            var lonDirection = endNotInclusive.Longitude - startNotInclusive.Longitude > 0 ? 1 : -1;
+           
+            if (lonDiff >= StepSize)
+            {
+                nextLon = StepSize * lonDirection;
+            }
+            if (latDiff >= StepSize)
+            {
+                nextLat = StepSize * latDirection;
+            }
+            if (latDiff < StepSize)
+            {
+                nextLat = latDiff * latDirection;
+            }
+            if (lonDiff < StepSize)
+            {
+                nextLon = lonDiff * lonDirection;
+            }
+            tempLat += nextLat;
+            tempLon += nextLon;
             route.Add(new GeoLocation
             {
-                Latitude = latSum,
-                Longitude = lonSum
+                Latitude = tempLat,
+                Longitude = tempLon
             });
+       
         }
         return route.ToArray();
     }
     
+    /// <summary>
+    ///  Return an array of Geolocations representing a drone's delivery route.
+    /// </summary>
+    /// <returns>The GeoLocations which will simulate drone movement over time.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    public GeoLocation[] GetRoute()
+    {
+        if (HomeLocation.Equals(Destination))
+            throw new ArgumentException(
+                "Destination cannot be the same as the AssignDeliveryRequest station!");
+        var route = new List<GeoLocation>();
+        route.AddRange(GetSingleRoute(HomeLocation,Destination));
+        route.Add(Destination);
+        route.AddRange(GetSingleRoute(HomeLocation,Destination));
+        route.Add(HomeLocation);
+        // Assuming that home location is added to route
+        return route.ToArray();
+        // var haversine = Haversine(
+        //     ToDouble(HomeLocation.Latitude), 
+        //     ToDouble(HomeLocation.Longitude),
+        //     ToDouble(Destination.Latitude), 
+        //     ToDouble(Destination.Longitude)
+        //     );
+        //
+        // var latMax  = (decimal)Haversine(
+        //         ToDouble(HomeLocation.Latitude), 
+        //         ToDouble(HomeLocation.Longitude),
+        //         ToDouble(Destination.Latitude), 
+        //         ToDouble(HomeLocation.Longitude)
+        //     );
+        // var lonMax = (decimal)Haversine(
+        //         ToDouble(HomeLocation.Latitude), 
+        //         ToDouble(HomeLocation.Longitude),
+        //         ToDouble(HomeLocation.Latitude), 
+        //         ToDouble(Destination.Longitude)
+        //     );
+        //var route = new List<GeoLocation>();
+        //decimal latDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
+        //decimal lonDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
+        // var latStep = latMax / (decimal)haversine * StepSize;
+        // var lonStep = lonMax / (decimal)haversine * StepSize;
+        // var latSum = 0m;
+        // var lonSum = 0m;
+        // while (latSum > latMax ||
+        //        lonSum < lonMax)
+        // {
+        //     latSum += latDirection / latStep;
+        //     lonSum += lonDirection / lonStep;
+        //     route.Add(new GeoLocation
+        //     {
+        //         Latitude = latSum,
+        //         Longitude = lonSum
+        //     });
+        // }
+        //return route.ToArray();
+    }
+    
 
     // Tell SimDrone to deliver an order
-    public AssignDeliveryResponse AssignDelivery(AssignDeliveryRequest request)
+    public bool DeliverOrder(GeoLocation customerLocation)
     {
-        var assignDeliveryResponse = new AssignDeliveryResponse
-        {
-            OrderId = request.OrderId,
-            DroneId = DroneId,
-            Success = false
-        };
-        Destination = request.OrderLocation;
+        Destination = customerLocation;
         UpdateStatus(DroneState.Delivering);
         var route = GetRoute();
         var s = string.Join(",", route.Select(x => $"{{{x.Latitude},{x.Longitude}}}").ToArray());
@@ -128,28 +164,27 @@ public class Drone : DroneRecord
 
         UpdateStatus(DroneState.Ready);
         Console.WriteLine("Back home!"); // Debug
-
-        assignDeliveryResponse.Success = true;
-        return assignDeliveryResponse;
+        return true;
     }
     
 
     // Send an DroneState update to DispatcherGateway
-    private UpdateDroneStatusResponse? UpdateStatus(DroneState state)
+    private bool UpdateStatus(DroneState state)
     {
         State = state;
         return PatchDroneStatus();
     }
 
-    private UpdateDroneStatusResponse? PatchDroneStatus()
+    private bool PatchDroneStatus()
     {
-        var response = _controller.UpdateDroneStatus(
-            new UpdateDroneStatusRequest
+        var t = DroneToDispatchGateway.PatchDroneStatus(
+            new DroneStatusUpdateRequest
             {
-                DroneId = DroneId,
+                Id = Id,
                 State = State
             });
-        return response;
+        t.Wait();
+        return t.IsCompletedSuccessfully;
     }
     
     // Send an Location update to DispatcherGateway
@@ -161,7 +196,7 @@ public class Drone : DroneRecord
 
     public override string ToString()
     {
-        return $"SimDrone:{{DroneId:{DroneId},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
+        return $"SimDrone:{{DroneId:{Id},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
     }
 
     // Helper function for Haversine formula readability
