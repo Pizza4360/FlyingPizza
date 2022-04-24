@@ -23,7 +23,7 @@ partial class FleetView : ComponentBase
         try
         {
             Fleet = (await HttpMethods.Get<List<DroneRecord>>("http://localhost:5127/DatabaseAccess/GetFleet")).ToArray();
-            
+
             size = Fleet.Length;
             connection = true;
         }
@@ -42,11 +42,5 @@ partial class FleetView : ComponentBase
     {
         return drone.State.GetColor();
     }
-
-    /*  public async Task DroneState(string state)
-      {
-          color = new( await JsRuntime.InvokeAsync<string>("statusColor", state) );
-          Console.WriteLine("!!!!!!!!!!!!!this is color: " + color);
-      }*/
 
 }
