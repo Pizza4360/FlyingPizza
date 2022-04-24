@@ -60,4 +60,8 @@
     <UpToDateCheckInput Remove="Shared\NavMenu.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="wwwroot\Weather.cs" />
+  </ItemGroup>
+
 </Project>
