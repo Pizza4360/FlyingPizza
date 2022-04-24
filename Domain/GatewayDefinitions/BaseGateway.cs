@@ -19,6 +19,7 @@ public class BaseGateway<T1> : IBaseGateway<T1>
 
     public async Task<TResponse> SendMessageGet<TResponse>(string url)
     {
+        Console.WriteLine($"HttpMethods.Get<TResponse>({url})");
         return await HttpMethods.Get<TResponse>(url);
     }
     
