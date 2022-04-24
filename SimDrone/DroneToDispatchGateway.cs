@@ -20,13 +20,13 @@ public class DroneToDispatchGateway : BaseGateway<SimDroneController>
         new HttpClient(handler);
     }
     
-    public async Task<CompleteOrderResponse?> CompleteOrder(CompleteOrderRequest request) => await SendMessage<CompleteOrderRequest, CompleteOrderResponse>( 
+    public async Task<CompleteOrderResponse?> CompleteOrder(CompleteOrderRequest request) => await SendMessagePost<CompleteOrderRequest, CompleteOrderResponse>( 
         $"{EndPoint}/CompleteOrder", request);
 
     public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(UpdateDroneStatusRequest request)
     {
         Console.WriteLine($"Drone is updating status to url {EndPoint}");
-        return await SendMessage<UpdateDroneStatusRequest, UpdateDroneStatusResponse>
+        return await SendMessagePost<UpdateDroneStatusRequest, UpdateDroneStatusResponse>
                 ($"{EndPoint}/UpdateDroneStatus", request);
     }
 }

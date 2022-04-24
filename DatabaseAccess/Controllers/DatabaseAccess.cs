@@ -23,9 +23,12 @@ public class DatabaseAccess : ControllerBase
     }
 
     [HttpGet("GetFleet")]
-    public DroneRecord[] GetFleet()
+    public async Task<List<DroneRecord>> GetFleet()
     {
-        return _fleet.GetAllAsync().Result.ToArray();
+        Console.WriteLine("got a request to get the fleet...");
+        var fleet =  await _fleet.GetAllAsync();
+        Console.WriteLine("Got back" + string.Join("\n", fleet));
+        return fleet;
     }
     
     [HttpPost("AddOrder")]

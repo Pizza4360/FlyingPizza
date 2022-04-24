@@ -142,7 +142,7 @@ public class DispatchController : ControllerBase
     }
 
     [HttpPost("EnqueueOrder")]
-    public async Task<AssignDeliveryResponse?> EnqueueOrder(AddOrderRequest enqueueOrderRequest)
+    public async Task<AssignDeliveryResponse?> EnqueueOrder(EnqueueOrderRequest enqueueOrderRequest)
     {
         Console.WriteLine($"DispatchController.EqueueOrder -> {enqueueOrderRequest}");
         List<DroneRecord> availableDrones;

@@ -1,43 +1,47 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.GatewayDefinitions;
 
 namespace FrontEnd.Services;
 
-public class FrontEndToDispatchGateway : BaseGateway<App> 
+public class FrontEndToDispatchGateway : BaseGateway<App>
 {
-    public string Url{get;}
-
-    public FrontEndToDispatchGateway(string url)
+    private string DispatchUrl{ get; } 
+    public FrontEndToDispatchGateway(/*string ipAddress*/)
     {
-        Url = url;
+        DispatchUrl = "http://localhost:83" + "/Dispatch";
     }
     
-    public async Task<PingDto?> Ping(PingDto ready)
+    public async Task<PingDto> Ping(PingDto ready)
+        => await SendMessagePost<PingDto, PingDto>($"{DispatchUrl}/Ping", new PingDto {
+                    S = "Malc"
+                });
+
+    public async Task<EnqueueOrderResponse> EnqueueOrder(EnqueueOrderRequest request) => 
+        await SendMessagePost<EnqueueOrderRequest, EnqueueOrderResponse>($"{DispatchUrl}/EnqueueOrder",  request );
+
+    /*public void RemoveDrone(HttpMessageHandler handler)
     {
-        return await SendMessage<PingDto, PingDto>($"{Url}/Ping", new PingDto { S = "Malc" });
-    }
-
-    public async Task<AddOrderResponse?> AddOrder(AddOrderRequest ready)
-    => await SendMessage<AddOrderRequest, AddOrderResponse>
-            ($"{Url}/EnqueueOrder", ready);
+        // Added for mocking reasons, no way around it
+        // TODO: what why?
+        // HttpClient = new HttpClient(handler);
+    }*/
 
 
-    public async Task<RemoveDroneResponse?> RemoveDrone(RemoveDroneRequest request)
-        => await SendMessage<RemoveDroneRequest, RemoveDroneResponse>
-            ($"{Url}/RemoveDrone", request);
+    public async Task<AddDroneResponse> AddDrone(AddDroneRequest request) 
+        => await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DispatchUrl}/AddDrone", new AddDroneRequest {
+        DroneId = request.DroneId,
+        DroneUrl = request.DroneUrl
+    });
 
 
-    public async Task<AddDroneResponse?> AddDrone(AddDroneRequest request)
-        => await SendMessage<AddDroneRequest, AddDroneResponse>($"{Url}/AddDrone", request);
-
-
-    public async Task<CancelDeliveryResponse?> CancelDeliveryRequest(string id) =>
-        await SendMessage<CancelDeliveryRequest, CancelDeliveryResponse>(
-            $"{Url}/CancelDeliveryRequest",
+    public async Task<CancelDeliveryResponse> CancelDelivery(string id) =>
+          await SendMessagePost<CancelDeliveryRequest, CancelDeliveryResponse>($"{DispatchUrl}/CancelDelivery",
             new CancelDeliveryRequest
             {
                 OrderId = id
             });
 }
+

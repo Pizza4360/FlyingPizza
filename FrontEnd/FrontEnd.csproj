@@ -50,4 +50,14 @@
     <_ContentIncludedByDefault Remove="Shared\NavMenu.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\FleetPages\DetailedDrone.razor" />
+    <UpToDateCheckInput Remove="Pages\FleetPages\FleetView.razor" />
+    <UpToDateCheckInput Remove="Pages\OrderPages\OrderPage.razor" />
+    <UpToDateCheckInput Remove="Pages\TrackingPages\EventConsole.razor" />
+    <UpToDateCheckInput Remove="Pages\TrackingPages\TrackingPage.razor" />
+    <UpToDateCheckInput Remove="Shared\MainLayout.razor" />
+    <UpToDateCheckInput Remove="Shared\NavMenu.razor" />
+  </ItemGroup>
+
 </Project>

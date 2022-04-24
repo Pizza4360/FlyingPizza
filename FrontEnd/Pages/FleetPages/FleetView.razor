@@ -1,13 +1,14 @@
 ﻿@page "/"
 
 @* @inject Services.HttpMethods restPoint *@
+@inject Services.FrontEndToDatabaseGateway _frontEndToDatabaseGateway;
 @inject Services.GlobalDataSvc globalData
 @inject HttpClient _client
 @inject Radzen.DialogService dialogService
 
 <!--Quick info about various fleet metrics at top of page-->
 <div class="quick-look">
-    <div class="status-bar">
+    <div class="status-bar" >
         <b>Fleet Size: @size</b>
     </div>
     @if (connection)
@@ -35,8 +36,10 @@
                 <!--Creates a block for each drone with id, status, more info button and a drone img-->
                 <li style="background-image: url('../images/drone.jpg')">
                     <div class="drone-status">
-                        <span class="title">DroneDroneDroneBadgeNumber: @drone.BadgeNumber</span>
-                        <span class="price">@drone.State</span>
+                        <span class="title" >ID: 
+                            <br> @drone.BadgeNumber.ToString().Substring(0, 4)... <br>
+                        </span>
+                        <span class="price" style="background-color: @Color(drone)">@drone.State</span>
                         <span class="more">
                             <RadzenButton style="background-color: #3b3b3b" Icon="add_circle_outline" Click=@(args => GoToDrone(drone)) />
                         </span>
@@ -46,7 +49,5 @@
         }
     </ul>
 </div>
-
-
 
 

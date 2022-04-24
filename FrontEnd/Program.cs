@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Radzen;
 
@@ -13,7 +14,7 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
-        
+
         builder.RootComponents.Add<App>("#app");
 
         builder.Services.AddScoped(
@@ -26,7 +27,8 @@ public class Program
 
         builder.Services.AddSingleton( new GlobalDataSvc() );
             
-        builder.Services.AddSingleton( new FrontEndToDispatchGateway ( "http://localhost" ));
+        builder.Services.AddSingleton( new FrontEndToDispatchGateway());
+        builder.Services.AddSingleton( new FrontEndToDatabaseGateway());
             
         builder.Services.AddSingleton( new HttpClient() );
 

@@ -26,7 +26,17 @@
     <a class="dismiss">🗙</a>
 </div>
 <script src="_framework/blazor.webassembly.js"></script>
-
+<script>
+    function codeAddress(address) {
+        geocoder.geocode( { 'address': address}, function(results, status) {
+            if (status == 'OK') {
+                return results[0]
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+        })
+    }
+</script>
 <script>
     var map
     let markers = {}
