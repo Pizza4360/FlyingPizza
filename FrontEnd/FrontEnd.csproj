@@ -62,6 +62,7 @@
 
   <ItemGroup>
     <Compile Include="wwwroot\Weather.cs" />
+    <Compile Include="wwwroot\Weather.json.cs" />
   </ItemGroup>
 
 </Project>
