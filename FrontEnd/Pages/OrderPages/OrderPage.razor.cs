@@ -21,6 +21,8 @@ partial class OrderPage : ComponentBase
     // = new ("http://localhost:80"); 
     protected override void OnInitialized()
     {
+        _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
+
         // Make a new order for the customer to use when the page boots up
         custOrder = new Order();
             
@@ -49,7 +51,8 @@ partial class OrderPage : ComponentBase
 
 
         // upload final object to the server. 
-        var r = await HttpMethods.Post("http://localhost:5127/DatabaseAccess/EnqueueOrder", custOrder);
+        // _frontEndToDatabaseGateway.CreateOrder()
+        var r = await HttpMethods.Post("http://localhost:80/DatabaseAccess/EnqueueOrder", custOrder);
         if (r.Headers.Location != null) custOrder.Id = r.Headers.Location.AbsoluteUri;
         var response = await HttpMethods.Put(custOrder.Id,custOrder);
 

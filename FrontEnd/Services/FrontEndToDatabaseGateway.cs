@@ -18,6 +18,7 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
     public async Task<List<DroneRecord>> GetFleet()
     {
         Console.WriteLine("Getting fleet...");
+        Console.WriteLine($"SendMessageGet<List<DroneRecord>>({DispatchUrl}/GetFleet");
         var response = await SendMessageGet<List<DroneRecord>>($"{DispatchUrl}/GetFleet");
         Console.WriteLine("Got back" + string.Join("\n", response));
         return response;

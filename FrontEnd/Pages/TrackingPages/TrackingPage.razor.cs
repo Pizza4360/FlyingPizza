@@ -71,8 +71,7 @@ partial class TrackingPage : ComponentBase
     private async Task UpdateDroneMarkers()
     {
         
-        var markers = (await HttpMethods.Get<List<DroneRecord>>
-            ("http://localhost:80/DatabaseAccess/GetFleet")).Select(x => 
+        var markers = (await _frontEndToDatabaseGateway.GetFleet()).Select(x => 
             new JsMarker{
                 lat = (double)x.CurrentLocation.Latitude,
                 lng = (double)x.CurrentLocation.Longitude,
