@@ -1,61 +1,65 @@
 ﻿using Domain.DTO.DroneDispatchCommunication;
 using Domain.GatewayDefinitions;
+using Domain.RepositoryDefinitions;
+using MongoDB.Bson;
 using DispatchController = Dispatch.Controllers.DispatchController;
 
 namespace Dispatch;
 
 public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
-{ 
-    private string Url(string currentDroneId) => IdToIpDictionary[currentDroneId] + "/SimDrone";
-    
-    private Dictionary<string, string> IdToIpDictionary { get; }
-
-    public DispatchToSimDroneGateway(Dictionary<string, string> dictionary, int port) : base(port)
+{
+    private IFleetRepository _fleet;
+    // private IOrdersRepository _orders;
+    private async Task<string> Endpoint(string currentDroneId)
     {
-        IdToIpDictionary = dictionary;
+        return (await _fleet.GetByIdAsync(currentDroneId)).DroneUrl;
     }
     
-    public InitDroneResponse?
-        InitDrone(InitDroneRequest request)
-        =>  SendMessage<InitDroneRequest, InitDroneResponse>(
-            $"{request.DroneIp}/SimDrone/InitDrone",
-            request).Result;
+    public DispatchToSimDroneGateway(IFleetRepository fleet/*, IOrdersRepository orders*/)
+    {
+        _fleet = fleet;
+        // _orders = orders;
+    }
+    
+    public async Task<InitDroneResponse?> InitDrone(InitDroneRequest request)
+    {
+        var url = $"{request.DroneUrl}/SimDrone/InitDrone";
+        Console.WriteLine($"\n\n\nurl:{url}\n\n");
+        
 
+        return await SendMessage<InitDroneRequest, InitDroneResponse>(
+                url, request);
+    }
 
-    public AssignFleetResponse? AssignFleet(AssignFleetRequest assignFleetRequest)
+    public async Task<AssignFleetResponse?> AssignFleet(AssignFleetRequest assignFleetRequest)
     {
         if(assignFleetRequest.DispatchIp is null or "")
         {
             Console.WriteLine("A Dispatch Ip Address is requred!");
-
             return new AssignFleetResponse
             {
                 DroneId = assignFleetRequest.DroneId,
                 IsInitializedAndAssigned = false
             };
         }
-
-        IdToIpDictionary[assignFleetRequest.DroneId] = assignFleetRequest.DroneIp;
-
+        
         var droneUrl = $"{assignFleetRequest.DroneIp}/SimDrone/AssignFleet";
-        Console.WriteLine($"Sending {assignFleetRequest.DispatchIp} to the drone so it can talk to us...");
-
-        Console.WriteLine($"\n\n\n\n\n!!!!!!!!!!!assignFleetRequest.DispatchIp = {assignFleetRequest.DispatchIp}\n\n\n\n\n");
+        Console.WriteLine($"Sending {assignFleetRequest.DispatchIp} to the drone @ {droneUrl} so it can talk to us...");
+        Console.WriteLine($"\n\n\n\n\n!!!!!!!!!!!assignFleetRequest.DispatchUrl = {assignFleetRequest.DispatchIp}\n\n\n\n\n");
 
         var response = SendMessage<AssignFleetRequest, AssignFleetResponse>(
-            $"{droneUrl}", assignFleetRequest);
+            droneUrl, assignFleetRequest);
 
 
         response.Wait();
         return response.Result;
     }
 
-    public AssignDeliveryResponse? AssignDelivery(AssignDeliveryRequest assignDeliveryRequest)
+    public async Task<AssignDeliveryResponse?> AssignDelivery(AssignDeliveryRequest assignDeliveryRequest)
     {
-        var url = Url(assignDeliveryRequest.DroneId);
+        var url = await Endpoint(assignDeliveryRequest.DroneId);
         Console.WriteLine($"\n\nChoosing drone {assignDeliveryRequest.DroneId} url:{url}\n\n\n");
-        return SendMessage<AssignDeliveryRequest, AssignDeliveryResponse>(
-                $"{url}/AssignDelivery", assignDeliveryRequest)
-           .Result;
+        return await SendMessage<AssignDeliveryRequest, AssignDeliveryResponse>(
+            $"{url}/SimDrone/AssignDelivery", assignDeliveryRequest);
     }
 }

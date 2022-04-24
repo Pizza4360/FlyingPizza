@@ -6,38 +6,37 @@ namespace FrontEnd.Services;
 
 public class FrontEndToDispatchGateway : BaseGateway<App> 
 {
-    private string _url;
-    public string Url => IpAndPort +  "/Dispatch";
-    
-    public FrontEndToDispatchGateway(string ipAddress, int port) : base(port)
+    public string Url{get;}
+
+    public FrontEndToDispatchGateway(string url)
     {
-        IpAddress = ipAddress;
+        Url = url;
     }
     
-    public PingDto? Ping(PingDto ready)
+    public async Task<PingDto?> Ping(PingDto ready)
     {
-        return SendMessage<PingDto, PingDto>($"{Url}/Ping", new PingDto { S = "Malc" }).Result;
+        return await SendMessage<PingDto, PingDto>($"{Url}/Ping", new PingDto { S = "Malc" });
     }
 
-    public AddOrderResponse? AddOrder(AddOrderRequest ready)
-    => SendMessage<AddOrderRequest, AddOrderResponse>
-            ($"{Url}/EnqueueOrder", ready).Result;
+    public async Task<AddOrderResponse?> AddOrder(AddOrderRequest ready)
+    => await SendMessage<AddOrderRequest, AddOrderResponse>
+            ($"{Url}/EnqueueOrder", ready);
 
 
-    public RemoveDroneResponse? RemoveDrone(RemoveDroneRequest request)
-        => SendMessage<RemoveDroneRequest, RemoveDroneResponse>
-            ($"{Url}/RemoveDrone", request).Result;
+    public async Task<RemoveDroneResponse?> RemoveDrone(RemoveDroneRequest request)
+        => await SendMessage<RemoveDroneRequest, RemoveDroneResponse>
+            ($"{Url}/RemoveDrone", request);
 
 
-    public AddDroneResponse? AddDrone(AddDroneRequest request)
-        => SendMessage<AddDroneRequest, AddDroneResponse>($"{Url}/AddDrone", request).Result;
+    public async Task<AddDroneResponse?> AddDrone(AddDroneRequest request)
+        => await SendMessage<AddDroneRequest, AddDroneResponse>($"{Url}/AddDrone", request);
 
 
-    public CancelDeliveryResponse? CancelDeliveryRequest(string id) =>
-        SendMessage<CancelDeliveryRequest, CancelDeliveryResponse>(
+    public async Task<CancelDeliveryResponse?> CancelDeliveryRequest(string id) =>
+        await SendMessage<CancelDeliveryRequest, CancelDeliveryResponse>(
             $"{Url}/CancelDeliveryRequest",
             new CancelDeliveryRequest
             {
                 OrderId = id
-            }).Result;
+            });
 }

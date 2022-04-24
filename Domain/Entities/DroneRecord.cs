@@ -13,7 +13,6 @@ namespace Domain.Entities
         [JsonPropertyName("BadgeNumber")]
         public Guid BadgeNumber { get; set; }
 
-
         [BsonElement("OrderId")]
         [JsonPropertyName("OrderId")]
         public string OrderId { get; set; }
@@ -34,18 +33,20 @@ namespace Domain.Entities
         [JsonPropertyName("State")]
         public DroneState State { get; set; }
 
+        [BsonElement("DroneId")]
+        public string DroneId { get; set; }
 
-        [BsonElement("DroneIp")]
-        [JsonPropertyName("DroneIp")]
-        public string DroneIp { get; set; }
+        [BsonElement("DroneUrl")]
+        [JsonPropertyName("DroneUrl")]
+        public string DroneUrl { get; set; }
 
-        [BsonElement("DispatchIp")]
-        [JsonPropertyName("DispatchIp")]
-        public string DispatchIp { get; set; }
+        [BsonElement("DispatchUrl")]
+        [JsonPropertyName("DispatchUrl")]
+        public string DispatchUrl { get; set; }
 
         public override string ToString()
         {
-            return $"DroneId:{DroneId}" +
+            return $"Id:{DroneId}" +
                    $"Currentlocation:{CurrentLocation}\n" +
                    $"Destination:{Destination}\n" +
                    $"Status:{State}";
@@ -60,7 +61,7 @@ namespace Domain.Entities
                    oo.CurrentLocation.Equals(CurrentLocation) &&
                    oo.Destination.Equals(Destination) &&
                    oo.State.Equals(State) &&
-                   oo.DispatchIp.Equals(DispatchIp);
+                   oo.DispatchUrl.Equals(DispatchUrl);
         }
     }
 }

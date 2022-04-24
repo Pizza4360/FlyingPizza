@@ -9,6 +9,6 @@ public class InitDroneRequest
     [JsonPropertyName("DroneId")]
     public string DroneId { get; set; }
         
-    [JsonPropertyName("DroneIp")]
-    public string DroneIp { get; set; }
+    [JsonPropertyName("DroneUrl")]
+    public string DroneUrl { get; set; }
 }

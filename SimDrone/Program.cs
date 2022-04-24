@@ -8,7 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add a gateway for drone to send status updates
+// OffSet a gateway for drone to send status updates
 //TODO: changed since wouldn't compile, may need to add constructor later
 
 var app = builder.Build();

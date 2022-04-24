@@ -13,9 +13,9 @@ public class AddDroneRequest
     [JsonPropertyName("HomeLocation")]
     public GeoLocation HomeLocation { get; set; }
         
-    [JsonPropertyName("DroneIp")]
-    public string DroneIp { get; set; }
-        
-    [JsonPropertyName("DispatchIp")]
-    public string DispatchIp { get; set; }
+    [JsonPropertyName("DroneUrl")]
+    public string DroneUrl { get; set; }
+
+    [JsonPropertyName("DispatchUrl")]
+    public string DispatchUrl { get; set; }
 }

@@ -20,6 +20,17 @@ public class FleetRepository : IFleetRepository
             fleetSettings.Value.CollectionName);
     }
 
+
+    public FleetRepository(string connectionString, string dbName, string collectionName)
+    {
+        var mongoClient = new MongoClient(connectionString);
+
+        var mongoDatabase = mongoClient.GetDatabase(dbName);
+
+        _collection = mongoDatabase.GetCollection<DroneRecord>(collectionName);
+    }
+
+
     public async Task CreateAsync(DroneRecord drone)
     {
         await _collection.InsertOneAsync(drone);
@@ -30,10 +41,7 @@ public class FleetRepository : IFleetRepository
 
     public async Task<DroneRecord> GetByIdAsync(string id) =>
         await _collection.Find(x => x.DroneId == id).FirstOrDefaultAsync();
-
-    public async Task<Dictionary<string, string>> GetAllAddresses() =>
-        Enumerable.ToDictionary(await _collection.Find(_ => true).ToListAsync(), droneRecord => droneRecord.DroneId, droneRecord => droneRecord.DroneIp);
-
+    
     public async Task<bool> RemoveAsync(string id) =>
         (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
 
@@ -51,7 +59,7 @@ public class FleetRepository : IFleetRepository
         UpdateDefinition<DroneRecord> updateDefinition = null;
         foreach (var property in drone.GetType().GetProperties())
         {
-            if (property != null) {
+            if (property != null && property.Name != "Id") {
                 if (updateDefinition == null)
                 {
                     updateDefinition = builder.Set(property.Name, property.GetValue(drone));

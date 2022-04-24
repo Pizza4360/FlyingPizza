@@ -3,6 +3,7 @@ using Domain.RepositoryDefinitions;
 using Microsoft.Extensions.Options;
 
 Console.WriteLine("hello world!!!");
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options => { options.AddPolicy(name: "*", _  => { _.WithOrigins("*"); }); });
 
@@ -10,13 +11,13 @@ builder.Services.AddCors(options => { options.AddPolicy(name: "*", _  => { _.Wit
 #region repositories
 
 builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton<IOrdersRepository>(provider =>
+builder.Services.AddScoped<IOrdersRepository>(provider =>
 {
     return new OrderRepository(provider.GetService<IOptions<OrdersDatabaseSettings>>());
 });
 
 builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
-builder.Services.AddSingleton<IFleetRepository>(provider =>
+builder.Services.AddScoped<IFleetRepository>(provider =>
 {
     return new FleetRepository(provider.GetService<IOptions<FleetDatabaseSettings>>());
 });
@@ -28,7 +29,7 @@ builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializ
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-// Add builder.Services to the container.
+// OffSet builder.Services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -41,7 +42,6 @@ Console.WriteLine(DateTime.Now);
 
 
 var app = builder.Build();
-
 
 
 // Configure the HTTP request pipeline.

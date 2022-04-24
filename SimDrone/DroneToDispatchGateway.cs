@@ -6,12 +6,12 @@ namespace SimDrone;
 
 public class DroneToDispatchGateway : BaseGateway<SimDroneController>
 {
-    public string Url => IpAndPort + "/Dispatch";
+    public string EndPoint{get;}
 
-    public DroneToDispatchGateway(string ipAddress, int port) : base(port)
+    public DroneToDispatchGateway(string dispatchUrl)
     {
-        Console.WriteLine($"\n\n\n\nThis drone will talk to Dispatch at {ipAddress}{port}\n\n\n\n");
-        IpAddress = ipAddress;
+        Console.WriteLine($"\n\n\n\nThis drone will talk to Dispatch at {dispatchUrl}\n\n\n\n");
+        EndPoint = dispatchUrl + "/Dispatch";
     }
     
     public void ChangeHandler(HttpMessageHandler handler)
@@ -20,12 +20,13 @@ public class DroneToDispatchGateway : BaseGateway<SimDroneController>
         new HttpClient(handler);
     }
     
-    public CompleteOrderResponse? CompleteOrder(CompleteOrderRequest request) => SendMessage<CompleteOrderRequest, CompleteOrderResponse>( 
-        $"{Url}/CompleteOrder", request).Result;
+    public async Task<CompleteOrderResponse?> CompleteOrder(CompleteOrderRequest request) => await SendMessage<CompleteOrderRequest, CompleteOrderResponse>( 
+        $"{EndPoint}/CompleteOrder", request);
 
-    public UpdateDroneStatusResponse? UpdateDroneStatus(UpdateDroneStatusRequest request)
+    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(UpdateDroneStatusRequest request)
     {
-        return SendMessage<UpdateDroneStatusRequest, UpdateDroneStatusResponse>
-                ($"{Url}/UpdateDroneStatus", request).Result;
+        Console.WriteLine($"Drone is updating status to url {EndPoint}");
+        return await SendMessage<UpdateDroneStatusRequest, UpdateDroneStatusResponse>
+                ($"{EndPoint}/UpdateDroneStatus", request);
     }
 }

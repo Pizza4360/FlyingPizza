@@ -26,7 +26,7 @@ public class Program
 
         builder.Services.AddSingleton( new GlobalDataSvc() );
             
-        builder.Services.AddSingleton( new FrontEndToDispatchGateway ( "http://localhost",82 ));
+        builder.Services.AddSingleton( new FrontEndToDispatchGateway ( "http://localhost" ));
             
         builder.Services.AddSingleton( new HttpClient() );
 

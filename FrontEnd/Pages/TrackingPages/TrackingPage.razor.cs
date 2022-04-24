@@ -12,7 +12,7 @@ namespace FrontEnd.Pages.TrackingPages;
 
 partial class TrackingPage : ComponentBase
 {
-    private const int RefreshInterval = 2000;
+    private const int RefreshInterval = 10;
     private Timer _timer;
     
     [Inject]

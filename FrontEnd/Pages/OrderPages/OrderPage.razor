@@ -12,7 +12,7 @@
     <b>Customer Name: </b>
     <RadzenTextBox id="CUST_NAME" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.CustomerName = e.Value.ToString()) />
     <br />
-    <b>Address: </b> 
+    <b>OffSetress: </b> 
     <RadzenTextBox id="ADDRESS" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.DeliveryAddress = e.Value.ToString()) />
     <br />
     <RadzenButton id="ORDER_SUBMIT" Click=@(args => makeOrder()) Style="width: 200px" Text="Create Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />

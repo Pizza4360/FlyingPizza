@@ -10,7 +10,7 @@ public class BaseEntity
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string DroneId { get; set; }
+    public string Id { get; set; }
     
     private static Random _random = new();
     const string chars = "abcdef0123456789";

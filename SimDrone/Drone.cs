@@ -2,6 +2,7 @@ using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
 using Domain.GatewayDefinitions;
+using MongoDB.Bson;
 using SimDrone.Controllers;
 using static System.Decimal;
 
@@ -9,30 +10,16 @@ namespace SimDrone;
 
 public class Drone : DroneRecord
 {
-    /// Radius of the Earth used in calculating distance 
-    private const int EarthRadius = 6371;
 
-    /// 20 MPH as meters per second
-    private const double DroneSpeed = 0.0089408;
-
-    /// Number of milliseconds to wait before updating SimDrone status
-    private const int DroneUpdateInterval = 2000;
-
-    /// I don't think this makes sense but it's working...
-    private const decimal StepSize = DroneUpdateInterval / 1000.0m * (decimal) DroneSpeed;
-
-    /// Allows the simulation to communicate with the dispatcher.
-    private IBaseGateway<SimDroneController> DroneToDispatchGateway { get; set; }
 
     private SimDroneController _controller;
-
+    
     public Drone(DroneRecord record, IBaseGateway<SimDroneController> gateway, SimDroneController controller)
     {
         DroneId = record.DroneId;
         HomeLocation = record.HomeLocation;
         BadgeNumber = record.BadgeNumber;
-        DroneIp = record.DroneIp;
-        DroneToDispatchGateway = gateway;
+        DroneUrl = record.DroneUrl;
         _controller = controller;
         State = DroneState.Ready;
         CurrentLocation = HomeLocation;
@@ -40,114 +27,56 @@ public class Drone : DroneRecord
     }
 
 
-    public GeoLocation[] GetRoute()
+    public async Task<AssignDeliveryResponse> AssignDelivery(AssignDeliveryRequest request)
     {
-        if (HomeLocation.Equals(Destination))
-            throw new ArgumentException(
-                "Destination cannot be the same as the AssignDelivery station!");
+        await UpdateStatus(DroneState.Delivering);
+        await Traverse(request.OrderLocation);
+        Console.WriteLine("Done with delivery, returning home.");
+        // await UpdateStatus(DroneState.Returning);
+        // await Traverse(request.OrderLocation);
+        // await UpdateStatus(DroneState.Ready);
 
-        var haversine = Haversine(
-            ToDouble(HomeLocation.Latitude), 
-            ToDouble(HomeLocation.Longitude),
-            ToDouble(Destination.Latitude), 
-            ToDouble(Destination.Longitude)
-            );
-
-        var latMax  = (decimal)Haversine(
-                ToDouble(HomeLocation.Latitude), 
-                ToDouble(HomeLocation.Longitude),
-                ToDouble(Destination.Latitude), 
-                ToDouble(HomeLocation.Longitude)
-            );
-        var lonMax = (decimal)Haversine(
-                ToDouble(HomeLocation.Latitude), 
-                ToDouble(HomeLocation.Longitude),
-                ToDouble(HomeLocation.Latitude), 
-                ToDouble(Destination.Longitude)
-            );
-        // TODO: direction is determined incorrectly
-        // TODO: You may want behavior:
-        // TODO: latDirection = Destination.Latitude - HomeLocation.Lattitude < 0 ? 1 : -1
-        // TODO: longDirection = Destination.Longitude - HomeLocation.Longitude < 0 ? 1 : -1
-
-        var route = new List<GeoLocation>();
-        decimal latDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
-        decimal lonDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
-        // TODO: latMax/stepSize is the behavior you want, but rolling a for loop will do better
-        var latStep = latMax / (decimal)haversine * StepSize;
-        var lonStep = lonMax / (decimal)haversine * StepSize;
-        var latSum = 0m;
-        var lonSum = 0m;
-        while (latSum > latMax ||
-               lonSum < lonMax)
+        return new AssignDeliveryResponse
         {
-            latSum += latDirection / latStep;
-            lonSum += lonDirection / lonStep;
-            // TODO: incorrect use of haversine, converting kilometers to Arc Distance Geolocation
-            // TODO: options: discard haversine or make inverseHaversine to make Geolocation
-            route.Add(new GeoLocation
-            {
-                Latitude = latSum,
-                Longitude = lonSum
-            });
-        }
-        return route.ToArray();
-    }
-    
-
-    // Tell SimDrone to deliver an order
-    public AssignDeliveryResponse AssignDelivery(AssignDeliveryRequest request)
-    {
-        var assignDeliveryResponse = new AssignDeliveryResponse
-        {
-            OrderId = request.OrderId,
             DroneId = DroneId,
-            Success = false
+            OrderId = OrderId,
+            Success = true
         };
-        Destination = request.OrderLocation;
-        UpdateStatus(DroneState.Delivering);
-        var route = GetRoute();
-        var s = string.Join(",", route.Select(x => $"{{{x.Latitude},{x.Longitude}}}").ToArray());
-        Console.WriteLine($"{this},route:{s}"); // Debug
-
-        foreach (var location in route)
-        {
-            UpdateLocation(location);
-            Console.WriteLine(this); // Debug
-            Thread.Sleep(DroneUpdateInterval);
-        }
-
-        Console.WriteLine("Order Delivered! Returning to Home...");
-        UpdateStatus(DroneState.Returning);
-        foreach (var location in route.Reverse())
-        {
-            UpdateLocation(location);
-            Console.WriteLine(this); // Debug
-            Thread.Sleep(DroneUpdateInterval);
-        }
-
-        UpdateStatus(DroneState.Ready);
-        Console.WriteLine("Back home!"); // Debug
-
-        assignDeliveryResponse.Success = true;
-        return assignDeliveryResponse;
     }
-    
+
+
+    private async Task Traverse(GeoLocation destination)
+    {
+        Thread.Sleep(5000);
+        Console.WriteLine($"Starting at {CurrentLocation.Latitude},{CurrentLocation.Longitude}");
+        double DroneStepSizeInKilometers = .00004;
+        while(!CurrentLocation.Equals(destination))
+        {
+            var bearing = Trig.Bearing(CurrentLocation.Latitude, CurrentLocation.Longitude, destination.Latitude, destination.Longitude);
+            Console.WriteLine($"bearing between = {bearing}" );
+            var newLocation = Trig.FindPointAtDistanceFrom(CurrentLocation, bearing , DroneStepSizeInKilometers);
+            Console.WriteLine($"{newLocation.Latitude},{newLocation.Longitude}");
+            CurrentLocation = newLocation;
+            PatchDroneStatus();
+            Thread.Sleep(2000);
+        }
+    }
 
     // Send an DroneState update to DispatcherGateway
-    private UpdateDroneStatusResponse? UpdateStatus(DroneState state)
+    private async Task<UpdateDroneStatusResponse?> UpdateStatus(DroneState state)
     {
         State = state;
-        return PatchDroneStatus();
+        return await PatchDroneStatus();
     }
 
-    private UpdateDroneStatusResponse? PatchDroneStatus()
+    private async Task<UpdateDroneStatusResponse?> PatchDroneStatus()
     {
-        var response = _controller.UpdateDroneStatus(
+        var response = await _controller.UpdateDroneStatus(
             new UpdateDroneStatusRequest
             {
                 DroneId = DroneId,
-                State = State
+                State = State,
+                Location = CurrentLocation
             });
         return response;
     }
@@ -164,25 +93,82 @@ public class Drone : DroneRecord
         return $"SimDrone:{{DroneId:{DroneId},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
     }
 
-    // Helper function for Haversine formula readability
-    private static double ToRadians(double x)
+
+        public class Trig
     {
-        return Math.PI / 180 * x;
+        public static double ToRadians(double x) => x * Math.PI / 180;
+
+
+        public static double ToDegrees(double x) => x * 180 / Math.PI;
+
+        public static double Haversine(decimal alat, decimal alon, decimal blat, decimal blon)
+        {
+            double longitude = (double) alon, latitude = (double) alat, otherLongitude = (double) blon, otherLatitude = (double) blat;
+            var d1 = latitude * (Math.PI / 180.0);
+            var num1 = longitude * (Math.PI / 180.0);
+            var d2 = otherLatitude * (Math.PI / 180.0);
+            var num2 = otherLongitude * (Math.PI / 180.0) - num1;
+            var d3 = Math.Pow(Math.Sin((d2 - d1) / 2.0), 2.0) + Math.Cos(d1) * Math.Cos(d2) * Math.Pow(Math.Sin(num2 / 2.0), 2.0);
+
+            return 6376500.0 * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3)));
+        }
+
+        public static GeoLocation FindPointAtDistanceFrom(GeoLocation startLocation, double initialBearingInRadians, double distanceInKilometres)
+        {
+            const double radiusEarthKilometres = 6371.01;
+            var distRatio = distanceInKilometres / radiusEarthKilometres;
+            var distRatioSine = Math.Sin(distRatio);
+            var distRatioCosine = Math.Cos(distRatio);
+
+            var startLatRad = DegreesToRadians((double) startLocation.Latitude);
+            var startLonRad = DegreesToRadians((double) startLocation.Longitude);
+
+            var startLatCos = Math.Cos(startLatRad);
+            var startLatSin = Math.Sin(startLatRad);
+
+            var endLatRads = Math.Asin(startLatSin * distRatioCosine + startLatCos * distRatioSine * Math.Cos(initialBearingInRadians));
+
+            var endLonRads = startLonRad + Math.Atan2( Math.Sin(initialBearingInRadians) * distRatioSine * startLatCos, distRatioCosine - startLatSin * Math.Sin(endLatRads));
+
+            return new GeoLocation
+            {
+                Latitude = (decimal) RadiansToDegrees(endLatRads),
+                Longitude = (decimal) RadiansToDegrees(endLonRads)
+            };
+        }
+
+
+        public static double DegreesToRadians(double degrees)
+        {
+            const double degToRadFactor = Math.PI / 180;
+            return degrees * degToRadFactor;
+        }
+
+
+        public static double RadiansToDegrees(double radians)
+        {
+            const double radToDegFactor = 180 / Math.PI;
+            return radians * radToDegFactor;
+        }
+
+
+
+        public static double Bearing(decimal lat1Degrees, decimal lon1Degrees, decimal lat2Degrees, decimal lon2Degrees)
+        {
+            var startLat = ToRadians((double)lat1Degrees);
+            var startLong = ToRadians((double)lon1Degrees);
+            var endLat = ToRadians((double)lat2Degrees);
+            var endLong = ToRadians((double)lon2Degrees);
+            var dLong = endLong - startLong;
+            var dPhi = Math.Log(Math.Tan(endLat / 2.0 + Math.PI / 4.0) / Math.Tan(startLat / 2.0 + Math.PI / 4.0));
+
+            if(Math.Abs(dLong) > Math.PI)
+            {
+                dLong = (2.0 * Math.PI - dLong) * dLong > 0.0 ? -1 : 1;
+            }
+
+            return ToDegrees(Math.Atan2(dLong, dPhi) + 360.0) % 360;
+        }
     }
 
-    // Helper function for Haversine formula readability
-    private static double SinSquared(double x)
-    {
-        return Math.Pow(Math.Sin(ToRadians(x) / 2), 2);
-    }
-
-    // Calculate the difference between two points on a sphere
-    private static double Haversine(
-        double lat1, double lon1,
-        double lat2, double lon2)
-    {
-        return EarthRadius * 2 * Math.Asin(
-            Math.Sqrt(SinSquared(lat2 - lat1)) +
-            SinSquared((lon2 - lon1) * Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2))));
-    }
 }

@@ -8,6 +8,9 @@ namespace Domain.Entities;
 [BsonDiscriminator("Order")]
 public class Order : BaseEntity
 {
+    [BsonElement("DroneId")]
+    public string DroneId { get; set; }
+    
     [BsonElement("Items")]
     [JsonPropertyName("Items")]
     public object[] Items { get; set; }

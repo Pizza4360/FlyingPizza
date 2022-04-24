@@ -21,7 +21,7 @@ namespace FrontEnd.Pages.OrderPages
 
 
         public FrontEndToDispatchGateway GetGateway()
-            => new ("http://localhost", 82);
+            => new ("http://localhost");
 
         public async Task makeOrder()
         {

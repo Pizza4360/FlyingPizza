@@ -59,7 +59,7 @@ public class OrderRepository : IOrdersRepository
         UpdateDefinition<Order> updateDefinition = null;
         foreach (var property in order.GetType().GetProperties())
         {
-            if (property != null)
+            if (property != null && property.Name != "Id")
             {
                 if (updateDefinition == null)
                 {

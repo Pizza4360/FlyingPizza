@@ -15,7 +15,7 @@ public class SimDroneController : ControllerBase
     private bool IsInitiatead = false;
 
     [HttpPost("InitDrone")]
-    public InitDroneResponse InitDrone(
+    public async Task<InitDroneResponse> InitDrone(
         InitDroneRequest initDroneRequest)
     {
         var responseString = IsInitiatead ? "This drone is already initialized" : "This drone is ready to be initialized to a fleet.";
@@ -29,18 +29,18 @@ public class SimDroneController : ControllerBase
         
         
     [HttpPost("AssignFleet")]
-    public AssignFleetResponse AssignFleet(AssignFleetRequest assignFleetRequest)
+    public async Task<AssignFleetResponse> AssignFleet(AssignFleetRequest assignFleetRequest)
     {
         Console.WriteLine($"SimDroneController.AssignFleet -> {assignFleetRequest.ToJson()}");
         Console.WriteLine($"{assignFleetRequest.DispatchIp}");
-        _gateway = new DroneToDispatchGateway(assignFleetRequest.DispatchIp, 84);
+        _gateway = new DroneToDispatchGateway(assignFleetRequest.DispatchIp);
         _drone = new Drone(new DroneRecord
             {
                 BadgeNumber = assignFleetRequest.BadgeNumber,
                 CurrentLocation = assignFleetRequest.HomeLocation,
                 Destination = assignFleetRequest.HomeLocation,
-                DispatchIp = assignFleetRequest.DispatchIp,
-                DroneIp = assignFleetRequest.DroneIp,
+                DispatchUrl = assignFleetRequest.DispatchIp,
+                DroneUrl = assignFleetRequest.DroneIp,
                 HomeLocation = assignFleetRequest.HomeLocation,
                 DroneId = assignFleetRequest.DroneId,
                 OrderId = null
@@ -58,15 +58,15 @@ public class SimDroneController : ControllerBase
 
         
     [HttpPost("AssignDelivery")]
-    public AssignDeliveryResponse AssignDelivery(
+    public async Task<AssignDeliveryResponse> AssignDelivery(
         AssignDeliveryRequest assignDeliveryRequest)
     {
         Console.WriteLine($"SimDroneController.AssignDelivery -> {assignDeliveryRequest}");
-        return _drone.AssignDelivery(assignDeliveryRequest);
+        return await _drone.AssignDelivery(assignDeliveryRequest);
     }
 
 
-    [NonAction]
-    public UpdateDroneStatusResponse? UpdateDroneStatus(UpdateDroneStatusRequest updateDroneStatusRequest)
-        => _gateway.UpdateDroneStatus(updateDroneStatusRequest);
+    [HttpPost("UpdateDroneStatus")]
+    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(UpdateDroneStatusRequest updateDroneStatusRequest)
+        => await _gateway.UpdateDroneStatus(updateDroneStatusRequest);
 }

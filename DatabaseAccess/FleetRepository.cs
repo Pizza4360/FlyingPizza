@@ -32,7 +32,7 @@ public class FleetRepository : IFleetRepository
         await _collection.Find(x => x.DroneId == id).FirstOrDefaultAsync();
 
     public async Task<Dictionary<string, string>> GetAllAddresses() =>
-        Enumerable.ToDictionary<DroneRecord, string, string>((await _collection.Find(_ => true).ToListAsync()), droneRecord => droneRecord.DroneId, droneRecord => droneRecord.DroneIp);
+        Enumerable.ToDictionary<DroneRecord, string, string>((await _collection.Find(_ => true).ToListAsync()), droneRecord => droneRecord.DroneId, droneRecord => droneRecord.DroneUrl);
 
     public async Task<bool> RemoveAsync(string id) =>
         (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;

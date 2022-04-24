@@ -7,10 +7,10 @@ public class AssignFleetRequest
     [JsonPropertyName("DroneId")]
     public string DroneId { get; set; }
 
-    [JsonPropertyName("DroneIp")]
+    [JsonPropertyName("DroneUrl")]
     public string DroneIp {get;set;}
             
-    [JsonPropertyName("DispatchIp")]
+    [JsonPropertyName("DispatchUrl")]
     public string DispatchIp{get;set;}
 
     [JsonPropertyName("BadgeNumber")]
