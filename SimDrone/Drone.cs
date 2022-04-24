@@ -2,9 +2,8 @@ using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
 using Domain.GatewayDefinitions;
-using MongoDB.Bson;
 using SimDrone.Controllers;
-using static System.Decimal;
+using DecimalMath;
 
 namespace SimDrone;
 
@@ -17,7 +16,8 @@ public class Drone : DroneRecord
                 LovesTravelStop = new() {Latitude = 40.30514631684113m, Longitude = -104.98423969309658m},
                 VillageInnI25Hwy7 = new() {Latitude = 39.99955658640521m, Longitude = -104.97768379612273m};
 
-    private SimDroneController _controller;
+    public decimal GeoLocationTolerance => Haversine(CurrentLocation, Destination);
+    private readonly SimDroneController _controller;
 
 
     public Drone(DroneRecord record, IBaseGateway<SimDroneController> gateway, SimDroneController controller)
@@ -53,6 +53,10 @@ public class Drone : DroneRecord
     // Send an DroneState update to DispatcherGateway
     private async Task<UpdateDroneStatusResponse?> UpdateStatus(DroneState state)
     {
+        if(State == DroneState.Delivering && state == DroneState.Returning)
+        {
+            Destination = HomeLocation;
+        }
         State = state;
         return await PatchDroneStatus();
     }
@@ -89,7 +93,7 @@ public class Drone : DroneRecord
     public async Task TravelTo(GeoLocation endingLocation)
     {
         Console.WriteLine($"Starting at {CurrentLocation.Latitude}");
-        double DroneStepSizeInKilometers = .04; // .04 km == 40 meters every two seconds
+        decimal DroneStepSizeInKilometers = .04m; // .04m km == 40 meters every two seconds
         while(!CurrentLocation.Equals(endingLocation))
         {
             var bearing = Bearing(CurrentLocation.Latitude, CurrentLocation.Longitude, endingLocation.Latitude, endingLocation.Longitude);
@@ -103,82 +107,87 @@ public class Drone : DroneRecord
 
 
 
-    public static double ToRadians(double x) => x * Math.PI / 180;
+    public static decimal ToRadians(decimal x) => x * DecimalEx.Pi / 180;
 
 
-    public static double ToDegrees(double x) => x * 180 / Math.PI;
+    public static decimal ToDegrees(decimal x) => x * 180 / DecimalEx.Pi;
 
 
-    public static double Haversine(decimal alat, decimal alon, decimal blat, decimal blon)
+    public static decimal Haversine(GeoLocation locationA, GeoLocation locationB)
     {
-        double longitude = (double) alon, latitude = (double) alat, otherLongitude = (double) blon, otherLatitude = (double) blat;
-        var d1 = latitude * (Math.PI / 180.0);
-        var num1 = longitude * (Math.PI / 180.0);
-        var d2 = otherLatitude * (Math.PI / 180.0);
-        var num2 = otherLongitude * (Math.PI / 180.0) - num1;
-        var d3 = Math.Pow(Math.Sin((d2 - d1) / 2.0), 2.0) + Math.Cos(d1) * Math.Cos(d2) * Math.Pow(Math.Sin(num2 / 2.0), 2.0);
-
-        return 6376500.0 * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3)));
+        decimal longitude = locationA.Longitude,
+               latitude = locationA.Latitude,
+               otherLongitude = locationB.Longitude,
+               otherLatitude = locationB.Latitude;
+        var d1 = latitude * (DecimalEx.Pi / 180.0m);
+        var num1 = longitude * (DecimalEx.Pi / 180.0m);
+        var d2 = otherLatitude * (DecimalEx.Pi / 180.0m);
+        var num2 = otherLongitude * (DecimalEx.Pi / 180.0m) - num1;
+        var d3 = DecimalEx.Pow(DecimalEx.Sin((d2 - d1) / 2.0m), 2.0m) + DecimalEx.Cos(d1) * DecimalEx.Cos(d2) * DecimalEx.Pow(DecimalEx.Sin(num2 / 2.0m), 2.0m);
+        return 6376500.0m * (2.0m * DecimalEx.ATan2(DecimalEx.Sqrt(d3), DecimalEx.Sqrt(1.0m - d3)));
     }
 
 
-    public static GeoLocation FindPointAtDistanceFrom(GeoLocation startLocation, double initialBearingInRadians, double distanceInKilometres)
+    public static GeoLocation FindPointAtDistanceFrom(GeoLocation startLocation, decimal initialBearingInRadians, decimal distanceInKilometres)
     {
-        const double radiusEarthKilometres = 6371.01;
+        const decimal radiusEarthKilometres = 6371.01m;
         var distRatio = distanceInKilometres / radiusEarthKilometres;
-        var distRatioSine = Math.Sin(distRatio);
-        var distRatioCosine = Math.Cos(distRatio);
+        var distRatioSine = DecimalEx.Sin(distRatio);
+        var distRatioCosine = DecimalEx.Cos(distRatio);
 
-        var startLatRad = DegreesToRadians((double) startLocation.Latitude);
-        var startLonRad = DegreesToRadians((double) startLocation.Longitude);
+        var startLatRad = DegreesToRadians(startLocation.Latitude);
+        var startLonRad = DegreesToRadians(startLocation.Longitude);
 
-        var startLatCos = Math.Cos(startLatRad);
-        var startLatSin = Math.Sin(startLatRad);
+        var startLatCos = DecimalEx.Cos(startLatRad);
+        var startLatSin = DecimalEx.Sin(startLatRad);
 
-        var endLatRads = Math.Asin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * Math.Cos(initialBearingInRadians)));
+        var endLatRads = DecimalEx.ASin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * DecimalEx.Cos(initialBearingInRadians)));
 
         var endLonRads = startLonRad +
-                         Math.Atan2(
-                             Math.Sin(initialBearingInRadians) * distRatioSine * startLatCos,
-                             distRatioCosine - startLatSin * Math.Sin(endLatRads));
+                         DecimalEx.ATan2(
+                             DecimalEx.Sin(initialBearingInRadians) * distRatioSine * startLatCos,
+                             distRatioCosine - startLatSin * DecimalEx.Sin(endLatRads));
 
         return new GeoLocation
         {
-            Latitude = (decimal) RadiansToDegrees(endLatRads),
-            Longitude = (decimal) RadiansToDegrees(endLonRads)
+            Latitude = RadiansToDegrees(endLatRads),
+            Longitude = RadiansToDegrees(endLonRads)
         };
     }
 
 
-    public static double DegreesToRadians(double degrees)
+    public static decimal DegreesToRadians(decimal degrees)
     {
-        const double degToRadFactor = Math.PI / 180;
+        const decimal degToRadFactor = DecimalEx.Pi / 180;
         return degrees * degToRadFactor;
     }
 
 
-    public static double RadiansToDegrees(double radians)
+    public static decimal RadiansToDegrees(decimal radians)
     {
-        const double radToDegFactor = 180 / Math.PI;
+        const decimal radToDegFactor = 180 / DecimalEx.Pi;
         return radians * radToDegFactor;
     }
 
 
-    public static double Bearing(decimal lat1Degrees, decimal lon1Degrees, decimal lat2Degrees, decimal lon2Degrees)
-    {
-        var startLat = ToRadians((double) lat1Degrees);
-        var startLong = ToRadians((double) lon1Degrees);
-        var endLat = ToRadians((double) lat2Degrees);
-        var endLong = ToRadians((double) lon2Degrees);
-        var dLong = endLong - startLong;
-        var dPhi = Math.Log(Math.Tan(endLat / 2.0 + Math.PI / 4.0) / Math.Tan(startLat / 2.0 + Math.PI / 4.0));
+    public static decimal Abs(decimal x) => x > 0 ? x : -x;
 
-        if(Math.Abs(dLong) > Math.PI)
+
+    public static decimal Bearing(decimal lat1Degrees, decimal lon1Degrees, decimal lat2Degrees, decimal lon2Degrees)
+    {
+        var startLat = ToRadians(lat1Degrees);
+        var startLong = ToRadians(lon1Degrees);
+        var endLat = ToRadians(lat2Degrees);
+        var endLong = ToRadians(lon2Degrees);
+        var dLong = endLong - startLong;
+        var dPhi = DecimalEx.Log(DecimalEx.Tan(endLat / 2.0m + DecimalEx.Pi / 4.0m) / DecimalEx.Tan(startLat / 2.0m + DecimalEx.Pi / 4.0m));
+
+        if(Abs(dLong) > DecimalEx.Pi)
         {
-            dLong = (2.0 * Math.PI - dLong) * dLong > 0.0 ? -1 : 1;
+            dLong = (2.0m * DecimalEx.Pi - dLong) * dLong > 0.0m ? -1 : 1;
         }
 
-        return ToDegrees(Math.Atan2(dLong, dPhi) + 360.0) % 360;
+        return ToDegrees(DecimalEx.ATan2(dLong, dPhi) + 360.0m) % 360;
     }
 }
 

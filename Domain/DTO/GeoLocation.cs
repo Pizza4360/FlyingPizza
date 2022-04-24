@@ -8,7 +8,7 @@ namespace Domain.DTO
 {
     public class GeoLocation
     {
-        private const decimal Tolerance = 0.01m;
+        private const decimal Tolerance = 0.000000000000000000000001m;
 
         [BsonElement("Latitude")]
         [JsonPropertyName("Latitude")]
