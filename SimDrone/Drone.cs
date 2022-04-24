@@ -4,22 +4,26 @@ using Domain.Entities;
 using Domain.GatewayDefinitions;
 using SimDrone.Controllers;
 using DecimalMath;
+using MongoDB.Bson;
 
 namespace SimDrone;
 
 public class Drone : DroneRecord
 {
-    GeoLocation belmarPark = new() {Latitude = 39.70481995951833m, Longitude = -105.10536817563754m},
-                msu = new() {Latitude = 39.74386695629378m, Longitude = -105.00610500179027m},
-                aurora = new() {Latitude = 39.710573732539885m, Longitude = -104.81408307283085m},
-                TractorSupplyCo = new() {Latitude = 40.20104629143965m, Longitude = -104.97856186942785m},
-                LovesTravelStop = new() {Latitude = 40.30514631684113m, Longitude = -104.98423969309658m},
-                VillageInnI25Hwy7 = new() {Latitude = 39.99955658640521m, Longitude = -104.97768379612273m};
+    private const decimal DroneStepSizeInKilometers = .0004m;
+    private const decimal RadiusEarthKilometres = 6371.01m;
+    private const decimal DegToRadFactor = DecimalEx.Pi / 180;
+    private const decimal RadToDegFactor = 180 / DecimalEx.Pi;
+    
+    private readonly GeoLocation
+        belmarPark = new() {Latitude = 39.70481995951833m, Longitude = -105.10536817563754m},
+        msu = new() {Latitude = 39.74386695629378m, Longitude = -105.00610500179027m},
+        aurora = new() {Latitude = 39.710573732539885m, Longitude = -104.81408307283085m},
+        TractorSupplyCo = new() {Latitude = 40.20104629143965m, Longitude = -104.97856186942785m},
+        LovesTravelStop = new() {Latitude = 40.30514631684113m, Longitude = -104.98423969309658m},
+        VillageInnI25Hwy7 = new() {Latitude = 39.99955658640521m, Longitude = -104.97768379612273m};
 
-    public decimal GeoLocationTolerance => Haversine(CurrentLocation, Destination);
     private readonly SimDroneController _controller;
-
-
     public Drone(DroneRecord record, IBaseGateway<SimDroneController> gateway, SimDroneController controller)
     {
         DroneId = record.DroneId;
@@ -32,36 +36,13 @@ public class Drone : DroneRecord
         Destination = record.Destination;
     }
 
-
-    public async Task<AssignDeliveryResponse> DeliverOrder(AssignDeliveryRequest request)
-    {
-        await UpdateStatus(DroneState.Delivering);
-        await TravelTo(request.OrderLocation);
-        Console.WriteLine("Done with delivery, returning home.");
-        await UpdateStatus(DroneState.Returning);
-        await TravelTo(HomeLocation);
-        await UpdateStatus(DroneState.Ready);
-        return new AssignDeliveryResponse
-        {
-            DroneId = DroneId,
-            OrderId = OrderId,
-            Success = true
-        };
-    }
-
-
-    // Send an DroneState update to DispatcherGateway
-    private async Task<UpdateDroneStatusResponse?> UpdateStatus(DroneState state)
-    {
-        if(State == DroneState.Delivering && state == DroneState.Returning)
-        {
-            Destination = HomeLocation;
-        }
-        State = state;
-        return await PatchDroneStatus();
-    }
-
-
+    public override string ToString() => this.ToJson();
+    private static decimal ToRadians(decimal x) => x * DecimalEx.Pi / 180;
+    private static decimal ToDegrees(decimal x) => x * 180 / DecimalEx.Pi;
+    private static decimal DegreesToRadians(decimal degrees) => degrees * DegToRadFactor;
+    private static decimal RadiansToDegrees(decimal radians) => radians * RadToDegFactor;
+    private static decimal Abs(decimal x) => x > 0 ? x : -x;
+   
     private async Task<UpdateDroneStatusResponse?> PatchDroneStatus()
     {
         var response = await _controller.UpdateDroneStatus(
@@ -71,49 +52,26 @@ public class Drone : DroneRecord
                 State = State,
                 Location = CurrentLocation
             });
-
         return response;
     }
 
-
-    // Send an Location update to DispatcherGateway
     private void UpdateLocation(GeoLocation location)
     {
         CurrentLocation = location;
         PatchDroneStatus();
     }
 
-
-    public override string ToString()
+    private async Task<UpdateDroneStatusResponse?> UpdateStatus(DroneState state)
     {
-        return $"SimDrone:{{DroneId:{DroneId},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
-    }
-
-
-    public async Task TravelTo(GeoLocation endingLocation)
-    {
-        Console.WriteLine($"Starting at {CurrentLocation.Latitude}");
-        decimal DroneStepSizeInKilometers = .04m; // .04m km == 40 meters every two seconds
-        while(!CurrentLocation.Equals(endingLocation))
+        if(State == DroneState.Delivering && state == DroneState.Returning)
         {
-            var bearing = Bearing(CurrentLocation.Latitude, CurrentLocation.Longitude, endingLocation.Latitude, endingLocation.Longitude);
-            Console.WriteLine($"bearing between = {bearing}" );
-            var newLocation = FindPointAtDistanceFrom(CurrentLocation, bearing , DroneStepSizeInKilometers);
-            Console.WriteLine($"{newLocation.Latitude},{newLocation.Longitude}");
-            UpdateLocation(newLocation);
-            Thread.Sleep(2000);
+            Destination = HomeLocation;
         }
+        State = state;
+        return await PatchDroneStatus();
     }
-
-
-
-    public static decimal ToRadians(decimal x) => x * DecimalEx.Pi / 180;
-
-
-    public static decimal ToDegrees(decimal x) => x * 180 / DecimalEx.Pi;
-
-
-    public static decimal Haversine(GeoLocation locationA, GeoLocation locationB)
+    
+    private static decimal HaversineInMeters(GeoLocation locationA, GeoLocation locationB)
     {
         decimal longitude = locationA.Longitude,
                latitude = locationA.Latitude,
@@ -124,14 +82,12 @@ public class Drone : DroneRecord
         var d2 = otherLatitude * (DecimalEx.Pi / 180.0m);
         var num2 = otherLongitude * (DecimalEx.Pi / 180.0m) - num1;
         var d3 = DecimalEx.Pow(DecimalEx.Sin((d2 - d1) / 2.0m), 2.0m) + DecimalEx.Cos(d1) * DecimalEx.Cos(d2) * DecimalEx.Pow(DecimalEx.Sin(num2 / 2.0m), 2.0m);
-        return 6376500.0m * (2.0m * DecimalEx.ATan2(DecimalEx.Sqrt(d3), DecimalEx.Sqrt(1.0m - d3)));
+        return RadiusEarthKilometres * 2.0m * DecimalEx.ATan2(DecimalEx.Sqrt(d3), DecimalEx.Sqrt(1.0m - d3));
     }
-
-
-    public static GeoLocation FindPointAtDistanceFrom(GeoLocation startLocation, decimal initialBearingInRadians, decimal distanceInKilometres)
+    
+    private static GeoLocation GetNextLocation(GeoLocation startLocation, decimal initialBearingInRadians, decimal distanceInKilometres)
     {
-        const decimal radiusEarthKilometres = 6371.01m;
-        var distRatio = distanceInKilometres / radiusEarthKilometres;
+        var distRatio = distanceInKilometres / RadiusEarthKilometres;
         var distRatioSine = DecimalEx.Sin(distRatio);
         var distRatioCosine = DecimalEx.Cos(distRatio);
 
@@ -154,26 +110,8 @@ public class Drone : DroneRecord
             Longitude = RadiansToDegrees(endLonRads)
         };
     }
-
-
-    public static decimal DegreesToRadians(decimal degrees)
-    {
-        const decimal degToRadFactor = DecimalEx.Pi / 180;
-        return degrees * degToRadFactor;
-    }
-
-
-    public static decimal RadiansToDegrees(decimal radians)
-    {
-        const decimal radToDegFactor = 180 / DecimalEx.Pi;
-        return radians * radToDegFactor;
-    }
-
-
-    public static decimal Abs(decimal x) => x > 0 ? x : -x;
-
-
-    public static decimal Bearing(decimal lat1Degrees, decimal lon1Degrees, decimal lat2Degrees, decimal lon2Degrees)
+    
+    private static decimal Bearing(decimal lat1Degrees, decimal lon1Degrees, decimal lat2Degrees, decimal lon2Degrees)
     {
         var startLat = ToRadians(lat1Degrees);
         var startLong = ToRadians(lon1Degrees);
@@ -188,6 +126,41 @@ public class Drone : DroneRecord
         }
 
         return ToDegrees(DecimalEx.ATan2(dLong, dPhi) + 360.0m) % 360;
+    } 
+ 
+    private async Task TravelTo(GeoLocation endingLocation)
+    {
+        Console.WriteLine($"Starting at {CurrentLocation.Latitude}");
+        var buffer = new GeoLocation[5];
+        buffer[0] = CurrentLocation;
+        for(var i = 0; !CurrentLocation.Equals(endingLocation); i++)
+        {
+            Console.WriteLine($"{HaversineInMeters(CurrentLocation, endingLocation)} meters away");
+            var bearing = Bearing(CurrentLocation.Latitude, CurrentLocation.Longitude, endingLocation.Latitude, endingLocation.Longitude);
+            Console.WriteLine($"bearing between = {bearing}" );
+            buffer[i % 5] = CurrentLocation = GetNextLocation(CurrentLocation, bearing, DroneStepSizeInKilometers);
+            Console.WriteLine($"{CurrentLocation}");
+            if(i % 100 != 0) { continue; }
+            UpdateLocation(CurrentLocation);
+            Thread.Sleep(500);
+        }
     }
+
+    public async Task<AssignDeliveryResponse> DeliverOrder(AssignDeliveryRequest request)
+    {
+        await UpdateStatus(DroneState.Delivering);
+        await TravelTo(request.OrderLocation);
+        Console.WriteLine("Done with delivery, returning home.");
+        await UpdateStatus(DroneState.Returning);
+        await TravelTo(HomeLocation);
+        await UpdateStatus(DroneState.Ready);
+        return new AssignDeliveryResponse
+        {
+            DroneId = DroneId,
+            OrderId = OrderId,
+            Success = true
+        };
+    }
+
 }
 

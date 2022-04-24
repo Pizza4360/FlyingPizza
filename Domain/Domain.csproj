@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="DecimalMath.DecimalEx" Version="1.0.2" />
       <PackageReference Include="MongoDB.Bson" Version="2.15.0" />
       <PackageReference Include="MongoDB.Driver" Version="2.15.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
