@@ -33,12 +33,13 @@ namespace FrontEnd.Pages.OrderPages
 
             // upload final object to the server. 
             var r = await HttpMethods.Post("http://localhost:5127/DatabaseAccess/AddOrder", custOrder);
-            custOrder.URL = r.Headers.Location.AbsoluteUri;
-            var response = await HttpMethods.Put(custOrder.URL,custOrder);
+            if (r.Headers.Location != null) custOrder.Id = r.Headers.Location.AbsoluteUri;
+            var response = await HttpMethods.Put(custOrder.Id,custOrder);
 
-            var dispatchResponse = _gateway.Ping(new Ping
+            var dispatchResponse = _gateway.AddOrder(new AddOrderRequest
             {
-                S = "Malc"
+                DeliveryLocation = custOrder.DeliveryLocation,
+                OrderId = custOrder.Id
             });
             
             Console.WriteLine(dispatchResponse);

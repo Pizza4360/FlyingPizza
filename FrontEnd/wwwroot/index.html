@@ -2,27 +2,205 @@
 <html>
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>FlyingPizza</title>
-    <base href="/" />
-    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-    <link href="css/app.css" rel="stylesheet" />
-    <link href="FrontEnd.styles.css" rel="stylesheet" />
+    <base href="/"/>
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
+    <link href="css/app.css" rel="stylesheet"/>
+    <link href="FrontEnd.styles.css" rel="stylesheet"/>
 
     <link rel="stylesheet" href="_content/Radzen.Blazor/css/default-base.css">
 </head>
 
 <body>
-    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
-    <div id="app">Loading...</div>
+<script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABM05Ov28GgnvCE6fvNUT0hmPB7Ol6kuI&callback=initMap">
+</script>
+<script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+<div id="app">Loading...</div>
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
-    </div>
-    <script src="_framework/blazor.webassembly.js"></script>
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+<script src="_framework/blazor.webassembly.js"></script>
+
+<script>
+    var map
+    let markers = {}
+
+    
+    function initGoogleMap(obj) {
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: {lat: obj.lat, lng: obj.lng},
+            zoom: 12,
+            styles: [
+                { elementType: "geometry", stylers: [{ color: "#1E1E24" }] },
+                { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+                { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+                {
+                    featureType: "administrative.locality",
+                    elementType: "labels.text.fill",
+                    stylers: [{ color: "#3f7cac" }],
+                },
+                {
+                    featureType: "poi",
+                    elementType: "labels.text.fill",
+                    stylers: [{ color: "#3f7cac" }],
+                },
+                {
+                    featureType: "poi.park",
+                    elementType: "geometry",
+                    stylers: [{ color: "#242f3e" }],
+                },
+                {
+                    featureType: "poi.park",
+                    elementType: "labels.text.fill",
+                    stylers: [{ color: "#3f7cac" }],
+                },
+                {
+                    featureType: "road",
+                    elementType: "geometry",
+                    stylers: [{ color: "#38414e" }],
+                },
+                {
+                    featureType: "road",
+                    elementType: "geometry.stroke",
+                    stylers: [{ color: "#212a37" }],
+                },
+                {
+                    featureType: "road",
+                    elementType: "labels.text.fill",
+                    stylers: [{ color: "#9ca5b3" }],
+                },
+                {
+                    featureType: "road.highway",
+                    elementType: "geometry",
+                    stylers: [{ color: "#bfbfbf" }],
+                },
+                {
+                    featureType: "road.highway",
+                    elementType: "geometry.stroke",
+                    stylers: [{ color: "#1f2835" }],
+                },
+                {
+                    featureType: "road.highway",
+                    elementType: "labels.text.fill",
+                    stylers: [{ color: "#f3d19c" }],
+                },
+                {
+                    featureType: "transit",
+                    elementType: "geometry",
+                    stylers: [{ color: "#2f3948" }],
+                },
+                {
+                    featureType: "transit.station",
+                    elementType: "labels.text.fill",
+                    stylers: [{ color: "#d59563" }],
+                },
+                {
+                    featureType: "water",
+                    elementType: "geometry",
+                    stylers: [{ color: "#17263c" }],
+                },
+                {
+                    featureType: "water",
+                    elementType: "labels.text.fill",
+                    stylers: [{ color: "#515c6d" }],
+                },
+                {
+                    featureType: "water",
+                    elementType: "labels.text.stroke",
+                    stylers: [{ color: "#17263c" }],
+                },
+            ],
+        });
+        deliveryZone = new google.maps.Circle({
+            center: {lat: 39.74386695629378, lng: -105.00610500179027},
+            radius: 10000,
+            map: map,
+            fillOpacity: .3
+        });
+    }
+
+    function addMarker(id, newMarker) {
+        // https://stackoverflow.com/questions/43067318/adding-a-circle-radius-around-google-map-markers
+        var marker = new google.maps.Marker({
+            position: {lat: newMarker["lat"], lng: newMarker["lng"]},
+            title: id,
+            icon: "-"
+        });
+        marker.Circle = new google.maps.Circle({
+            center: {lat: marker.getPosition().lat - 16, lng:marker.getPosition().lng - 16},
+            radius: 150,
+            map: map,
+            strokeColor: newMarker["color"],
+            fillColor: newMarker["color"],
+            fillOpacity: .75
+        });
+        marker.Circle.bindTo('center', marker, 'position');
+        markers[id] = marker;
+        marker.setMap(map);
+    }
+    
+    function updateAll(currentMarkers){
+        for(badgeNumber in markers){ // find out which markers are deleted, remove them
+            if(!(badgeNumber in currentMarkers)){
+                console.log(badgeNumber + " is no longer a valid markers! removing " + markers[badgeNumber])
+                removeMarker(badgeNumber)
+            }
+        }
+        for(var badgeNumber in currentMarkers) { 
+            if(!(badgeNumber in markers)){ // find out which are new, add them
+                console.log(badgeNumber + " is not in known markers! inserting {" + currentMarkers[badgeNumber])
+                addMarker(badgeNumber, currentMarkers[badgeNumber])
+            } else { // must check if the marker is in a new location
+                newMarker = currentMarkers[badgeNumber]
+                if(
+                    newMarker["lat"] !== markers[badgeNumber].position.lat ||
+                    newMarker["lng"] !== markers[badgeNumber].position.lng
+                ){
+                    console.log("drone " + badgeNumber + " has moved from (" + markers[badgeNumber].getPosition().lat() + "," + markers[badgeNumber].getPosition().lng() + ") to (" + newMarker["lat"] + "," + newMarker["lng"] + ")")
+                    updateMarker(badgeNumber, newMarker["lat"],  newMarker["lng"]);
+                } if(newMarker["color"] !== markers[badgeNumber].Circle.fillColor) {
+                    console.log(markers[badgeNumber].Circle.fillColor + " vs " + newMarker["color"]);
+                    markers[badgeNumber].Circle.setMap(null);
+                    markers[badgeNumber].Circle = new google.maps.Circle({
+                        center: {lat: newMarker["lat"].lat - 16, lng: newMarker["lng"] - 16},
+                        radius: 150,
+                        map: map,
+                        strokeColor: newMarker["color"],
+                        fillColor: newMarker["color"],
+                        fillOpacity: .75
+                    });
+                    markers[badgeNumber].Circle.bindTo('center', markers[badgeNumber], 'position');
+                }
+            }
+        }
+    }
+    
+    function removeMarker(id){
+        markers[id].Circle.setMap(null)
+        markers[id].setMap(null)
+        markers[id] = null
+        delete markers[id]
+    }
+    
+    function removeAllMarkers(){
+        for (id in markers) {
+            removeMarker(id)
+        }
+    }
+    
+    function updateMarker(id, lat, lng){
+        markers[id].setMap(map)
+        markers[id].setPosition(new google.maps.LatLng(lat, lng))
+    }
+
+    window.initMap = initMap;
+</script>
 </body>
 
 </html>

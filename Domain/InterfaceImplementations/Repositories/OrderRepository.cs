@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Domain.InterfaceDefinitions.Repositories;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Domain.InterfaceImplementations.Repositories;
 
-public class OrderRepository
+public class OrderRepository : IOrdersRepository
 {
     private readonly IMongoCollection<Order> _collection;
     public OrderRepository(IOptions<OrdersDatabaseSettings> ordersSettings) //: Domain.InterfaceDefinitions.Repositories
@@ -26,47 +23,14 @@ public class OrderRepository
             ordersSettings.Value.CollectionName);
         Console.WriteLine($"this should be 'Orders'>>>{ordersSettings.Value.CollectionName}<<<");
     }
-    
-    public OrderRepository(string connectionString, string databaseName, string collctionName) //: Domain.InterfaceDefinitions.Repositories
+
+    public async Task CreateAsync(Order newOrder)
     {
-        var mongoClient = new MongoClient(connectionString);
-        var mongoDatabase = mongoClient.GetDatabase(databaseName);
-        _collection = mongoDatabase.GetCollection<Order>(collctionName);
+        await _collection.InsertOneAsync(newOrder);
     }
 
-    public async Task<Order?> GetAsync(string id) =>
+    public async Task<Order> GetByIdAsync(string id) =>
         await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
-
-    public async Task<string?> CreateAsync(Order newOrder)
-    {
-        var updateDefinition = Builders<Order>.Update
-                .Set(order => order.BadgeNumber, newOrder.BadgeNumber)
-                .Set(order => order.Id, newOrder.Id)
-                .Set(order => order.CustomerName, newOrder.CustomerName)
-                .Set(order => order.DeliveryAddress, newOrder.DeliveryAddress)
-                .Set(order => order.Items, newOrder.Items)
-                .Set(order => order.DeliveryLocation, newOrder.DeliveryLocation)
-                .Set(order => order.TimeDelivered, newOrder.TimeDelivered)
-                .Set(order => order.TimeOrdered, newOrder.TimeOrdered)
-                .Set(order => order.HasBeenDelivered, newOrder.HasBeenDelivered);
-            return _collection.UpdateOneAsync(_ => false, updateDefinition, new UpdateOptions { IsUpsert = true }).Result.UpsertedId.ToString();
-    }
-
-    public async Task<Order> 
-        GetByIdAsync(string id) 
-        => _collection.FindAsync(x => x.Id.Equals(id)).Result.First();
-
-
-    public Task<IEnumerable<Order>> 
-        GetByIdsAsync(IEnumerable<string> ids) 
-        => Task.FromResult<IEnumerable<Order>>(ids.Select(id => GetByIdAsync(id).Result).ToList());
-
-    public Task<bool> 
-        Delete(string id)
-    {
-        
-        return Task.FromResult(_collection.DeleteOne(x => x.Id.Equals(id)).IsAcknowledged);
-    }
 
     public Task<bool> 
         Update(Order order)
@@ -79,16 +43,37 @@ public class OrderRepository
         return Task.FromResult(result.IsCompletedSuccessfully);
     }
 
-    //https://stackoverflow.com/questions/40526758/patch-rest-api-to-partial-update-mongodb-in-net
-    // https://mongodb-entities.com/wiki/Code-Samples.html
-    public async Task<bool> 
-        PatchTimeCompleted(string id)
+    public async Task<bool> RemoveAsync(string id) =>
+        (await _collection.DeleteOneAsync(x => x.Id == id)).IsAcknowledged;
+
+
+    public async Task<bool> UpdateAsync(Order order)
     {
-        var doc = JsonDocument.Parse($"{{\"TimeDelivered\":\"{DateTime.Now}\"}}").ToBsonDocument();
-        var updateDefinition = new BsonDocumentUpdateDefinition<Order>(new BsonDocument("$set", doc));
-        var options = new UpdateOptions();
-        var token = CancellationToken.None;
-        var result = await _collection.UpdateOneAsync( Builders<Order>.Filter.Eq("_id", id), updateDefinition,options, token);
+        var result = await _collection.UpdateOneAsync(
+            record => record.Id == order.Id,
+            GetUpdateDefinition(order));
         return result.IsAcknowledged;
+    }
+
+    private static UpdateDefinition<Order> GetUpdateDefinition(Order order)
+    {
+        var builder = new UpdateDefinitionBuilder<Order>();
+        UpdateDefinition<Order> updateDefinition = null;
+        foreach (var property in order.GetType().GetProperties())
+        {
+            if (property != null)
+            {
+                if (updateDefinition == null)
+                {
+                    updateDefinition = builder.Set(property.Name, property.GetValue(order));
+                }
+                else
+                {
+                    updateDefinition = updateDefinition.Set(property.Name, property.GetValue(order));
+                }
+            }
+        }
+
+        return updateDefinition;
     }
 }

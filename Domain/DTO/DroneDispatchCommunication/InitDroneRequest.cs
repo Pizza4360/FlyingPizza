@@ -6,9 +6,9 @@ namespace Domain.DTO.DroneDispatchCommunication
     public class InitDroneRequest : BaseDto
     {
         [BsonId]
-        [BsonElement("Id")]
-        [JsonPropertyName("Id")]
-        public string Id { get; set; }
+        [BsonElement("DroneId")]
+        [JsonPropertyName("DroneId")]
+        public string DroneId { get; set; }
         
         [BsonElement("Ip")]
         [JsonPropertyName("Ip")]

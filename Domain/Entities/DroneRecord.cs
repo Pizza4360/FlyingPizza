@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 using Domain.DTO;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities
@@ -44,10 +43,23 @@ namespace Domain.Entities
         [JsonPropertyName("DispatcherUrl")]
         public string DispatcherUrl { get; set; }
 
+        [BsonElement("DispatchIp")]
+        [JsonPropertyName("DispatchIp")]
+        public string DispatchIp { get; set; }
+
+        [BsonElement("DroneId")]
+        [JsonPropertyName("DroneId")]
+        public string DroneId { get; set; }
+        [BsonElement("DroneUrl")]
+        [JsonPropertyName("DroneUrl")]
+        public string DroneUrl { get; set; }
+        [BsonElement("DispatchUrl")]
+        [JsonPropertyName("DispatchUrl")]
+        public string DispatchUrl { get; set; }
 
         public override string ToString()
         {
-            return $"Id:{Id}" +
+            return $"DroneId:{Id}" +
                    $"Currentlocation:{CurrentLocation}\n" +
                    $"Destination:{Destination}\n" +
                    $"Status:{State}";
@@ -68,6 +80,15 @@ namespace Domain.Entities
         public static string NewId()
         {
             throw new System.NotImplementedException();
+        }
+
+        // public double Lat => (double) CurrentLocation.Latitude;
+        // public double Lng => (double) CurrentLocation.Longitude;
+
+        public class Coords
+        {
+            public double Lat { get; set; }
+            public double Lng { get; set; }
         }
     }
 }

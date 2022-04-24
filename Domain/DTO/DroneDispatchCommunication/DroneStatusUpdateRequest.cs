@@ -8,7 +8,7 @@ namespace Domain.DTO.DroneDispatchCommunication
     public class DroneStatusUpdateRequest : BaseDto
     {
         [BsonId]
-        [BsonElement("Id")]
+        [BsonElement("DroneId")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id;    
         

@@ -1,25 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Domain.DTO;
 using Domain.Entities;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace FrontEnd.Pages.FleetPages;
 
 partial class FleetView : ComponentBase
 {
-    public DroneRecord[] Fleet = null;
+    public DroneRecord[] Fleet;
     public int size;
-    public Boolean connection = false;
+    public Boolean connection;
+    public string color;
+
+    [Inject]
+    public IJSRuntime JsRuntime { get; set; }
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            Fleet = (await HttpMethods.Get<List<DroneRecord>>("http://35.173.218.215:80/DatabaseAccess/GetFleet")).ToArray();
-            
+            Fleet = (await HttpMethods.Get<List<DroneRecord>>("http://localhost:5127/DatabaseAccess/GetFleet")).ToArray();
             size = Fleet.Length;
             connection = true;
         }
@@ -33,4 +36,10 @@ partial class FleetView : ComponentBase
         globalData.currDrone = drone;
         await dialogService.OpenAsync<DetailedDrone>("View SimDrone");           
     }
+
+    public string Color(DroneRecord drone)
+    {
+        return drone.State.GetColor();
+    }
+
 }

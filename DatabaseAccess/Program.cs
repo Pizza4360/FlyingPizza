@@ -1,4 +1,6 @@
+using Domain.InterfaceDefinitions.Repositories;
 using Domain.InterfaceImplementations.Repositories;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,10 +16,16 @@ builder.Services.AddSwaggerGen();
 #region repositories
 
 builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton<OrderRepository>();
+builder.Services.AddSingleton<IOrdersRepository>(provider =>
+{
+    return new OrderRepository(provider.GetService<IOptions<OrdersDatabaseSettings>>());
+});
 
 builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
-builder.Services.AddSingleton<FleetRepository>();
+builder.Services.AddSingleton<IFleetRepository>(provider =>
+{
+    return new FleetRepository(provider.GetService<IOptions<FleetDatabaseSettings>>());
+});
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 

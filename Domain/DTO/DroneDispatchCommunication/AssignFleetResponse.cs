@@ -8,12 +8,12 @@ namespace Domain.DTO.DroneDispatchCommunication
     public class AssignFleetResponse : BaseDto
     {
         [BsonId]
-        [BsonElement("Id")]
+        [BsonElement("DroneId")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id;
 
-        [BsonElement("Okay")]
-        public bool Okay;
+        [BsonElement("IsInitializedAndAssigned")]
+        public bool IsInitializedAndAssigned;
         
         public DroneState FirstState { get; set; }
     }

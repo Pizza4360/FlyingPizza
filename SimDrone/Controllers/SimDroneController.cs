@@ -1,5 +1,6 @@
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
+using Domain.Entities;
 using Domain.InterfaceImplementations.Gateways;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,8 +13,8 @@ namespace SimDrone.Controllers
         private Drone _drone;
         private static DroneToDispatchGateway _gateway;
 
-        [HttpPost("InitializeRegistration")]
-        public Task<InitDroneResponse> InitializeRegistration(
+        [HttpPost("InitDrone")]
+        public InitDroneResponse InitDrone(
         InitDroneRequest initInfo)
         {
             Console.WriteLine(initInfo.ToJsonString());
@@ -22,30 +23,42 @@ namespace SimDrone.Controllers
             {
                 _gateway = new DroneToDispatchGateway{ Url = initInfo.DroneIp };
             }
-            return Task.FromResult(new InitDroneResponse
+            return new InitDroneResponse
             {
-                Id = initInfo.Id,
+                Id = initInfo.DroneId,
                 Okay = okay
-            });
+            };
         }
         
         
-        [HttpPost("CompleteRegistration")]
-        public async Task<CompleteRegistrationResponse> AssignToFleet(
-        CompleteRegistrationRequest post)
+        [HttpPost("AssignFleet")]
+        public AssignFleetResponse AssignFleet(
+        AssignFleetRequest request)
         {
             Console.WriteLine("Generating simulated drone...");
-            _drone = new Drone(post.Record, new DroneToDispatchGateway
+            _gateway = new DroneToDispatchGateway
             {
-                Url = post.DispatchIpAddress
-            });
+                Url = request.DispatcherIp
+            };
+            _drone = new Drone(new DroneRecord
+            {
+                BadgeNumber = request.BadgeNumber,
+                CurrentLocation = request.HomeLocation,
+                Destination = request.HomeLocation,
+                DispatcherUrl = request.DispatcherIp,
+                DroneIp = request.DispatcherIp,
+                HomeLocation = request.HomeLocation,
+                Id = request.DroneId,
+                OrderId = null
+            }, _gateway);
             var doneString
                 = $"SimDrone successfully initialized.\nDrone -->{_drone}";
             Console.WriteLine(doneString);
-            return new CompleteRegistrationResponse
+            return new AssignFleetResponse
             {
-                Record = post.Record,
-                Okay = true
+                FirstState = DroneState.Ready,
+                Id = request.DroneId,
+                IsInitializedAndAssigned = true
             };
         }
 

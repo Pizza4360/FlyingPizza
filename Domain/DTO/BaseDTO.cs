@@ -15,7 +15,7 @@ public class BaseDto : IBaseEntity
     private string _id { get; set; }
 
     [BsonId]
-    [BsonElement("Id")]
+    [BsonElement("DroneId")]
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id
     {

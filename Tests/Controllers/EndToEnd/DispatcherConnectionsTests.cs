@@ -33,11 +33,11 @@
 //         // {
 //         //     var simDroneSetup = new Mock<SimDroneController>();
 //         //     simDroneSetup.Setup(x 
-//         //         => x.InitializeRegistration(
+//         //         => x.InitDrone(
 //         //             It.IsAny<InitDroneRequest>())).Returns<Task<string?>>();
 //         // private Dictionary<string, IActionResult> methodMap =
 //         //     new Dictionary<string, IActionResult>(
-//         //             "SimDrone.InitializeRegistration"  
+//         //             "SimDrone.InitDrone"  
 //         //         );
 //         // }
 //
@@ -59,7 +59,7 @@
 //             if(toggles.Contains(MethodSetups.GatewayShouldStartRegistration))
 //                 gateway.Setup(x => x.StartRegistration(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<GeoLocation>())).ReturnsAsync(true).Verifiable();
 //             if(toggles.Contains(MethodSetups.GatewayShouldAssignDelivery2))
-//                 gateway.Setup(x => x.AssignDelivery(It.IsAny<string>(),It.IsAny<string>(), It.IsAny<GeoLocation>())).Verifiable();
+//                 gateway.Setup(x => x.EnqueueOrder(It.IsAny<string>(),It.IsAny<string>(), It.IsAny<GeoLocation>())).Verifiable();
 //             controller = new DispatcherController(drones.Object, orders.Object, gateway.Object);
 //         }*/
 //         //completeRegistration
@@ -95,7 +95,7 @@
 //
 //
 //             // Calls
-//             var response = await testDispatchToDroneGateway.CompleteRegistration(Constants.TestRecord);
+//             var response = await testDispatchToDroneGateway.AssignFleet(Constants.TestRecord);
 //
 //             // Comparisons
 //             var expected = new OkResult();
@@ -128,14 +128,14 @@
 //         //     mockedDroneHandlerSetup.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x => x.RequestUri == new Uri($"http://test_ip/drone/initregistration")), ItExpr.IsAny<CancellationToken>())
 //         //         .ReturnsAsync(new HttpResponseMessage {
 //         //             StatusCode = HttpStatusCode.OK,
-//         //             Content = new StringContent(testDroneController.InitializeRegistration().IsCompletedSuccessfully.ToString()
+//         //             Content = new StringContent(testDroneController.InitDrone().IsCompletedSuccessfully.ToString()
 //         //             )
 //         //             // Assumed ok only for now
 //         //         });
 //         //     mockedDroneHandlerSetup.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x => x.RequestUri == new Uri($"http://test_ip/drone/completeregistration")), ItExpr.IsAny<CancellationToken>())
 //         //         .ReturnsAsync(new HttpResponseMessage {
 //         //             StatusCode = HttpStatusCode.OK,
-//         //             Content = new StringContent(testDroneController.CompleteRegistration().IsCompletedSuccessfully.ToString()
+//         //             Content = new StringContent(testDroneController.AssignFleet().IsCompletedSuccessfully.ToString()
 //         //             )
 //         //             // Assumed ok only for now
 //         //         });
@@ -143,7 +143,7 @@
 //         //     mockedDispatcherHandlerSetup.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x => x.RequestUri == new Uri($"http://test_ip/drone/register")), ItExpr.IsAny<CancellationToken>())
 //         //         .ReturnsAsync(new HttpResponseMessage {
 //         //             StatusCode = HttpStatusCode.OK,
-//         //             Content = new StringContent(testDroneGateway.AssignToFleet(testDroneInfo.DispatchIp).IsCompletedSuccessfully.ToString()
+//         //             Content = new StringContent(testDroneGateway.AssignFleet(testDroneInfo.DispatchIp).IsCompletedSuccessfully.ToString()
 //         //             )
 //         //             // Assumed ok only for now
 //         //         });
@@ -157,7 +157,7 @@
 //         //     response.Should().BeEquivalentTo(expected);
 //         // }
 //         //
-//         //     // AssignDelivery
+//         //     // EnqueueOrder
 //         // [Fact]
 //         // public async Task dispatcher_controller_should_assign_delivery_to_drone()
 //         // {
