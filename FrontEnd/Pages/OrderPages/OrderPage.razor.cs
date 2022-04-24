@@ -19,11 +19,9 @@ namespace FrontEnd.Pages.OrderPages
         
         }
 
+
         public FrontEndToDispatchGateway GetGateway()
-            => new FrontEndToDispatchGateway
-            {
-                Url = "http://localhost:80"
-            };
+            => new ("http://localhost");
 
         public async Task makeOrder()
         {
@@ -33,13 +31,13 @@ namespace FrontEnd.Pages.OrderPages
 
             // upload final object to the server. 
             var r = await HttpMethods.Post("http://localhost:5127/DatabaseAccess/AddOrder", custOrder);
-            if (r.Headers.Location != null) custOrder.Id = r.Headers.Location.AbsoluteUri;
-            var response = await HttpMethods.Put(custOrder.Id,custOrder);
+            if (r.Headers.Location != null) custOrder.DroneId = r.Headers.Location.AbsoluteUri;
+            var response = await HttpMethods.Put(custOrder.DroneId,custOrder);
 
             var dispatchResponse = _gateway.AddOrder(new AddOrderRequest
             {
-                DeliveryLocation = custOrder.DeliveryLocation,
-                OrderId = custOrder.Id
+                OrderLocation = custOrder.DeliveryLocation,
+                OrderId = custOrder.DroneId
             });
             
             Console.WriteLine(dispatchResponse);

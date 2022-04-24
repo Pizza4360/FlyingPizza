@@ -1,10 +1,14 @@
-﻿using Domain.Entities;
-using Domain.InterfaceImplementations.Gateways;
+﻿using System.Text.Json.Serialization;
+using Domain.DTO.FrontEndDispatchCommunication;
+using Domain.Entities;
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
-public class CompleteRegistrationRequest : BaseDto
+public class CompleteRegistrationRequest
 {
+    [JsonPropertyName("Record")]
     public DroneRecord Record { get; set; }
+    
+    [JsonPropertyName("DispatchIpAddress")]
     public string DispatchIpAddress { get; set; }
 }

@@ -1,7 +1,12 @@
-﻿namespace Domain.DTO.FrontEndDispatchCommunication;
+﻿using System.Text.Json.Serialization;
 
-public class CancelDeliveryResponse : BaseDto
+namespace Domain.DTO.FrontEndDispatchCommunication;
+
+public class CancelDeliveryResponse
 {
+    [JsonPropertyName("OrderId")]
     public string OrderId { get; set; }
+    
+    [JsonPropertyName("IsCancelled")]
     public bool IsCancelled { get; set; }
 }

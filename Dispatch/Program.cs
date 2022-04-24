@@ -1,6 +1,5 @@
-using Domain.InterfaceDefinitions.Gateways;
-using Domain.InterfaceDefinitions.Repositories;
-using Domain.InterfaceImplementations.Repositories;
+using DatabaseAccess;
+using Domain.RepositoryDefinitions;
 using Microsoft.Extensions.Options;
 
 Console.WriteLine("hello world!!!");

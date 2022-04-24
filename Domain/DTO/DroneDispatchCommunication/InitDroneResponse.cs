@@ -1,16 +1,13 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using System.Text.Json.Serialization;
+using Domain.DTO.FrontEndDispatchCommunication;
 
-namespace Domain.DTO.DroneDispatchCommunication
+namespace Domain.DTO.DroneDispatchCommunication;
+
+public class InitDroneResponse
 {
-    public class InitDroneResponse : BaseDto
-    {
-        [BsonId]
-        [BsonElement("DroneId")]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+    [JsonPropertyName("DroneId")]
+    public string DroneId { get; set; }
         
-        [BsonElement("IsInitializedAndAssigned")]
-        public bool Okay { get; set; }
-    }
+    [JsonPropertyName("Okay")]
+    public bool Okay { get; set; }
 }

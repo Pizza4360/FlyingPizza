@@ -3,12 +3,11 @@ using Domain.DTO.FrontEndDispatchCommunication;
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
-public class AssignDeliveryResponse
+public class UpdateDroneStatusResponse
 {
-    [JsonPropertyName("OrderId")]
-    public string OrderId{get;set;}
     [JsonPropertyName("DroneId")]
     public string DroneId{get;set;}
-    [JsonPropertyName("Success")]
-    public bool Success{get;set;}
+        
+    [JsonPropertyName("IsCompletedSuccessfully")]
+    public bool IsCompletedSuccessfully{get;set;}
 }

@@ -12,16 +12,12 @@ namespace FrontEnd.Pages.TrackingPages;
 
 partial class TrackingPage : ComponentBase
 {
-    private const int RefreshInterval = 2000;
+    private const int RefreshInterval = 10;
     private Timer _timer;
-    public bool connection;
-    public string dropDownLabel;
-    public DroneRecord[] Fleet;
-    public DroneRecord[] filteredDrones;
-
+    
     [Inject]
     public IJSRuntime JsRuntime {get;set; }
-
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -29,33 +25,13 @@ partial class TrackingPage : ComponentBase
             await JsRuntime.InvokeVoidAsync("initGoogleMap", new { Lat = 39.74386695629378, Lng = -105.00610500179027 });
         }
     }
-
-    protected override async Task OnInitializedAsync()
+    
+    protected override Task OnInitializedAsync()
     {
-        await DisplayDroneAsync("Delivering");
-        await Temp();
-    }
-
-    protected Task Temp() {
         _timer = new Timer(MarkerUpdateCallback, null, 0, RefreshInterval);
         return Task.CompletedTask;
     }
-
-    protected async Task DisplayDroneAsync(string filter)
-    {
-        try
-        {
-            dropDownLabel = filter;
-            Fleet = (await HttpMethods.Get<List<DroneRecord>>("http://localhost:5127/DatabaseAccess/GetFleet")).ToArray();
-            filteredDrones = Fleet.Where(record => record.State.ToString() == filter).ToArray();
-            connection = true;
-        }
-        catch
-        {
-
-        }
-    }
-
+    
     private async void MarkerUpdateCallback(object _) => await UpdateDroneMarkers();
     public class JsMarker
     {
@@ -73,14 +49,9 @@ partial class TrackingPage : ComponentBase
             new JsMarker{
                 lat = (double)x.CurrentLocation.Latitude,
                 lng = (double)x.CurrentLocation.Longitude,
-                title = x.Id,
+                title = x.DroneId,
                 color = x.State.GetColor()
             }).ToDictionary(x => x.title, x => x);
         await JsRuntime.InvokeVoidAsync("updateAll", markers);
-    }
-
-    public string Color(DroneRecord drone)
-    {
-        return drone.State.GetColor();
     }
 }

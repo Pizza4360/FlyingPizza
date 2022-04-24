@@ -1,5 +1,5 @@
 using Domain.Entities;
-using Domain.InterfaceDefinitions.Repositories;
+using Domain.RepositoryDefinitions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DatabaseAccess.Controllers;
@@ -15,7 +15,7 @@ public class DatabaseAccess : ControllerBase
     private IOrdersRepository _orders;
     
     public DatabaseAccess(
-    ILogger<DatabaseAccess> logger, IFleetRepository fleet, IOrdersRepository orders)
+        ILogger<DatabaseAccess> logger, IFleetRepository fleet, IOrdersRepository orders)
     {
         _logger = logger;
         _fleet = fleet;

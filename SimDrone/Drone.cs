@@ -1,175 +1,166 @@
-using Domain;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Domain.InterfaceDefinitions.Gateways;
-using Domain.InterfaceImplementations.Gateways;
-using static System.Decimal;
+using Domain.GatewayDefinitions;
+using SimDrone.Controllers;
+using DecimalMath;
+using MongoDB.Bson;
 
 namespace SimDrone;
 
 public class Drone : DroneRecord
 {
-    /// Radius of the Earth used in calculating distance 
-    private const int EarthRadius = 6371;
+    private const decimal DroneStepSizeInKilometers = .0004m;
+    private const decimal RadiusEarthKilometres = 6371.01m;
+    private const decimal DegToRadFactor = DecimalEx.Pi / 180;
+    private const decimal RadToDegFactor = 180 / DecimalEx.Pi;
+    
+    private readonly GeoLocation
+        belmarPark = new() {Latitude = 39.70481995951833m, Longitude = -105.10536817563754m},
+        msu = new() {Latitude = 39.74386695629378m, Longitude = -105.00610500179027m},
+        aurora = new() {Latitude = 39.710573732539885m, Longitude = -104.81408307283085m},
+        TractorSupplyCo = new() {Latitude = 40.20104629143965m, Longitude = -104.97856186942785m},
+        LovesTravelStop = new() {Latitude = 40.30514631684113m, Longitude = -104.98423969309658m},
+        VillageInnI25Hwy7 = new() {Latitude = 39.99955658640521m, Longitude = -104.97768379612273m};
 
-    /// 20 MPH as meters per second
-    private const double DroneSpeed = 0.0089408;
-
-    /// Number of milliseconds to wait before updating SimDrone status
-    private const int DroneUpdateInterval = 2000;
-
-    /// I don't think this makes sense but it's working...
-    private const decimal StepSize = DroneUpdateInterval / 1000.0m * (decimal) DroneSpeed;
-
-    /// Allows the simulation to communicate with the dispatcher.
-    private IDroneToDispatcherGateway DroneToDispatchGateway { get; set; }
-
-    public Drone(DroneRecord record, IDroneToDispatcherGateway gateway)
+    private readonly SimDroneController _controller;
+    public Drone(DroneRecord record, IBaseGateway<SimDroneController> gateway, SimDroneController controller)
     {
-        Id = record.Id;
+        DroneId = record.DroneId;
         HomeLocation = record.HomeLocation;
         BadgeNumber = record.BadgeNumber;
-        DroneIp = record.DroneIp;
-        DroneToDispatchGateway = gateway;
+        DroneUrl = record.DroneUrl;
+        _controller = controller;
         State = DroneState.Ready;
         CurrentLocation = HomeLocation;
         Destination = record.Destination;
     }
 
-    /// <summary>
-    ///  Return an array of Geolocations representing a drone's delivery route.
-    /// </summary>
-    /// <returns>The GeoLocations which will simulate drone movement over time.</returns>
-    /// <exception cref="ArgumentException"></exception>
-    public GeoLocation[] GetRoute()
+    public override string ToString() => this.ToJson();
+    private static decimal ToRadians(decimal x) => x * DecimalEx.Pi / 180;
+    private static decimal ToDegrees(decimal x) => x * 180 / DecimalEx.Pi;
+    private static decimal DegreesToRadians(decimal degrees) => degrees * DegToRadFactor;
+    private static decimal RadiansToDegrees(decimal radians) => radians * RadToDegFactor;
+    private static decimal Abs(decimal x) => x > 0 ? x : -x;
+   
+    private async Task<UpdateDroneStatusResponse?> PatchDroneStatus()
     {
-        if (HomeLocation.Equals(Destination))
-            throw new ArgumentException(
-                "Destination cannot be the same as the AssignDeliveryRequest station!");
-
-        var haversine = Haversine(
-            ToDouble(HomeLocation.Latitude), 
-            ToDouble(HomeLocation.Longitude),
-            ToDouble(Destination.Latitude), 
-            ToDouble(Destination.Longitude)
-            );
-
-        var latMax  = (decimal)Haversine(
-                ToDouble(HomeLocation.Latitude), 
-                ToDouble(HomeLocation.Longitude),
-                ToDouble(Destination.Latitude), 
-                ToDouble(HomeLocation.Longitude)
-            );
-        var lonMax = (decimal)Haversine(
-                ToDouble(HomeLocation.Latitude), 
-                ToDouble(HomeLocation.Longitude),
-                ToDouble(HomeLocation.Latitude), 
-                ToDouble(Destination.Longitude)
-            );
-        var route = new List<GeoLocation>();
-        decimal latDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
-        decimal lonDirection = Destination.Latitude - Destination.Longitude > 0 ? 1 : -1;
-        var latStep = latMax / (decimal)haversine * StepSize;
-        var lonStep = lonMax / (decimal)haversine * StepSize;
-        var latSum = 0m;
-        var lonSum = 0m;
-        while (latSum > latMax ||
-               lonSum < lonMax)
-        {
-            latSum += lonDirection / latStep;
-            lonSum += lonDirection / lonStep;
-            route.Add(new GeoLocation
+        var response = await _controller.UpdateDroneStatus(
+            new UpdateDroneStatusRequest
             {
-                Latitude = latSum,
-                Longitude = lonSum
+                DroneId = DroneId,
+                State = State,
+                Location = CurrentLocation
             });
-        }
-        return route.ToArray();
-    }
-    
-
-    // Tell SimDrone to deliver an order
-    public bool DeliverOrder(GeoLocation customerLocation)
-    {
-        Destination = customerLocation;
-        UpdateStatus(DroneState.Delivering);
-        var route = GetRoute();
-        var s = string.Join(",", route.Select(x => $"{{{x.Latitude},{x.Longitude}}}").ToArray());
-        Console.WriteLine($"{this},route:{s}"); // Debug
-
-        foreach (var location in route)
-        {
-            UpdateLocation(location);
-            Console.WriteLine(this); // Debug
-            Thread.Sleep(DroneUpdateInterval);
-        }
-
-        Console.WriteLine("Order Delivered! Returning to Home...");
-        UpdateStatus(DroneState.Returning);
-        foreach (var location in route.Reverse())
-        {
-            UpdateLocation(location);
-            Console.WriteLine(this); // Debug
-            Thread.Sleep(DroneUpdateInterval);
-        }
-
-        UpdateStatus(DroneState.Ready);
-        Console.WriteLine("Back home!"); // Debug
-        return true;
-    }
-    
-
-    // Send an DroneState update to DispatcherGateway
-    private bool UpdateStatus(DroneState state)
-    {
-        State = state;
-        return PatchDroneStatus();
+        return response;
     }
 
-    private bool PatchDroneStatus()
-    {
-        var t = DroneToDispatchGateway.PatchDroneStatus(
-            new DroneStatusUpdateRequest
-            {
-                Id = Id,
-                State = State
-            });
-        t.Wait();
-        return t.IsCompletedSuccessfully;
-    }
-    
-    // Send an Location update to DispatcherGateway
     private void UpdateLocation(GeoLocation location)
     {
         CurrentLocation = location;
         PatchDroneStatus();
     }
 
-    public override string ToString()
+    private async Task<UpdateDroneStatusResponse?> UpdateStatus(DroneState state)
     {
-        return $"SimDrone:{{DroneId:{Id},Location:{CurrentLocation},Destination:{Destination},State:{State}}}";
+        if(State == DroneState.Delivering && state == DroneState.Returning)
+        {
+            Destination = HomeLocation;
+        }
+        State = state;
+        return await PatchDroneStatus();
+    }
+    
+    private static decimal HaversineInMeters(GeoLocation locationA, GeoLocation locationB)
+    {
+        decimal longitude = locationA.Longitude,
+               latitude = locationA.Latitude,
+               otherLongitude = locationB.Longitude,
+               otherLatitude = locationB.Latitude;
+        var d1 = latitude * (DecimalEx.Pi / 180.0m);
+        var num1 = longitude * (DecimalEx.Pi / 180.0m);
+        var d2 = otherLatitude * (DecimalEx.Pi / 180.0m);
+        var num2 = otherLongitude * (DecimalEx.Pi / 180.0m) - num1;
+        var d3 = DecimalEx.Pow(DecimalEx.Sin((d2 - d1) / 2.0m), 2.0m) + DecimalEx.Cos(d1) * DecimalEx.Cos(d2) * DecimalEx.Pow(DecimalEx.Sin(num2 / 2.0m), 2.0m);
+        return RadiusEarthKilometres * 2.0m * DecimalEx.ATan2(DecimalEx.Sqrt(d3), DecimalEx.Sqrt(1.0m - d3));
+    }
+    
+    private static GeoLocation GetNextLocation(GeoLocation startLocation, decimal initialBearingInRadians, decimal distanceInKilometres)
+    {
+        var distRatio = distanceInKilometres / RadiusEarthKilometres;
+        var distRatioSine = DecimalEx.Sin(distRatio);
+        var distRatioCosine = DecimalEx.Cos(distRatio);
+
+        var startLatRad = DegreesToRadians(startLocation.Latitude);
+        var startLonRad = DegreesToRadians(startLocation.Longitude);
+
+        var startLatCos = DecimalEx.Cos(startLatRad);
+        var startLatSin = DecimalEx.Sin(startLatRad);
+
+        var endLatRads = DecimalEx.ASin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * DecimalEx.Cos(initialBearingInRadians)));
+
+        var endLonRads = startLonRad +
+                         DecimalEx.ATan2(
+                             DecimalEx.Sin(initialBearingInRadians) * distRatioSine * startLatCos,
+                             distRatioCosine - startLatSin * DecimalEx.Sin(endLatRads));
+
+        return new GeoLocation
+        {
+            Latitude = RadiansToDegrees(endLatRads),
+            Longitude = RadiansToDegrees(endLonRads)
+        };
+    }
+    
+    private static decimal Bearing(decimal lat1Degrees, decimal lon1Degrees, decimal lat2Degrees, decimal lon2Degrees)
+    {
+        var startLat = ToRadians(lat1Degrees);
+        var startLong = ToRadians(lon1Degrees);
+        var endLat = ToRadians(lat2Degrees);
+        var endLong = ToRadians(lon2Degrees);
+        var dLong = endLong - startLong;
+        var dPhi = DecimalEx.Log(DecimalEx.Tan(endLat / 2.0m + DecimalEx.Pi / 4.0m) / DecimalEx.Tan(startLat / 2.0m + DecimalEx.Pi / 4.0m));
+
+        if(Abs(dLong) > DecimalEx.Pi)
+        {
+            dLong = (2.0m * DecimalEx.Pi - dLong) * dLong > 0.0m ? -1 : 1;
+        }
+
+        return ToDegrees(DecimalEx.ATan2(dLong, dPhi) + 360.0m) % 360;
+    } 
+ 
+    private async Task TravelTo(GeoLocation endingLocation)
+    {
+        Console.WriteLine($"Starting at {CurrentLocation.Latitude}");
+        var buffer = new GeoLocation[5];
+        buffer[0] = CurrentLocation;
+        for(var i = 0; !CurrentLocation.Equals(endingLocation); i++)
+        {
+            Console.WriteLine($"{HaversineInMeters(CurrentLocation, endingLocation)} meters away");
+            var bearing = Bearing(CurrentLocation.Latitude, CurrentLocation.Longitude, endingLocation.Latitude, endingLocation.Longitude);
+            Console.WriteLine($"bearing between = {bearing}" );
+            buffer[i % 5] = CurrentLocation = GetNextLocation(CurrentLocation, bearing, DroneStepSizeInKilometers);
+            Console.WriteLine($"{CurrentLocation}");
+            if(i % 100 != 0) { continue; }
+            UpdateLocation(CurrentLocation);
+            Thread.Sleep(500);
+        }
     }
 
-    // Helper function for Haversine formula readability
-    private static double ToRadians(double x)
+    public async Task<AssignDeliveryResponse> DeliverOrder(AssignDeliveryRequest request)
     {
-        return Math.PI / 180 * x;
+        await UpdateStatus(DroneState.Delivering);
+        await TravelTo(request.OrderLocation);
+        Console.WriteLine("Done with delivery, returning home.");
+        await UpdateStatus(DroneState.Returning);
+        await TravelTo(HomeLocation);
+        await UpdateStatus(DroneState.Ready);
+        return new AssignDeliveryResponse
+        {
+            DroneId = DroneId,
+            OrderId = OrderId,
+            Success = true
+        };
     }
 
-    // Helper function for Haversine formula readability
-    private static double SinSquared(double x)
-    {
-        return Math.Pow(Math.Sin(ToRadians(x) / 2), 2);
-    }
-
-    // Calculate the difference between two points on a sphere
-    private static double Haversine(
-        double lat1, double lon1,
-        double lat2, double lon2)
-    {
-        return EarthRadius * 2 * Math.Asin(
-            Math.Sqrt(SinSquared(lat2 - lat1)) +
-            SinSquared((lon2 - lon1) * Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2))));
-    }
 }
+

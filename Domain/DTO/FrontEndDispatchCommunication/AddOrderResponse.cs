@@ -1,6 +1,6 @@
 ﻿namespace Domain.DTO.FrontEndDispatchCommunication
 {
-    public class AddOrderResponse : BaseDto
+    public class AddOrderResponse
     {
         
     }

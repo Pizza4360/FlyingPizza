@@ -1,4 +1,4 @@
-using System.Net;
+/*using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Domain.DTO;
@@ -375,4 +375,4 @@ public class TelloDrone : Drone
         return true;
     }
 
-}
+}*/

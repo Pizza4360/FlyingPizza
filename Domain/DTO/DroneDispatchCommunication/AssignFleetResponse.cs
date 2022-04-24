@@ -1,20 +1,20 @@
 ﻿using System.Data;
+using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Domain;
 
 namespace Domain.DTO.DroneDispatchCommunication
 {
-    public class AssignFleetResponse : BaseDto
+    public class AssignFleetResponse
     {
-        [BsonId]
-        [BsonElement("DroneId")]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id;
+        [JsonPropertyName("DroneId")]
+        public string DroneId{get;set; }
 
-        [BsonElement("IsInitializedAndAssigned")]
-        public bool IsInitializedAndAssigned;
-        
+        [JsonPropertyName("IsInitializedAndAssigned")]
+        public bool IsInitializedAndAssigned{get;set;}
+
+        [JsonPropertyName("FirstState")]
         public DroneState FirstState { get; set; }
     }
 }

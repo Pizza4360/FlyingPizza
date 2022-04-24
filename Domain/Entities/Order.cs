@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text.Json.Serialization;
 using Domain.DTO;
 using MongoDB.Bson;
@@ -8,8 +7,11 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace Domain.Entities;
 
 [BsonDiscriminator("Order")]
-public class Order : BaseDto
+public class Order : BaseEntity
 {
+    [BsonElement("DroneId")]
+    public string DroneId { get; set; }
+    
     [BsonElement("Items")]
     [JsonPropertyName("Items")]
     public object[] Items { get; set; }
@@ -22,8 +24,8 @@ public class Order : BaseDto
     [JsonPropertyName("DeliveryAddress")]
     public string DeliveryAddress { get; set; }
 
-    [BsonElement("DeliveryLocation")]
-    [JsonPropertyName("DeliveryLocation")]
+    [BsonElement("OrderLocation")]
+    [JsonPropertyName("OrderLocation")]
     public GeoLocation DeliveryLocation { get; set; }
 
     [BsonElement("TimeOrdered")]

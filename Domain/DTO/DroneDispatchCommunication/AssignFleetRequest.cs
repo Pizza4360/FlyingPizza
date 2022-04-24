@@ -1,31 +1,22 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using Domain.Entities;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.IdGenerators;
 
-namespace Domain.DTO.DroneDispatchCommunication
+namespace Domain.DTO.DroneDispatchCommunication;
+
+public class AssignFleetRequest
 {
-    public class AssignFleetRequest : BaseDto
-        {
-            [BsonId]
-            [BsonElement("DroneId")]
-            [BsonRepresentation(BsonType.ObjectId)]
-            public string DroneId { get; set; }
+    [JsonPropertyName("DroneId")]
+    public string DroneId { get; set; }
 
-            [BsonElement("DroneIp"), JsonPropertyName("DroneIp")]
-            public string DroneIp { get; set; }
+    [JsonPropertyName("DroneUrl")]
+    public string DroneIp {get;set;}
             
-            [BsonElement("BadgeNumber"), JsonPropertyName("BadgeNumber")]
-            [BsonId(IdGenerator = typeof(CombGuidGenerator))]
-            public Guid BadgeNumber { get; set; }           
+    [JsonPropertyName("DispatchUrl")]
+    public string DispatchIp{get;set;}
+
+    [JsonPropertyName("BadgeNumber")]
+    public Guid BadgeNumber { get; set; }    
             
-            [BsonElement("HomeLocation"), JsonPropertyName("HomeLocation")]
-            public GeoLocation HomeLocation { get; set; }
-            public override string ToString() => $"{{BadgeNumber:{BadgeNumber},DispatcherUrl:{DispatcherIp},HomeLocation:{HomeLocation}}}";
-            
-            [BsonElement("DispatcherUrl"), JsonPropertyName("DispatcherUrl")]
-            public string DispatcherIp;
-        }
+    [JsonPropertyName("HomeLocation")]
+    public GeoLocation HomeLocation { get; set; }
 }
