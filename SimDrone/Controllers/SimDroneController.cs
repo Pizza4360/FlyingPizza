@@ -62,7 +62,7 @@ public class SimDroneController : ControllerBase
         AssignDeliveryRequest assignDeliveryRequest)
     {
         Console.WriteLine($"SimDroneController.AssignDelivery -> {assignDeliveryRequest}");
-        return await _drone.AssignDelivery(assignDeliveryRequest);
+        return await _drone.DeliverOrder(assignDeliveryRequest);
     }
 
 

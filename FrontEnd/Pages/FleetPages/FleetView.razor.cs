@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Domain.DTO;
+using Domain.Entities;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 
@@ -13,7 +14,9 @@ partial class FleetView : ComponentBase
     {
         try
         {
-            Fleet = (await HttpMethods.Get<List<DroneRecord>>("http://localhost:5127/DatabaseAccess/GetFleet")).ToArray();
+            var droneRecords = (await HttpMethods.Get<List<DroneRecord>>("http://localhost:5127/DatabaseAccess/GetFleet"));
+            Fleet = droneRecords.ToArray();
+            var readyDrones = droneRecords.Where(record => record.State == DroneState.Ready);
             size = Fleet.Length;
             connection = true;
         }
