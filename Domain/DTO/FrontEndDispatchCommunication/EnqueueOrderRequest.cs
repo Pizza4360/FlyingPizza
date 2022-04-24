@@ -2,7 +2,7 @@
 
 namespace Domain.DTO.FrontEndDispatchCommunication;
 
-public class AddOrderRequest
+public class EnqueueOrderRequest
    
 {
     [JsonPropertyName("OrderId")]
