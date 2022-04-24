@@ -15,14 +15,13 @@ partial class TrackingPage : ComponentBase
     private const int RefreshInterval = 2000;
     private Timer _timer;
     public bool connection;
-    public int count = 0;
-    public string dropdown = "Delivering";
+    public string dropDownLabel;
     public DroneRecord[] Fleet;
     public DroneRecord[] filteredDrones;
 
     [Inject]
     public IJSRuntime JsRuntime {get;set; }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -31,17 +30,24 @@ partial class TrackingPage : ComponentBase
         }
     }
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
+        await DisplayDroneAsync("Delivering");
+        await Temp();
+    }
+
+    protected Task Temp() {
         _timer = new Timer(MarkerUpdateCallback, null, 0, RefreshInterval);
         return Task.CompletedTask;
     }
-    protected async Task DisplayDroneAsync()
+
+    protected async Task DisplayDroneAsync(string filter)
     {
         try
         {
+            dropDownLabel = filter;
             Fleet = (await HttpMethods.Get<List<DroneRecord>>("http://localhost:5127/DatabaseAccess/GetFleet")).ToArray();
-            filteredDrones = Fleet.Where(record => record.State == DroneState.Returning).ToArray();
+            filteredDrones = Fleet.Where(record => record.State.ToString() == filter).ToArray();
             connection = true;
         }
         catch
@@ -77,10 +83,4 @@ partial class TrackingPage : ComponentBase
     {
         return drone.State.GetColor();
     }
-
-    public void Test()
-    {
-        count++;
-    }
-
 }

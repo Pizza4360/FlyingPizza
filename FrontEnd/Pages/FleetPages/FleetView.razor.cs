@@ -23,7 +23,6 @@ partial class FleetView : ComponentBase
         try
         {
             Fleet = (await HttpMethods.Get<List<DroneRecord>>("http://localhost:5127/DatabaseAccess/GetFleet")).ToArray();
-
             size = Fleet.Length;
             connection = true;
         }

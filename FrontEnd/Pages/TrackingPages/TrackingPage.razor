@@ -26,22 +26,24 @@
 <div class="content">
     <div class="drone-bar">
         <div class="selection-bar">
-             <div class="dropdown"> @dropdown 
+             <div class="dropdown"> @dropDownLabel
                 <span class="oi oi-menu" style="color: white; font-size:20px"></span>
 
                 <div class="dropdown-content">
-                    <btn>Delivering</btn>
-                   <btn @onclick="@DisplayDroneAsync">Returning</btn>
-                   <btn @onclick="@Test">Ready</btn>
+                    <btn @onclick="@(args => DisplayDroneAsync("Delivering"))">Delivering</btn> 
+                    <btn @onclick="@(args => DisplayDroneAsync("Returning"))">Returning</btn>
+                    <btn @onclick="@(args => DisplayDroneAsync("Dead"))">Dead</btn>
+                    <btn @onclick="@(args => DisplayDroneAsync("Ready"))">Ready</btn>
+                    <btn @onclick="@(args => DisplayDroneAsync("Charging"))">Charging</btn>
                 </div>
 
             </div>
         </div>
 
         <ul class="drone-fleet">
-        @if (Fleet != null)
+        @if (filteredDrones != null)
         {
-            @foreach (var drone in Fleet)
+            @foreach (var drone in filteredDrones)
             {
                 <!--Creates a block for each drone with id, status, more info button and a drone img-->
                 <li style="background-image: url('../images/drone.jpg')">
