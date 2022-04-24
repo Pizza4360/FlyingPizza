@@ -155,36 +155,19 @@
     background-color: #F00000;
 }
 
-
-
-.noBorder {
-    float: left;
-    margin: 0px;
-    padding: 0px;
-    padding-right: 24px;
-}
-
-.checkBox {
-    float: left;
-    margin-top: 6.6px;
-    margin-right: 6px;
-    width: 24px;
-    height: 24px;
-}
-
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
 
 .drone-fleet {
     display: grid;
     grid-template-columns: repeat(auto-fill, 20rem);
+    grid-template-rows: repeat(auto-fill, 10rem);
     grid-gap: 1rem;
-    justify-content: center;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
     padding-top: 0.5rem;
     height: 650px;
-    z-index: 1;
+/*    justify-content: start;
+*/    z-index: 1;
     overflow-y: scroll;
     margin: 0rem 0.75rem 0.75rem 0.25rem;
 }
@@ -204,7 +187,7 @@
     }
 
     .drone-fleet > li {
-        height: 10rem;
+        height: 10rem !important;
         position: relative;
         z-index: 0;
         background-size: cover;

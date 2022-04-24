@@ -18,6 +18,7 @@ partial class TrackingPage : ComponentBase
     public int count = 0;
     public string dropdown = "Delivering";
     public DroneRecord[] Fleet;
+    public DroneRecord[] filteredDrones;
 
     [Inject]
     public IJSRuntime JsRuntime {get;set; }
@@ -33,14 +34,14 @@ partial class TrackingPage : ComponentBase
     protected override Task OnInitializedAsync()
     {
         _timer = new Timer(MarkerUpdateCallback, null, 0, RefreshInterval);
-        OnInitializedAsyncTwo();
         return Task.CompletedTask;
     }
-    protected async Task OnInitializedAsyncTwo()
+    protected async Task DisplayDroneAsync()
     {
         try
         {
             Fleet = (await HttpMethods.Get<List<DroneRecord>>("http://localhost:5127/DatabaseAccess/GetFleet")).ToArray();
+            filteredDrones = Fleet.Where(record => record.State == DroneState.Returning).ToArray();
             connection = true;
         }
         catch
