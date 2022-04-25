@@ -31,6 +31,7 @@ partial class OrderPage : ComponentBase
     }
     protected override void OnInitialized()
     {
+        _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
         _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
          converter = new ConvertAddressToGeoLocation();
     }
@@ -38,8 +39,18 @@ partial class OrderPage : ComponentBase
     public FrontEndToDispatchGateway GetGateway()
         => new FrontEndToDispatchGateway();
 
-        
 
+    public async Task<AddDroneResponse> AddDrone() {
+        return await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
+        {
+            DroneId = BaseEntity.GenerateNewId(),
+            BadgeNumber = Guid.NewGuid(),
+            HomeLocation = new GeoLocation{ Latitude = 39.74386695629378m, Longitude = -105.00610500179027m },
+            DroneUrl = "http://localhost:85",
+            DispatchUrl = "http://localhost:83"
+        });
+        
+    }
     public async Task makeOrder()
     {
 
