@@ -1,3 +1,4 @@
+using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
 using Microsoft.AspNetCore.Mvc;
@@ -32,10 +33,10 @@ public class DatabaseAccess : ControllerBase
     }
     
     [HttpPost("CreateOrder")]
-    public async Task<IActionResult> CreateOrder(Order order)
+    public async Task<CreateOrderResponse> CreateOrder(Order order)
     {
         await _orders.CreateAsync(order);
-        return Ok();
+        return new CreateOrderResponse();
     }
     
     [HttpGet("GetDrone")]

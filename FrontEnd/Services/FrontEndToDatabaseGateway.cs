@@ -31,7 +31,7 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
     {
         Console.Write("before SendMessagePost");
 
-        return await SendMessagePost<CreateOrderRequest, CreateOrderResponse>($"{DispatchUrl}/EnqueueOrder", request);
+        return await SendMessagePost<CreateOrderRequest, CreateOrderResponse>($"{DispatchUrl}/CreateOrder", request);
 
     }
 

@@ -52,7 +52,7 @@ partial class OrderPage : ComponentBase
             TimeOrdered = DateTime.Now,
             CustomerName = CustomerName,
             DeliveryLocation = DeliveryLocation,
-            CustomerAddress = DeliveryAddress
+            DeliveryAddress = DeliveryAddress
         });
 
         Console.Write("AHHHHHH~~~~~~~~~~");

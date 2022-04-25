@@ -24,8 +24,8 @@ public class Order : BaseEntity
     [JsonPropertyName("DeliveryAddress")]
     public string DeliveryAddress { get; set; }
 
-    [BsonElement("OrderLocation")]
-    [JsonPropertyName("OrderLocation")]
+    [BsonElement("DeliveryLocation")]
+    [JsonPropertyName("DeliveryLocation")]
     public GeoLocation DeliveryLocation { get; set; }
 
     [BsonElement("TimeOrdered")]
