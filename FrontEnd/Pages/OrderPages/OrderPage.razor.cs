@@ -45,18 +45,22 @@ partial class OrderPage : ComponentBase
 
         var DeliveryLocation = await converter.CoordsFromAddress(DeliveryAddress);
 
+        string OrderId = BaseEntity.GenerateNewId();
 
-        string orderId = (await _frontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest {
+        await _frontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest {
+            OrderId = OrderId,
             TimeOrdered = DateTime.Now,
             CustomerName = CustomerName,
             DeliveryLocation = DeliveryLocation,
             CustomerAddress = DeliveryAddress
-        })).OrderId;
+        });
+
+        Console.Write("AHHHHHH~~~~~~~~~~");
 
         var dispatchResponse = _gateway.EnqueueOrder(new EnqueueOrderRequest
         {
             OrderLocation = DeliveryLocation,
-            OrderId = orderId
+            OrderId = OrderId,
         });
             
         Console.WriteLine(dispatchResponse);

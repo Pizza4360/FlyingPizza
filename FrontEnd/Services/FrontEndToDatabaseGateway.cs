@@ -24,9 +24,17 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
         return response;
     }
 
+    /*   public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request)
+           => await SendMessagePost<CreateOrderRequest, CreateOrderResponse>($"{DispatchUrl}/EnqueueOrder", request);*/
+
     public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request)
-        => await SendMessagePost<CreateOrderRequest, CreateOrderResponse>($"{DispatchUrl}/EnqueueOrder", request);
-    
+    {
+        Console.Write("before SendMessagePost");
+
+        return await SendMessagePost<CreateOrderRequest, CreateOrderResponse>($"{DispatchUrl}/EnqueueOrder", request);
+
+    }
+
     public async Task<DroneRecord> GetDrone(string id)
         => await SendMessagePost<string, DroneRecord>($"{DispatchUrl}/GetDrone", id);
     

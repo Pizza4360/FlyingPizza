@@ -4,6 +4,8 @@ namespace Domain.DTO.FrontEndDispatchCommunication;
 
 public class CreateOrderRequest
 {
+
+    public string OrderId { get; set; }
     public string CustomerName {get;set;}
     public string CustomerAddress{get;set;}
     public DateTime TimeOrdered{get;set;}

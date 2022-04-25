@@ -17,7 +17,7 @@ public class BaseEntity
     private const int IdLength = 24;
     
     // https://stackoverflow.com/questions/1344221/how-can-i-generate-random-alphanumeric-strings
-    private static string GenerateNewId()
+    public static string GenerateNewId()
     {
         return new string(Enumerable.Repeat(chars, IdLength)
                                     .Select(s => s[_random.Next(s.Length)]).ToArray());
