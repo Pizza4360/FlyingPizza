@@ -1,75 +1,72 @@
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Domain.InterfaceImplementations.Gateways;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
-namespace SimDrone.Controllers
+namespace SimDrone.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class SimDroneController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class SimDroneController : ControllerBase
+    private static Drone _drone;
+    private static DroneToDispatchGateway _gateway;
+    private bool IsInitiatead = false;
+
+    [HttpPost("InitDrone")]
+    public async Task<InitDroneResponse> InitDrone(
+        InitDroneRequest initDroneRequest)
     {
-        private Drone _drone;
-        private static DroneToDispatchGateway _gateway;
-
-        [HttpPost("InitDrone")]
-        public InitDroneResponse InitDrone(
-        InitDroneRequest initInfo)
+        var responseString = IsInitiatead ? "This drone is already initialized" : "This drone is ready to be initialized to a fleet.";
+        Console.WriteLine($"SimDroneController.InitDrone -> {initDroneRequest}\tresponse -> {responseString}");
+        return new InitDroneResponse
         {
-            Console.WriteLine(initInfo.ToJsonString());
-            var okay = _drone.Id == null;
-            if(okay)
-            {
-                _gateway = new DroneToDispatchGateway{ Url = initInfo.DroneIp };
-            }
-            return new InitDroneResponse
-            {
-                Id = initInfo.DroneId,
-                Okay = okay
-            };
-        }
-        
-        
-        [HttpPost("AssignFleet")]
-        public AssignFleetResponse AssignFleet(
-        AssignFleetRequest request)
-        {
-            Console.WriteLine("Generating simulated drone...");
-            _gateway = new DroneToDispatchGateway
-            {
-                Url = request.DispatcherIp
-            };
-            _drone = new Drone(new DroneRecord
-            {
-                BadgeNumber = request.BadgeNumber,
-                CurrentLocation = request.HomeLocation,
-                Destination = request.HomeLocation,
-                DispatcherUrl = request.DispatcherIp,
-                DroneIp = request.DispatcherIp,
-                HomeLocation = request.HomeLocation,
-                Id = request.DroneId,
-                OrderId = null
-            }, _gateway);
-            var doneString
-                = $"SimDrone successfully initialized.\nDrone -->{_drone}";
-            Console.WriteLine(doneString);
-            return new AssignFleetResponse
-            {
-                FirstState = DroneState.Ready,
-                Id = request.DroneId,
-                IsInitializedAndAssigned = true
-            };
-        }
-
-        
-        [HttpPost("AssignDelivery")]
-        public async Task<string> DeliverOrder(
-        AssignDeliveryRequest order)
-        {
-            Console.WriteLine($"Delivering {order}");
-            return _drone.DeliverOrder(order.OrderLocation)
-                .ToString();
-        }
+            DroneId = initDroneRequest.DroneId,
+            Okay = !IsInitiatead
+        };
     }
+        
+        
+    [HttpPost("AssignFleet")]
+    public async Task<AssignFleetResponse> AssignFleet(AssignFleetRequest assignFleetRequest)
+    {
+        Console.WriteLine($"SimDroneController.AssignFleet -> {assignFleetRequest.ToJson()}");
+        Console.WriteLine($"{assignFleetRequest.DispatchIp}");
+        _gateway = new DroneToDispatchGateway(assignFleetRequest.DispatchIp);
+        _drone = new Drone(new DroneRecord
+            {
+                BadgeNumber = assignFleetRequest.BadgeNumber,
+                CurrentLocation = assignFleetRequest.HomeLocation,
+                Destination = assignFleetRequest.HomeLocation,
+                DispatchUrl = assignFleetRequest.DispatchIp,
+                DroneUrl = assignFleetRequest.DroneIp,
+                HomeLocation = assignFleetRequest.HomeLocation,
+                DroneId = assignFleetRequest.DroneId,
+                OrderId = null
+            }, _gateway, 
+            this);
+        Console.WriteLine($"SimDrone successfully initialized.\nDrone -->{_drone}");
+        IsInitiatead = true;
+        return new AssignFleetResponse
+        {
+            FirstState = DroneState.Ready,
+            DroneId = assignFleetRequest.DroneId,
+            IsInitializedAndAssigned = true
+        };
+    }
+
+        
+    [HttpPost("AssignDelivery")]
+    public async Task<AssignDeliveryResponse> AssignDelivery(
+        AssignDeliveryRequest assignDeliveryRequest)
+    {
+        Console.WriteLine($"SimDroneController.AssignDelivery -> {assignDeliveryRequest}");
+        return await _drone.DeliverOrder(assignDeliveryRequest);
+    }
+
+
+    [HttpPost("UpdateDroneStatus")]
+    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(UpdateDroneStatusRequest updateDroneStatusRequest)
+        => await _gateway.UpdateDroneStatus(updateDroneStatusRequest);
 }

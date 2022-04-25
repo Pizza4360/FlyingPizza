@@ -1,6 +1,9 @@
-﻿namespace Domain.DTO.DroneDispatchCommunication;
+﻿using System.Text.Json.Serialization;
 
-public class CompleteOrderResponse : BaseDto
+namespace Domain.DTO.DroneDispatchCommunication;
+
+public class CompleteOrderResponse
 {
-    public bool IsAknowledged { get; set; }
+    [JsonPropertyName("IsAcknowledged")]
+    public bool IsAcknowledged { get; set; }
 }

@@ -1,5 +1,6 @@
+using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
-using Domain.InterfaceDefinitions.Repositories;
+using Domain.RepositoryDefinitions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DatabaseAccess.Controllers;
@@ -15,7 +16,7 @@ public class DatabaseAccess : ControllerBase
     private IOrdersRepository _orders;
     
     public DatabaseAccess(
-    ILogger<DatabaseAccess> logger, IFleetRepository fleet, IOrdersRepository orders)
+        ILogger<DatabaseAccess> logger, IFleetRepository fleet, IOrdersRepository orders)
     {
         _logger = logger;
         _fleet = fleet;
@@ -23,16 +24,19 @@ public class DatabaseAccess : ControllerBase
     }
 
     [HttpGet("GetFleet")]
-    public DroneRecord[] GetFleet()
+    public async Task<List<DroneRecord>> GetFleet()
     {
-        return _fleet.GetAllAsync().Result.ToArray();
+        Console.WriteLine("got a request to get the fleet...");
+        var fleet =  await _fleet.GetAllAsync();
+        Console.WriteLine("Got back" + string.Join("\n", fleet));
+        return fleet;
     }
     
-    [HttpPost("AddOrder")]
-    public async Task<IActionResult> AddOrder(Order order)
+    [HttpPost("CreateOrder")]
+    public async Task<CreateOrderResponse> CreateOrder(Order order)
     {
         await _orders.CreateAsync(order);
-        return Ok();
+        return new CreateOrderResponse();
     }
     
     [HttpGet("GetDrone")]

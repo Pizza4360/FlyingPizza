@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Domain.Entities;
-using Domain.InterfaceDefinitions.Repositories;
+using Domain.RepositoryDefinitions;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace Domain.InterfaceImplementations.Repositories;
+namespace DatabaseAccess;
 
 public class FleetRepository : IFleetRepository
 {
@@ -32,19 +32,18 @@ public class FleetRepository : IFleetRepository
         await _collection.Find(_ => true).ToListAsync();
 
     public async Task<DroneRecord> GetByIdAsync(string id) =>
-        await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+        await _collection.Find(x => x.DroneId == id).FirstOrDefaultAsync();
 
     public async Task<Dictionary<string, string>> GetAllAddresses() =>
-        (await _collection.Find(_ => true).ToListAsync())
-        .ToDictionary(droneRecord => droneRecord.Id, droneRecord => droneRecord.DroneIp);
+        Enumerable.ToDictionary<DroneRecord, string, string>((await _collection.Find(_ => true).ToListAsync()), droneRecord => droneRecord.DroneId, droneRecord => droneRecord.DroneUrl);
 
     public async Task<bool> RemoveAsync(string id) =>
-        (await _collection.DeleteOneAsync(x => x.Id == id)).IsAcknowledged;
+        (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
 
     public async Task<bool> UpdateAsync(DroneRecord drone)
     {
         var result = await _collection.UpdateOneAsync(
-            record => record.Id == drone.Id,
+            record => record.DroneId == drone.DroneId,
             GetUpdateDefinition(drone));
         return result.IsAcknowledged;
     }
@@ -55,7 +54,7 @@ public class FleetRepository : IFleetRepository
         UpdateDefinition<DroneRecord> updateDefinition = null;
         foreach (var property in drone.GetType().GetProperties())
         {
-            if (property != null) {
+            if (property != null && property.Name != "Id") {
                 if (updateDefinition == null)
                 {
                     updateDefinition = builder.Set(property.Name, property.GetValue(drone));

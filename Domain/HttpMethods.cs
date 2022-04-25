@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace FrontEnd.Services
+namespace Domain
 {
 
     // this service is called by any and all methods and classes that need to make a request to the rest database

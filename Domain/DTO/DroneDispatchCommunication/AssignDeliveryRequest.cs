@@ -1,16 +1,15 @@
 ﻿using System.Text.Json.Serialization;
-using Domain.Entities;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Domain.DTO.DroneDispatchCommunication
+namespace Domain.DTO.DroneDispatchCommunication;
+
+public class AssignDeliveryRequest
 {
-    public class AssignDeliveryRequest : BaseDto
-    {
-        [BsonElement("OrderId"), JsonPropertyName("OrderId")]
-        public string OrderId { get; set; } 
-        [BsonElement("OrderLocation"), JsonPropertyName("OrderLocation")]
-        public GeoLocation OrderLocation { get; set; }
+    [JsonPropertyName("OrderId")]
+    public string OrderId { get; set; } 
+    [JsonPropertyName("OrderLocation")]
+    public GeoLocation OrderLocation { get; set; }
         
-        public string DroneId { get; set; }
-    }
+    [JsonPropertyName("DroneId")]
+    public string DroneId { get; set; }
 }

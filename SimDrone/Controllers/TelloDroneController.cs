@@ -1,3 +1,4 @@
+/*
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.InterfaceImplementations.Gateways;
@@ -81,3 +82,4 @@ namespace SimDrone.Controllers
         }
     }
 }
+*/

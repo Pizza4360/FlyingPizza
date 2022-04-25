@@ -1,17 +1,14 @@
 ﻿using System.Text.Json.Serialization;
+using Domain.DTO.FrontEndDispatchCommunication;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Domain.DTO.DroneDispatchCommunication
+namespace Domain.DTO.DroneDispatchCommunication;
+
+public class InitDroneRequest
 {
-    public class InitDroneRequest : BaseDto
-    {
-        [BsonId]
-        [BsonElement("DroneId")]
-        [JsonPropertyName("DroneId")]
-        public string DroneId { get; set; }
+    [JsonPropertyName("DroneId")]
+    public string DroneId { get; set; }
         
-        [BsonElement("Ip")]
-        [JsonPropertyName("Ip")]
-        public string DroneIp { get; set; }
-    }
+    [JsonPropertyName("DroneUrl")]
+    public string DroneUrl { get; set; }
 }

@@ -6,13 +6,12 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities
 {
-    public class DroneRecord : BaseDto, IBaseEntity
+    public class DroneRecord : BaseEntity
     {
 
         [BsonElement("BadgeNumber")]
         [JsonPropertyName("BadgeNumber")]
         public Guid BadgeNumber { get; set; }
-
 
         [BsonElement("OrderId")]
         [JsonPropertyName("OrderId")]
@@ -34,32 +33,20 @@ namespace Domain.Entities
         [JsonPropertyName("State")]
         public DroneState State { get; set; }
 
-
-        [BsonElement("DroneIp")]
-        [JsonPropertyName("DroneIp")]
-        public string DroneIp { get; set; }
-
-        [BsonElement("DispatcherUrl")]
-        [JsonPropertyName("DispatcherUrl")]
-        public string DispatcherUrl { get; set; }
-
-        [BsonElement("DispatchIp")]
-        [JsonPropertyName("DispatchIp")]
-        public string DispatchIp { get; set; }
-
         [BsonElement("DroneId")]
-        [JsonPropertyName("DroneId")]
         public string DroneId { get; set; }
+
         [BsonElement("DroneUrl")]
         [JsonPropertyName("DroneUrl")]
         public string DroneUrl { get; set; }
+
         [BsonElement("DispatchUrl")]
         [JsonPropertyName("DispatchUrl")]
         public string DispatchUrl { get; set; }
 
         public override string ToString()
         {
-            return $"DroneId:{Id}" +
+            return $"Id:{DroneId}" +
                    $"Currentlocation:{CurrentLocation}\n" +
                    $"Destination:{Destination}\n" +
                    $"Status:{State}";
@@ -74,21 +61,7 @@ namespace Domain.Entities
                    oo.CurrentLocation.Equals(CurrentLocation) &&
                    oo.Destination.Equals(Destination) &&
                    oo.State.Equals(State) &&
-                   oo.DispatcherUrl.Equals(DispatcherUrl);
-        }
-
-        public static string NewId()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        // public double Lat => (double) CurrentLocation.Latitude;
-        // public double Lng => (double) CurrentLocation.Longitude;
-
-        public class Coords
-        {
-            public double Lat { get; set; }
-            public double Lng { get; set; }
+                   oo.DispatchUrl.Equals(DispatchUrl);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain;
 using Domain.DTO;
 using Domain.Entities;
 using FrontEnd.Services;
@@ -15,6 +16,7 @@ partial class TrackingPage : ComponentBase
     private const int RefreshInterval = 2000;
     private Timer _timer;
     public bool connection;
+    public FrontEndToDatabaseGateway _FrontEndToDatabaseGateway;
     public string dropDownLabel;
     public DroneRecord[] Fleet;
     public DroneRecord[] filteredDrones;
@@ -26,6 +28,7 @@ partial class TrackingPage : ComponentBase
     {
         if (firstRender)
         {
+            _FrontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
             await JsRuntime.InvokeVoidAsync("initGoogleMap", new { Lat = 39.74386695629378, Lng = -105.00610500179027 });
         }
     }
@@ -46,7 +49,7 @@ partial class TrackingPage : ComponentBase
         try
         {
             dropDownLabel = filter;
-            Fleet = (await HttpMethods.Get<List<DroneRecord>>("http://localhost:5127/DatabaseAccess/GetFleet")).ToArray();
+            Fleet = (await _FrontEndToDatabaseGateway.GetFleet()).ToArray();
             filteredDrones = Fleet.Where(record => record.State.ToString() == filter).ToArray();
             connection = true;
         }
@@ -68,8 +71,7 @@ partial class TrackingPage : ComponentBase
     private async Task UpdateDroneMarkers()
     {
         
-        var markers = (await HttpMethods.Get<List<DroneRecord>>
-            ("http://localhost:5127/DatabaseAccess/GetFleet")).Select(x => 
+        var markers = (await _frontEndToDatabaseGateway.GetFleet()).Select(x => 
             new JsMarker{
                 lat = (double)x.CurrentLocation.Latitude,
                 lng = (double)x.CurrentLocation.Longitude,

@@ -1,12 +1,9 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain.DTO.FrontEndDispatchCommunication;
 
-public class CancelDeliveryRequest : BaseDto
+public class CancelDeliveryRequest
 {
-    [BsonId]
-    [BsonElement("OrderId")]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string OrderId;
+    [JsonPropertyName("OrderId")]
+    public string OrderId{get;set;}
 }

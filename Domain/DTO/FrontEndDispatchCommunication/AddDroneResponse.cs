@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.FrontEndDispatchCommunication
 {
-    public class AddDroneResponse : BaseDto
+    public class AddDroneResponse
     {
-        [BsonElement("Success"), JsonPropertyName("Success")]
+        [JsonPropertyName("Success")]
         public bool Success { get; set; }
 
-        [BsonId]
-        [BsonElement("DroneId")]
-        [JsonPropertyName("DroneId")]
+        [JsonPropertyName("BadgeNumber")]
         public Guid BadgeNumber { get; set; }    
     }
 }

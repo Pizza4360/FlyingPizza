@@ -1,18 +1,18 @@
-using Domain.InterfaceDefinitions.Gateways;
-using Domain.InterfaceDefinitions.Repositories;
-using Domain.InterfaceImplementations.Repositories;
+using DatabaseAccess;
+using Domain.RepositoryDefinitions;
 using Microsoft.Extensions.Options;
 
 Console.WriteLine("hello world!!!");
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: "*",
-        _  =>
-        {
-            _.WithOrigins("*");
-        });
-});
+    options.AddPolicy(name: "CORS", policy => policy.WithOrigins("https://localhost:44364", 
+    "http://localhost:5001", "http://localhost:81", "http://localhost:82",
+    "http://localhost:83",
+    "http://localhost:84",
+    "http://localhost:85",
+    "http://localhost:86",
+    "http://localhost:87",
+    "http://localhost:88").AllowAnyHeader().AllowAnyMethod()));
 
 
 #region repositories
@@ -61,6 +61,8 @@ if (app.Environment.IsDevelopment())
 
 // turn off ssl: https://stackoverflow.com/questions/43809665/enable-disable-ssl-on-asp-net-core-projects-in-development
 // app.UseHttpsRedirection();
+
+app.UseCors("CORS");
 
 app.UseAuthorization();
 

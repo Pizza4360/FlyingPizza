@@ -118,8 +118,8 @@ namespace Tests
                 DroneIp = ValidTestIp
             };
 
-        private static Domain.DTO.FrontEndDispatchCommunication.AddOrderRequest
-        addOrderRequest= new()
+        private static Domain.DTO.FrontEndDispatchCommunication.EnqueueOrderRequest
+        _enqueueOrderRequest= new()
         {
             OrderId = TestOrderId,
             

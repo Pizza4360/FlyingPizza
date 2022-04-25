@@ -1,50 +1,81 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Domain;
+using Domain.DTO;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using MongoDB.Bson;
+using Newtonsoft.Json.Linq;
 
-namespace FrontEnd.Pages.OrderPages
+namespace FrontEnd.Pages.OrderPages;
+
+partial class OrderPage : ComponentBase
 {
-    partial class OrderPage : ComponentBase
+    [Inject]
+    public IJSRuntime JsRuntime {get;set; }
+
+
+
+    public string DeliveryAddress;
+    public string CustomerName;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Order custOrder;
-
-        // = new ("http://localhost:80"); 
-        protected override void OnInitialized()
+        if (firstRender)
         {
-            // Make a new order for the customer to use when the page boots up
-            custOrder = new Order();
+            await JsRuntime.InvokeVoidAsync("initGeocoder");
+        }
+    }
+    protected override void OnInitialized()
+    {
+        _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
+        _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
+         converter = new ConvertAddressToGeoLocation();
+    }
+
+    public FrontEndToDispatchGateway GetGateway()
+        => new FrontEndToDispatchGateway();
+
+
+    public async Task<AddDroneResponse> AddDrone() {
+        return await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
+        {
+            DroneId = BaseEntity.GenerateNewId(),
+            BadgeNumber = Guid.NewGuid(),
+            HomeLocation = new GeoLocation{ Latitude = 39.74386695629378m, Longitude = -105.00610500179027m },
+            DroneUrl = "http://localhost:85",
+            DispatchUrl = "http://localhost:83"
+        });
         
-        }
+    }
+    public async Task makeOrder()
+    {
 
-        public FrontEndToDispatchGateway GetGateway()
-            => new FrontEndToDispatchGateway
-            {
-                Url = "http://localhost:80"
-            };
+        var DeliveryLocation = await converter.CoordsFromAddress(DeliveryAddress);
 
-        public async Task makeOrder()
+        string OrderId = BaseEntity.GenerateNewId();
+
+        await _frontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest {
+            OrderId = OrderId,
+            TimeOrdered = DateTime.Now,
+            CustomerName = CustomerName,
+            DeliveryLocation = DeliveryLocation,
+            DeliveryAddress = DeliveryAddress
+        });
+
+        Console.Write("AHHHHHH~~~~~~~~~~");
+
+        var dispatchResponse = _gateway.EnqueueOrder(new EnqueueOrderRequest
         {
-            // get time they ordered it
-            custOrder.TimeOrdered = DateTime.Now;
-
-
-            // upload final object to the server. 
-            var r = await HttpMethods.Post("http://localhost:5127/DatabaseAccess/AddOrder", custOrder);
-            if (r.Headers.Location != null) custOrder.Id = r.Headers.Location.AbsoluteUri;
-            var response = await HttpMethods.Put(custOrder.Id,custOrder);
-
-            var dispatchResponse = _gateway.AddOrder(new AddOrderRequest
-            {
-                DeliveryLocation = custOrder.DeliveryLocation,
-                OrderId = custOrder.Id
-            });
+            OrderLocation = DeliveryLocation,
+            OrderId = OrderId,
+        });
             
-            Console.WriteLine(dispatchResponse);
-            // Navigate to page to display users current order. 
-            _navigationManager.NavigateTo("/userPage", false);
-        }
+        Console.WriteLine(dispatchResponse);
+        // Navigate to page to display users current order. 
+        _navigationManager.NavigateTo("/userPage", false);
     }
 }

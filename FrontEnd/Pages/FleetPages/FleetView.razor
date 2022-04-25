@@ -1,7 +1,7 @@
 ﻿@page "/"
 
 @* @inject Services.HttpMethods restPoint *@
-@using Domain.Entities
+@inject Services.FrontEndToDatabaseGateway _frontEndToDatabaseGateway;
 @inject Services.GlobalDataSvc globalData
 @inject HttpClient _client
 @inject Radzen.DialogService dialogService
