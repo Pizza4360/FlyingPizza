@@ -27,16 +27,28 @@
 </div>
 <script src="_framework/blazor.webassembly.js"></script>
 <script>
+    var geocoder
+
+    function initGeocoder() {
+        geocoder = new google.maps.Geocoder();
+
+    }
     function codeAddress(address) {
+
+        //return address;
+        /*geocoder.geocode(address).then((result) => { const { results } = result;
+            return result; */
         geocoder.geocode( { 'address': address}, function(results, status) {
             if (status == 'OK') {
-                return results[0]
+                return "OK"
             } else {
-                alert('Geocode was not successful for the following reason: ' + status);
+                return "NOT OK"
+                //alert('Geocode was not successful for the following reason: ' + status);
             }
-        })
+        }) 
     }
 </script>
+
 <script>
     var map
     let markers = {}

@@ -31,8 +31,8 @@ public class DatabaseAccess : ControllerBase
         return fleet;
     }
     
-    [HttpPost("AddOrder")]
-    public async Task<IActionResult> AddOrder(Order order)
+    [HttpPost("CreateOrder")]
+    public async Task<IActionResult> CreateOrder(Order order)
     {
         await _orders.CreateAsync(order);
         return Ok();

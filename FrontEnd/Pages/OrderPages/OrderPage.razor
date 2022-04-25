@@ -1,8 +1,10 @@
 ﻿@page "/order"
 @using FrontEnd.Services
+@using Domain
 @inject FrontEndToDispatchGateway _gateway 
 @inject NavigationManager _navigationManager
 @inject FrontEndToDatabaseGateway _frontEndToDatabaseGateway
+@inject Domain.ConvertAddressToGeoLocation converter
 
 <div class="status-bar">
     <b>Create New Order</b>
@@ -10,10 +12,10 @@
 
 <div class="right">
     <b>Customer Name: </b>
-    <RadzenTextBox id="CUST_NAME" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.CustomerName = e.Value.ToString()) />
+    <RadzenTextBox id="CUST_NAME" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => CustomerName = e.Value.ToString()) />
     <br />
     <b>Address: </b> 
-    <RadzenTextBox id="ADDRESS" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => custOrder.DeliveryAddress = e.Value.ToString()) />
+    <RadzenTextBox id="ADDRESS" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => DeliveryAddress = e.Value.ToString()) />
     <br />
     <RadzenButton id="ORDER_SUBMIT" Click=@(args => makeOrder()) Style="width: 200px" Text="Create Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
 </div>

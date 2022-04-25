@@ -7,6 +7,7 @@ using Domain.Entities;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using MongoDB.Bson;
 using Newtonsoft.Json.Linq;
 
 namespace FrontEnd.Pages.OrderPages;
@@ -15,51 +16,47 @@ partial class OrderPage : ComponentBase
 {
     [Inject]
     public IJSRuntime JsRuntime {get;set; }
-    Order custOrder;
 
 
-    // = new ("http://localhost:80"); 
+
+    public string DeliveryAddress;
+    public string CustomerName;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("initGeocoder");
+        }
+    }
     protected override void OnInitialized()
     {
         _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
-
-        // Make a new order for the customer to use when the page boots up
-        custOrder = new Order();
-            
+         converter = new ConvertAddressToGeoLocation();
     }
 
     public FrontEndToDispatchGateway GetGateway()
         => new FrontEndToDispatchGateway();
 
         
-    public async Task<GeoLocation> GetGeoLocationFromAddress(string address)
-    {
-        var js = JObject.Parse(await JsRuntime.InvokeAsync<string>("codeAddress", address));
-        var lng = decimal.Parse(Convert.ToString(js["results"]?[0]?["geometry"]?["location"]?["lng"]) ?? string.Empty);
-        var lat = decimal.Parse(Convert.ToString(js["results"]?[0]?["geometry"]?["location"]?["lat"]) ?? string.Empty);
-        return new GeoLocation
-        {
-            Latitude = lat,
-            Longitude = lng 
-        };
-    }
 
     public async Task makeOrder()
     {
-        // get time they ordered it
-        custOrder.TimeOrdered = DateTime.Now;
+
+        var DeliveryLocation = await converter.CoordsFromAddress(DeliveryAddress);
 
 
-        // upload final object to the server. 
-        // _frontEndToDatabaseGateway.CreateOrder()
-        var r = await HttpMethods.Post("http://localhost:80/DatabaseAccess/EnqueueOrder", custOrder);
-        if (r.Headers.Location != null) custOrder.Id = r.Headers.Location.AbsoluteUri;
-        var response = await HttpMethods.Put(custOrder.Id,custOrder);
+        string orderId = (await _frontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest {
+            TimeOrdered = DateTime.Now,
+            CustomerName = CustomerName,
+            DeliveryLocation = DeliveryLocation,
+            CustomerAddress = DeliveryAddress
+        })).OrderId;
 
         var dispatchResponse = _gateway.EnqueueOrder(new EnqueueOrderRequest
         {
-            OrderLocation = custOrder.DeliveryLocation,
-            OrderId = custOrder.Id
+            OrderLocation = DeliveryLocation,
+            OrderId = orderId
         });
             
         Console.WriteLine(dispatchResponse);
