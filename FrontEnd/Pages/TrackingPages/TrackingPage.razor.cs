@@ -28,13 +28,13 @@ partial class TrackingPage : ComponentBase
     {
         if (firstRender)
         {
-            _FrontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
             await JsRuntime.InvokeVoidAsync("initGoogleMap", new { Lat = 39.74386695629378, Lng = -105.00610500179027 });
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
+        _FrontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
         await DisplayDroneAsync("Delivering");
         await Temp();
     }
