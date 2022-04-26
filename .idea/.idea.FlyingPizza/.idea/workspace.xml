@@ -16,10 +16,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="">
+    <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="Saving to switch to Composite-key style implmentation">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DatabaseAccess/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DatabaseAccess/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dispatch/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Dispatch/Program.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Domain/Entities/CompositeDocument.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/CompositeDocument.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/CompositeRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/CompositeRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/CompositeRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/RepositorySettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/RepositorySettings.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,16 +61,19 @@
     </option>
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1e8feaadf5c3fa14d36ea2a638c432a2e1a47b7837d8b83d88303c5d9c15cf/AsyncValueTaskMethodBuilderT.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c6ad457575d35dcbff26c9a5e3fb1d92f1d3c55f25ef6ebf475367b5d8/List.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CompositeOrderPrototyping/Repo.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/575c31ecc35a636b6f962cb71d53992552941a18982aae1c8e6c16305cc3761b/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c1da7b6c7c71a954fe3eb2531c6476711b3e6d93a8d76795386d326bb9dbc/ExecutionContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/efd3e9c4749621d4a53b45d7117d2a581e02a265c444a040f1387a155db/Dictionary.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Domain/GatewayDefinitions/BaseGateway.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/969cc68a19b851dbd1c752f325bdd20359c55478c769fbdaa78b42d99b2c/BsonClassMapSerializer.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/FrontEnd/Services/FrontEndToDatabaseGateway.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1e8feaadf5c3fa14d36ea2a638c432a2e1a47b7837d8b83d88303c5d9c15cf/AsyncValueTaskMethodBuilderT.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c6ad457575d35dcbff26c9a5e3fb1d92f1d3c55f25ef6ebf475367b5d8/List.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1af51483c9bf18871cce649b9f966dd7be686536f998c33bba3c5fc4adea4a0/Task.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37565caec58e43d79f8d7b166d8a3628130400/0c/15123d88/IMongoCollection`1.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/CompositeOrderPrototyping/Repo.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/575c31ecc35a636b6f962cb71d53992552941a18982aae1c8e6c16305cc3761b/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c1da7b6c7c71a954fe3eb2531c6476711b3e6d93a8d76795386d326bb9dbc/ExecutionContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/sonia/Documents/god_save_the_repo/FlyingPizza/Domain/Entities/CompositeDocument.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fd24584d19b30e71661e6cf1e2b72e725ac87c09096b9fcbf5f344bff357d/DefaultInterpolatedStringHandler.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7ae1d944d557dfac4e41c4c4518ee2afb845c9a63da7bbf8c63a72d36fda393/IMongoCollection.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
@@ -262,7 +270,7 @@
       <workItem from="1650912728798" duration="31495000" />
       <workItem from="1650944770086" duration="16622000" />
       <workItem from="1650964302843" duration="11377000" />
-      <workItem from="1650987106315" duration="1211000" />
+      <workItem from="1650987106315" duration="16598000" />
     </task>
     <task id="LOCAL-00001" summary="adding untracked files from merge">
       <created>1650835990823</created>
@@ -362,7 +370,14 @@
       <option name="project" value="LOCAL" />
       <updated>1650976485126</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Saving to switch to Composite-key style implmentation">
+      <created>1650988371936</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1650988371936</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -397,7 +412,8 @@
     <MESSAGE value="Adding DTO support to ICompositeRepository.cs and associated method calls from DispatchController.cs" />
     <MESSAGE value="Half way done checking new implementation" />
     <MESSAGE value="Mostly done. Still need to figure out how to push and pull items from nested objects/arrays." />
-    <option name="LAST_COMMIT_MESSAGE" value="Mostly done. Still need to figure out how to push and pull items from nested objects/arrays." />
+    <MESSAGE value="Saving to switch to Composite-key style implmentation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Saving to switch to Composite-key style implmentation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -453,6 +469,19 @@
             </endOffsets>
           </properties>
           <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs</url>
+          <line>49</line>
+          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Domain\RepositoryDefinitions\Compository.cs" initialLine="45" containingFunctionPresentation="method 'CreateDroneAsync'">
+            <startOffsets>
+              <option value="1783" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1870" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

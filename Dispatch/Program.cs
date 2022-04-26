@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
 
 
 builder.Services.Configure<RepositorySettings>(builder.Configuration.GetSection("FleetDb"));
-builder.Services.AddSingleton<ICompositeRepository>(_ => new CompositeRepository(_.GetService<IOptions<RepositorySettings>>()));
+builder.Services.AddSingleton<ICompositeRepository>(_ => new Compository(_.GetService<IOptions<RepositorySettings>>()));
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 

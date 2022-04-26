@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using MongoDB.Bson;
 
 namespace Domain.RepositoryDefinitions;
 
@@ -12,8 +13,8 @@ public interface ICompositeRepository
 {
     public Task<List<DroneRecord>> GetDrones();
     public Task<List<Order>> GetOrders();
-    public Task<Task<CompositeDocument>> CreateDroneAsync(DroneRecord entity);
-    public Task<Task<CompositeDocument>> CreateOrderAsync(Order entity);
+    public Task<DronesOrderKey> CreateDroneAsync(DroneRecord entity);
+    public Task<BsonDocument> CreateOrderAsync(Order entity);
     public Task<DroneRecord> GetDroneByIdAsync(string id);
     public Task<Order> GetOrderByIdAsync(string id);
     public Task<DeleteResult> RemoveDroneAsync(string id);

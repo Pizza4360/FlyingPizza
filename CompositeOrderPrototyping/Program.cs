@@ -2,7 +2,6 @@
 
 
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using Dispatch;
 using Domain.DTO;
 using Domain.DTO.FrontEndDispatchCommunication;
@@ -14,7 +13,7 @@ using MongoDB.Bson;
 
 Console.WriteLine("Hello, World!");
 
-var repo = new CompositeRepository(Options.Create(new RepositorySettings
+var repo = new Compository(Options.Create(new RepositorySettings
 {
     ConnectionString = "mongodb+srv://capstone:Ms2KqQKc5U3gFydE@cluster0.rjlgf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
     DatabaseName = "Capstone",
@@ -43,7 +42,7 @@ var droneRecord = new DroneRecord
 };
 
 Console.WriteLine($"\n\nThe response from updating a document contains a copy of that entire document:\n" +
-                  $"{repo.CreateDroneAsync(droneRecord).Result.Result.ToJson()}");
+                  $"{repo.CreateDroneAsync(droneRecord).ToJson()}");
 
 var orderDoc = $"{{\"Items\":[\"pizza\",\"artichoke\",\"pineapple\",\"olives\",\"medium\",13.42],\"CustomerName\":\"Mickey Mouse\",\"DeliveryAddress\":\"1201 5th St,Denver,CO 80204\",\"DeliveryLocation\":{droneRecord.Destination},\"HasBeenDelivered\":false}}";
 Console.WriteLine($"{{\"$date\":\"{DateTime.Now.ToJson()}\"}}");
@@ -51,7 +50,7 @@ var newOrder = JsonSerializer.Deserialize<Order>(orderDoc);
 newOrder.TimeOrdered = DateTime.Now;
 
 Console.WriteLine($"\n\nAdd a new order and attach it to the new drone:\n" +
-                  $"{repo.CreateOrderAsync(newOrder).Result.Result.ToJson()}");
+                  $"{repo.CreateOrderAsync(newOrder).Result.ToJson()}");
 
 
 Console.WriteLine($"\n\nGet a drone record or an order by id. Let's test by setting the previous one to null:\n");
@@ -67,7 +66,7 @@ newOrder = repo.GetOrderByIdAsync(orderId).Result;
 Console.WriteLine($"after:\ndroneRecord:{droneRecord.ToJson()},\nnewOrder:{newOrder}" +
                   $"Now let's assign the order to the new drone");
 
-Console.WriteLine(repo.EnqueuOrder(new EnqueueOrderRequest{Order = newOrder}));
+Console.WriteLine(repo.EnqueueOrder(new EnqueueOrderRequest{Order = newOrder}));
 
 
 
