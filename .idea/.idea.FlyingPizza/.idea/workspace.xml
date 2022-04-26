@@ -16,19 +16,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="">
+    <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="Half way done checking new implementation">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CompositeOrderTest/.dockerignore" beforeDir="false" afterPath="$PROJECT_DIR$/CompositeOrderPrototyping/.dockerignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CompositeOrderTest/CompositeOrderTest.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/CompositeOrderPrototyping/CompositeOrderPrototyping.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CompositeOrderTest/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/CompositeOrderPrototyping/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CompositeOrderTest/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CompositeOrderTest/Repo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CompositeOrderPrototyping/Repo.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dispatch/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Dispatch/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/DTO/GeoLocation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/DTO/GeoLocation.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Entities/CompositeDocument.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/CompositeDocument.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Entities/Order.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Entities/Order.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/CompositeRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/CompositeRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FlyingPizza.sln" beforeDir="false" afterPath="$PROJECT_DIR$/FlyingPizza.sln" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -270,7 +261,7 @@
       <workItem from="1650901776357" duration="6081000" />
       <workItem from="1650912728798" duration="31495000" />
       <workItem from="1650944770086" duration="16622000" />
-      <workItem from="1650964302843" duration="6749000" />
+      <workItem from="1650964302843" duration="11215000" />
     </task>
     <task id="LOCAL-00001" summary="adding untracked files from merge">
       <created>1650835990823</created>
@@ -356,7 +347,14 @@
       <option name="project" value="LOCAL" />
       <updated>1650962809479</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Half way done checking new implementation">
+      <created>1650971400682</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1650971400682</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -389,7 +387,8 @@
     <MESSAGE value="Working prototype of updates and such" />
     <MESSAGE value="got updates working!!!!" />
     <MESSAGE value="Adding DTO support to ICompositeRepository.cs and associated method calls from DispatchController.cs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding DTO support to ICompositeRepository.cs and associated method calls from DispatchController.cs" />
+    <MESSAGE value="Half way done checking new implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Half way done checking new implementation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

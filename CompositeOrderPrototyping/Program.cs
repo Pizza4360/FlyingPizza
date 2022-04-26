@@ -60,11 +60,15 @@ var droneId = droneRecord.DroneId;
 droneRecord = null;
 newOrder = null;
 
-Console.WriteLine($"Before:\ndroneRecord: \"{droneRecord}\", order: {newOrder}\nWe'll wait for ten seconds to make sure the updates are finished.\n");
+Console.WriteLine($"Before:\ndroneRecord: \"{droneRecord}\", order: {newOrder}\nWe'll wait for a few seconds to make sure the updates are finished.\n");
 Thread.Sleep(15000);
 droneRecord = repo.GetDroneByIdAsync(droneId).Result;
 newOrder = repo.GetOrderByIdAsync(orderId).Result;
-Console.WriteLine($"after:\ndroneRecord:{droneRecord.ToJson()},\nnewOrder:{newOrder}");
+Console.WriteLine($"after:\ndroneRecord:{droneRecord.ToJson()},\nnewOrder:{newOrder}" +
+                  $"Now let's assign the order to the new drone");
+
+Console.WriteLine(repo.EnqueuOrder(new EnqueueOrderRequest{Order = newOrder}));
+
 
 
 // dispToSim.SendMessagePost<AddDroneRequest, AddDroneResponse>(

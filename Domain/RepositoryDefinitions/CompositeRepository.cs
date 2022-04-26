@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
+using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
@@ -33,18 +35,23 @@ public class CompositeRepository : ICompositeRepository
     }
 
 
-    /*public async Task<bool> AssignOrder(string orderId, string droneId)
+    public async Task<UpdateResult> AssignOrder(string orderId, string droneId)
     {
-        var drone = _compositeDocument.Fleet.First(x => x.DroneId == droneId);
-        var order = await RemoveOrderAsync(orderId);
-        if(drone != null) drone.Orders.Add(order);
-        else
+        var order = await GetOrderByIdAsync(orderId);
+        var drone = await GetDroneByIdAsync(droneId);
+        drone.Orders.Add(order);
+        await RemoveOrderAsync(orderId);
+        await UpdateDroneAsync(new UpdateDroneStatusRequest
         {
-            return false;
-        }
-        await UpdateDroneAsync(drone);
-        return true;
-    }*/
+            CurrentLocation = drone.CurrentLocation,
+            Destination = drone.Destination,
+            DroneId = droneId,
+            Orders = drone.Orders
+        });
+        var filter = Builders<CompositeDocument>.Filter.Eq($"Fleet.0.{{'DroneId':1}}", droneId);
+        var update = Builders<CompositeDocument>.Update.Push($"Fleet.0.{droneId}.Orders", order);
+        return await _collection.UpdateOneAsync(filter, update);
+    }
 
 
     public async Task<List<DroneRecord>> GetDrones() => Get() .Fleet;
@@ -82,8 +89,16 @@ public class CompositeRepository : ICompositeRepository
         return order;
     }
 
+
+    public async Task<UpdateResult> EnqueuOrder(EnqueueOrderRequest request)
+    {
+        var update = Builders<CompositeDocument>.Update .Push("Fleet.Orders", request.Order);
+        var filter = Builders<CompositeDocument>.Filter.Where(d => d.Fleet.Any(x => x.State == DroneState.Ready));
+        return await _collection.UpdateOneAsync(filter, update);
+    }
     public async Task<UpdateResult> UpdateDroneAsync(UpdateDroneStatusRequest request)
     {
+ ;
         var update = Builders<CompositeDocument>
                     .Update.Set($"Fleet.{request.DroneId}.Orders", request.Orders)
                     .Set($"Fleet.{request.DroneId}.State", request.State)
