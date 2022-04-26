@@ -43,7 +43,7 @@ public class SimDroneController : ControllerBase
                 DroneUrl = assignFleetRequest.DroneIp,
                 HomeLocation = assignFleetRequest.HomeLocation,
                 DroneId = assignFleetRequest.DroneId,
-                OrderId = null
+                Orders = null
             }, _gateway, 
             this);
         Console.WriteLine($"SimDrone successfully initialized.\nDrone -->{_drone}");

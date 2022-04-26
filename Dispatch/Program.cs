@@ -1,6 +1,4 @@
-using DatabaseAccess;
 using Domain.RepositoryDefinitions;
-using Microsoft.Extensions.Options;
 
 Console.WriteLine("hello world!!!");
 var builder = WebApplication.CreateBuilder(args);
@@ -17,17 +15,15 @@ builder.Services.AddCors(options =>
 
 #region repositories
 
-builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton<IOrdersRepository>(provider =>
-{
-    return new OrderRepository(provider.GetService<IOptions<OrdersDatabaseSettings>>());
-});
 
-builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
-builder.Services.AddSingleton<IFleetRepository>(provider =>
-{
-    return new FleetRepository(provider.GetService<IOptions<FleetDatabaseSettings>>());
-});
+// builder.Services.AddSingleton<IOrdersRepository>(provider =>
+// {
+//     return new OrderRepository(provider.GetService<IOptions<OrdersDatabaseSettings>>());
+// });
+
+
+builder.Services.Configure<RepositorySettings>(builder.Configuration.GetSection("FleetDb"));
+builder.Services.AddSingleton<ICompositeRepository>(_ => new CompositeRepository(/*provider.GetService<IOptions<FleetDatabaseSettings>>()*/));
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 

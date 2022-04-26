@@ -1,4 +1,4 @@
-﻿namespace DatabaseAccess;
+﻿namespace Domain.RepositoryDefinitions;
 
 public class RepositorySettings
 {

@@ -22,7 +22,7 @@ public class FleetViewTest
         //Xunit.Assert.Equal("Fleet Size: 2", check.Find($"b").TextContent);
 
         //check.Find($".rz-button").Click();
-        //check.Find("b").MarkupMatches("<b>DroneId:Currentlocation:Domain.DTO.Shared.GeoLocationDestination: Domain.DTO.Shared.GeoLocationStatus: Charging</b>");
+        //check.Find("b").MarkupMatches("<b>DroneUrl:Currentlocation:Domain.DTO.Shared.GeoLocationDestination: Domain.DTO.Shared.GeoLocationStatus: Charging</b>");
 
         
     }

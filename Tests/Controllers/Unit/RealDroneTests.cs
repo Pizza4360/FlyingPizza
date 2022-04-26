@@ -35,8 +35,8 @@ public class RealDroneTests
     //         DispatcherUrl = Constants.DispatcherIp,
     //         DroneIp = Constants.TelloIp,
     //         HomeLocation = myTable,
-    //         Id = Constants.DroneId,
-    //         OrderId = Constants.TestOrderId,
+    //         OrderId = Constants.DroneUrl,
+    //         Orders = Constants.TestOrderId,
     //         State = DroneState.Ready
     //     };
     //     var testTello = new TelloDrone(droneRecord, testGateway, false);

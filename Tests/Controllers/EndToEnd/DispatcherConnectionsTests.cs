@@ -69,7 +69,7 @@
 //
 //             // Mocked items
 //             var arrayOfDrones = new DroneRecord[] {Constants.TestRecord, Constants.TestRecord};
-//             var arrayOfOrders = new Order[] {Constants.TestOrder, Constants.TestOrder};
+//             var arrayOfOrders = new OrderId[] {Constants.TestOrder, Constants.TestOrder};
 //
 //             var databaseFactory = new ArrayMockDatabaseFactory(arrayOfDrones, arrayOfOrders);
 //             var mockDroneMongo = databaseFactory.getDroneDatabase();
@@ -171,7 +171,7 @@
 //         //
 //         //     var testDeliverOrderDto = new AssignDeliveryRequest
 //         //     {
-//         //        OrderId = "testOrderId",
+//         //        Orders = "testOrderId",
 //         //        OrderLocation = new GeoLocation
 //         //        {
 //         //            Latitude = 39.7440m,

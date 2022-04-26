@@ -45,7 +45,7 @@ public class TelloDrone : Drone
     public TelloDrone(DroneRecord record, DroneToDispatchGateway gateway, bool offline = true) : base(record, gateway)
     {
         Route = new List<GeoLocation>();
-        Id = record.Id;
+        OrderId = record.OrderId;
         BadgeNumber = record.BadgeNumber;
         State = DroneState.Ready;
         CurrentLocation = record.HomeLocation;

@@ -1,67 +1,40 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Domain.DTO;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Domain.Entities
+namespace Domain.Entities;
+
+public class DroneRecord
 {
-    public class DroneRecord : BaseEntity
+    [BsonId] 
+    public string DroneId{get;set;}
+    public List<Order> Orders{get;set;}
+    public Guid BadgeNumber { get; set; }
+    public GeoLocation Destination { get; set; }
+    public GeoLocation CurrentLocation { get; set; }
+    public GeoLocation HomeLocation { get; set; }
+    public DroneState State { get; set; }
+    public string DroneUrl { get; set; }
+    public string DispatchUrl { get; set; }
+    public override string ToString()
     {
-
-        [BsonElement("BadgeNumber")]
-        [JsonPropertyName("BadgeNumber")]
-        public Guid BadgeNumber { get; set; }
-
-        [BsonElement("OrderId")]
-        [JsonPropertyName("OrderId")]
-        public string OrderId { get; set; }
-
-        [BsonElement("Destination")]
-        [JsonPropertyName("Destination")]
-        public GeoLocation Destination { get; set; }
-
-        [BsonElement("CurrentLocation")]
-        [JsonPropertyName("CurrentLocation")]
-        public GeoLocation CurrentLocation { get; set; }
-
-        [BsonElement("HomeLocation")]
-        [JsonPropertyName("HomeLocation")]
-        public GeoLocation HomeLocation { get; set; }
-
-        [BsonElement("State")]
-        [JsonPropertyName("State")]
-        public DroneState State { get; set; }
-
-        [BsonElement("DroneId")]
-        public string DroneId { get; set; }
-
-        [BsonElement("DroneUrl")]
-        [JsonPropertyName("DroneUrl")]
-        public string DroneUrl { get; set; }
-
-        [BsonElement("DispatchUrl")]
-        [JsonPropertyName("DispatchUrl")]
-        public string DispatchUrl { get; set; }
-
-        public override string ToString()
-        {
-            return $"Id:{DroneId}" +
-                   $"Currentlocation:{CurrentLocation}\n" +
-                   $"Destination:{Destination}\n" +
-                   $"Status:{State}";
-        }
-
-        public override bool Equals(object o)
-        {
-            if (o == null ||
-                o.GetType() != GetType()) return false;
-            DroneRecord oo = (DroneRecord) o;
-            return oo.BadgeNumber == BadgeNumber &&
-                   oo.CurrentLocation.Equals(CurrentLocation) &&
-                   oo.Destination.Equals(Destination) &&
-                   oo.State.Equals(State) &&
-                   oo.DispatchUrl.Equals(DispatchUrl);
-        }
+        return $"Orders:{Orders}" +
+               $"Currentlocation:{CurrentLocation}\n" +
+               $"Destination:{Destination}\n" +
+               $"Status:{State}";
+    }
+    public override bool Equals(object o)
+    {
+        if (o == null ||
+            o.GetType() != GetType()) return false;
+        DroneRecord oo = (DroneRecord) o;
+        return oo.BadgeNumber == BadgeNumber &&
+               oo.CurrentLocation.Equals(CurrentLocation) &&
+               oo.Destination.Equals(Destination) &&
+               oo.State.Equals(State) &&
+               oo.DispatchUrl.Equals(DispatchUrl);
     }
 }

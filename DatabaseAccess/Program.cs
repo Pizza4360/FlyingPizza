@@ -22,16 +22,13 @@ public class Program
 
         #region repositories
 
-        builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-        builder.Services.AddSingleton<IOrdersRepository>(provider => new OrderRepository(provider.GetService<IOptions<OrdersDatabaseSettings>>()));
+        builder.Services.Configure<RepositorySettings>(builder.Configuration.GetSection("FleetDb"));
+        builder.Services.AddSingleton<ICompositeRepository>(_ => new CompositeRepository(/*provider.GetService<IOptions<FleetDatabaseSettings>>()*/));
 
-        builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
-        builder.Services.AddSingleton<IFleetRepository>(provider => new FleetRepository(provider.GetService<IOptions<FleetDatabaseSettings>>()));
-
-        builder.Services.AddControllers()
-               .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
         #endregion repositories
+        builder.Services.AddControllers()
+               .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
         var app = builder.Build();
 
@@ -54,4 +51,4 @@ public class Program
     }
 }
 
-// curl -X 'POST'  'http://localhost:5101/Dispatch/AddDrone'  -H 'accept: application/json'  -H 'Content-Type: application/json'  -d '{ "DroneId": "625cbcdd53108e735ee56351", "DroneId": "625cbcdd53108e735ee56351", "BadgeNumber": "ba9b96d2-fb0f-455b-b0bf-33693e171acc", "HomeLocation": { "Latitude": 39.74386695629378, "Longitude": -105.00610500179027 }, "DispatchUrl": "http://localhost:5102", "DispatchUrl": "http://localhost:5101" }'
+// curl -X 'POST'  'http://localhost:5101/Dispatch/AddDrone'  -H 'accept: application/json'  -H 'Content-Type: application/json'  -d '{ "DroneUrl": "625cbcdd53108e735ee56351", "DroneUrl": "625cbcdd53108e735ee56351", "BadgeNumber": "ba9b96d2-fb0f-455b-b0bf-33693e171acc", "HomeLocation": { "Latitude": 39.74386695629378, "Longitude": -105.00610500179027 }, "DispatchUrl": "http://localhost:5102", "DispatchUrl": "http://localhost:5101" }'

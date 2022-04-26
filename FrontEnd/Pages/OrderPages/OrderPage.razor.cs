@@ -43,7 +43,7 @@ partial class OrderPage : ComponentBase
     public async Task<AddDroneResponse> AddDrone() {
         return await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
         {
-            DroneId = BaseEntity.GenerateNewId(),
+            DroneId = ObjectId.GenerateNewId(),
             BadgeNumber = Guid.NewGuid(),
             HomeLocation = new GeoLocation{ Latitude = 39.74386695629378m, Longitude = -105.00610500179027m },
             DroneUrl = "http://localhost:85",
@@ -56,22 +56,26 @@ partial class OrderPage : ComponentBase
 
         var DeliveryLocation = await converter.CoordsFromAddress(DeliveryAddress);
 
-        string OrderId = BaseEntity.GenerateNewId();
+        var id = BaseEntity.GenerateNewId();
 
-        await _frontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest {
-            OrderId = OrderId,
+        var order = new Order
+        {
+            OrderId = id,
             TimeOrdered = DateTime.Now,
             CustomerName = CustomerName,
             DeliveryLocation = DeliveryLocation,
             DeliveryAddress = DeliveryAddress
+        };
+
+        await _frontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest {
+            Order = order
         });
 
         Console.Write("AHHHHHH~~~~~~~~~~");
 
         var dispatchResponse = _gateway.EnqueueOrder(new EnqueueOrderRequest
         {
-            OrderLocation = DeliveryLocation,
-            OrderId = OrderId,
+            Order = order,
         });
             
         Console.WriteLine(dispatchResponse);

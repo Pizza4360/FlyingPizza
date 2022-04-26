@@ -32,14 +32,14 @@ namespace SimDrone.Controllers
         InitDroneRequest initInfo)
         {
             Console.WriteLine(initInfo.ToJsonString());
-            var okay = _drone.Id == null;
+            var okay = _drone.OrderId == null;
             if(okay)
             {
                 _gateway = new DroneToDispatchGateway{ Url = initInfo.DroneIp };
             }
             return Task.FromResult(new InitDroneResponse
             {
-                Id = initInfo.DroneId,
+                OrderId = initInfo.DroneUrl,
                 Okay = okay
             });
         }

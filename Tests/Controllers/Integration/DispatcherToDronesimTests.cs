@@ -22,7 +22,7 @@ namespace Tests.Controllers.Integration
             var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
             var testUpdateDto = new DroneStatusUpdateRequest
             {
-                DroneId = "something",
+                DroneUrl = "something",
                 Location = new GeoLocation
                 {
                     Latitude = 69,

@@ -8,7 +8,7 @@ namespace Domain.DTO.DroneDispatchCommunication;
 
 public class UpdateDroneStatusRequest
 {
-    [JsonPropertyName("DroneId")]
+    [JsonPropertyName("DroneUrl")]
     public string DroneId{get;set;}
 
     [JsonPropertyName("Location")]

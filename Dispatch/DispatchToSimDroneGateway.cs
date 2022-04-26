@@ -8,14 +8,14 @@ namespace Dispatch;
 
 public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
 {
-    private IFleetRepository _fleet;
+    private ICompositeRepository _fleet;
     // private IOrdersRepository _orders;
     private async Task<string> Endpoint(string currentDroneId)
     {
-        return (await _fleet.GetByIdAsync(currentDroneId)).DroneUrl;
+        return (await _fleet.GetDroneByIdAsync(currentDroneId)).DroneUrl;
     }
     
-    public DispatchToSimDroneGateway(IFleetRepository fleet/*, IOrdersRepository orders*/)
+    public DispatchToSimDroneGateway(ICompositeRepository fleet/*, IOrdersRepository orders*/)
     {
         _fleet = fleet;
         // _orders = orders;
@@ -57,8 +57,8 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
 
     public async Task<AssignDeliveryResponse?> AssignDelivery(AssignDeliveryRequest assignDeliveryRequest)
     {
-        var url = await Endpoint(assignDeliveryRequest.DroneId);
-        Console.WriteLine($"\n\nChoosing drone {assignDeliveryRequest.DroneId} url:{url}\n\n\n");
+        var url = await Endpoint(assignDeliveryRequest.DroneUrl);
+        Console.WriteLine($"\n\nChoosing drone {assignDeliveryRequest.DroneUrl} url:{url}\n\n\n");
         return await SendMessagePost<AssignDeliveryRequest, AssignDeliveryResponse>(
             $"{url}/SimDrone/AssignDelivery", assignDeliveryRequest);
     }

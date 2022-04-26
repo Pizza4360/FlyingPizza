@@ -75,7 +75,7 @@ partial class TrackingPage : ComponentBase
             new JsMarker{
                 lat = (double)x.CurrentLocation.Latitude,
                 lng = (double)x.CurrentLocation.Longitude,
-                title = x.Id,
+                title = x.DroneId.ToString(),
                 color = x.State.GetColor()
             }).ToDictionary(x => x.title, x => x);
         await JsRuntime.InvokeVoidAsync("updateAll", markers);

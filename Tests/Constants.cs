@@ -37,12 +37,12 @@ namespace Tests
         {
             BadgeNumber = TestBadgeNumber,
             DispatcherUrl = Url,
-            Id = DroneId,
+            DroneId = DroneId,
             DroneIp = DispatcherIp,
             HomeLocation = HomeLocation,
             Destination = Destination,
             CurrentLocation = HomeLocation,
-            OrderId  = TestOrderId,
+            Orders  = TestOrderId,
             State = DroneState.Ready
         };
         
@@ -84,7 +84,7 @@ namespace Tests
         {
             DeliveryAddress = TestDeliveryAddress,
             TimeDelivered = TestTimeDelivered,
-            Id = TestOrderId,
+            OrderId = TestOrderId,
             TimeOrdered = TestTimeDelivered,
             DeliveryLocation = TestDeliveryLocation,
             CustomerName = TestCustomerName
@@ -121,7 +121,7 @@ namespace Tests
         private static Domain.DTO.FrontEndDispatchCommunication.EnqueueOrderRequest
         _enqueueOrderRequest= new()
         {
-            OrderId = TestOrderId,
+            Order = TestOrderId,
             
         };
 

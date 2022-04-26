@@ -2,6 +2,7 @@ using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace DatabaseAccess.Controllers;
 
@@ -9,25 +10,23 @@ namespace DatabaseAccess.Controllers;
 [Route("[controller]")]
 public class DatabaseAccess : ControllerBase
 {
-    
-
     private readonly ILogger<DatabaseAccess> _logger;
-    private IFleetRepository _fleet;
-    private IOrdersRepository _orders;
+    private ICompositeRepository _repository;
+    private ICompositeRepository _composite;
     
     public DatabaseAccess(
-        ILogger<DatabaseAccess> logger, IFleetRepository fleet, IOrdersRepository orders)
+        ILogger<DatabaseAccess> logger, ICompositeRepository repository, ICompositeRepository composite)
     {
         _logger = logger;
-        _fleet = fleet;
-        _orders = orders;
+        _repository = repository;
+        _composite = composite;
     }
 
     [HttpGet("GetFleet")]
     public async Task<List<DroneRecord>> GetFleet()
     {
-        Console.WriteLine("got a request to get the fleet...");
-        var fleet =  await _fleet.GetAllAsync();
+        Console.WriteLine("got a request to get the repository...");
+        var fleet =  await _repository.GetDrones();
         Console.WriteLine("Got back" + string.Join("\n", fleet));
         return fleet;
     }
@@ -35,19 +34,17 @@ public class DatabaseAccess : ControllerBase
     [HttpPost("CreateOrder")]
     public async Task<CreateOrderResponse> CreateOrder(Order order)
     {
-        await _orders.CreateAsync(order);
+        // await _composite.CreateAsync(order);
+        await _composite.CreateOrderAsync(order);
         return new CreateOrderResponse();
     }
     
     [HttpGet("GetDrone")]
     public DroneRecord GetDrone(string id)
     {
-        return _fleet.GetByIdAsync(id).Result;
+        return _repository.GetDroneByIdAsync(id).Result;
     }
 
     [HttpGet("GetOrder")]
-    public Order GetOrder(string id)
-    {
-        return _orders.GetByIdAsync(id).Result;
-    }
+    public async Task<Order> GetOrder(string id) =>await _composite.GetOrderByIdAsync(id);
 }

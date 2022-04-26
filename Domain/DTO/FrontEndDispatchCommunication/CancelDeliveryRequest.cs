@@ -4,6 +4,6 @@ namespace Domain.DTO.FrontEndDispatchCommunication;
 
 public class CancelDeliveryRequest
 {
-    [JsonPropertyName("OrderId")]
+    [JsonPropertyName("Orders")]
     public string OrderId{get;set;}
 }

@@ -1,11 +1,12 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.DTO.FrontEndDispatchCommunication;
+using MongoDB.Bson;
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
 public class InitDroneResponse
 {
-    [JsonPropertyName("DroneId")]
+    [JsonPropertyName("DroneUrl")]
     public string DroneId { get; set; }
         
     [JsonPropertyName("Okay")]

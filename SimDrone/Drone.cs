@@ -149,15 +149,15 @@ public class Drone : DroneRecord
     public async Task<AssignDeliveryResponse> DeliverOrder(AssignDeliveryRequest request)
     {
         await UpdateStatus(DroneState.Delivering);
-        await TravelTo(request.OrderLocation);
+        await TravelTo(request.Order.DeliveryLocation);
         Console.WriteLine("Done with delivery, returning home.");
         await UpdateStatus(DroneState.Returning);
         await TravelTo(HomeLocation);
         await UpdateStatus(DroneState.Ready);
+        Orders.Add(request.Order);
         return new AssignDeliveryResponse
         {
             DroneId = DroneId,
-            OrderId = OrderId,
             Success = true
         };
     }

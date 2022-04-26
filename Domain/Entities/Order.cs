@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 using Domain.DTO;
+
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities;
 
-[BsonDiscriminator("Order")]
-public class Order : BaseEntity
+[BsonDiscriminator("OrderId")]
+public class Order
 {
-    [BsonElement("DroneId")]
-    public string DroneId { get; set; }
+    [BsonElement("OrderId")]
+    public string OrderId;
     
     [BsonElement("Items")]
     [JsonPropertyName("Items")]
@@ -40,13 +41,13 @@ public class Order : BaseEntity
     [BsonIgnoreIfNull]
     public DateTime? TimeDelivered { get; set; }
 
-    [BsonElement("BadgeNumber")]
-    [JsonPropertyName("BadgeNumber")]
-    [BsonRepresentation(BsonType.String)]
-    public Guid BadgeNumber { get; set; }
-
     [BsonElement("HasBeenDelivered")]
     [JsonPropertyName("HasBeenDelivered")]
     [BsonIgnoreIfNull]
     public bool HasBeenDelivered => TimeDelivered != null;
+
+    public override string ToString()
+    {
+        return this.ToJson();
+    }
 }
