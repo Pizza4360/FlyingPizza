@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using MongoDB.Bson;
@@ -9,6 +10,8 @@ namespace Domain.DTO.DroneDispatchCommunication;
 public class UpdateDroneStatusRequest
 {
     public string DroneId{get;set;}
-    public GeoLocation Location { get; set; }
+    public GeoLocation CurrentLocation { get; set; }
     public DroneState State { get; set; }
+    public List<Order> Orders{get;set;}
+    public GeoLocation Destination{get;set;}
 }

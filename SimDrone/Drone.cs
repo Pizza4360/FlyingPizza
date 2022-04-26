@@ -50,7 +50,7 @@ public class Drone : DroneRecord
             {
                 DroneId = DroneId,
                 State = State,
-                Location = CurrentLocation
+                CurrentLocation = CurrentLocation
             });
         return response;
     }

@@ -23,7 +23,7 @@ namespace Tests.Controllers.Integration
             var testUpdateDto = new DroneStatusUpdateRequest
             {
                 DroneUrl = "something",
-                Location = new GeoLocation
+                CurrentLocation = new GeoLocation
                 {
                     Latitude = 69,
                     Longitude = 69

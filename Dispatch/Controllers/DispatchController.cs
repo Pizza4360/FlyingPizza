@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.RepositoryDefinitions;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Dispatch.Controllers;
 
@@ -124,10 +125,14 @@ public class DispatchController : ControllerBase
 
 
     [HttpPost("CompleteOrder")]
-    public async Task<bool> CompleteOrder(CompleteOrderRequest completeOrderRequest)
+    public async Task<CompleteOrderResponse> CompleteOrder(CompleteOrderRequest completeOrderRequest)
     {
         Console.WriteLine($"DispatchController.CompleteOrder -> {completeOrderRequest}");
-        return await _repository.UpdateOrderAsync(new Order{OrderId = completeOrderRequest.OrderId, TimeDelivered = DateTime.Now});
+        return new CompleteOrderResponse
+        {
+            IsAcknowledged = true,
+            UpdateResult = await _repository.UpdateOrderAsync(completeOrderRequest)
+        };
     }
 
     [HttpPost("EnqueueOrder")]
@@ -156,10 +161,10 @@ public class DispatchController : ControllerBase
         var droneRecord = new DroneRecord
         {
             DroneId = droneStatusRequest.DroneId,
-            CurrentLocation = droneStatusRequest.Location,
+            CurrentLocation = droneStatusRequest.CurrentLocation,
             State = droneStatusRequest.State
         };
-        await _repository.UpdateDroneAsync(droneRecord);
+        await _repository.UpdateDroneAsync(droneStatusRequest);
 
         var response = new UpdateDroneStatusResponse
         {
@@ -172,7 +177,8 @@ public class DispatchController : ControllerBase
             _unfilledOrders.Count <= 0)
         {
             Console.WriteLine($"\n\n\nDrone {droneStatusRequest.DroneId} is still delivering an order. Updating the status tho....");
-            response.IsCompletedSuccessfully = await _repository.UpdateDroneAsync(droneRecord);
+            response.IsCompletedSuccessfully = true;
+            response.UpdateResult = await _repository.UpdateDroneAsync(droneStatusRequest);
             Console.WriteLine($"The status of {droneStatusRequest.DroneId}'s db update is {response.IsCompletedSuccessfully}\n\n\n");
         }
         else
@@ -180,15 +186,15 @@ public class DispatchController : ControllerBase
             var orderDto = _unfilledOrders.Dequeue();
             Console.WriteLine($"Drone i{droneStatusRequest.DroneId} is ready for the next order, and we have more. Resending to order {orderDto.Order}\n\n\n");
             orderDto.DroneUrl = droneStatusRequest.DroneId;
-            await _dispatchToSimDroneGateway.AssignDelivery(orderDto);
-            response.IsCompletedSuccessfully = await _repository.UpdateDroneAsync(droneRecord);
+            response.IsCompletedSuccessfully = true;
+            response.UpdateResult = await _repository.UpdateDroneAsync(droneStatusRequest);
         }
         return response;
     }
 
         
     [HttpPost("{id:length(24)}")]
-    public async Task<ActionResult<DroneRecord>> GetDroneById(string requestedDroneId)
+    public async Task<ActionResult<DroneRecord>> GetDroneById(string requestedDroneId, string id)
     {
         Console.WriteLine($"DispatchController.Get -> {requestedDroneId}");
         var droneRecord = await _repository.GetDroneByIdAsync(requestedDroneId);

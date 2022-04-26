@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -14,20 +14,19 @@ public class CompositeRepository : ICompositeRepository
 {
     private readonly IMongoCollection<CompositeDocument>? _collection;
     private readonly CompositeDocument _compositeDocument;
-
+    private readonly FilterDefinition<CompositeDocument> _IdFilter;
 
     public CompositeRepository()
     {
         var mongoClient = new MongoClient("mongodb+srv://capstone:Ms2KqQKc5U3gFydE@cluster0.rjlgf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority");
         var mongoDatabase = mongoClient.GetDatabase("Capstone");
         _collection = mongoDatabase.GetCollection<CompositeDocument>("CompositeTest");
-
-        _compositeDocument = _collection.Find(x => true)
-                                        .FirstOrDefault();
+        _compositeDocument = _collection.Find(x => true) .FirstOrDefault();
+        _IdFilter = Builders<CompositeDocument>.Filter.Eq("_id",  BsonObjectId.Create(_compositeDocument._id));
     }
 
 
-    public async Task<bool> AssignOrder(string orderId, string droneId)
+    /*public async Task<bool> AssignOrder(string orderId, string droneId)
     {
         var drone = _compositeDocument.Fleet.First(x => x.DroneId == droneId);
         var order = await RemoveOrderAsync(orderId);
@@ -38,7 +37,7 @@ public class CompositeRepository : ICompositeRepository
         }
         await UpdateDroneAsync(drone);
         return true;
-    }
+    }*/
 
 
     public async Task<List<DroneRecord>> GetDrones() => Get() .Fleet;
@@ -60,15 +59,10 @@ public class CompositeRepository : ICompositeRepository
         => (await GetDrones()).First(x => x.DroneId == id);
 
 
-    public async Task<bool> RemoveDroneAsync(string id)
+    public Task<DeleteResult> RemoveDroneAsync(string id)
     {
-        var doc = Get();
-
-        doc.Fleet = doc.Fleet.Where(x => x.DroneId != id)
-                       .ToList();
-
-        await UpdateRepo();
-        return true;
+        var filter = Builders<CompositeDocument>.Filter.Eq("Fleet", new BsonObjectId(ObjectId.Parse(id)));
+        return _collection.DeleteOneAsync(filter);
     }
 
 
@@ -81,40 +75,22 @@ public class CompositeRepository : ICompositeRepository
         return order;
     }
 
-
-    public async Task<bool> UpdateDroneAsync(DroneRecord entity)
+    public async Task<UpdateResult> UpdateDroneAsync(UpdateDroneStatusRequest request)
     {
-        var record = Get()
-                    .Fleet.First(x => x.DroneId == entity.DroneId);
-        var index = _compositeDocument.Fleet.IndexOf(record);
-
-        if(index == -1)
-            return false;
-        Console.WriteLine("\n\n\n\n" + record);
-
-        record.CurrentLocation = record.CurrentLocation == null ? record.CurrentLocation : entity.CurrentLocation;
-        record.DroneId = record.DroneId == null ? record.DroneId : entity.DroneId;
-        record.Destination = record.Destination == null ? record.Destination : entity.Destination;
-        record.DispatchUrl = record.DispatchUrl == null ? record.DispatchUrl : entity.DispatchUrl;
-        record.BadgeNumber = record.BadgeNumber == null ? record.BadgeNumber : entity.BadgeNumber;
-        record.DroneUrl = record.DroneUrl == null ? record.DroneUrl : entity.DispatchUrl;
-        record.HomeLocation = record.HomeLocation == null ? record.HomeLocation : entity.HomeLocation;
-        record.Orders = record.Orders == null ? record.Orders : entity.Orders;
-        _compositeDocument.Fleet[index] = record;
-        Console.WriteLine("\n\n\n\n" + record);
-        await UpdateRepo();
-        return true;
+        var update = Builders<CompositeDocument>
+                    .Update.Set($"Fleet.{request.DroneId}.Orders", request.Orders)
+                    .Set($"Fleet.{request.DroneId}.State", request.State)
+                    .Set($"Fleet.{request.DroneId}.CurrentLocation", request.CurrentLocation)
+                    .Set($"Fleet.{request.DroneId}.Destination", request.Destination);
+        return await _collection.UpdateOneAsync(_IdFilter, update, new UpdateOptions {IsUpsert = true});
     }
 
 
-    public async Task<bool> UpdateOrderAsync(Order entity)
+    public async Task<UpdateResult> UpdateOrderAsync(CompleteOrderRequest request)
     {
-        var record = Get()
-                    .Orders.First(x => x.OrderId == entity.OrderId);
-
-        record.TimeDelivered = entity.TimeDelivered;
-        await UpdateRepo();
-        return true;
+        var update = Builders<CompositeDocument>
+                    .Update.Set($"Fleet.{request.OrderId}.TimeDelivered", request.Time);
+        return await _collection.UpdateOneAsync(_IdFilter, update, new UpdateOptions {IsUpsert = true});
     }
 
 
@@ -139,42 +115,24 @@ public class CompositeRepository : ICompositeRepository
     }
 
 
-    public async Task CreateDroneAsync(DroneRecord newDrone)
+    public async Task<Task<CompositeDocument>> CreateDroneAsync(DroneRecord newDrone)
     {
-        _compositeDocument.Fleet.Add(newDrone);
-        await UpdateRepo();
+        var update = Builders<CompositeDocument>.Update.Push("Fleet", newDrone);
+        return _collection.FindOneAndUpdateAsync(_IdFilter, update);
     }
 
 
-    public async Task CreateOrderAsync(Order newOrder)
+    public async Task<Task<CompositeDocument>> CreateOrderAsync(Order newOrder)
     {
-        _compositeDocument.Orders.Add(newOrder);
-        await UpdateRepo();
+        var update = Builders<CompositeDocument>.Update.Push("Fleet", newOrder);
+        return _collection.FindOneAndUpdateAsync(_IdFilter, update);
     }
 
 
-    public async Task<bool> Update(Order order)
+    public async Task<Task<CompositeDocument>> RemoveOrderAsync(Order order)
     {
-        foreach(
-            var oldOrder
-            in _compositeDocument
-              .Orders
-              .Where(oldOrder => order.OrderId == oldOrder.OrderId))
-        {
-            oldOrder.TimeDelivered = order.TimeDelivered;
-            break;
-        }
-
-        await UpdateRepo();
-        return true;
-    }
-
-
-    public async Task<bool> RemoveOrderAsync(Order order)
-    {
-        _compositeDocument.Orders.Remove(order);
-        await UpdateRepo();
-        return true;
+        var update = Builders<CompositeDocument>.Update.Pull("Orders", order);
+        return _collection.FindOneAndUpdateAsync(_IdFilter, update);
     }
 
 
