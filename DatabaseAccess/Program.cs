@@ -22,7 +22,7 @@ public class Program
 
         #region repositories
 
-        builder.Services.Configure<RepositorySettings>(builder.Configuration.GetSection("FleetDb"));
+        builder.Services.Configure<RepositorySettings>(builder.Configuration.GetSection("CompositeDb"));
         builder.Services.AddSingleton<ICompositeRepository>(_ => new CompositeRepository(/*provider.GetService<IOptions<FleetDatabaseSettings>>()*/));
 
 

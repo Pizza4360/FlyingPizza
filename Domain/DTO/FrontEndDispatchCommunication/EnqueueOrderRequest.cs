@@ -7,6 +7,5 @@ namespace Domain.DTO.FrontEndDispatchCommunication;
 public class EnqueueOrderRequest
    
 {
-    [JsonPropertyName("OrderId")]
     public Order Order { get; set; }
 }

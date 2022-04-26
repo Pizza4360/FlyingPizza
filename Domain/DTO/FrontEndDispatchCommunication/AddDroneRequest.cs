@@ -6,18 +6,9 @@ namespace Domain.DTO.FrontEndDispatchCommunication;
 
 public class AddDroneRequest
 {
-    [JsonPropertyName("DroneUrl")]
     public string DroneId { get; set; }
-        
-    [JsonPropertyName("BadgeNumber")]
-    public Guid BadgeNumber { get; set; }    
-        
-    [JsonPropertyName("HomeLocation")]
+    public Guid BadgeNumber { get; set; }
     public GeoLocation HomeLocation { get; set; }
-        
-    [JsonPropertyName("DroneUrl")]
     public string DroneUrl { get; set; }
-
-    [JsonPropertyName("DispatchUrl")]
     public string DispatchUrl { get; set; }
 }

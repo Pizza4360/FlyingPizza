@@ -183,7 +183,6 @@ public class DispatchController : ControllerBase
             await _dispatchToSimDroneGateway.AssignDelivery(orderDto);
             response.IsCompletedSuccessfully = await _repository.UpdateDroneAsync(droneRecord);
         }
-
         return response;
     }
 

@@ -41,8 +41,5 @@ public class Program
         builder.Services.AddScoped<DialogService>();
 
         await builder.Build().RunAsync();
-
-
-
     }
 }

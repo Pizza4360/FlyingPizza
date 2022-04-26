@@ -33,8 +33,9 @@ public class FrontEndToDispatchGateway : BaseGateway<App>
     public async Task<AddDroneResponse> AddDrone(AddDroneRequest request) 
         => await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DispatchUrl}/AddDrone", new AddDroneRequest {
         DroneId = request.DroneId,
-        DroneUrl = request.DroneUrl
-    });
+        DroneUrl = request.DroneUrl,
+        DispatchUrl = DispatchUrl
+        });
 
 
     public async Task<CancelDeliveryResponse> CancelDelivery(string id) =>

@@ -43,7 +43,7 @@ partial class OrderPage : ComponentBase
     public async Task<AddDroneResponse> AddDrone() {
         return await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
         {
-            DroneId = ObjectId.GenerateNewId(),
+            DroneId = BaseEntity.GenerateNewId(),
             BadgeNumber = Guid.NewGuid(),
             HomeLocation = new GeoLocation{ Latitude = 39.74386695629378m, Longitude = -105.00610500179027m },
             DroneUrl = "http://localhost:85",

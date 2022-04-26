@@ -7,9 +7,6 @@ namespace Domain.DTO.DroneDispatchCommunication;
 
 public class AssignDeliveryRequest
 {
-    [JsonPropertyName("OrderId")]
-    public Order Order { get; set; } 
-        
-    [JsonPropertyName("DroneUrl")]
+    public Order Order { get; set; }
     public string DroneUrl { get; set; }
 }
