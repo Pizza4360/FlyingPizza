@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseAccess", "DatabaseA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "putstuff", "putstuff\putstuff.csproj", "{37122D4F-34DB-4245-ACA9-6F1730A87079}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompositeOrderTest", "CompositeOrderTest\CompositeOrderTest.csproj", "{80E52887-E95A-44F2-934D-2F80A063A3D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompositeOrderPrototyping", "CompositeOrderPrototyping\CompositeOrderPrototyping.csproj", "{80E52887-E95A-44F2-934D-2F80A063A3D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

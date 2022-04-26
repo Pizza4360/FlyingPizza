@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -16,12 +17,18 @@ public class CompositeRepository : ICompositeRepository
     private readonly CompositeDocument _compositeDocument;
     private readonly FilterDefinition<CompositeDocument> _IdFilter;
 
-    public CompositeRepository()
+    public CompositeRepository(IOptions<RepositorySettings> fleetSettings) 
     {
-        var mongoClient = new MongoClient("mongodb+srv://capstone:Ms2KqQKc5U3gFydE@cluster0.rjlgf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority");
-        var mongoDatabase = mongoClient.GetDatabase("Capstone");
-        _collection = mongoDatabase.GetCollection<CompositeDocument>("CompositeTest");
-        _compositeDocument = _collection.Find(x => true) .FirstOrDefault();
+        var mongoClient = new MongoClient(
+            fleetSettings.Value.ConnectionString);
+
+        var mongoDatabase = mongoClient.GetDatabase(
+            fleetSettings.Value.DatabaseName);
+
+        _collection = mongoDatabase.GetCollection<CompositeDocument>(
+            fleetSettings.Value.CollectionName);
+
+        _compositeDocument = _collection.Find(x => true).FirstOrDefault();
         _IdFilter = Builders<CompositeDocument>.Filter.Eq("_id",  BsonObjectId.Create(_compositeDocument._id));
     }
 
@@ -124,7 +131,7 @@ public class CompositeRepository : ICompositeRepository
 
     public async Task<Task<CompositeDocument>> CreateOrderAsync(Order newOrder)
     {
-        var update = Builders<CompositeDocument>.Update.Push("Fleet", newOrder);
+        var update = Builders<CompositeDocument>.Update.Push("Orders", newOrder);
         return _collection.FindOneAndUpdateAsync(_IdFilter, update);
     }
 

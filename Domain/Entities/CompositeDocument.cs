@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace Domain.Entities;
-
+[BsonDiscriminator ]
 public class CompositeDocument
 {
     [BsonId]

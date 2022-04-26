@@ -41,7 +41,7 @@ namespace Domain.DTO
 
         public override string ToString()
         {
-            return $"{{Latitude:{Latitude},Longitude:{Longitude}}}";
+            return $"{{\"Latitude\":{Latitude},\"Longitude\":{Longitude}}}";
         }
 
 

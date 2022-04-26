@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <RootNamespace>CompositeOrderTest</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,7 +15,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Dispatch\Dispatch.csproj" />
       <ProjectReference Include="..\Domain\Domain.csproj" />
+      <ProjectReference Include="..\SimDrone\SimDrone.csproj" />
     </ItemGroup>
 
 </Project>

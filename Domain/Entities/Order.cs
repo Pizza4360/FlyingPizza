@@ -10,12 +10,17 @@ namespace Domain.Entities;
 [BsonDiscriminator("OrderId")]
 public class Order
 {
+    private string _id;
     [BsonElement("OrderId")]
-    public string OrderId;
-    
-    [BsonElement("Items")]
-    [JsonPropertyName("Items")]
-    public object[] Items { get; set; }
+    public string OrderId
+    {
+        get => _id ??= BaseEntity.GenerateNewId();
+        set => _id = value;
+    }
+
+    // [BsonElement("Items")]
+    // [JsonPropertyName("Items")]
+    // public string[] Items { get; set; }
 
     [BsonElement("CustomerName")]
     [JsonPropertyName("CustomerName")]
