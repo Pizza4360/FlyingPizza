@@ -56,18 +56,18 @@ public class Compository : ICompositeRepository
         
         _assignments =  mongoDatabase.GetCollection<Assignment>(repoSettings.Value.Assignments);
         _assignmentsFilter = Builders<Assignment>.Filter.Exists("Assignments");
+        TryAssignOrders();
+
         _timer = new Timer(TryAssignmentsCallback, null, 0, RefreshInterval);
         _stopwatch = new Stopwatch();
         _stopwatch.Start();
     }
 
-    public async Task<Tuple<DroneRecord, Assignment>> CreateDroneAsync(DroneRecord newDrone)
+    public async Task CreateDroneAsync(DroneRecord newDrone)
     {
-        var keyUpdateDefinition = Builders<Assignment>.Update.Push("Assignments", new Assignment
-        { ShouldNotifyDrone = true, DroneId = newDrone.DroneId, OrderId = string.Empty });
         await _fleet.InsertOneAsync(newDrone);
-        var assignmentsUpdateResult = await _assignments.FindOneAndUpdateAsync(_assignmentsFilter, keyUpdateDefinition);
-        return new Tuple<DroneRecord, Assignment>(newDrone, assignmentsUpdateResult);
+        var assignment = new Assignment {DroneId = newDrone.DroneId, OrderId = string.Empty, ShouldNotifyDrone = true};
+        await _assignments.InsertOneAsync(assignment);
     }
 
     public async Task<Order> EnqueueOrder(Order newOrder)
@@ -86,10 +86,10 @@ public class Compository : ICompositeRepository
 
 
     public async Task<List<string>> GetAvailableDrones()
-        => (await GetAssignments())
-          .Where(entry => entry.OrderId.Equals(string.Empty))
-          .Select(drone => drone.DroneId)
-          .ToList();
+    {
+        var assignments = await GetAssignments();
+        return (from assignment in assignments where assignment.OrderId.Equals(string.Empty) select assignment.DroneId).ToList();
+    }
 
 
     public async Task<DroneRecord> GetDroneByIdAsync(string id)
@@ -143,7 +143,7 @@ public class Compository : ICompositeRepository
         return await _orders.FindOneAndDeleteAsync(_ordersFilter, deleteOptions, CancellationToken.None);
     }
 
-    public async Task<Assignment> TryAssignOrders()
+    public async Task TryAssignOrders()
     {
         Console.WriteLine("trying to assign some orders...");
         var allOrders = await GetOrders();
@@ -151,8 +151,11 @@ public class Compository : ICompositeRepository
         var unassignedOrderIds = GetUnassignedOrderIds(allOrders, allAssignments);
         var availableDronesIds = await GetAvailableDrones();
         var newAssignments = GetNewAssignments(availableDronesIds, unassignedOrderIds);
-        var updateDefinition = Builders<Assignment>.Update.Set("Assignment", newAssignments);
-        return await _assignments.FindOneAndUpdateAsync(k => true, updateDefinition);
+
+        foreach(var updateDefinition in newAssignments.Select(newAssignment => Builders<Assignment>.Update.Set("OrderId", newAssignment.OrderId)))
+        {
+            await _assignments.FindOneAndUpdateAsync(k => true, updateDefinition);
+        }
     }
     private static List<Assignment> GetNewAssignments(IEnumerable<string> availableDronesIds, IEnumerable<string> unassignedOrderIds)
     {
@@ -166,7 +169,7 @@ public class Compository : ICompositeRepository
 
     private static IEnumerable<string> GetUnassignedOrderIds(IEnumerable<Order> allOrders, List<Assignment> keyMap)
     {
-        return allOrders.Select(x => x.OrderId).Where(orderId => keyMap.TrueForAll(y => y.OrderId != orderId));
+        return allOrders.Select(x => x.OrderId).Where(orderId => keyMap.TrueForAll(y => !y.OrderId.Equals(orderId)));
     }
 
 }

@@ -16,10 +16,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="Drone disappearing when delivering, but still delivering">
+    <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="added stopwatch to check for orders">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DatabaseAccess/Controllers/DatabaseAccess.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DatabaseAccess/Controllers/DatabaseAccess.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DatabaseAccess/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/DatabaseAccess/Properties/launchSettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrontEnd/Pages/OrderPages/OrderPage.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/FrontEnd/Pages/OrderPages/OrderPage.razor.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,6 +62,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1e8feaadf5c3fa14d36ea2a638c432a2e1a47b7837d8b83d88303c5d9c15cf/AsyncValueTaskMethodBuilderT.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/575c31ecc35a636b6f962cb71d53992552941a18982aae1c8e6c16305cc3761b/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/567aa18d430a3542037394d878e88b2e1c35b49c50a9a134f8a3b03c923e/MongoCollectionImpl.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c1da7b6c7c71a954fe3eb2531c6476711b3e6d93a8d76795386d326bb9dbc/ExecutionContext.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/CompositeOrderPrototyping/Repo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/51876386fdbc9f7d023118d9aa41d5f65b65fce13745eed5cab5ae88f5cd3/Ensure.cs" root0="SKIP_HIGHLIGHTING" />
@@ -129,7 +134,7 @@
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
-  <component name="RunManager" selected=".NET Launch Settings Profile.SimDrone">
+  <component name="RunManager" selected=".NET Project.CompositeOrderTest">
     <configuration name="CompositeOrderTest" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
@@ -420,7 +425,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651039614655</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="added stopwatch to check for orders">
+      <created>1651042556303</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1651042556303</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -458,7 +470,8 @@
     <MESSAGE value="Saving to switch to Composite-key style implmentation" />
     <MESSAGE value="comparing two versions" />
     <MESSAGE value="Drone disappearing when delivering, but still delivering" />
-    <option name="LAST_COMMIT_MESSAGE" value="Drone disappearing when delivering, but still delivering" />
+    <MESSAGE value="added stopwatch to check for orders" />
+    <option name="LAST_COMMIT_MESSAGE" value="added stopwatch to check for orders" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -490,27 +503,14 @@
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/DatabaseAccess/Controllers/DatabaseAccess.cs</url>
-          <line>27</line>
-          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\DatabaseAccess\Controllers\DatabaseAccess.cs" initialLine="27" containingFunctionPresentation="method 'GetFleet'">
-            <startOffsets>
-              <option value="765" />
-            </startOffsets>
-            <endOffsets>
-              <option value="825" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs</url>
-          <line>61</line>
+          <line>64</line>
           <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\CompositeOrderPrototyping\Program.cs" initialLine="63" containingFunctionPresentation="">
             <startOffsets>
-              <option value="2469" />
+              <option value="2474" />
             </startOffsets>
             <endOffsets>
-              <option value="2621" />
+              <option value="2626" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="22" />
@@ -520,23 +520,23 @@
           <line>104</line>
           <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Dispatch\Controllers\DispatchController.cs" initialLine="107" containingFunctionPresentation="method 'AddDrone'">
             <startOffsets>
-              <option value="4242" />
+              <option value="4155" />
             </startOffsets>
             <endOffsets>
-              <option value="4266" />
+              <option value="4179" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="29" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs</url>
-          <line>148</line>
+          <line>150</line>
           <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Domain\RepositoryDefinitions\Compository.cs" initialLine="133" containingFunctionPresentation="method 'TryAssignOrders'">
             <startOffsets>
-              <option value="5856" />
+              <option value="5651" />
             </startOffsets>
             <endOffsets>
-              <option value="5890" />
+              <option value="5685" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="31" />
@@ -553,6 +553,32 @@
             </endOffsets>
           </properties>
           <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs</url>
+          <line>102</line>
+          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Dispatch\Controllers\DispatchController.cs" initialLine="102" containingFunctionPresentation="method 'AddDrone'">
+            <startOffsets>
+              <option value="4030" />
+            </startOffsets>
+            <endOffsets>
+              <option value="4078" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/SimDrone/Program.cs</url>
+          <line>22</line>
+          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\SimDrone\Program.cs" initialLine="22" containingFunctionPresentation="">
+            <startOffsets>
+              <option value="663" />
+            </startOffsets>
+            <endOffsets>
+              <option value="673" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="36" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

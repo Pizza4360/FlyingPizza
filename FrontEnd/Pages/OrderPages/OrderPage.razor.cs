@@ -63,7 +63,7 @@ partial class OrderPage : ComponentBase
 
         var order = new Order
         {
-            // OrderId = id,
+            OrderId = BaseEntity.GenerateNewId(),
             TimeOrdered = DateTime.Now,
             CustomerName = CustomerName,
             DeliveryLocation = DeliveryLocation,

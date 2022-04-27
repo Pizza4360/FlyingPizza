@@ -22,6 +22,9 @@ var repo = new Compository(Options.Create(new RepositorySettings
     Assignments = "AssignmentsCompositeTest"
 }));
 
+
+
+/*
 var dispToSim = new DispatchToSimDroneGateway(repo);
 Console.WriteLine("all the drones:\n\t" + string.Join("\n\t", repo.GetDrones().Result));
 Console.WriteLine("\n\nall the orders:\n\t" + string.Join("\n\t", repo.GetOrders().Result));
@@ -67,6 +70,7 @@ Console.WriteLine($"after:\ndroneRecord:{droneRecord.ToJson()},\nnewOrder:{newOr
                   $"Now let's assign the order to the new drone");
 
 Console.WriteLine(await repo.EnqueueOrder(newOrder));
+*/
 
 
 

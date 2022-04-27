@@ -96,12 +96,12 @@ public class DispatchController : ControllerBase
             CurrentLocation = _homeLocation,
             HomeLocation = _homeLocation,
             DispatchUrl = addDroneRequest.DispatchUrl,
-            State = assignFleetResponse.FirstState
+            State = DroneState.Ready
         };
 
         Console.WriteLine($"\n\n\n\nabout to YEET this drone record:\n{droneRecord.ToJson()}");
-        var (record, assignment) = await _repository.CreateDroneAsync(droneRecord);
-        Console.WriteLine($"\n\nResponse from the database:\ndrone record: {record}\nassignment:{assignment}\n");
+        await _repository.CreateDroneAsync(droneRecord);
+        Console.WriteLine($"\n\nCreated a drone and assignment\n");
         response.Success = true;
         return response;
     }
