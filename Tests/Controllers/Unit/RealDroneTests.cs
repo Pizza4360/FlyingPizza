@@ -29,7 +29,7 @@ public class RealDroneTests
     //     };
     //     var droneRecord = new DroneRecord
     //     {
-    //         BadgeNumber = new Guid(),
+    //         DroneId = new Guid(),
     //         CurrentLocation = myTable,
     //         Destination = otherTable,
     //         DispatcherUrl = Constants.DispatcherIp,

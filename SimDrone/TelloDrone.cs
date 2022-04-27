@@ -46,7 +46,7 @@ public class TelloDrone : Drone
     {
         Route = new List<GeoLocation>();
         OrderId = record.OrderId;
-        BadgeNumber = record.BadgeNumber;
+        DroneId = record.DroneId;
         State = DroneState.Ready;
         CurrentLocation = record.HomeLocation;
         Destination = record.Destination;
@@ -271,7 +271,7 @@ public class TelloDrone : Drone
 
     public override string ToString()
     {
-        return $"ID:{BadgeNumber}\nlocation:{CurrentLocation}\nDestination:{Destination}\nStatus:{State}";
+        return $"ID:{DroneId}\nlocation:{CurrentLocation}\nDestination:{Destination}\nStatus:{State}";
     }
     
    

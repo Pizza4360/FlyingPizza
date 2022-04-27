@@ -61,13 +61,13 @@
 //         var dotNetObj = new InitDroneRequest
 //         {
 //             Url = "localhost:7100"
-//             , BadgeNumber = 1
+//             , DroneId = 1
 //         };
 //         _testOutputHelper.WriteLine($"{dotNetObj}"); 
 //         //     dotNetObj.ToBsonDocument()
 //         // BsonTypeMapper.MapToDotNetValue());
 //         // JsonConvert.SerializeObject();JsonConvert.SerializeObject(dotNetObj);
-//         // var expected = @"{""BadgeNumber"":1,""Url"":""localhost:7100""}";
+//         // var expected = @"{""DroneId"":1,""Url"":""localhost:7100""}";
 //         // Assert.Equal(expected, body.ToString());
 //         
 //         

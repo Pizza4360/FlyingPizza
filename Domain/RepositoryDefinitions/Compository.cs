@@ -66,18 +66,18 @@ public class Compository : ICompositeRepository
 
 
     public async Task<Order> GetOrderByIdAsync(string id)
-        => (await GetOrders()).First(x => x.OrderId == id);
+        => (await GetOrders()).First(x => x.OrderId.Equals(id));
 
 
     public async Task<List<string>> GetAvailableDrones()
         => (await GetAssignments())
-          .Where(entry => entry.OrderId == string.Empty)
+          .Where(entry => entry.OrderId.Equals(string.Empty))
           .Select(drone => drone.DroneId)
           .ToList();
 
 
     public async Task<DroneRecord> GetDroneByIdAsync(string id)
-        => (await GetDrones()).First(x => x.DroneId == id);
+        => (await GetDrones()).First(x => x.DroneId.Equals(id));
 
 
     public async Task<UpdateResult> UpdateDroneAsync(UpdateDroneStatusRequest request)

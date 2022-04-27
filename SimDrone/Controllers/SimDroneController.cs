@@ -36,7 +36,6 @@ public class SimDroneController : ControllerBase
         _gateway = new DroneToDispatchGateway(assignFleetRequest.DispatchIp);
         _drone = new Drone(new DroneRecord
             {
-                BadgeNumber = assignFleetRequest.BadgeNumber,
                 CurrentLocation = assignFleetRequest.HomeLocation,
                 Destination = assignFleetRequest.HomeLocation,
                 DispatchUrl = assignFleetRequest.DispatchIp,

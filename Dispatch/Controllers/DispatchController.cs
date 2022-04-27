@@ -5,7 +5,6 @@ using Domain.Entities;
 using Domain.RepositoryDefinitions;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace Dispatch.Controllers;
 
@@ -18,7 +17,7 @@ public class DispatchController : ControllerBase
     private readonly Queue<AssignDeliveryRequest> _unfilledOrders;
     private readonly ICompositeRepository _repository;
     private readonly DispatchToSimDroneGateway _dispatchToSimDroneGateway;
-        
+
     public DispatchController(ICompositeRepository repository)
     {
         _repository = repository;
@@ -31,7 +30,6 @@ public class DispatchController : ControllerBase
         };
     }
 
-        
     [HttpPost("Ping")]
     public async Task<string> Ping(PingDto name)
     {
@@ -48,13 +46,13 @@ public class DispatchController : ControllerBase
         var response = new AddDroneResponse
         {
             Success = false,
-            BadgeNumber = addDroneRequest.BadgeNumber
+            DroneId = addDroneRequest.DroneId
         };
         Console.WriteLine($"DispatchController.AddDrone({addDroneRequest})");
 
-        if(await CanAddDrone(addDroneRequest.DroneId))
+        if(!await CanAddDrone(addDroneRequest.DroneId, addDroneRequest.DroneUrl))
         {
-            Console.WriteLine("Either the DroneUrl or DroneUrl you are trying to use is taken by another drone.");
+            Console.WriteLine("Either the DroneUrl or DroneId you are trying to use is taken by another drone.");
             return response;
         }
         var initDroneRequest = new InitDroneRequest
@@ -63,12 +61,11 @@ public class DispatchController : ControllerBase
             DroneUrl = addDroneRequest.DroneUrl
         };
 
-        var initDroneResponse = _dispatchToSimDroneGateway
-           .InitDrone( initDroneRequest ).Result;
-        Console.WriteLine($"Response from _dispatchToSimDroneGateway.InitDrone({initDroneRequest})\n\t->{{DroneUrl:{initDroneResponse.DroneId},Okay:{initDroneResponse.Okay}}}");
-        if (!initDroneResponse.Okay)
-        {
-            return new AddDroneResponse { BadgeNumber = addDroneRequest.BadgeNumber, Success = false };
+        var initDroneResponse = await _dispatchToSimDroneGateway
+           .InitDrone( initDroneRequest );
+        Console.WriteLine($"Response from _dispatchToSimDroneGateway.InitDrone({initDroneRequest})\n\t->{{DroneUrl:{initDroneResponse?.DroneId},Okay:{initDroneResponse is {Okay: true}}}}");
+        if (initDroneResponse is { Okay: false }) {
+            return response;
         }
 
         var assignFleetRequest = new AssignFleetRequest
@@ -76,34 +73,28 @@ public class DispatchController : ControllerBase
             DroneId = addDroneRequest.DroneId,
             DroneIp = addDroneRequest.DroneUrl,
             DispatchIp = addDroneRequest.DispatchUrl,
-            BadgeNumber = addDroneRequest.BadgeNumber,
             HomeLocation = addDroneRequest.HomeLocation
         };
 
         Console.WriteLine($"Proceeding with _dispatchToSimDroneGateway.AssignFleet({assignFleetRequest.ToJson()}");
-        var assignFleetResponse = _dispatchToSimDroneGateway.AssignFleet(assignFleetRequest).Result;
+        var  assignFleetResponse = await _dispatchToSimDroneGateway.AssignFleet(assignFleetRequest);
         var responseString = assignFleetResponse != null ? assignFleetResponse.IsInitializedAndAssigned.ToString() : "null";
         Console.WriteLine($"\t_dispatchToSimDroneGateway.AssignFleet - response -> {responseString}");
 
         if(assignFleetResponse is {IsInitializedAndAssigned: false})
         {
-            Console.WriteLine($"FAILURE! new drone {addDroneRequest.BadgeNumber} was not initiated.");
-            return new AddDroneResponse
-            {
-                Success = false,
-                BadgeNumber = addDroneRequest.BadgeNumber
-            };
+            Console.WriteLine($"FAILURE! new drone {addDroneRequest.DroneId} was not initiated.");
+            return response;
         }
-        Console.WriteLine($"success! Saving new drone {addDroneRequest.BadgeNumber} to repository.");
+        Console.WriteLine($"success! Saving new drone {addDroneRequest.DroneId} to repository.");
 
         var droneRecord = new DroneRecord
         {
             DroneId = addDroneRequest.DroneId,
             DroneUrl = addDroneRequest.DroneUrl,
-            BadgeNumber = addDroneRequest.BadgeNumber,
-            Destination = addDroneRequest.HomeLocation,
-            CurrentLocation = addDroneRequest.HomeLocation,
-            HomeLocation = addDroneRequest.HomeLocation,
+            Destination = _homeLocation,
+            CurrentLocation = _homeLocation,
+            HomeLocation = _homeLocation,
             DispatchUrl = addDroneRequest.DispatchUrl,
             State = assignFleetResponse.FirstState
         };
@@ -111,21 +102,15 @@ public class DispatchController : ControllerBase
         Console.WriteLine($"\n\n\n\nabout to YEET this drone record:\n{droneRecord.ToJson()}");
         var (record, assignment) = await _repository.CreateDroneAsync(droneRecord);
         Console.WriteLine($"\n\nResponse from the database:\ndrone record: {record}\nassignment:{assignment}\n");
-        return new AddDroneResponse
-        {
-            BadgeNumber = addDroneRequest.BadgeNumber,
-            Success = true
-        };
+        response.Success = true;
+        return response;
     }
 
     [NonAction]
-    private async Task<bool> CanAddDrone(string droneId)
-    {
-        var drones = await _repository.GetDrones();
-        return drones.Any(x => x.DroneId == droneId);
-    }
-
-
+    private async Task<bool> CanAddDrone(string droneId, string droneUrl)
+    => (await _repository.GetDrones()).All(drone => !drone.DroneId.Equals(droneId) && !drone.DroneUrl.Equals(droneUrl));
+    
+    
     [HttpPost("CompleteOrder")]
     public async Task<CompleteOrderResponse> CompleteOrder(CompleteOrderRequest completeOrderRequest)
     {
@@ -140,7 +125,7 @@ public class DispatchController : ControllerBase
     [HttpPost("EnqueueOrder")]
     public async Task<EnqueueOrderResponse?> EnqueueOrder(EnqueueOrderRequest enqueueOrderRequest)
     {
-        Console.WriteLine($"DispatchController.EqueueOrder -> {enqueueOrderRequest}");
+        Console.WriteLine($"DispatchController.EnqueueOrder -> {enqueueOrderRequest}");
         await _repository.EnqueueOrder(enqueueOrderRequest.Order);
 
         return new EnqueueOrderResponse

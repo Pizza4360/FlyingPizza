@@ -6,6 +6,6 @@ namespace Domain.DTO.FrontEndDispatchCommunication
     public class AddDroneResponse
     {
         public bool Success { get; set; }
-        public Guid BadgeNumber { get; set; }    
+        public string DroneId { get; set; }    
     }
 }

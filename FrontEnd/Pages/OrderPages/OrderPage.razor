@@ -8,7 +8,7 @@
 @inject Domain.ConvertAddressToGeoLocation converter
 
 <div class="status-bar">
-    <b>Create New OrderId</b>
+    <b>Create New Order_id</b>
 </div>
 
 <div class="right">
@@ -18,7 +18,7 @@
     <b>Address: </b> 
     <RadzenTextBox id="ADDRESS" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => DeliveryAddress = e.Value.ToString()) />
     <br />
-    <RadzenButton id="ORDER_SUBMIT" Click=@(args => makeOrder()) Style="width: 200px" Text="Create OrderId" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
+    <RadzenButton id="ORDER_SUBMIT" Click=@(args => makeOrder()) Style="width: 200px" Text="Create Order_id" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
     <RadzenButton id="ADD_DRONE" Click=@(args => AddDrone()) Style="width: 200px" Text="ADD DRONE" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
 
 </div>

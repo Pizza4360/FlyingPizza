@@ -17,7 +17,6 @@ namespace Tests
         public const string DroneIp = "localhost:5000";
         public const string DispatcherIp = "localhost:4000";
         public const string Url = "https://FlyingPizza.com";
-        public static readonly Guid TestBadgeNumber = new Guid();
         public const string DroneId = "abcdefg";
         public const string TestOrderId = "123456";
         
@@ -35,7 +34,6 @@ namespace Tests
 
         public static DroneRecord TestRecord = new()
         {
-            BadgeNumber = TestBadgeNumber,
             DispatcherUrl = Url,
             DroneId = DroneId,
             DroneIp = DispatcherIp,

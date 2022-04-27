@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Domain.DTO;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities;
 
 public class DroneRecord : BaseEntity
 {
+
     [BsonElement("DroneId")]
     [JsonPropertyName("DroneId")]
     public string DroneId{get;set;}
-    
-    [BsonElement("BadgeNumber")]
-    [JsonPropertyName("BadgeNumber")]
-    public Guid BadgeNumber { get; set; }
+
     [BsonElement("Destination")]
     [JsonPropertyName("Destination")]
     public GeoLocation Destination { get; set; }
@@ -37,7 +32,6 @@ public class DroneRecord : BaseEntity
     public override string ToString()
     {
         return $"\"DroneId\":\"{DroneId}\"," +
-               $"\"BadgeNumber\":\"{BadgeNumber}\"," +
                $"\"Destination\":\"{Destination}\"," +
                $"\"CurrentLocation\":\"{CurrentLocation}\"," +
                $"\"HomeLocation\":\"{HomeLocation}\"," +
@@ -50,8 +44,7 @@ public class DroneRecord : BaseEntity
         if (o == null ||
             o.GetType() != GetType()) return false;
         DroneRecord oo = (DroneRecord) o;
-        return oo.BadgeNumber == BadgeNumber &&
-               oo.CurrentLocation.Equals(CurrentLocation) &&
+        return oo.CurrentLocation.Equals(CurrentLocation) &&
                oo.Destination.Equals(Destination) &&
                oo.State.Equals(State) &&
                oo.DispatchUrl.Equals(DispatchUrl);

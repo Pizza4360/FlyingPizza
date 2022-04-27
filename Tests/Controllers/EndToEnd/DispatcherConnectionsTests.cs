@@ -110,7 +110,7 @@
 //         //     var mockedOrdersRepo = new Mock<IOrdersRepository>().Object;
 //         //     var testDroneInfo = new AssignFleetRequest
 //         //     {
-//         //         BadgeNumber = 5,
+//         //         DroneId = 5,
 //         //         DispatcherUrl = Constants.Url,
 //         //         HomeLocation = Constants.HomeLocation
 //         //     };

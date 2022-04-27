@@ -29,7 +29,6 @@ Console.WriteLine("\n\nAdd a new drone in Aurora:");
 
 var droneRecord = new DroneRecord
 {
-    BadgeNumber = Guid.NewGuid(),
     CurrentLocation = new GeoLocation
         {Latitude = 39.710573732539885m, Longitude = -104.81408307283085m},
     Destination = new GeoLocation
@@ -76,7 +75,7 @@ Console.WriteLine(await repo.EnqueueOrder(newOrder));
 //     new AddDroneRequest
 //     {
 //         DroneId = droneRecord.DroneId,
-//         BadgeNumber = droneRecord.BadgeNumber,
+//         DroneId = droneRecord.DroneId,
 //         DispatchUrl = droneRecord.DispatchUrl,
 //         DroneUrl = droneRecord.DroneUrl,
 //         HomeLocation = droneRecord.HomeLocation
