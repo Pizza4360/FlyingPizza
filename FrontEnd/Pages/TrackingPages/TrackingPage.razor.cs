@@ -79,6 +79,8 @@ partial class TrackingPage : ComponentBase
                 color = x.State.GetColor()
             }).ToDictionary(x => x.title, x => x);
         await JsRuntime.InvokeVoidAsync("updateAll", markers);
+        await DisplayDroneAsync(dropDownLabel);
+        StateHasChanged();
     }
 
     public string Color(DroneRecord drone)
