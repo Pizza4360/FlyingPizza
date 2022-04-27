@@ -75,13 +75,7 @@ partial class OrderPage : ComponentBase
         });
 
         Console.Write("AHHHHHH~~~~~~~~~~");
-
-        var dispatchResponse = _gateway.EnqueueOrder(new EnqueueOrderRequest
-        {
-            Order = order,
-        });
-            
-        Console.WriteLine(dispatchResponse);
+        
         // Navigate to page to display users current order. 
         _navigationManager.NavigateTo("/userPage", false);
     }

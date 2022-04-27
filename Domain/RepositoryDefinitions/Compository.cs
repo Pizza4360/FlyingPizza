@@ -137,10 +137,10 @@ public class Compository : ICompositeRepository
         return await _orders.DeleteOneAsync(filter);
     }
 
-    public async Task<Order> RemoveAssignment(Order order)
+    public async Task RemoveAssignment(Assignment assignment)
     {
-        var deleteOptions = new FindOneAndDeleteOptions<Order>();
-        return await _orders.FindOneAndDeleteAsync(_ordersFilter, deleteOptions, CancellationToken.None);
+        var deleteOptions = new FindOneAndDeleteOptions<Assignment>();
+        await _assignments.FindOneAndDeleteAsync<Assignment>(x => x.DroneId.Equals(assignment.DroneId), deleteOptions, CancellationToken.None);
     }
 
     public async Task TryAssignOrders()
@@ -155,6 +155,14 @@ public class Compository : ICompositeRepository
         foreach(var updateDefinition in newAssignments.Select(newAssignment => Builders<Assignment>.Update.Set("OrderId", newAssignment.OrderId)))
         {
             await _assignments.FindOneAndUpdateAsync(k => true, updateDefinition);
+        }
+
+        foreach(var assignment in allAssignments)
+        {
+            if((await GetDrones()).TrueForAll(x => !x.DroneId.Equals(assignment.DroneId)))
+            {
+                RemoveAssignment(assignment);
+            }
         }
     }
     private static List<Assignment> GetNewAssignments(IEnumerable<string> availableDronesIds, IEnumerable<string> unassignedOrderIds)
