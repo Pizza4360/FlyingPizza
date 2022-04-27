@@ -7,9 +7,6 @@ using Dispatch.Controllers;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Domain.InterfaceDefinitions.Gateways;
-using Domain.InterfaceDefinitions.Repositories;
-using Domain.InterfaceImplementations.Gateways;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -31,7 +28,7 @@ namespace Tests.Controllers.Unit
             var mockedGateway = new Mock<IDroneToDispatcherGateway>();
             mockedGateway.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>()))
                 .Returns(Task.FromResult<BaseDto>(Constants.TestDroneStatusUpdateResponse));
-            var adapter = new Drone(Constants.TestRecord, mockedGateway.Object);
+            var adapter = new Drone(Constants.TestRecord);
             var response = adapter.DeliverOrder(Constants.TestOrder.DeliveryLocation);
             response.Should().BeTrue();
         }

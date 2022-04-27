@@ -32,17 +32,17 @@ public class SimDroneController : ControllerBase
     public async Task<AssignFleetResponse> AssignFleet(AssignFleetRequest assignFleetRequest)
     {
         Console.WriteLine($"SimDroneController.AssignFleet -> {assignFleetRequest.ToJson()}");
-        Console.WriteLine($"{assignFleetRequest.DispatchIp}");
-        _gateway = new DroneToDispatchGateway(assignFleetRequest.DispatchIp);
+        Console.WriteLine($"{assignFleetRequest.DispatchUrl}");
+        _gateway = new DroneToDispatchGateway(assignFleetRequest.DispatchUrl);
         _drone = new Drone(new DroneRecord
             {
                 CurrentLocation = assignFleetRequest.HomeLocation,
                 Destination = assignFleetRequest.HomeLocation,
-                DispatchUrl = assignFleetRequest.DispatchIp,
+                DispatchUrl = assignFleetRequest.DispatchUrl,
                 DroneUrl = assignFleetRequest.DroneIp,
                 HomeLocation = assignFleetRequest.HomeLocation,
                 DroneId = assignFleetRequest.DroneId,
-            }, _gateway, 
+            }, 
             this);
         Console.WriteLine($"SimDrone successfully initialized.\nDrone -->{_drone}");
         IsInitiatead = true;
@@ -59,12 +59,14 @@ public class SimDroneController : ControllerBase
     public async Task<AssignDeliveryResponse> AssignDelivery(
         AssignDeliveryRequest assignDeliveryRequest)
     {
-        Console.WriteLine($"SimDroneController.AssignDelivery -> {assignDeliveryRequest}");
+        Console.WriteLine($"\n\n\nSimDroneController.AssignDelivery -> {assignDeliveryRequest.ToJson()}\n\n\n");
         return await _drone.DeliverOrder(assignDeliveryRequest);
     }
 
 
     [HttpPost("UpdateDroneStatus")]
-    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(UpdateDroneStatusRequest updateDroneStatusRequest)
-        => await _gateway.UpdateDroneStatus(updateDroneStatusRequest);
+    public async Task UpdateDroneStatus(UpdateDroneStatusRequest updateDroneStatusRequest)
+    {
+        await _gateway.UpdateDroneStatus(updateDroneStatusRequest);
+    } 
 }

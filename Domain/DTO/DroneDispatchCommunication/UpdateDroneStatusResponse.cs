@@ -9,5 +9,5 @@ public class UpdateDroneStatusResponse
 {
     public string DroneId{get;set;}
     public bool IsCompletedSuccessfully{get;set;}
-    public UpdateResult UpdateResult{get;set;}
+    // public UpdateResult UpdateResult{get;set;}
 }

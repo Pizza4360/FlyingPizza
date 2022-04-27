@@ -9,4 +9,5 @@ public class AssignDeliveryRequest
 {
     public Order Order { get; set; }
     public string DroneUrl { get; set; }
+    public string DroneId{get;set;}
 }

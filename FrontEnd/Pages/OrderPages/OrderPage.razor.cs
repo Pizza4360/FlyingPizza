@@ -21,6 +21,8 @@ partial class OrderPage : ComponentBase
 
     public string DeliveryAddress;
     public string CustomerName;
+    private GeoLocation _homeLocation;
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -31,6 +33,7 @@ partial class OrderPage : ComponentBase
     }
     protected override void OnInitialized()
     {
+        _homeLocation = new GeoLocation{ Latitude = 39.74386695629378m, Longitude = -105.00610500179027m };
         _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
         _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
          converter = new ConvertAddressToGeoLocation();
@@ -44,10 +47,11 @@ partial class OrderPage : ComponentBase
     {
         var newGuid = BaseEntity.GenerateNewGuid();
 
+
         var response = await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
         {
             DroneId = BaseEntity.GenerateNewId(),
-            HomeLocation = new GeoLocation{ Latitude = 39.74386695629378m, Longitude = -105.00610500179027m },
+            HomeLocation = _homeLocation,
             DroneUrl = "http://localhost:85",
             DispatchUrl = "http://localhost:83"
         });

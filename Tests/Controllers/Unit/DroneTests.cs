@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
-using Domain.InterfaceDefinitions.Gateways;
-using Domain.InterfaceImplementations.Gateways;
 using FluentAssertions;
 using Moq;
 using SimDrone;
@@ -26,7 +24,7 @@ public class DroneTests
         public void drone_should_have_destination_in_route()
         {
             //TODO: Bug #5 drone moves in Latitude and Longitude direction indefinitely
-            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
+            var drone = new Drone(Constants.TestRecord);
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
@@ -39,7 +37,7 @@ public class DroneTests
         {
 
             //TODO: Bug #5 drone moves in Latitude and Longitude direction indefinitely
-            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
+            var drone = new Drone(Constants.TestRecord);
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
@@ -52,7 +50,7 @@ public class DroneTests
         {
 
             //TODO: Bug #5 drone moves in Latitude and Longitude direction indefinitely
-            var drone = new Drone(Constants.TestRecord, new DroneToDispatchGateway());
+            var drone = new Drone(Constants.TestRecord);
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();
@@ -74,7 +72,7 @@ public class DroneTests
             mockedDroneGatewaySetup.Setup(x => x.PatchDroneStatus(It.IsAny<DroneStatusUpdateRequest>()))
                 .Returns(Task.FromResult<BaseDto>(Constants.TestDroneStatusUpdateRequest));
             var mockedDroneGateway = mockedDroneGatewaySetup.Object;
-            var drone = new Drone(Constants.TestRecord, mockedDroneGateway as DroneToDispatchGateway);
+            var drone = new Drone(Constants.TestRecord);
             var route = drone.GetRoute();
             route.Should()
                 .NotBeNull();

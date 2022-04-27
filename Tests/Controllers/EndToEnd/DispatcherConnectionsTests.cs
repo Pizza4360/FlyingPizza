@@ -143,7 +143,7 @@
 //         //     mockedDispatcherHandlerSetup.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x => x.RequestUri == new Uri($"http://test_ip/drone/register")), ItExpr.IsAny<CancellationToken>())
 //         //         .ReturnsAsync(new HttpResponseMessage {
 //         //             StatusCode = HttpStatusCode.OK,
-//         //             Content = new StringContent(testDroneGateway.AssignFleet(testDroneInfo.DispatchIp).IsCompletedSuccessfully.ToString()
+//         //             Content = new StringContent(testDroneGateway.AssignFleet(testDroneInfo.DispatchUrl).IsCompletedSuccessfully.ToString()
 //         //             )
 //         //             // Assumed ok only for now
 //         //         });

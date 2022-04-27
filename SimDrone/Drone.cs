@@ -1,7 +1,6 @@
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Domain.GatewayDefinitions;
 using SimDrone.Controllers;
 using DecimalMath;
 using MongoDB.Bson;
@@ -24,16 +23,28 @@ public class Drone : DroneRecord
         VillageInnI25Hwy7 = new() {Latitude = 39.99955658640521m, Longitude = -104.97768379612273m};
 
     private readonly SimDroneController _controller;
-    public Drone(DroneRecord record, IBaseGateway<SimDroneController> gateway, SimDroneController controller)
+    public Drone(DroneRecord record, SimDroneController controller)
     {
+        _controller = controller;
+        HasNullValue(record);
         DroneId = record.DroneId;
         HomeLocation = record.HomeLocation;
         DroneUrl = record.DroneUrl;
-        _controller = controller;
         State = DroneState.Ready;
-        CurrentLocation = HomeLocation;
+        CurrentLocation = record.HomeLocation;
         Destination = record.Destination;
     }
+
+
+    private static void HasNullValue(DroneRecord record)
+    {
+        Console.WriteLine(record.DroneId == null ||
+                          record.HomeLocation == null ||
+                          record.DroneUrl == null ||
+                          record.HomeLocation == null ||
+                          record.Destination == null);
+    }
+
 
     public override string ToString() => this.ToJson();
     private static decimal ToRadians(decimal x) => x * DecimalEx.Pi / 180;
@@ -42,32 +53,31 @@ public class Drone : DroneRecord
     private static decimal RadiansToDegrees(decimal radians) => radians * RadToDegFactor;
     private static decimal Abs(decimal x) => x > 0 ? x : -x;
    
-    private async Task<UpdateDroneStatusResponse?> PatchDroneStatus()
+    private async Task PatchDroneStatus()
     {
-        var response = await _controller.UpdateDroneStatus(
+        HasNullValue(this);
+        await _controller.UpdateDroneStatus(
             new UpdateDroneStatusRequest
             {
                 DroneId = DroneId,
                 State = State,
-                CurrentLocation = CurrentLocation
+                CurrentLocation = CurrentLocation,
+                Destination = Destination
             });
-        return response;
     }
 
-    private void UpdateLocation(GeoLocation location)
+    private async Task UpdateLocation(GeoLocation location)
     {
         CurrentLocation = location;
+        HasNullValue(this);
         PatchDroneStatus();
     }
 
-    private async Task<UpdateDroneStatusResponse?> UpdateStatus(DroneState state)
+    private async Task UpdateStatus(DroneState state)
     {
-        if(State == DroneState.Delivering && state == DroneState.Returning)
-        {
-            Destination = HomeLocation;
-        }
         State = state;
-        return await PatchDroneStatus();
+        HasNullValue(this);
+        PatchDroneStatus();
     }
     
     private static decimal HaversineInMeters(GeoLocation locationA, GeoLocation locationB)
@@ -129,24 +139,28 @@ public class Drone : DroneRecord
  
     private async Task TravelTo(GeoLocation endingLocation)
     {
+        HasNullValue(this);
+        Destination = endingLocation;
         Console.WriteLine($"Starting at {CurrentLocation.Latitude}");
         var buffer = new GeoLocation[5];
         buffer[0] = CurrentLocation;
         for(var i = 0; !CurrentLocation.Equals(endingLocation); i++)
         {
+            HasNullValue(this);
             Console.WriteLine($"{HaversineInMeters(CurrentLocation, endingLocation)} meters away");
             var bearing = Bearing(CurrentLocation.Latitude, CurrentLocation.Longitude, endingLocation.Latitude, endingLocation.Longitude);
             Console.WriteLine($"bearing between = {bearing}" );
             buffer[i % 5] = CurrentLocation = GetNextLocation(CurrentLocation, bearing, DroneStepSizeInKilometers);
             Console.WriteLine($"{CurrentLocation}");
             if(i % 100 != 0) { continue; }
-            UpdateLocation(CurrentLocation);
+            await UpdateLocation(CurrentLocation);
             Thread.Sleep(500);
         }
     }
 
     public async Task<AssignDeliveryResponse> DeliverOrder(AssignDeliveryRequest request)
     {
+        Console.WriteLine($"DeliverOrder(AssignDeliveryRequest {request.ToJson()})");
         await UpdateStatus(DroneState.Delivering);
         await TravelTo(request.Order.DeliveryLocation);
         Console.WriteLine("Done with delivery, returning home.");

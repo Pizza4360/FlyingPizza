@@ -120,7 +120,6 @@ public class Compository : ICompositeRepository
     {
         var update = Builders<DroneRecord>
                     .Update
-                    .Set($"Fleet.{request.DroneId}.Orders", request.Orders)
                     .Set($"Fleet.{request.DroneId}.State", request.State)
                     .Set($"Fleet.{request.DroneId}.CurrentLocation", request.CurrentLocation)
                     .Set($"Fleet.{request.DroneId}.Destination", request.Destination);
@@ -138,14 +137,19 @@ public class Compository : ICompositeRepository
     }
 
 
-    public async Task<UpdateResult> UpdateAssinmentAsync(string droneId, string orderId, bool ShouldBeNotified)
+    public async Task UpdateAssignmentAsync(string droneId, bool shouldBeNotified)
     {
+        var assignment =
+        (
+            from a in await GetAssignments()
+            where a.DroneId.Equals(droneId) select a).First();
+
+        var filter = Builders<Assignment>.Filter.Eq("DroneId", droneId);
         var update = Builders<Assignment>
                     .Update
-                    .Set($"DronesOrdersMap.{droneId}", orderId)
-                    .Set($"DronesOrdersMap.HasBeenNotified", ShouldBeNotified);
-
-        return await _assignments.UpdateOneAsync(_assignmentsFilter, update, new UpdateOptions {IsUpsert = true});
+                    .Set($"OrderId", assignment.OrderId)
+                    .Set($"HasBeenNotified", shouldBeNotified);
+        await _assignments.UpdateOneAsync(filter, update, new UpdateOptions {IsUpsert = true});
     }
 
 
@@ -213,15 +217,45 @@ public class Compository : ICompositeRepository
 
     public async Task<IEnumerable<AssignDeliveryRequest>> GenerateDeliveryRequests()
     {
-        var newAssignments = from a in await GetAssignments() where !a.OrderId.Equals(string.Empty) && a.ShouldNotifyDrone select a;
-        var newOrderIds = from a in newAssignments select a.OrderId;
-        var newOrders = from o in await GetOrders() where newOrderIds.Contains(o.OrderId) select o;
-        var newDrones = from d in await GetDrones() where newOrderIds.Contains(d.DroneId) select d;
-        return
-            from assignment in await GetNewAssignments()
-            from order in newOrders
-            from drone in newDrones
-            where assignment.OrderId.Equals(order.OrderId) && assignment.DroneId.Equals(drone.DroneId)
-            select new AssignDeliveryRequest {DroneUrl = drone.DroneUrl, Order = order};
+        var allAssignmentsEnum = await GetAssignments();
+
+        var newAssignments = 
+            from a in allAssignmentsEnum
+            where !a.OrderId.Equals(string.Empty) && a.ShouldNotifyDrone 
+            select a;
+        var assignments = newAssignments as Assignment[] ?? newAssignments.ToArray();
+        Console.WriteLine($"newAssignments:{assignments}");
+
+        var newOrderIds = 
+            from a in assignments
+            select a.OrderId;
+        var orderIds = newOrderIds as string[] ?? newOrderIds.ToArray();
+        Console.WriteLine($"newOrderIds:{orderIds.Length}");
+
+        
+        var newOrders = 
+            from o in await GetOrders() 
+            from a in allAssignmentsEnum
+            where orderIds.Contains(o.OrderId) && allAssignmentsEnum.Select(x=>x.OrderId).Contains(o.OrderId)
+            select o;
+        var newOrdersEnum = newOrders as Order[] ?? newOrders.ToArray();
+        Console.WriteLine($"newOrders:{newOrdersEnum.Length}");
+
+        var newDrones = 
+            from d in await GetDrones() 
+            where  assignments.Select(x => x.DroneId).Contains(d.DroneId) 
+            select d;
+        
+        var droneRecords = newDrones as DroneRecord[] ?? newDrones.ToArray();
+        Console.WriteLine($"newDrones:{droneRecords.Length}");
+
+        var newRequests =
+            from a in allAssignmentsEnum
+            from o in newOrdersEnum
+            from d in newDrones
+            where o.OrderId.Equals(a.OrderId) && d.DroneId.Equals(a.DroneId)
+            select new AssignDeliveryRequest {DroneUrl = d.DroneUrl, Order = o, DroneId = d.DroneId};
+        Console.WriteLine($"newRequests:{newRequests.ToArray().Length}");
+        return newRequests;
     }
 }

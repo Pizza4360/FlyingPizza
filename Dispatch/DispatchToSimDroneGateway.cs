@@ -12,6 +12,7 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
     // private IOrdersRepository _orders;
     private async Task<string> Endpoint(string currentDroneId)
     {
+        Console.WriteLine("getting ");
         return (await _fleet.GetDroneByIdAsync(currentDroneId)).DroneUrl;
     }
     
@@ -33,7 +34,7 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
 
     public async Task<AssignFleetResponse?> AssignFleet(AssignFleetRequest assignFleetRequest)
     {
-        if(assignFleetRequest.DispatchIp is null or "")
+        if(assignFleetRequest.DispatchUrl is null or "")
         {
             Console.WriteLine("A Dispatch Ip Address is requred!");
             return new AssignFleetResponse
@@ -44,8 +45,8 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
         }
         
         var droneUrl = $"{assignFleetRequest.DroneIp}/SimDrone/AssignFleet";
-        Console.WriteLine($"Sending {assignFleetRequest.DispatchIp} to the drone @ {droneUrl} so it can talk to us...");
-        Console.WriteLine($"\n\n\n\n\n!!!!!!!!!!!assignFleetRequest.DispatchUrl = {assignFleetRequest.DispatchIp}\n\n\n\n\n");
+        Console.WriteLine($"Sending {assignFleetRequest.DispatchUrl} to the drone @ {droneUrl} so it can talk to us...");
+        Console.WriteLine($"\n\n\n\n\n!!!!!!!!!!!assignFleetRequest.DispatchUrl = {assignFleetRequest.DispatchUrl}\n\n\n\n\n");
 
         var response = SendMessagePost<AssignFleetRequest, AssignFleetResponse>(
             droneUrl, assignFleetRequest);
@@ -57,9 +58,9 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
 
     public async Task<AssignDeliveryResponse?> AssignDelivery(AssignDeliveryRequest assignDeliveryRequest)
     {
-        var url = await Endpoint(assignDeliveryRequest.DroneUrl);
-        Console.WriteLine($"\n\nChoosing drone {assignDeliveryRequest.DroneUrl} url:{url}\n\n\n");
+        // var url = await Endpoint(assignDeliveryRequest.DroneUrl);
+        Console.WriteLine($"\n\nChoosing drone {assignDeliveryRequest.DroneUrl}\n\n\n");
         return await SendMessagePost<AssignDeliveryRequest, AssignDeliveryResponse>(
-            $"{url}/SimDrone/AssignDelivery", assignDeliveryRequest);
+            $"{assignDeliveryRequest.DroneUrl}/SimDrone/AssignDelivery", assignDeliveryRequest);
     }
 }

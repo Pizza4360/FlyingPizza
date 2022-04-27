@@ -12,6 +12,5 @@ public class UpdateDroneStatusRequest
     public string DroneId{get;set;}
     public GeoLocation CurrentLocation { get; set; }
     public DroneState State { get; set; }
-    public List<Order> Orders{get;set;}
     public GeoLocation Destination{get;set;}
 }

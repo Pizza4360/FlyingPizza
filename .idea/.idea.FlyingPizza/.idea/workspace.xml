@@ -18,9 +18,22 @@
   <component name="ChangeListManager">
     <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DatabaseAccess/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/DatabaseAccess/Properties/launchSettings.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dispatch/DispatchToSimDroneGateway.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Dispatch/DispatchToSimDroneGateway.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/AssignDeliveryRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/AssignDeliveryRequest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/AssignFleetRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/AssignFleetRequest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/UpdateDroneStatusRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/UpdateDroneStatusRequest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/UpdateDroneStatusResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/UpdateDroneStatusResponse.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrontEnd/Pages/OrderPages/OrderPage.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/FrontEnd/Pages/OrderPages/OrderPage.razor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimDrone/Controllers/SimDroneController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SimDrone/Controllers/SimDroneController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimDrone/Drone.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SimDrone/Drone.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimDrone/DroneToDispatchGateway.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SimDrone/DroneToDispatchGateway.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tests/Controllers/EndToEnd/DispatcherConnectionsTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/Controllers/EndToEnd/DispatcherConnectionsTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tests/Controllers/Unit/DispatcherControllerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/Controllers/Unit/DispatcherControllerTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tests/Controllers/Unit/DroneTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/Controllers/Unit/DroneTests.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,41 +70,22 @@
     </option>
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1e8feaadf5c3fa14d36ea2a638c432a2e1a47b7837d8b83d88303c5d9c15cf/AsyncValueTaskMethodBuilderT.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/575c31ecc35a636b6f962cb71d53992552941a18982aae1c8e6c16305cc3761b/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/567aa18d430a3542037394d878e88b2e1c35b49c50a9a134f8a3b03c923e/MongoCollectionImpl.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c1da7b6c7c71a954fe3eb2531c6476711b3e6d93a8d76795386d326bb9dbc/ExecutionContext.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/efd3e9c4749621d4a53b45d7117d2a581e02a265c444a040f1387a155db/Dictionary.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/CompositeOrderPrototyping/Repo.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/51876386fdbc9f7d023118d9aa41d5f65b65fce13745eed5cab5ae88f5cd3/Ensure.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3444aea72fd552a5be14e6c6d1bb43569412a5547ca7f0b93136753e44471e5c/CallSiteRuntimeResolver.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8fe5b9fa0d07425ba30fafd53baa5a7ea23880/59/b1c509b6/ICriticalNotifyCompletion.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/FrontEnd/Pages/TrackingPages/TrackingPage.razor" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8fe5b9fa0d07425ba30fafd53baa5a7ea23880/c6/7e6ca7ac/Timer.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37565caec58e43d79f8d7b166d8a3628130400/0c/15123d88/IMongoCollection`1.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Dispatch/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/DatabaseAccess/appsettings.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fd24584d19b30e71661e6cf1e2b72e725ac87c09096b9fcbf5f344bff357d/DefaultInterpolatedStringHandler.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Dispatch/Program.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c6ad457575d35dcbff26c9a5e3fb1d92f1d3c55f25ef6ebf475367b5d8/List.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9d4f4ac7db6d2c5d183ab2d92602280ed4349fd6e6a1b6313546b3d01fdab5/ServiceProvider.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/FrontEnd/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CompositeOrderPrototyping/Repo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/FrontEnd/Pages/FleetPages/FleetView.razor.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ec8d31969156f1d771e7274a581d8d418fb2d12ffc44d80538bb88856af9/CallSiteVisitor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Domain/GatewayDefinitions/BaseGateway.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/969cc68a19b851dbd1c752f325bdd20359c55478c769fbdaa78b42d99b2c/BsonClassMapSerializer.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FrontEnd/Pages/TrackingPages/TrackingPage.razor" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Domain/Entities/Assignment.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DatabaseAccess/Program.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/FrontEnd/Services/FrontEndToDatabaseGateway.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1af51483c9bf18871cce649b9f966dd7be686536f998c33bba3c5fc4adea4a0/Task.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/27b91272f348469b8fccc471c1ccd767f57a64f55a44975790bfae805b4ebb/Future.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/21c744ab66484b5cbfc8f3c489e6f14b5cec287df16ee952c6c5b6378704243/SslStream.Implementation.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DatabaseAccess/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7ae1d944d557dfac4e41c4c4518ee2afb845c9a63da7bbf8c63a72d36fda393/IMongoCollection.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Dispatch/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DatabaseAccess/appsettings.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Dispatch/Program.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -115,9 +109,10 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C#" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
-  <component name="RunManager" selected=".NET Project.CompositeOrderTest">
+  <component name="RunManager" selected=".NET Launch Settings Profile.FrontEnd">
     <configuration name="CompositeOrderTest" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
@@ -288,7 +283,10 @@
       <workItem from="1650964302843" duration="11377000" />
       <workItem from="1650987106315" duration="16598000" />
       <workItem from="1651024194488" duration="1575000" />
-      <workItem from="1651070274242" duration="3948000" />
+      <workItem from="1651070274242" duration="7060000" />
+      <workItem from="1651081911833" duration="7082000" />
+      <workItem from="1651089978849" duration="4875000" />
+      <workItem from="1651098128899" duration="987000" />
     </task>
     <task id="LOCAL-00001" summary="adding untracked files from merge">
       <created>1650835990823</created>
@@ -437,7 +435,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651051774081</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Created method DispatchController.cs.AssignEnqueuedDeliveries.">
+      <created>1651076216150</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1651076216150</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -479,33 +484,21 @@
     <MESSAGE value="Assignments now update automatically when a new oreder is enqueued" />
     <MESSAGE value="Added Deletion for stale Assignment mappings.&#10;Front end only directs new orders to database now" />
     <MESSAGE value="need to join on url, order and drone id to get assignDeliveryRequest list" />
-    <option name="LAST_COMMIT_MESSAGE" value="need to join on url, order and drone id to get assignDeliveryRequest list" />
+    <MESSAGE value="Created method DispatchController.cs.AssignEnqueuedDeliveries." />
+    <option name="LAST_COMMIT_MESSAGE" value="Created method DispatchController.cs.AssignEnqueuedDeliveries." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/SimDrone/Drone.cs</url>
-          <line>154</line>
-          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\SimDrone\Drone.cs" initialLine="154" containingFunctionPresentation="method 'DeliverOrder'">
-            <startOffsets>
-              <option value="-1" />
-            </startOffsets>
-            <endOffsets>
-              <option value="-1" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/SimDrone/Drone.cs</url>
-          <line>53</line>
+          <line>66</line>
           <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\SimDrone\Drone.cs" initialLine="55" containingFunctionPresentation="method 'PatchDroneStatus'">
             <startOffsets>
-              <option value="2242" />
+              <option value="2578" />
             </startOffsets>
             <endOffsets>
-              <option value="2251" />
+              <option value="2583" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="2" />
@@ -524,69 +517,30 @@
           <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs</url>
-          <line>125</line>
-          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Dispatch\Controllers\DispatchController.cs" initialLine="107" containingFunctionPresentation="method 'AddDrone'">
+          <url>file://$PROJECT_DIR$/Dispatch/DispatchToSimDroneGateway.cs</url>
+          <line>62</line>
+          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Dispatch\DispatchToSimDroneGateway.cs" initialLine="61" containingFunctionPresentation="method 'AssignDelivery'">
             <startOffsets>
-              <option value="4765" />
+              <option value="2285" />
             </startOffsets>
             <endOffsets>
-              <option value="4789" />
+              <option value="2458" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="29" />
+          <option name="timeStamp" value="44" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs</url>
-          <line>177</line>
-          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Domain\RepositoryDefinitions\Compository.cs" initialLine="133" containingFunctionPresentation="method 'TryAssignOrders'">
+          <url>file://$PROJECT_DIR$/SimDrone/Drone.cs</url>
+          <line>163</line>
+          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\SimDrone\Drone.cs" initialLine="151" containingFunctionPresentation="method 'DeliverOrder'">
             <startOffsets>
-              <option value="5884" />
+              <option value="6911" />
             </startOffsets>
             <endOffsets>
-              <option value="5918" />
+              <option value="6988" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="31" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs</url>
-          <line>40</line>
-          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Domain\RepositoryDefinitions\Compository.cs" initialLine="36" containingFunctionPresentation="method 'TimerCheck'">
-            <startOffsets>
-              <option value="1253" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1271" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="32" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs</url>
-          <line>123</line>
-          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Dispatch\Controllers\DispatchController.cs" initialLine="102" containingFunctionPresentation="method 'AddDrone'">
-            <startOffsets>
-              <option value="4640" />
-            </startOffsets>
-            <endOffsets>
-              <option value="4688" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="35" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/SimDrone/Program.cs</url>
-          <line>22</line>
-          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\SimDrone\Program.cs" initialLine="22" containingFunctionPresentation="">
-            <startOffsets>
-              <option value="663" />
-            </startOffsets>
-            <endOffsets>
-              <option value="673" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="36" />
+          <option name="timeStamp" value="45" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

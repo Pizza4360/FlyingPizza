@@ -8,6 +8,6 @@ public class AssignFleetRequest
 {
     public string DroneId { get; set; }
     public string DroneIp {get;set;}
-    public string DispatchIp{get;set;}
+    public string DispatchUrl{get;set;}
     public GeoLocation HomeLocation { get; set; }
 }

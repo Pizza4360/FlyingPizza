@@ -24,4 +24,5 @@ public interface ICompositeRepository
     public Task<UpdateResult> UpdateOrderAsync(CompleteOrderRequest request);
     public Task<IEnumerable<AssignDeliveryRequest>> GenerateDeliveryRequests();
 
+    public Task UpdateAssignmentAsync(string droneId, bool shouldBeNotified);
 }
