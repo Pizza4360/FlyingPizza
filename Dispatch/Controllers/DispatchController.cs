@@ -45,16 +45,17 @@ public class DispatchController : ControllerBase
     [HttpPost("AddDrone")]
     public async Task<AddDroneResponse> AddDrone(AddDroneRequest addDroneRequest)
     {
+        var response = new AddDroneResponse
+        {
+            Success = false,
+            BadgeNumber = addDroneRequest.BadgeNumber
+        };
         Console.WriteLine($"DispatchController.AddDrone({addDroneRequest})");
 
         if(await CanAddDrone(addDroneRequest.DroneId))
         {
             Console.WriteLine("Either the DroneUrl or DroneUrl you are trying to use is taken by another drone.");
-            return new AddDroneResponse
-            {
-                BadgeNumber = addDroneRequest.BadgeNumber,
-                Success = false
-            };
+            return response;
         }
         var initDroneRequest = new InitDroneRequest
         {
@@ -89,8 +90,8 @@ public class DispatchController : ControllerBase
             Console.WriteLine($"FAILURE! new drone {addDroneRequest.BadgeNumber} was not initiated.");
             return new AddDroneResponse
             {
-                BadgeNumber = addDroneRequest.BadgeNumber,
-                Success = false
+                Success = false,
+                BadgeNumber = addDroneRequest.BadgeNumber
             };
         }
         Console.WriteLine($"success! Saving new drone {addDroneRequest.BadgeNumber} to repository.");

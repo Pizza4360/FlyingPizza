@@ -13,15 +13,7 @@ public class Program
 
         // OffSet services to the container.
         builder.Services.AddCors(options =>
-            options.AddPolicy(name: "CORS", policy => policy.WithOrigins(
-                "https://localhost:44364",
-                "http://localhost:5001",
-                "http://localhost:81",
-                "http://localhost:82",
-                "http://localhost:83",
-                "http://localhost:84",
-                "http://localhost:85"
-                ).AllowAnyHeader().AllowAnyMethod()));
+            options.AddPolicy(name: "CORS", policy => policy.WithOrigins("https://localhost:44364","http://localhost:5001","http://localhost:81").AllowAnyHeader().AllowAnyMethod()));
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -29,12 +21,13 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         #region repositories
+
         builder.Services.Configure<RepositorySettings>(builder.Configuration.GetSection("RepositorySettings"));
-        builder.Services.AddSingleton<ICompositeRepository>(_ => new Compository(_.GetService<IOptions<RepositorySettings>>()));
+        builder.Services.AddSingleton<ICompositeRepository>(provider 
+            => new Compository(provider.GetService<IOptions<RepositorySettings>>()));
+        builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+
         #endregion repositories
-        
-        builder.Services.AddControllers()
-               .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
         var app = builder.Build();
 
@@ -57,4 +50,4 @@ public class Program
     }
 }
 
-// curl -X 'POST'  'http://localhost:5101/Dispatch/AddDrone'  -H 'accept: application/json'  -H 'Content-Type: application/json'  -d '{ "DroneUrl": "625cbcdd53108e735ee56351", "DroneUrl": "625cbcdd53108e735ee56351", "BadgeNumber": "ba9b96d2-fb0f-455b-b0bf-33693e171acc", "HomeLocation": { "Latitude": 39.74386695629378, "Longitude": -105.00610500179027 }, "DispatchUrl": "http://localhost:5102", "DispatchUrl": "http://localhost:5101" }'
+// curl -X 'POST'  'http://localhost:5101/Dispatch/AddDrone'  -H 'accept: application/json'  -H 'Content-Type: application/json'  -d '{ "DroneId": "625cbcdd53108e735ee56351", "DroneId": "625cbcdd53108e735ee56351", "BadgeNumber": "ba9b96d2-fb0f-455b-b0bf-33693e171acc", "HomeLocation": { "Latitude": 39.74386695629378, "Longitude": -105.00610500179027 }, "DispatchUrl": "http://localhost:5102", "DispatchUrl": "http://localhost:5101" }'

@@ -41,7 +41,7 @@ partial class OrderPage : ComponentBase
 
 
     public async Task<AddDroneResponse> AddDrone() {
-        return await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
+        var response = await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
         {
             DroneId = BaseEntity.GenerateNewId(),
             BadgeNumber = Guid.NewGuid(),
@@ -49,7 +49,8 @@ partial class OrderPage : ComponentBase
             DroneUrl = "http://localhost:85",
             DispatchUrl = "http://localhost:83"
         });
-        
+
+        return response;
     }
     public async Task makeOrder()
     {

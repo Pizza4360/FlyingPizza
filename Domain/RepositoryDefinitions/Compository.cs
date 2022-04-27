@@ -30,10 +30,10 @@ public class Compository : ICompositeRepository
         var mongoDatabase = mongoClient.GetDatabase(repoSettings.Value.DatabaseName);
         
         _fleet =  mongoDatabase.GetCollection<DroneRecord>(repoSettings.Value.Fleet);
-        _fleetFilter = Builders<DroneRecord>.Filter.Exists("Fleet");
+        _fleetFilter = Builders<DroneRecord>.Filter.Exists("FleetCompositeTest");
         
         _orders =  mongoDatabase.GetCollection<Order>(repoSettings.Value.Orders);
-        _ordersFilter = Builders<Order>.Filter.Exists("Orders");
+        _ordersFilter = Builders<Order>.Filter.Exists("OrdersCompositeTest");
         
         _assignments =  mongoDatabase.GetCollection<Assignment>(repoSettings.Value.Assignments);
         _assignmentsFilter = Builders<Assignment>.Filter.Exists("Assignments");
