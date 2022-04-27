@@ -22,4 +22,6 @@ public interface ICompositeRepository
     public Task<DeleteResult> RemoveOrderAsync(string id);
     public Task<UpdateResult> UpdateDroneAsync(UpdateDroneStatusRequest request);
     public Task<UpdateResult> UpdateOrderAsync(CompleteOrderRequest request);
+    public Task<IEnumerable<AssignDeliveryRequest>> GenerateDeliveryRequests();
+
 }

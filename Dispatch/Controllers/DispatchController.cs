@@ -18,12 +18,12 @@ public class DispatchController : ControllerBase
     private readonly Queue<AssignDeliveryRequest> _unfilledOrders;
     private readonly ICompositeRepository _repository;
     private readonly DispatchToSimDroneGateway _dispatchToSimDroneGateway;
-    private const int RefreshInterval = 2000;
+    private const int RefreshInterval = 5000;
     
     
     private Stopwatch _stopwatch;
     private Timer _timer;
-    private async void TryAssignmentsCallback(object _) => await TimerCheck();
+    private async void IssueAssignments(object _) => await TimerCheck();
 
 
     private async Task TimerCheck()
@@ -32,7 +32,7 @@ public class DispatchController : ControllerBase
         {
             _stopwatch.Stop();
             _stopwatch.Reset();
-            TryDequeueOrders();
+            AssignEnqueuedDeliveries();
             _stopwatch.Start();
         }
     }
@@ -46,6 +46,9 @@ public class DispatchController : ControllerBase
             Latitude = 39.74364421910773m,
             Longitude = -105.00858710385576m
         };
+        _timer = new Timer(IssueAssignments, null, 0, RefreshInterval);
+        _stopwatch = new Stopwatch();
+        _stopwatch.Start();
     }
 
     [HttpPost("Ping")]
@@ -141,14 +144,16 @@ public class DispatchController : ControllerBase
     }
 
     [NonAction]
-    public async Task<EnqueueOrderResponse?> TryDequeueOrders()
+    private async Task<List<AssignDeliveryResponse?>> AssignEnqueuedDeliveries()
     {
-        await _repository.GetAssig;
-
-        return new EnqueueOrderResponse
+        var deliveryRequests = _repository.GenerateDeliveryRequests();
+        var responses = new List<AssignDeliveryResponse?>();
+        foreach(var request in await deliveryRequests)
         {
-            IsEnqueued = true
-        };
+            var response = await _dispatchToSimDroneGateway.AssignDelivery(request);
+            responses.Add(response);
+        }
+        return responses;
     }
 
     [HttpPost("PostInitialStatus")]
