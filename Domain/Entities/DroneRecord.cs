@@ -7,15 +7,12 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities;
 
-public class DroneRecord
+public class DroneRecord : BaseEntity
 {
     [BsonElement("DroneId")]
     [JsonPropertyName("DroneId")]
     public string DroneId{get;set;}
-
-    [BsonElement("Orders")]
-    [JsonPropertyName("Orders")]
-    public List<Order> Orders{get;set;}
+    
     [BsonElement("BadgeNumber")]
     [JsonPropertyName("BadgeNumber")]
     public Guid BadgeNumber { get; set; }
@@ -39,7 +36,14 @@ public class DroneRecord
     public string DispatchUrl { get; set; }
     public override string ToString()
     {
-        return this.ToJson();
+        return $"\"DroneId\":\"{DroneId}\"," +
+               $"\"BadgeNumber\":\"{BadgeNumber}\"," +
+               $"\"Destination\":\"{Destination}\"," +
+               $"\"CurrentLocation\":\"{CurrentLocation}\"," +
+               $"\"HomeLocation\":\"{HomeLocation}\"," +
+               $"\"State\":\"{State}\"," +
+               $"\"DroneUrl\":\"{DroneUrl}\"," +
+               $"\"DispatchUrl\":\"{DispatchUrl}\"";
     }
     public override bool Equals(object o)
     {

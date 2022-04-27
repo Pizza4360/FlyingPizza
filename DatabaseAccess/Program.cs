@@ -13,7 +13,15 @@ public class Program
 
         // OffSet services to the container.
         builder.Services.AddCors(options =>
-            options.AddPolicy(name: "CORS", policy => policy.WithOrigins("https://localhost:44364","http://localhost:5001","http://localhost:81").AllowAnyHeader().AllowAnyMethod()));
+            options.AddPolicy(name: "CORS", policy => policy.WithOrigins(
+                "https://localhost:44364",
+                "http://localhost:5001",
+                "http://localhost:81",
+                "http://localhost:82",
+                "http://localhost:83",
+                "http://localhost:84",
+                "http://localhost:85"
+                ).AllowAnyHeader().AllowAnyMethod()));
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -21,12 +29,10 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         #region repositories
-
-        builder.Services.Configure<RepositorySettings>(builder.Configuration.GetSection("CompositeDb"));
-        builder.Services.AddSingleton<ICompositeRepository>(_ => new Compository(/*provider.GetService<IOptions<FleetDatabaseSettings>>()*/));
-
-
+        builder.Services.Configure<RepositorySettings>(builder.Configuration.GetSection("RepositorySettings"));
+        builder.Services.AddSingleton<ICompositeRepository>(_ => new Compository(_.GetService<IOptions<RepositorySettings>>()));
         #endregion repositories
+        
         builder.Services.AddControllers()
                .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 

@@ -47,7 +47,7 @@ public class DispatchController : ControllerBase
     {
         Console.WriteLine($"DispatchController.AddDrone({addDroneRequest})");
 
-        if(!await CanAddDrone(addDroneRequest.DroneId))
+        if(await CanAddDrone(addDroneRequest.DroneId))
         {
             Console.WriteLine("Either the DroneUrl or DroneUrl you are trying to use is taken by another drone.");
             return new AddDroneResponse
@@ -97,7 +97,6 @@ public class DispatchController : ControllerBase
 
         var droneRecord = new DroneRecord
         {
-            Orders = null,
             DroneId = addDroneRequest.DroneId,
             DroneUrl = addDroneRequest.DroneUrl,
             BadgeNumber = addDroneRequest.BadgeNumber,
@@ -109,7 +108,8 @@ public class DispatchController : ControllerBase
         };
 
         Console.WriteLine($"\n\n\n\nabout to YEET this drone record:\n{droneRecord.ToJson()}");
-        await _repository.CreateDroneAsync(droneRecord);
+        var (record, assignment) = await _repository.CreateDroneAsync(droneRecord);
+        Console.WriteLine($"\n\nResponse from the database:\ndrone record: {record}\nassignment:{assignment}\n");
         return new AddDroneResponse
         {
             BadgeNumber = addDroneRequest.BadgeNumber,
@@ -117,10 +117,11 @@ public class DispatchController : ControllerBase
         };
     }
 
-
+    [NonAction]
     private async Task<bool> CanAddDrone(string droneId)
     {
-        return (await _repository.GetDrones()).Any(x => x.DroneId == droneId);
+        var drones = await _repository.GetDrones();
+        return drones.Any(x => x.DroneId == droneId);
     }
 
 
@@ -139,7 +140,7 @@ public class DispatchController : ControllerBase
     public async Task<EnqueueOrderResponse?> EnqueueOrder(EnqueueOrderRequest enqueueOrderRequest)
     {
         Console.WriteLine($"DispatchController.EqueueOrder -> {enqueueOrderRequest}");
-        await _repository.CreateOrderAsync(enqueueOrderRequest.Order);
+        await _repository.EnqueueOrder(enqueueOrderRequest.Order);
 
         return new EnqueueOrderResponse
         {

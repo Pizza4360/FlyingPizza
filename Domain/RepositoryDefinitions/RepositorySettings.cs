@@ -4,7 +4,7 @@ public class RepositorySettings
 {
     public string ConnectionString { get; set; } = null!;
     public string DatabaseName { get; set; } = null!;
-    public string CollectionName { get; set; } = null!;
-    
-    public string 
+    public string Fleet{get;set;}
+    public string Orders{get;set;}
+    public string Assignments{get;set;}
 }

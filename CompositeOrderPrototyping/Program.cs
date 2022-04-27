@@ -17,7 +17,9 @@ var repo = new Compository(Options.Create(new RepositorySettings
 {
     ConnectionString = "mongodb+srv://capstone:Ms2KqQKc5U3gFydE@cluster0.rjlgf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
     DatabaseName = "Capstone",
-    CollectionName = "CompositeTest",
+    Fleet = "FleetCompositeTest",
+    Orders = "OrdersCompositeTest",
+    Assignments = "AssignmentsCompositeTest"
 }));
 
 var dispToSim = new DispatchToSimDroneGateway(repo);
@@ -38,7 +40,6 @@ var droneRecord = new DroneRecord
     HomeLocation = new GeoLocation
         {Latitude = 39.74386695629378m, Longitude = -105.00610500179027m},
     State = DroneState.Returning,
-    Orders = new List<Order>()
 };
 
 Console.WriteLine($"\n\nThe response from updating a document contains a copy of that entire document:\n" +
@@ -50,7 +51,7 @@ var newOrder = JsonSerializer.Deserialize<Order>(orderDoc);
 newOrder.TimeOrdered = DateTime.Now;
 
 Console.WriteLine($"\n\nAdd a new order and attach it to the new drone:\n" +
-                  $"{repo.CreateOrderAsync(newOrder).Result.ToJson()}");
+                  $"{repo.EnqueueOrder(newOrder).Result.ToJson()}");
 
 
 Console.WriteLine($"\n\nGet a drone record or an order by id. Let's test by setting the previous one to null:\n");
@@ -60,13 +61,13 @@ droneRecord = null;
 newOrder = null;
 
 Console.WriteLine($"Before:\ndroneRecord: \"{droneRecord}\", order: {newOrder}\nWe'll wait for a few seconds to make sure the updates are finished.\n");
-Thread.Sleep(15000);
+// Thread.Sleep(5000);
 droneRecord = repo.GetDroneByIdAsync(droneId).Result;
 newOrder = repo.GetOrderByIdAsync(orderId).Result;
 Console.WriteLine($"after:\ndroneRecord:{droneRecord.ToJson()},\nnewOrder:{newOrder}" +
                   $"Now let's assign the order to the new drone");
 
-Console.WriteLine(repo.EnqueueOrder(new EnqueueOrderRequest{Order = newOrder}));
+Console.WriteLine(await repo.EnqueueOrder(newOrder));
 
 
 

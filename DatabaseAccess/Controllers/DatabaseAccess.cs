@@ -35,7 +35,7 @@ public class DatabaseAccess : ControllerBase
     public async Task<CreateOrderResponse> CreateOrder(Order order)
     {
         // await _composite.CreateAsync(order);
-        await _composite.CreateOrderAsync(order);
+        await _composite.EnqueueOrder(order);
         return new CreateOrderResponse();
     }
     

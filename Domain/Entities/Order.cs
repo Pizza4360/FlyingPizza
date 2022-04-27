@@ -1,27 +1,22 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 using Domain.DTO;
-
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities;
 
-[BsonDiscriminator("OrderId")]
-public class Order
-{
-    private string _id;
-    [BsonElement("OrderId")]
-    public string OrderId
-    {
-        get => _id ??= BaseEntity.GenerateNewId();
-        set => _id = value;
-    }
 
+public class Order : BaseEntity
+{
     // [BsonElement("Items")]
     // [JsonPropertyName("Items")]
     // public string[] Items { get; set; }
 
+    [BsonElement("OrderId")]
+    [JsonPropertyName("OrderId")]
+    public string OrderId{get;set;}
+    
     [BsonElement("CustomerName")]
     [JsonPropertyName("CustomerName")]
     public string CustomerName { get; set; }
