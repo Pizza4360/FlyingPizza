@@ -152,7 +152,7 @@ public class Compository : ICompositeRepository
         var availableDronesIds = await GetAvailableDrones();
         var newAssignments = GetNewAssignments(availableDronesIds, unassignedOrderIds);
 
-        foreach(var updateDefinition in newAssignments.Select(newAssignment => Builders<Assignment>.Update.Set("OrderId", newAssignment.OrderId)))
+        foreach(var updateDefinition in (await newAssignments).Select(newAssignment => Builders<Assignment>.Update.Set("OrderId", newAssignment.OrderId)))
         {
             await _assignments.FindOneAndUpdateAsync(k => true, updateDefinition);
         }
@@ -165,7 +165,7 @@ public class Compository : ICompositeRepository
             }
         }
     }
-    private static List<Assignment> GetNewAssignments(IEnumerable<string> availableDronesIds, IEnumerable<string> unassignedOrderIds)
+    private static async Task<List<Assignment>> GetNewAssignments(IEnumerable<string> availableDronesIds, IEnumerable<string> unassignedOrderIds)
     {
         return availableDronesIds
               .Zip(unassignedOrderIds)
@@ -178,6 +178,28 @@ public class Compository : ICompositeRepository
     private static IEnumerable<string> GetUnassignedOrderIds(IEnumerable<Order> allOrders, List<Assignment> keyMap)
     {
         return allOrders.Select(x => x.OrderId).Where(orderId => keyMap.TrueForAll(y => !y.OrderId.Equals(orderId)));
+    }
+
+
+    public async Task<List<Assignment>> GetNewAssignmentsAndIpAddresses()
+    {
+        var availableDroneIds = await GetAvailableDrones();
+        var records = (await GetDrones()).Where(x => availableDroneIds.Contains(x.DroneId));
+        var newAssignments = (await GetAssignments()).Where(x => !x.OrderId.Equals(string.Empty) && x.ShouldNotifyDrone);
+        var newAssignmentOrderIds = newAssignments.Select(y => y.OrderId);
+        var newAssignmentDronesIds = newAssignments.Select(x => x.DroneId);
+        var newOrders = (await GetOrders()).Where(x => newAssignmentOrderIds.Contains(x.OrderId));
+        var urlsAndDroneIds = records.Where(x => newAssignmentDronesIds.Contains(x.DroneId)).Select(x => new KeyValuePair<string, string>(x.DroneUrl, x.DroneId));
+        var dispatchOrders = new List<AssignDeliveryRequest>();
+        var urlsDroneIdsAndNewOrders = urlsAndDroneIds.Where(x => )
+        var assignmentsAndOrders = 
+        // var urlsDroneIdsAndOrders = urlsAndDroneIds.First(x => new)
+        
+        foreach(var dronesId in newAssignmentDronesIds)
+        {
+            
+        }
+        
     }
 
 }

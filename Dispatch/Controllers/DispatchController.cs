@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.FrontEndDispatchCommunication;
@@ -17,7 +18,24 @@ public class DispatchController : ControllerBase
     private readonly Queue<AssignDeliveryRequest> _unfilledOrders;
     private readonly ICompositeRepository _repository;
     private readonly DispatchToSimDroneGateway _dispatchToSimDroneGateway;
+    private const int RefreshInterval = 2000;
+    
+    
+    private Stopwatch _stopwatch;
+    private Timer _timer;
+    private async void TryAssignmentsCallback(object _) => await TimerCheck();
 
+
+    private async Task TimerCheck()
+    {
+        if(_stopwatch.ElapsedMilliseconds > RefreshInterval)
+        {
+            _stopwatch.Stop();
+            _stopwatch.Reset();
+            TryDequeueOrders();
+            _stopwatch.Start();
+        }
+    }
     public DispatchController(ICompositeRepository repository)
     {
         _repository = repository;
@@ -122,11 +140,10 @@ public class DispatchController : ControllerBase
         };
     }
 
-    [HttpPost("EnqueueOrder")]
-    public async Task<EnqueueOrderResponse?> EnqueueOrder(EnqueueOrderRequest enqueueOrderRequest)
+    [NonAction]
+    public async Task<EnqueueOrderResponse?> TryDequeueOrders()
     {
-        Console.WriteLine($"DispatchController.EnqueueOrder -> {enqueueOrderRequest}");
-        await _repository.EnqueueOrder(enqueueOrderRequest.Order);
+        await _repository.GetAssig;
 
         return new EnqueueOrderResponse
         {

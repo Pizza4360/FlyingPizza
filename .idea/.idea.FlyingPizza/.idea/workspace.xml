@@ -16,14 +16,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="added stopwatch to check for orders">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DatabaseAccess/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/DatabaseAccess/Properties/launchSettings.json" afterDir="false" />
+    <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="Added Deletion for stale Assignment mappings.&#10;Front end only directs new orders to database now">
       <change beforePath="$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FrontEnd/Pages/OrderPages/OrderPage.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/FrontEnd/Pages/OrderPages/OrderPage.razor.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,6 +64,7 @@
     <setting file="file://$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3444aea72fd552a5be14e6c6d1bb43569412a5547ca7f0b93136753e44471e5c/CallSiteRuntimeResolver.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/FrontEnd/Pages/TrackingPages/TrackingPage.razor" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/sonia/Documents/god_save_the_repo/FlyingPizza/Domain/RepositoryDefinitions/Compository.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="mock://C:/Users/sonia/Documents/god_save_the_repo/FlyingPizza/FrontEnd/Services/FrontEndToDispatchGateway.cs" root0="SKIP_HIGHLIGHTING" />
@@ -109,6 +105,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/21c744ab66484b5cbfc8f3c489e6f14b5cec287df16ee952c6c5b6378704243/SslStream.Implementation.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DatabaseAccess/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="mock://C:/Users/sonia/Documents/god_save_the_repo/FlyingPizza/Dispatch/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/sonia/Documents/god_save_the_repo/FlyingPizza/FrontEnd/Pages/OrderPages/OrderPage.razor.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -432,7 +429,21 @@
       <option name="project" value="LOCAL" />
       <updated>1651042556303</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Assignments now update automatically when a new oreder is enqueued">
+      <created>1651047890419</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1651047890419</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Added Deletion for stale Assignment mappings.&#10;Front end only directs new orders to database now">
+      <created>1651048719083</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1651048719083</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -471,7 +482,9 @@
     <MESSAGE value="comparing two versions" />
     <MESSAGE value="Drone disappearing when delivering, but still delivering" />
     <MESSAGE value="added stopwatch to check for orders" />
-    <option name="LAST_COMMIT_MESSAGE" value="added stopwatch to check for orders" />
+    <MESSAGE value="Assignments now update automatically when a new oreder is enqueued" />
+    <MESSAGE value="Added Deletion for stale Assignment mappings.&#10;Front end only directs new orders to database now" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Deletion for stale Assignment mappings.&#10;Front end only directs new orders to database now" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -517,13 +530,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs</url>
-          <line>104</line>
+          <line>122</line>
           <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Dispatch\Controllers\DispatchController.cs" initialLine="107" containingFunctionPresentation="method 'AddDrone'">
             <startOffsets>
-              <option value="4155" />
+              <option value="4633" />
             </startOffsets>
             <endOffsets>
-              <option value="4179" />
+              <option value="4657" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="29" />
@@ -533,10 +546,10 @@
           <line>150</line>
           <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Domain\RepositoryDefinitions\Compository.cs" initialLine="133" containingFunctionPresentation="method 'TryAssignOrders'">
             <startOffsets>
-              <option value="5651" />
+              <option value="5697" />
             </startOffsets>
             <endOffsets>
-              <option value="5685" />
+              <option value="5731" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="31" />
@@ -556,13 +569,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs</url>
-          <line>102</line>
+          <line>120</line>
           <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Dispatch\Controllers\DispatchController.cs" initialLine="102" containingFunctionPresentation="method 'AddDrone'">
             <startOffsets>
-              <option value="4030" />
+              <option value="4508" />
             </startOffsets>
             <endOffsets>
-              <option value="4078" />
+              <option value="4556" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="35" />
