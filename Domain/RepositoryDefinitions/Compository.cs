@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,25 @@ public class Compository : ICompositeRepository
     private FilterDefinition<Assignment> _assignmentsFilter;
     private readonly List<DroneRecord> _droneList;
     private readonly List<Order> _orderList;
+    
+    private const int RefreshInterval = 2000;
+    
+    
+    private Stopwatch _stopwatch;
+    private Timer _timer;
+    private async void TryAssignmentsCallback(object _) => await TimerCheck();
 
+
+    private async Task TimerCheck()
+    {
+        if(_stopwatch.ElapsedMilliseconds > RefreshInterval)
+        {
+            _stopwatch.Stop();
+            _stopwatch.Reset();
+            TryAssignOrders();
+            _stopwatch.Start();
+        }
+    }
 
     public Compository(IOptions<RepositorySettings> repoSettings)
     {
@@ -37,6 +56,9 @@ public class Compository : ICompositeRepository
         
         _assignments =  mongoDatabase.GetCollection<Assignment>(repoSettings.Value.Assignments);
         _assignmentsFilter = Builders<Assignment>.Filter.Exists("Assignments");
+        _timer = new Timer(TryAssignmentsCallback, null, 0, RefreshInterval);
+        _stopwatch = new Stopwatch();
+        _stopwatch.Start();
     }
 
     public async Task<Tuple<DroneRecord, Assignment>> CreateDroneAsync(DroneRecord newDrone)
@@ -50,12 +72,6 @@ public class Compository : ICompositeRepository
 
     public async Task<Order> EnqueueOrder(Order newOrder)
     {
-        if((await GetOrders()).Count != 0)
-        {
-            Console.WriteLine("An order with the id {} already exists!");
-            return newOrder;
-        }
-        // var orderUpdateDefinition = Builders<Order>.Update.Push("Orders", newOrder);
         await _orders.InsertOneAsync(newOrder);
         return newOrder;
     }
@@ -129,6 +145,7 @@ public class Compository : ICompositeRepository
 
     public async Task<Assignment> TryAssignOrders()
     {
+        Console.WriteLine("trying to assign some orders...");
         var allOrders = await GetOrders();
         var allAssignments = await GetAssignments();
         var unassignedOrderIds = GetUnassignedOrderIds(allOrders, allAssignments);

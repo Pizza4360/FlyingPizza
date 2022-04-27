@@ -31,11 +31,11 @@ public class DatabaseAccess : ControllerBase
         return fleet;
     }
     
-    [HttpPost("CreateOrder")]
-    public async Task<CreateOrderResponse> CreateOrder(Order order)
+    [HttpPost("EnqueueOrder")]
+    public async Task<CreateOrderResponse> EnqueueOrder(CreateOrderRequest createOrderRequest)
     {
         // await _composite.CreateAsync(order);
-        await _composite.EnqueueOrder(order);
+        await _composite.EnqueueOrder(createOrderRequest.Order);
         return new CreateOrderResponse();
     }
     
