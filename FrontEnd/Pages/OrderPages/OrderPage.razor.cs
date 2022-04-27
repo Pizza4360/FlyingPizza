@@ -17,18 +17,8 @@ partial class OrderPage : ComponentBase
     [Inject]
     public IJSRuntime JsRuntime {get;set; }
 
-
-
     public string DeliveryAddress;
     public string CustomerName;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JsRuntime.InvokeVoidAsync("initGeocoder");
-        }
-    }
     protected override void OnInitialized()
     {
         _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
@@ -66,8 +56,6 @@ partial class OrderPage : ComponentBase
             DeliveryAddress = DeliveryAddress
         });
 
-        Console.Write("AHHHHHH~~~~~~~~~~");
-
         var dispatchResponse = _gateway.EnqueueOrder(new EnqueueOrderRequest
         {
             OrderLocation = DeliveryLocation,
@@ -75,7 +63,6 @@ partial class OrderPage : ComponentBase
         });
             
         Console.WriteLine(dispatchResponse);
-        // Navigate to page to display users current order. 
-        _navigationManager.NavigateTo("/userPage", false);
+
     }
 }

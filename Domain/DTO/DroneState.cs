@@ -19,10 +19,10 @@ public enum DroneState
 public static class DroneStateExtensions
 {
     private static readonly Dictionary<DroneState, string> StateToColorDict = new(){
-        { DroneState.Ready, "#13FF00" },
+        { DroneState.Ready, "#08af08" },
         { DroneState.Delivering, "#98f5ff" },
         { DroneState.Returning, "#8A2BE2" },
-        { DroneState.Dead, "#FF0000" },
+        { DroneState.Dead, "#FC401E" },
         { DroneState.Charging, "#FF9A08" }
     };
     private static readonly Dictionary<DroneState, string> StateToStringDict = new(){
