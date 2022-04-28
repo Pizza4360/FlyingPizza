@@ -52,6 +52,8 @@ public class DispatchController : ControllerBase
     [HttpPost("AddDrone")]
     public async Task<AddDroneResponse> AddDrone(AddDroneRequest addDroneRequest)
     {
+        addDroneRequest.DispatchUrl = "http://localhost:83";
+        addDroneRequest.HomeLocation = new GeoLocation { Latitude = 39.74386695629378m, Longitude = -105.00610500179027m };
         Console.WriteLine($"DispatchController.AddDrone({addDroneRequest})");
 
         if((await _fleet.GetAllAsync())
@@ -200,7 +202,7 @@ public class DispatchController : ControllerBase
             var orderDto = _unfilledOrders.Dequeue();
             Console.WriteLine($"Drone i{droneStatusRequest.DroneId} is ready for the next order, and we have more. Resending to order {orderDto.OrderId}\n\n\n");
             orderDto.DroneId = droneStatusRequest.DroneId;
-            _dispatchToSimDroneGateway.AssignDelivery(orderDto);
+            await _dispatchToSimDroneGateway.AssignDelivery(orderDto);
             response.IsCompletedSuccessfully = await _fleet.UpdateAsync(droneRecord);
         }
 
