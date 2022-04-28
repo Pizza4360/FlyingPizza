@@ -47,22 +47,22 @@ var droneRecord = new DroneRecord
     State = DroneState.Returning,
 };
 
-// Console.WriteLine($"\n\nThe response from updating a document contains a copy of that entire document:\n" +
-                  // $"{repo.CreateDroneAsync(droneRecord).ToJson()}");
+Console.WriteLine($"\n\nThe response from updating a document contains a copy of that entire document:\n" +
+                  $"{repo.CreateDroneAsync(droneRecord).ToJson()}");
 
-var orderDoc = $"{{\"Items\":[\"pizza\",\"artichoke\",\"pineapple\",\"olives\",\"medium\",13.42],\"CustomerName\":\"Mickey Mouse\",\"DeliveryAddress\":\"1201 5th St,Denver,CO 80204\",\"DeliveryLocation\":{droneRecord.Destination},\"HasBeenDelivered\":false}}";
-Console.WriteLine($"{{\"$date\":\"{DateTime.Now.ToJson()}\"}}");
-var newOrder = JsonSerializer.Deserialize<Order>(orderDoc);
-newOrder.TimeOrdered = DateTime.Now;
+// var orderDoc = $"{{\"Items\":[\"pizza\",\"artichoke\",\"pineapple\",\"olives\",\"medium\",13.42],\"CustomerName\":\"Mickey Mouse\",\"DeliveryAddress\":\"1201 5th St,Denver,CO 80204\",\"DeliveryLocation\":{droneRecord.Destination},\"HasBeenDelivered\":false}}";
+// Console.WriteLine($"{{\"$date\":\"{DateTime.Now.ToJson()}\"}}");
+// var newOrder = JsonSerializer.Deserialize<Order>(orderDoc);
+// newOrder.TimeOrdered = DateTime.Now;
 
-Console.WriteLine($"\n\nAdd a new order and attach it to the new drone:\n" +
-                  $"{repo.EnqueueOrder(newOrder).Result.ToJson()}");
-Console.WriteLine("Let's test completing (updating) the order");
-await repo.UpdateOrderAsync(new CompleteOrderRequest{OrderId = newOrder.OrderId, Time = DateTime.Now});
-Thread.Sleep(5000);
-// var copy = await repo.GetOrderByIdAsync(newOrder.OrderId);
-Console.WriteLine($"\n\nBofore: {(newOrder.TimeDelivered == null ? "null" : newOrder.TimeDelivered)}\nAfter: {(await repo.GetOrderByIdAsync(newOrder.OrderId)).TimeDelivered}");
-Console.WriteLine($"\n\n\n\nBofore: {droneRecord.ToJson()}\nAfter: {(await repo.CreateDroneAsync(droneRecord)).ToJson()}");
+// Console.WriteLine($"\n\nAdd a new order and attach it to the new drone:\n" +
+//                   $"{repo.EnqueueOrder(newOrder).Result.ToJson()}");
+// Console.WriteLine("Let's test completing (updating) the order");
+// await repo.UpdateOrderAsync(new CompleteOrderRequest{OrderId = newOrder.OrderId, Time = DateTime.Now});
+// Thread.Sleep(5000);
+// // var copy = await repo.GetOrderByIdAsync(newOrder.OrderId);
+// Console.WriteLine($"\n\nBofore: {(newOrder.TimeDelivered == null ? "null" : newOrder.TimeDelivered)}\nAfter: {(await repo.GetOrderByIdAsync(newOrder.OrderId)).TimeDelivered}");
+// Console.WriteLine($"\n\n\n\nBofore: {droneRecord.ToJson()}\nAfter: {(await repo.CreateDroneAsync(droneRecord)).ToJson()}");
 
 
 UpdateDroneStatusRequest request = new UpdateDroneStatusRequest

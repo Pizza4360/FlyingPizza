@@ -122,7 +122,8 @@ public class Compository : ICompositeRepository
 
     public async Task<DroneRecord> GetDroneByIdAsync(string id)
     {
-        (await _fleet.FindAsync(x => id.Equals(x.
+        var filter = Builders<DroneRecord>.Filter.Eq<string>(d => d.DroneId, id);
+        return await _fleet.Find(filter).FirstOrDefaultAsync();
     }
 
 
@@ -131,12 +132,11 @@ public class Compository : ICompositeRepository
         Console.WriteLine("updating drone status");
         var update = Builders<DroneRecord>
                     .Update
-                    .Set($"State", request.State)
-                    .Set($"CurrentLocation", request.CurrentLocation)
-                    .Set($"Destination", request.Destination);
-        var filter = Builders<DroneRecord>.Filter.Eq("DroneId", request.DroneId);
+                    .Set(d => d.State, request.State)
+                    .Set(d => d.CurrentLocation, request.CurrentLocation)
+                    .Set(d => d.Destination, request.Destination);
+        var filter = Builders<DroneRecord>.Filter.Eq(d => d.DroneId, request.DroneId);
         var result = await _fleet.UpdateOneAsync(filter, update, new UpdateOptions {IsUpsert = false});
-        // Console.WriteLine($"\n\n\n\nUpdate request: {request.ToJson()}\n\nUpdated result: {result.ToJson()}\n");
         return result;
     }
 

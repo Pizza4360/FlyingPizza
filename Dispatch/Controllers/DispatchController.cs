@@ -92,7 +92,7 @@ public class DispatchController : ControllerBase
         {
             DroneId = addDroneRequest.DroneId,
             DroneIp = addDroneRequest.DroneUrl,
-            DispatchUrl = addDroneRequest.DispatchUrl,
+            DispatchUrl = "localhost:81",
             HomeLocation = _homeLocation
         };
 

@@ -37,6 +37,7 @@ partial class OrderPage : ComponentBase
         _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
         _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
          converter = new ConvertAddressToGeoLocation();
+         
     }
 
     public FrontEndToDispatchGateway GetGateway()

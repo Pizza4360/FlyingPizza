@@ -16,14 +16,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="removed returning calls of updating drone status since this is not implemented in mongodb and requires our own implementation">
+    <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/CompleteOrderRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/CompleteOrderRequest.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimDrone/Drone.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SimDrone/Drone.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrontEnd/Pages/OrderPages/OrderPage.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/FrontEnd/Pages/OrderPages/OrderPage.razor.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +58,6 @@
     </option>
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/FrontEnd/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/CompositeOrderPrototyping/Repo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/FrontEnd/Pages/FleetPages/FleetView.razor.cs" root0="FORCE_HIGHLIGHTING" />
@@ -78,7 +75,6 @@
     <setting file="file://$PROJECT_DIR$/Dispatch/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DatabaseAccess/appsettings.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Dispatch/Program.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -102,7 +98,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C#" />
+    <property name="settings.editor.selected.configurable" value="reference.settings.ide.settings.web.browsers" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager" selected=".NET Project.CompositeOrderTest">
@@ -279,7 +275,8 @@
       <workItem from="1651070274242" duration="7060000" />
       <workItem from="1651081911833" duration="7082000" />
       <workItem from="1651089978849" duration="4875000" />
-      <workItem from="1651098128899" duration="13239000" />
+      <workItem from="1651098128899" duration="15318000" />
+      <workItem from="1651117290686" duration="91000" />
     </task>
     <task id="LOCAL-00001" summary="adding untracked files from merge">
       <created>1650835990823</created>
@@ -442,7 +439,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651099385968</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="almost done reimplementing crud">
+      <created>1651115062054</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1651115062054</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -486,7 +490,8 @@
     <MESSAGE value="need to join on url, order and drone id to get assignDeliveryRequest list" />
     <MESSAGE value="Created method DispatchController.cs.AssignEnqueuedDeliveries." />
     <MESSAGE value="removed returning calls of updating drone status since this is not implemented in mongodb and requires our own implementation" />
-    <option name="LAST_COMMIT_MESSAGE" value="removed returning calls of updating drone status since this is not implemented in mongodb and requires our own implementation" />
+    <MESSAGE value="almost done reimplementing crud" />
+    <option name="LAST_COMMIT_MESSAGE" value="almost done reimplementing crud" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -496,10 +501,10 @@
           <line>92</line>
           <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\CompositeOrderPrototyping\Program.cs" initialLine="63" containingFunctionPresentation="">
             <startOffsets>
-              <option value="4084" />
+              <option value="4114" />
             </startOffsets>
             <endOffsets>
-              <option value="4236" />
+              <option value="4266" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="22" />
