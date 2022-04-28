@@ -47,33 +47,11 @@ public class OrderRepository : IOrdersRepository
         (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
 
 
-    public async Task<bool> UpdateAsync(Order order)
+    public async Task<UpdateResult> UpdateAsync(Order order)
     {
-        var result = await _collection.UpdateOneAsync(
-            record => record.DroneId == order.DroneId,
-            GetUpdateDefinition(order));
-        return result.IsAcknowledged;
-    }
+        var update = Builders<Order>
+            .Update.Set(o => o.TimeDelivered, order.TimeDelivered);
 
-    private static UpdateDefinition<Order> GetUpdateDefinition(Order order)
-    {
-        var builder = new UpdateDefinitionBuilder<Order>();
-        UpdateDefinition<Order> updateDefinition = null;
-        foreach (var property in order.GetType().GetProperties())
-        {
-            if (property != null)
-            {
-                if (updateDefinition == null)
-                {
-                    updateDefinition = builder.Set(property.Name, property.GetValue(order));
-                }
-                else
-                {
-                    updateDefinition = updateDefinition.Set(property.Name, property.GetValue(order));
-                }
-            }
-        }
-
-        return updateDefinition;
+        return await _collection.UpdateOneAsync(Builders<Order>.Filter.Eq(o => o.Id.Equals(order.Id), true), update, new UpdateOptions {IsUpsert = false});
     }
 }

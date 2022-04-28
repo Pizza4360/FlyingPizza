@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using MongoDB.Driver;
 
 namespace Domain.RepositoryDefinitions;
 
@@ -30,5 +31,5 @@ public interface IBaseRepository<DomainEntity>
     /// </summary>
     /// <param name="entity"></param>
     /// <returns>The entity, as it was updated</returns>
-    public Task<bool> UpdateAsync(DomainEntity entity);
+    public Task<UpdateResult> UpdateAsync(DomainEntity entity);
 }

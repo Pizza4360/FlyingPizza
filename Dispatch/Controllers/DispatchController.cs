@@ -140,7 +140,8 @@ public class DispatchController : ControllerBase
             DroneId = completeOrderRequest.OrderId,
             TimeDelivered = DateTime.Now
         };
-        return await _orders.UpdateAsync(order);
+        var result = await _orders.UpdateAsync(order);
+        return result.IsAcknowledged && result.ModifiedCount == 0;
     }
 
     [HttpPost("EnqueueOrder")]
@@ -194,7 +195,8 @@ public class DispatchController : ControllerBase
             _unfilledOrders.Count <= 0)
         {
             Console.WriteLine($"\n\n\nDrone {droneStatusRequest.DroneId} is still delivering an order. Updating the status tho....");
-            response.IsCompletedSuccessfully = await _fleet.UpdateAsync(droneRecord);
+            var result = (await _fleet.UpdateAsync(droneRecord));
+            response.IsCompletedSuccessfully = result.IsAcknowledged && result.ModifiedCount == 1;
             Console.WriteLine($"The status of {droneStatusRequest.DroneId}'s db update is {response.IsCompletedSuccessfully}\n\n\n");
         }
         else
@@ -203,9 +205,9 @@ public class DispatchController : ControllerBase
             Console.WriteLine($"Drone i{droneStatusRequest.DroneId} is ready for the next order, and we have more. Resending to order {orderDto.OrderId}\n\n\n");
             orderDto.DroneId = droneStatusRequest.DroneId;
             await _dispatchToSimDroneGateway.AssignDelivery(orderDto);
-            response.IsCompletedSuccessfully = await _fleet.UpdateAsync(droneRecord);
+            var result = (await _fleet.UpdateAsync(droneRecord));
+            response.IsCompletedSuccessfully = result.IsAcknowledged && result.ModifiedCount == 1;
         }
-
         return response;
     }
 
