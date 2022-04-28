@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
@@ -23,7 +24,18 @@ public class OrderRepository : IOrdersRepository
             ordersSettings.Value.CollectionName);
         Console.WriteLine($"this should be 'Orders'>>>{ordersSettings.Value.CollectionName}<<<");
     }
+    public OrderRepository(OrdersDatabaseSettings settings) //: Domain.InterfaceDefinitions.Repositories
+    {
+        var mongoClient = new MongoClient(
+            settings.ConnectionString);
 
+        var mongoDatabase = mongoClient.GetDatabase(
+            settings.DatabaseName);
+
+        _collection = mongoDatabase.GetCollection<Order>(
+            settings.CollectionName);
+        Console.WriteLine($"this should be 'Orders'>>>{settings.CollectionName}<<<");
+    }
     public async Task CreateAsync(Order newOrder)
     {
         await _collection.InsertOneAsync(newOrder);
@@ -31,6 +43,8 @@ public class OrderRepository : IOrdersRepository
 
     public async Task<Order> GetByIdAsync(string id) =>
         await _collection.Find(x => x.DroneId == id).FirstOrDefaultAsync();
+
+    public async Task<List<Order>> GetAllAsync() => (await _collection.FindAsync(_ => true)).ToList();
 
     public Task<bool> 
         Update(Order order)
@@ -45,35 +59,13 @@ public class OrderRepository : IOrdersRepository
 
     public async Task<bool> RemoveAsync(string id) =>
         (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
+    
 
-
-    public async Task<bool> UpdateAsync(Order order)
+    public async Task<UpdateResult> UpdateAsync(Order order)
     {
-        var result = await _collection.UpdateOneAsync(
-            record => record.DroneId == order.DroneId,
-            GetUpdateDefinition(order));
-        return result.IsAcknowledged;
-    }
+        var update = Builders<Order>
+            .Update.Set(o => o.TimeDelivered, order.TimeDelivered);
 
-    private static UpdateDefinition<Order> GetUpdateDefinition(Order order)
-    {
-        var builder = new UpdateDefinitionBuilder<Order>();
-        UpdateDefinition<Order> updateDefinition = null;
-        foreach (var property in order.GetType().GetProperties())
-        {
-            if (property != null)
-            {
-                if (updateDefinition == null)
-                {
-                    updateDefinition = builder.Set(property.Name, property.GetValue(order));
-                }
-                else
-                {
-                    updateDefinition = updateDefinition.Set(property.Name, property.GetValue(order));
-                }
-            }
-        }
-
-        return updateDefinition;
+        return await _collection.UpdateOneAsync(Builders<Order>.Filter.Eq(o => o.Id.Equals(order.Id), true), update, new UpdateOptions {IsUpsert = false});
     }
 }

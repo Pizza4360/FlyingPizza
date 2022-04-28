@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using MongoDB.Driver;
 
 namespace Domain.RepositoryDefinitions;
 
@@ -11,6 +13,13 @@ public interface IBaseRepository<DomainEntity>
     /// <returns>The domain entity, as it was created</returns>
     public Task CreateAsync(DomainEntity entity);
 
+    /// <summary>
+    /// Generates a list of all domain entities in the collection.
+    /// </summary>
+    /// <returns>The the list of domain entities.</returns>
+    public Task<List<DomainEntity>> GetAllAsync();
+
+    
     /// <summary>
     /// Retrieves a domain entity based on id
     /// </summary>
@@ -30,5 +39,5 @@ public interface IBaseRepository<DomainEntity>
     /// </summary>
     /// <param name="entity"></param>
     /// <returns>The entity, as it was updated</returns>
-    public Task<bool> UpdateAsync(DomainEntity entity);
+    public Task<UpdateResult> UpdateAsync(DomainEntity entity);
 }

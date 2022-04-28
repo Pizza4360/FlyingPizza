@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain;
 using Domain.DTO;
 using Domain.Entities;
 using FrontEnd.Services;
@@ -78,6 +76,7 @@ partial class TrackingPage : ComponentBase
                 title = x.Id,
                 color = x.State.GetColor()
             }).ToDictionary(x => x.title, x => x);
+        
         await JsRuntime.InvokeVoidAsync("updateAll", markers);
     }
 

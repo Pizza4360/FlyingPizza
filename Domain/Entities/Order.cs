@@ -36,7 +36,6 @@ public class Order : BaseEntity
     [BsonElement("TimeDelivered")]
     [JsonPropertyName("TimeDelivered")]
     [BsonRepresentation(BsonType.DateTime)]
-    [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
     [BsonIgnoreIfNull]
     public DateTime? TimeDelivered { get; set; }
 

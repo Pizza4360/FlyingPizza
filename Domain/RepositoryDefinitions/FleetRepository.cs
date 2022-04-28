@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain.Entities;
@@ -22,6 +23,19 @@ public class FleetRepository : IFleetRepository
         _collection = mongoDatabase.GetCollection<DroneRecord>(
             fleetSettings.Value.CollectionName);
     }
+    public FleetRepository(FleetDatabaseSettings settings) //: Domain.InterfaceDefinitions.Repositories
+    {
+        var mongoClient = new MongoClient(
+            settings.ConnectionString);
+
+        var mongoDatabase = mongoClient.GetDatabase(
+            settings.DatabaseName);
+
+        _collection = mongoDatabase.GetCollection<DroneRecord>(
+            settings.CollectionName);
+        Console.WriteLine($"this should be 'Orders'>>>{settings.CollectionName}<<<");
+    }
+
 
     public async Task CreateAsync(DroneRecord drone)
     {
@@ -40,32 +54,17 @@ public class FleetRepository : IFleetRepository
     public async Task<bool> RemoveAsync(string id) =>
         (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
 
-    public async Task<bool> UpdateAsync(DroneRecord drone)
+    public async Task<UpdateResult> UpdateAsync(DroneRecord drone)
     {
-        var result = await _collection.UpdateOneAsync(
-            record => record.DroneId == drone.DroneId,
-            GetUpdateDefinition(drone));
-        return result.IsAcknowledged;
-    }
-        
-    private static UpdateDefinition<DroneRecord> GetUpdateDefinition(DroneRecord drone)
-    {
-        var builder = new UpdateDefinitionBuilder<DroneRecord>();
-        UpdateDefinition<DroneRecord> updateDefinition = null;
-        foreach (var property in drone.GetType().GetProperties())
-        {
-            if (property != null && property.Name != "Id") {
-                if (updateDefinition == null)
-                {
-                    updateDefinition = builder.Set(property.Name, property.GetValue(drone));
-                }
-                else
-                {
-                    updateDefinition = updateDefinition.Set(property.Name, property.GetValue(drone));
-                }
-            }
-        }
-
-        return updateDefinition;
+        Console.WriteLine("updating drone status");
+        var update = Builders<DroneRecord>
+            .Update
+            .Set(d => d.State, drone.State)
+            .Set(d => d.CurrentLocation, drone.CurrentLocation)
+            .Set(d => d.OrderId, drone.OrderId)
+            .Set(d => d.Destination, drone.Destination);
+        var filter = Builders<DroneRecord>.Filter.Eq(d => d.DroneId, drone.DroneId);
+        var result = await _collection.UpdateOneAsync(filter, update, new UpdateOptions {IsUpsert = false});
+        return result;
     }
 }
