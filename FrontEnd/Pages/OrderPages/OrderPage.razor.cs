@@ -7,8 +7,6 @@ using Domain.Entities;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using MongoDB.Bson;
-using Newtonsoft.Json.Linq;
 
 namespace FrontEnd.Pages.OrderPages;
 
@@ -49,7 +47,6 @@ partial class OrderPage : ComponentBase
             DroneUrl = "http://localhost:85",
             DispatchUrl = "http://localhost:83"
         });
-        
     }
     public async Task makeOrder()
     {

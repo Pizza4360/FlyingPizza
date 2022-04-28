@@ -48,10 +48,10 @@ public class FleetRepository : IFleetRepository
             .Update
             .Set(d => d.State, drone.State)
             .Set(d => d.CurrentLocation, drone.CurrentLocation)
+            .Set(d => d.OrderId, drone.OrderId)
             .Set(d => d.Destination, drone.Destination);
         var filter = Builders<DroneRecord>.Filter.Eq(d => d.DroneId, drone.DroneId);
         var result = await _collection.UpdateOneAsync(filter, update, new UpdateOptions {IsUpsert = false});
         return result;
     }
-    
 }

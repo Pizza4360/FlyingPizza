@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
@@ -32,6 +33,8 @@ public class OrderRepository : IOrdersRepository
     public async Task<Order> GetByIdAsync(string id) =>
         await _collection.Find(x => x.DroneId == id).FirstOrDefaultAsync();
 
+    public async Task<List<Order>> GetAllAsync() => (await _collection.FindAsync(_ => true)).ToList();
+
     public Task<bool> 
         Update(Order order)
     {
@@ -45,7 +48,7 @@ public class OrderRepository : IOrdersRepository
 
     public async Task<bool> RemoveAsync(string id) =>
         (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
-
+    
 
     public async Task<UpdateResult> UpdateAsync(Order order)
     {
