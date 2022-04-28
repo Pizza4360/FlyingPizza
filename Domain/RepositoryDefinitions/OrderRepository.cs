@@ -24,7 +24,18 @@ public class OrderRepository : IOrdersRepository
             ordersSettings.Value.CollectionName);
         Console.WriteLine($"this should be 'Orders'>>>{ordersSettings.Value.CollectionName}<<<");
     }
+    public OrderRepository(OrdersDatabaseSettings settings) //: Domain.InterfaceDefinitions.Repositories
+    {
+        var mongoClient = new MongoClient(
+            settings.ConnectionString);
 
+        var mongoDatabase = mongoClient.GetDatabase(
+            settings.DatabaseName);
+
+        _collection = mongoDatabase.GetCollection<Order>(
+            settings.CollectionName);
+        Console.WriteLine($"this should be 'Orders'>>>{settings.CollectionName}<<<");
+    }
     public async Task CreateAsync(Order newOrder)
     {
         await _collection.InsertOneAsync(newOrder);

@@ -23,6 +23,19 @@ public class FleetRepository : IFleetRepository
         _collection = mongoDatabase.GetCollection<DroneRecord>(
             fleetSettings.Value.CollectionName);
     }
+    public FleetRepository(FleetDatabaseSettings settings) //: Domain.InterfaceDefinitions.Repositories
+    {
+        var mongoClient = new MongoClient(
+            settings.ConnectionString);
+
+        var mongoDatabase = mongoClient.GetDatabase(
+            settings.DatabaseName);
+
+        _collection = mongoDatabase.GetCollection<DroneRecord>(
+            settings.CollectionName);
+        Console.WriteLine($"this should be 'Orders'>>>{settings.CollectionName}<<<");
+    }
+
 
     public async Task CreateAsync(DroneRecord drone)
     {

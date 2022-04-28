@@ -33,7 +33,6 @@ public class DispatchController : ControllerBase
             Latitude = 39.74364421910773m,
             Longitude = -105.00858710385576m
         };
-
     }
 
         
@@ -45,6 +44,16 @@ public class DispatchController : ControllerBase
         // .WriteAsJsonAsync() 
         Console.WriteLine(greeting);
         return greeting;
+    }   
+    
+    [HttpPost("TryDequeueOrders")]
+    public async Task<string> TryDequeueOrders(IEnumerable<EnqueueOrderRequest> requests)
+    {
+        Console.WriteLine($"Trying to dequeue orders from {string.Join(",", requests)}");
+        var response = 
+            from r in requests
+            select EnqueueOrder(r);
+        return response.ToJson();
     }
     
     [HttpPost("AddDrone")]
@@ -160,7 +169,7 @@ public class DispatchController : ControllerBase
     private async Task<AssignDeliveryResponse?> InitiateDelivery(Order order, DroneRecord drone)
     {
         drone.OrderId = order.Id;
-        drone.State = DroneState.Preparing;
+        drone.State = DroneState.Delivering;
         await _fleet.UpdateAsync(drone);
         var assignDeliveryResponse = await _dispatchToSimDroneGateway.AssignDelivery(new AssignDeliveryRequest
         {
@@ -171,15 +180,6 @@ public class DispatchController : ControllerBase
         return assignDeliveryResponse;
     }
 
-    public async Task<IEnumerable<Task<AssignDeliveryResponse?>>> DequeueOrders()
-    {
-        Console.WriteLine("DequeueOrders...");
-        var orders = await GetUnfulfilledOrders();
-        return from drone in await GetAvailableDrones()
-        from order in orders
-        select InitiateDelivery(order, drone);
-    }
-    
     private async Task<IEnumerable<DroneRecord>> GetAvailableDrones()
     {
         Console.WriteLine("DequeueOrders...");
@@ -188,16 +188,6 @@ public class DispatchController : ControllerBase
             select d;
         return drones;
     }
-
-    private async Task<IEnumerable<Order>> GetUnfulfilledOrders()
-    {
-        var orders = from o in await _orders.GetAllAsync()
-            where !o.HasBeenDelivered && o.DroneId.Equals(string.Empty)
-            select o;
-        Console.WriteLine(string.Join(",", orders));
-        return orders;
-    }
-
     
     [HttpPost("PostInitialStatus")]
     public async Task<UpdateDroneStatusResponse> PostInitialStatus(UpdateDroneStatusRequest initialStatusRequest)
