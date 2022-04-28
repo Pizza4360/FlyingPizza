@@ -16,24 +16,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="">
+    <list default="true" id="05404e4b-7036-4c49-8ab6-ccfe2f10d71e" name="Changes" comment="removed returning calls of updating drone status since this is not implemented in mongodb and requires our own implementation">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.FlyingPizza/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DatabaseAccess/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/DatabaseAccess/Properties/launchSettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dispatch/DispatchToSimDroneGateway.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Dispatch/DispatchToSimDroneGateway.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/AssignDeliveryRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/AssignDeliveryRequest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/AssignFleetRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/AssignFleetRequest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/UpdateDroneStatusRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/UpdateDroneStatusRequest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/UpdateDroneStatusResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/UpdateDroneStatusResponse.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/CompleteOrderRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/DTO/DroneDispatchCommunication/CompleteOrderRequest.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/RepositoryDefinitions/ICompositeRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FrontEnd/Pages/OrderPages/OrderPage.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/FrontEnd/Pages/OrderPages/OrderPage.razor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimDrone/Controllers/SimDroneController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SimDrone/Controllers/SimDroneController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SimDrone/Drone.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SimDrone/Drone.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimDrone/DroneToDispatchGateway.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SimDrone/DroneToDispatchGateway.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/Controllers/EndToEnd/DispatcherConnectionsTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/Controllers/EndToEnd/DispatcherConnectionsTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/Controllers/Unit/DispatcherControllerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/Controllers/Unit/DispatcherControllerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/Controllers/Unit/DroneTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/Controllers/Unit/DroneTests.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,6 +60,7 @@
     </option>
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/FrontEnd/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/CompositeOrderPrototyping/Repo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/FrontEnd/Pages/FleetPages/FleetView.razor.cs" root0="FORCE_HIGHLIGHTING" />
@@ -83,9 +74,11 @@
     <setting file="file://$PROJECT_DIR$/Dispatch/Controllers/DispatchController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DatabaseAccess/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2314e877e9ca6da9c5aa589e3020e7ab811721145aaf93aea44e8625a279c/BsonExtensionMethods.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Dispatch/Properties/launchSettings.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/DatabaseAccess/appsettings.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Dispatch/Program.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -112,7 +105,7 @@
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C#" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
-  <component name="RunManager" selected=".NET Launch Settings Profile.FrontEnd">
+  <component name="RunManager" selected=".NET Project.CompositeOrderTest">
     <configuration name="CompositeOrderTest" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
@@ -286,7 +279,7 @@
       <workItem from="1651070274242" duration="7060000" />
       <workItem from="1651081911833" duration="7082000" />
       <workItem from="1651089978849" duration="4875000" />
-      <workItem from="1651098128899" duration="987000" />
+      <workItem from="1651098128899" duration="13239000" />
     </task>
     <task id="LOCAL-00001" summary="adding untracked files from merge">
       <created>1650835990823</created>
@@ -442,7 +435,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651076216150</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="removed returning calls of updating drone status since this is not implemented in mongodb and requires our own implementation">
+      <created>1651099385968</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1651099385968</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -485,33 +485,21 @@
     <MESSAGE value="Added Deletion for stale Assignment mappings.&#10;Front end only directs new orders to database now" />
     <MESSAGE value="need to join on url, order and drone id to get assignDeliveryRequest list" />
     <MESSAGE value="Created method DispatchController.cs.AssignEnqueuedDeliveries." />
-    <option name="LAST_COMMIT_MESSAGE" value="Created method DispatchController.cs.AssignEnqueuedDeliveries." />
+    <MESSAGE value="removed returning calls of updating drone status since this is not implemented in mongodb and requires our own implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="removed returning calls of updating drone status since this is not implemented in mongodb and requires our own implementation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/SimDrone/Drone.cs</url>
-          <line>66</line>
-          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\SimDrone\Drone.cs" initialLine="55" containingFunctionPresentation="method 'PatchDroneStatus'">
-            <startOffsets>
-              <option value="2578" />
-            </startOffsets>
-            <endOffsets>
-              <option value="2583" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/CompositeOrderPrototyping/Program.cs</url>
-          <line>64</line>
+          <line>92</line>
           <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\CompositeOrderPrototyping\Program.cs" initialLine="63" containingFunctionPresentation="">
             <startOffsets>
-              <option value="2474" />
+              <option value="4084" />
             </startOffsets>
             <endOffsets>
-              <option value="2626" />
+              <option value="4236" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="22" />
@@ -531,16 +519,29 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/SimDrone/Drone.cs</url>
-          <line>163</line>
+          <line>162</line>
           <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\SimDrone\Drone.cs" initialLine="151" containingFunctionPresentation="method 'DeliverOrder'">
             <startOffsets>
-              <option value="6911" />
+              <option value="6763" />
             </startOffsets>
             <endOffsets>
-              <option value="6988" />
+              <option value="6840" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="45" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Domain/RepositoryDefinitions/Compository.cs</url>
+          <line>74</line>
+          <properties documentPath="C:\Users\sonia\Documents\god_save_the_repo\FlyingPizza\Domain\RepositoryDefinitions\Compository.cs" initialLine="75" containingFunctionPresentation="method 'CreateDroneAsync'">
+            <startOffsets>
+              <option value="2593" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2657" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="46" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

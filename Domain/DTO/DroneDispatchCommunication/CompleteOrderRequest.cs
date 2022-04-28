@@ -10,7 +10,6 @@ namespace Domain.DTO.DroneDispatchCommunication;
 public class CompleteOrderRequest 
 {
     public string OrderId { get; set; }
-    public string DroneId { get; set; }
     public DateTime Time { get; set; }
     
 }

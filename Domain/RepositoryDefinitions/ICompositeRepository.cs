@@ -14,7 +14,7 @@ public interface ICompositeRepository
 {
     public Task<List<DroneRecord>> GetDrones();
     public Task<List<Order>> GetOrders();
-    public Task CreateDroneAsync(DroneRecord entity);
+    public Task<Tuple<DroneRecord, Assignment>> CreateDroneAsync(DroneRecord entity);
     public Task<Order> EnqueueOrder(Order entity);
     public Task<DroneRecord> GetDroneByIdAsync(string id);
     public Task<Order> GetOrderByIdAsync(string id);

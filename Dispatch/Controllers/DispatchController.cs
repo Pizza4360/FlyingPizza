@@ -14,7 +14,7 @@ namespace Dispatch.Controllers;
 public class DispatchController : ControllerBase
 {
     // private readonly ILogger<DispatchController> _logger;
-    private const int RefreshInterval = 5000;
+    private const int RefreshInterval = 10000;
     private readonly GeoLocation _homeLocation;
     private readonly ICompositeRepository _repository;
     private readonly DispatchToSimDroneGateway _dispatchToSimDroneGateway;

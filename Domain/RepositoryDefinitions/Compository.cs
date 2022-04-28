@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
 namespace Domain.RepositoryDefinitions;
@@ -24,7 +26,7 @@ public class Compository : ICompositeRepository
     private readonly List<DroneRecord> _droneList;
     private readonly List<Order> _orderList;
 
-    private const int RefreshInterval = 2000;
+    private const int RefreshInterval = 10000;
 
 
     private Stopwatch _stopwatch;
@@ -65,22 +67,26 @@ public class Compository : ICompositeRepository
     }
 
 
-    public async Task CreateDroneAsync(DroneRecord newDrone)
+    public async Task<Tuple<DroneRecord, Assignment>> CreateDroneAsync(DroneRecord @newDrone)
     {
-        await _fleet.InsertOneAsync(newDrone);
-        var assignment = new Assignment {DroneId = newDrone.DroneId, OrderId = string.Empty, ShouldNotifyDrone = true};
-        await _assignments.InsertOneAsync(assignment);
+       await _fleet.InsertOneAsync(newDrone);
+       var assignment = new Assignment {DroneId = newDrone.DroneId, OrderId = string.Empty, ShouldNotifyDrone = true};
+       await _assignments.InsertOneAsync(assignment);
+       return new Tuple<DroneRecord, Assignment>(newDrone, assignment);
     }
 
 
     public async Task<Order> EnqueueOrder(Order newOrder)
     {
-        await _orders.InsertOneAsync(newOrder);
+        Console.WriteLine($"Adding order {newOrder.ToJson()}");
+        var task = _orders.InsertOneAsync(newOrder);
+        task.Wait();
+        newOrder = await GetOrderByIdAsync(newOrder.OrderId);
         return newOrder;
     }
 
 
-    public async Task<List<DroneRecord>> GetDrones() => _fleet.Find(_ => true)
+    public async Task<List<DroneRecord>> GetDrones() => (await _fleet.FindAsync(_ => true))
                                                               .ToList();
 
 
@@ -93,14 +99,16 @@ public class Compository : ICompositeRepository
 
 
     public async Task<Order> GetOrderByIdAsync(string id)
-        => (await GetOrders()).First(x => x.OrderId.Equals(id));
+    {
+        return (await _orders.FindAsync(Builders<Order>.Filter.Eq("OrderId", id))).FirstOrDefault();
+    }
 
 
     public async Task<List<string>> GetAvailableDroneIds()
     {
         var assignments = await GetAssignments();
 
-        return (await GetNewAssignments()).Select(x => x.Id)
+        return (await GetNewAssignments()).Select(x => x.DroneId)
                                           .ToList();
     }
 
@@ -113,27 +121,32 @@ public class Compository : ICompositeRepository
 
 
     public async Task<DroneRecord> GetDroneByIdAsync(string id)
-        => (await GetDrones()).First(x => x.DroneId.Equals(id));
+    {
+        (await _fleet.FindAsync(x => id.Equals(x.
+    }
 
 
     public async Task<UpdateResult> UpdateDroneAsync(UpdateDroneStatusRequest request)
     {
+        Console.WriteLine("updating drone status");
         var update = Builders<DroneRecord>
                     .Update
-                    .Set($"Fleet.{request.DroneId}.State", request.State)
-                    .Set($"Fleet.{request.DroneId}.CurrentLocation", request.CurrentLocation)
-                    .Set($"Fleet.{request.DroneId}.Destination", request.Destination);
-
-        return await _fleet.UpdateOneAsync(_fleetFilter, update, new UpdateOptions {IsUpsert = true});
+                    .Set($"State", request.State)
+                    .Set($"CurrentLocation", request.CurrentLocation)
+                    .Set($"Destination", request.Destination);
+        var filter = Builders<DroneRecord>.Filter.Eq("DroneId", request.DroneId);
+        var result = await _fleet.UpdateOneAsync(filter, update, new UpdateOptions {IsUpsert = false});
+        // Console.WriteLine($"\n\n\n\nUpdate request: {request.ToJson()}\n\nUpdated result: {result.ToJson()}\n");
+        return result;
     }
 
 
     public async Task<UpdateResult> UpdateOrderAsync(CompleteOrderRequest request)
     {
         var update = Builders<Order>
-                    .Update.Set($"Fleet.{request.OrderId}.TimeDelivered", request.Time);
+                    .Update.Set($"TimeDelivered", request.Time);
 
-        return await _orders.UpdateOneAsync(_ordersFilter, update, new UpdateOptions {IsUpsert = true});
+        return await _orders.UpdateOneAsync(Builders<Order>.Filter.Eq("OrderId", request.OrderId), update, new UpdateOptions {IsUpsert = true});
     }
 
 

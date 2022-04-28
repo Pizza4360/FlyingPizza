@@ -154,7 +154,7 @@ public class Drone : DroneRecord
             Console.WriteLine($"{CurrentLocation}");
             if(i % 100 != 0) { continue; }
             await UpdateLocation(CurrentLocation);
-            Thread.Sleep(500);
+            Thread.Sleep(10000);
         }
     }
 
