@@ -26,7 +26,9 @@ public class DroneToDispatchGateway : BaseGateway<SimDroneController>
     public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(UpdateDroneStatusRequest request)
     {
         Console.WriteLine($"Drone is updating status to url {EndPoint} with {request}");
-        return await SendMessagePost<UpdateDroneStatusRequest, UpdateDroneStatusResponse>
+        var result = await SendMessagePost<UpdateDroneStatusRequest, UpdateDroneStatusResponse>
                 ($"{EndPoint}/UpdateDroneStatus", request);
+
+        return result;
     }
 }

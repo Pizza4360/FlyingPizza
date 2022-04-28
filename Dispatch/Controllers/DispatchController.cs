@@ -14,7 +14,7 @@ namespace Dispatch.Controllers;
 public class DispatchController : ControllerBase
 {
     // private readonly ILogger<DispatchController> _logger;
-    private const int RefreshInterval = 10000;
+    private const int RefreshInterval = 2000;
     private readonly GeoLocation _homeLocation;
     private readonly ICompositeRepository _repository;
     private readonly DispatchToSimDroneGateway _dispatchToSimDroneGateway;
@@ -22,18 +22,18 @@ public class DispatchController : ControllerBase
     
     
     private Timer _timer;
-    private async void IssueAssignments(object _) => await TimerCheck();
-    
-    private async Task TimerCheck()
-    {
-        if(_stopwatch.ElapsedMilliseconds > RefreshInterval)
-        {
-            _stopwatch.Stop();
-            _stopwatch.Reset();
-            AssignEnqueuedDeliveries();
-            _stopwatch.Start();
-        }
-    }
+    private async void IssueAssignments(object _) => await AssignEnqueuedDeliveries();
+
+    //private async Task TimerCheck()
+    //{
+    //    if(_stopwatch.ElapsedMilliseconds > RefreshInterval)
+    //    {
+    //        _stopwatch.Stop();
+    //        _stopwatch.Reset();
+    //        AssignEnqueuedDeliveries();
+    //        _stopwatch.Start();
+    //    }
+    //}
     public DispatchController(ICompositeRepository repository)
     {
         _repository = repository;
@@ -44,8 +44,8 @@ public class DispatchController : ControllerBase
             Longitude = -105.00858710385576m
         };
         _timer = new Timer(IssueAssignments, null, 0, RefreshInterval);
-        _stopwatch = new Stopwatch();
-        _stopwatch.Start();
+        //_stopwatch = new Stopwatch();
+        //_stopwatch.Start();
     }
 
     [HttpPost("Ping")]
@@ -92,7 +92,7 @@ public class DispatchController : ControllerBase
         {
             DroneId = addDroneRequest.DroneId,
             DroneIp = addDroneRequest.DroneUrl,
-            DispatchUrl = "localhost:81",
+            DispatchUrl = "http://localhost:81",
             HomeLocation = _homeLocation
         };
 
@@ -146,6 +146,10 @@ public class DispatchController : ControllerBase
     {
         var deliveryRequests = (await _repository.GenerateDeliveryRequests()).ToList();
         var responses = new List<AssignDeliveryResponse?>();
+        if (responses.Any())
+        {
+            _timer.Dispose();
+        }
         foreach(var request in deliveryRequests)
         {
             Console.WriteLine($"new delivery of order {request.Order} to drone at url {request.DroneUrl}, {request.DroneId}");

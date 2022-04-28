@@ -116,7 +116,7 @@ public class Compository : ICompositeRepository
     public async Task<List<Assignment>> GetNewAssignments()
     {
         var assignments = await GetAssignments();
-        return (from assignment in assignments where assignment.OrderId.Equals(string.Empty) select assignment).ToList();
+        return (from assignment in assignments where string.IsNullOrWhiteSpace(assignment.OrderId) select assignment).ToList();
     }
 
 
@@ -144,9 +144,9 @@ public class Compository : ICompositeRepository
     public async Task<UpdateResult> UpdateOrderAsync(CompleteOrderRequest request)
     {
         var update = Builders<Order>
-                    .Update.Set($"TimeDelivered", request.Time);
+                    .Update.Set(o => o.TimeDelivered, request.Time);
 
-        return await _orders.UpdateOneAsync(Builders<Order>.Filter.Eq("OrderId", request.OrderId), update, new UpdateOptions {IsUpsert = true});
+        return await _orders.UpdateOneAsync(Builders<Order>.Filter.Eq(o => o.OrderId, request.OrderId), update, new UpdateOptions {IsUpsert = true});
     }
 
 
@@ -157,12 +157,13 @@ public class Compository : ICompositeRepository
             from a in await GetAssignments()
             where a.DroneId.Equals(droneId) select a).First();
 
-        var filter = Builders<Assignment>.Filter.Eq("DroneId", droneId);
+        var filter = Builders<Assignment>.Filter.Eq(a => a.DroneId, droneId);
         var update = Builders<Assignment>
                     .Update
-                    .Set($"OrderId", assignment.OrderId)
-                    .Set($"HasBeenNotified", shouldBeNotified);
-        await _assignments.UpdateOneAsync(filter, update, new UpdateOptions {IsUpsert = true});
+                    .Set(a => a.OrderId, assignment.OrderId)
+                    .Set(a => a.ShouldNotifyDrone, shouldBeNotified);
+        var response = await _assignments.UpdateOneAsync(filter, update);
+        var blah = response;
     }
 
 
@@ -196,7 +197,7 @@ public class Compository : ICompositeRepository
         var availableDronesIds = await GetAvailableDroneIds();
         var newAssignments = GetNewAssignments(availableDronesIds, unassignedOrderIds);
 
-        foreach(var updateDefinition in (await newAssignments).Select(newAssignment => Builders<Assignment>.Update.Set("OrderId", newAssignment.OrderId)))
+        foreach(var updateDefinition in (await newAssignments).Select(newAssignment => Builders<Assignment>.Update.Set(a => a.OrderId, newAssignment.OrderId)))
         {
             await _assignments.FindOneAndUpdateAsync(k => true, updateDefinition);
         }
