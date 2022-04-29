@@ -182,12 +182,14 @@ public class DispatchController : ControllerBase
     [HttpPost("CompleteOrder")]
     public async Task<CompleteOrderResponse> CompleteOrder(CompleteOrderRequest request)
     {
-        Console.WriteLine($"DispatchController.CompleteOrder -> {request}");
-        var order = await _orders.GetByIdAsync(request.OrderId);
-        Console.WriteLine($"Order Before -> {order.ToJson()}");
-        order.State = OrderState.Delivered;
-        order.TimeDelivered = request.Time;
-        Console.WriteLine($"Order After-> {order.ToJson()}");
+        var order = new Order
+        {
+            OrderId = request.OrderId,
+            State = OrderState.Delivered,
+            TimeDelivered = request.Time,
+            DroneId = request.DroneId
+        };
+        Console.WriteLine($"order {order.OrderId} has been delivered? {order.HasBeenDelivered} @ time {order.TimeDelivered}");
         var result = await _orders.UpdateAsync(order.Update());
         return new CompleteOrderResponse
         {

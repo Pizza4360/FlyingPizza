@@ -60,6 +60,7 @@ public class Drone : DroneRecord
         if(State == DroneState.Delivering && state == DroneState.Returning)
         {
             Destination = HomeLocation;
+            OrderId = null;
         }
         State = state;
         return await PatchDroneStatus();
@@ -154,6 +155,7 @@ public class Drone : DroneRecord
 
     public async Task<AssignDeliveryResponse> DeliverOrder(AssignDeliveryRequest request)
     {
+        OrderId = request.OrderId;
         await UpdateStatus(DroneState.Delivering);
         await TravelTo(request.OrderLocation);
         _controller.CompleteDelivery(
@@ -166,6 +168,7 @@ public class Drone : DroneRecord
         await UpdateStatus(DroneState.Returning);
         await TravelTo(HomeLocation);
         await UpdateStatus(DroneState.Ready);
+        OrderId = request.OrderId;
         return new AssignDeliveryResponse
         {
             DroneId = DroneId,
