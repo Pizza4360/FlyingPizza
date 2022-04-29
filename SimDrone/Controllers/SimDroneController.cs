@@ -26,8 +26,24 @@ public class SimDroneController : ControllerBase
             Okay = !IsInitiatead
         };
     }
-        
-        
+
+    [HttpPost("HealthCheck")]
+    public async Task<DroneRecord> HealthCheck(string s)
+    {
+        return new DroneRecord
+        {
+            DispatchUrl = _drone.DispatchUrl,
+            BadgeNumber = _drone.BadgeNumber,
+            CurrentLocation = _drone.CurrentLocation,
+            Destination = _drone.Destination,
+            DroneId = _drone.DroneId,
+            DroneUrl = _drone.DroneUrl,
+            HomeLocation = _drone.HomeLocation,
+            OrderId = _drone.OrderId,
+            State = _drone.State
+        };
+    }
+    
     [HttpPost("AssignFleet")]
     public async Task<AssignFleetResponse> AssignFleet(AssignFleetRequest assignFleetRequest)
     {

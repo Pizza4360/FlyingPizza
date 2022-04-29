@@ -56,10 +56,19 @@ public class Scheduler
     private async Task<IEnumerable<DroneRecord>> GetAvailableDrones()
     {
         Console.WriteLine("DequeueOrders...");
-        var drones = from d in await _fleet.GetAllAsync()
-            where d.State == DroneState.Ready && d.OrderId.Equals("")
-            select d;
-        return drones;
+        var roster = new List<DroneRecord>();
+        var drones = await _fleet.GetAllAsync();
+        foreach (var drone in drones)
+        {
+            var droneRecord = await _gateway.HealthCheck(drone); 
+            if(droneRecord != null 
+               && droneRecord.State == DroneState.Ready
+               && string.IsNullOrEmpty(droneRecord.OrderId))
+            {
+                roster.Add(drone);
+            }
+        }
+        return roster;
     }
 }
 
@@ -78,4 +87,17 @@ public class SchedulerToDispatchGateway : BaseGateway<Scheduler>
     public async Task<string?> TryDequeueOrders(IEnumerable<EnqueueOrderRequest> request) => 
         await SendMessagePost<IEnumerable<EnqueueOrderRequest>, string>
             ($"{DispatchUrl}/TryDequeueOrders",  request );
+
+    public async Task<DroneRecord?> HealthCheck(DroneRecord drone)
+    {
+        try
+        {
+            return await SendMessagePost<string, DroneRecord>($"{drone.DroneUrl}/SimDrone/HealthCheck", "Scheduler");
+        }   
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
+    }
 }
