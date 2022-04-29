@@ -24,11 +24,4 @@ public interface IBaseRepository<DomainEntity>
     /// <param name="id"></param>
     /// <returns>true if the operation succeeded, or false if it failed (including if the entity doesn't exist)</returns>
     public Task<bool> RemoveAsync(string id);
-
-    /// <summary>
-    /// Updates an existing entity in the repository
-    /// </summary>
-    /// <param name="entity"></param>
-    /// <returns>The entity, as it was updated</returns>
-    public Task<bool> UpdateAsync(DomainEntity entity);
 }

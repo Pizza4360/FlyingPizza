@@ -154,6 +154,12 @@ public class Drone : DroneRecord
         await UpdateStatus(DroneState.Returning);
         await TravelTo(HomeLocation);
         await UpdateStatus(DroneState.Ready);
+        await _controller.CompleteDelivery(new CompleteOrderRequest
+        {
+            DroneId = DroneId,
+            OrderId = request.OrderId,
+            Time = DateTime.Now
+        });
         return new AssignDeliveryResponse
         {
             DroneId = DroneId,

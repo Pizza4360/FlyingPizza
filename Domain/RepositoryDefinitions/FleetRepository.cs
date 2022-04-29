@@ -40,32 +40,12 @@ public class FleetRepository : IFleetRepository
     public async Task<bool> RemoveAsync(string id) =>
         (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
 
-    public async Task<bool> UpdateAsync(DroneRecord drone)
+    public async Task<bool> UpdateStatusAndLocationAsync(DroneRecord drone)
     {
-        var result = await _collection.UpdateOneAsync(
-            record => record.DroneId == drone.DroneId,
-            GetUpdateDefinition(drone));
+        var updateDefinition = new UpdateDefinitionBuilder<DroneRecord>()
+            .Set(record => record.CurrentLocation, drone.CurrentLocation)
+            .Set(record => record.State, drone.State);
+        var result = await _collection.UpdateOneAsync(record => record.DroneId == drone.DroneId, updateDefinition);
         return result.IsAcknowledged;
-    }
-        
-    private static UpdateDefinition<DroneRecord> GetUpdateDefinition(DroneRecord drone)
-    {
-        var builder = new UpdateDefinitionBuilder<DroneRecord>();
-        UpdateDefinition<DroneRecord> updateDefinition = null;
-        foreach (var property in drone.GetType().GetProperties())
-        {
-            if (property != null && property.Name != "Id") {
-                if (updateDefinition == null)
-                {
-                    updateDefinition = builder.Set(property.Name, property.GetValue(drone));
-                }
-                else
-                {
-                    updateDefinition = updateDefinition.Set(property.Name, property.GetValue(drone));
-                }
-            }
-        }
-
-        return updateDefinition;
     }
 }

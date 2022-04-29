@@ -33,8 +33,17 @@ public class DatabaseAccess : ControllerBase
     }
     
     [HttpPost("CreateOrder")]
-    public async Task<CreateOrderResponse> CreateOrder(Order order)
+    public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request)
     {
+        var order = new Order
+        {
+            OrderId = request.OrderId,
+            TimeOrdered = request.TimeOrdered,
+            CustomerName = request.CustomerName,
+            DeliveryAddress = request.DeliveryAddress,
+            DeliveryLocation = request.DeliveryLocation,
+            TimeDelivered = null
+        };
         await _orders.CreateAsync(order);
         return new CreateOrderResponse();
     }

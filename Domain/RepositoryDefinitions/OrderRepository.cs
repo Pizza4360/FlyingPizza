@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace DatabaseAccess;
@@ -21,7 +21,6 @@ public class OrderRepository : IOrdersRepository
 
         _collection = mongoDatabase.GetCollection<Order>(
             ordersSettings.Value.CollectionName);
-        Console.WriteLine($"this should be 'Orders'>>>{ordersSettings.Value.CollectionName}<<<");
     }
 
     public async Task CreateAsync(Order newOrder)
@@ -30,50 +29,19 @@ public class OrderRepository : IOrdersRepository
     }
 
     public async Task<Order> GetByIdAsync(string id) =>
-        await _collection.Find(x => x.DroneId == id).FirstOrDefaultAsync();
+        await _collection.Find(x => x.OrderId == id).FirstOrDefaultAsync();
 
-    public Task<bool> 
-        Update(Order order)
-    {
-        var result = _collection.ReplaceOneAsync(
-            new BsonDocument("_id", order.DroneId),
-            options: new ReplaceOptions { IsUpsert = true },
-            replacement: order);
-        result.Wait();
-        return Task.FromResult<bool>(result.IsCompletedSuccessfully);
-    }
+    public async Task<IEnumerable<Order>> GetAllAsync() =>
+        await _collection.Find(_ => true).ToListAsync();
 
     public async Task<bool> RemoveAsync(string id) =>
         (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
 
-
-    public async Task<bool> UpdateAsync(Order order)
+    public async Task<bool> UpdateOrderCompletionTime(string orderId, DateTime deliveryTime)
     {
-        var result = await _collection.UpdateOneAsync(
-            record => record.DroneId == order.DroneId,
-            GetUpdateDefinition(order));
+        var updateDefinition = new UpdateDefinitionBuilder<Order>()
+            .Set(record => record.TimeDelivered, deliveryTime);
+        var result = await _collection.UpdateOneAsync(record => record.OrderId == orderId, updateDefinition);
         return result.IsAcknowledged;
-    }
-
-    private static UpdateDefinition<Order> GetUpdateDefinition(Order order)
-    {
-        var builder = new UpdateDefinitionBuilder<Order>();
-        UpdateDefinition<Order> updateDefinition = null;
-        foreach (var property in order.GetType().GetProperties())
-        {
-            if (property != null)
-            {
-                if (updateDefinition == null)
-                {
-                    updateDefinition = builder.Set(property.Name, property.GetValue(order));
-                }
-                else
-                {
-                    updateDefinition = updateDefinition.Set(property.Name, property.GetValue(order));
-                }
-            }
-        }
-
-        return updateDefinition;
     }
 }

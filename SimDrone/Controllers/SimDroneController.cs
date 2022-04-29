@@ -69,4 +69,9 @@ public class SimDroneController : ControllerBase
     [HttpPost("UpdateDroneStatus")]
     public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(UpdateDroneStatusRequest updateDroneStatusRequest)
         => await _gateway.UpdateDroneStatus(updateDroneStatusRequest);
+
+    public async Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest completeOrderRequest)
+    {
+        return await _gateway.CompleteOrder(completeOrderRequest);
+    }
 }

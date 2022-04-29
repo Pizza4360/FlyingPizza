@@ -7,8 +7,6 @@ using Domain.Entities;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using MongoDB.Bson;
-using Newtonsoft.Json.Linq;
 
 namespace FrontEnd.Pages.OrderPages;
 
@@ -36,10 +34,6 @@ partial class OrderPage : ComponentBase
          converter = new ConvertAddressToGeoLocation();
     }
 
-    public FrontEndToDispatchGateway GetGateway()
-        => new FrontEndToDispatchGateway();
-
-
     public async Task<AddDroneResponse> AddDrone() {
         return await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
         {
@@ -53,7 +47,6 @@ partial class OrderPage : ComponentBase
     }
     public async Task makeOrder()
     {
-
         var DeliveryLocation = await converter.CoordsFromAddress(DeliveryAddress);
 
         string OrderId = BaseEntity.GenerateNewId();
@@ -66,16 +59,13 @@ partial class OrderPage : ComponentBase
             DeliveryAddress = DeliveryAddress
         });
 
-        Console.Write("AHHHHHH~~~~~~~~~~");
-
         var dispatchResponse = _gateway.EnqueueOrder(new EnqueueOrderRequest
         {
             OrderLocation = DeliveryLocation,
             OrderId = OrderId,
         });
-            
-        Console.WriteLine(dispatchResponse);
+
         // Navigate to page to display users current order. 
-        _navigationManager.NavigateTo("/userPage", false);
+        _navigationManager.NavigateTo("/tracking", false);
     }
 }

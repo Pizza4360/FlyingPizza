@@ -11,7 +11,10 @@ public class Order : BaseEntity
 {
     [BsonElement("DroneId")]
     public string DroneId { get; set; }
-    
+
+    [BsonElement("OrderId")]
+    public string OrderId { get; set; }
+
     [BsonElement("Items")]
     [JsonPropertyName("Items")]
     public object[] Items { get; set; }
@@ -37,7 +40,6 @@ public class Order : BaseEntity
     [JsonPropertyName("TimeDelivered")]
     [BsonRepresentation(BsonType.DateTime)]
     [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
-    [BsonIgnoreIfNull]
     public DateTime? TimeDelivered { get; set; }
 
     [BsonElement("BadgeNumber")]
@@ -47,6 +49,6 @@ public class Order : BaseEntity
 
     [BsonElement("HasBeenDelivered")]
     [JsonPropertyName("HasBeenDelivered")]
-    [BsonIgnoreIfNull]
+    [BsonIgnore]
     public bool HasBeenDelivered => TimeDelivered != null;
 }
