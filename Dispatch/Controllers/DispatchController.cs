@@ -184,8 +184,10 @@ public class DispatchController : ControllerBase
     {
         Console.WriteLine($"DispatchController.CompleteOrder -> {request}");
         var order = await _orders.GetByIdAsync(request.OrderId);
+        Console.WriteLine($"Order Before -> {order.ToJson()}");
         order.State = OrderState.Delivered;
         order.TimeDelivered = request.Time;
+        Console.WriteLine($"Order After-> {order.ToJson()}");
         var result = await _orders.UpdateAsync(order.Update());
         return new CompleteOrderResponse
         {

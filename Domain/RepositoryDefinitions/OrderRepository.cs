@@ -75,6 +75,7 @@ public class OrderRepository : IOrdersRepository
 
     public async Task<UpdateResult> UpdateAsync(OrderUpdate update)
     {
+        Console.WriteLine($"OrderRepository.UpdateAsync() -> {update.ToJson()}\n(state = {update.State})");
         var filter = Builders<Order>.Filter
             .Eq(o => o.OrderId, update.OrderId);
         var definition = Builders<Order>.Update
