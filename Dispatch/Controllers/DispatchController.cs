@@ -1,6 +1,7 @@
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.FrontEndDispatchCommunication;
+using Domain.DTO.SchedulerDispatch;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
 using Microsoft.AspNetCore.Mvc;
@@ -141,49 +142,28 @@ public class DispatchController : ControllerBase
         var result = await _orders.UpdateAsync(order);
         return result.IsAcknowledged && result.ModifiedCount == 0;
     }
-
-    public async Task<EnqueueOrderResponse> InitiateDelivery(EnqueueOrderRequest request)
-    {
-        _dispatchToSimDroneGateway.AssignDelivery(new AssignDeliveryRequest
-        {
-            OrderId = request.OrderId,
-            OrderLocation = request.OrderLocation,
-        });
-        _orders.UpdateAsync(request.OrderId, OrderState.Assigned);
-        return new EnqueueOrderResponse
-        {
-            IsAssigned = true
-        };
-    }
-    // [HttpPost("EnqueueOrder")]
-    // public async Task<AssignDeliveryResponse?> EnqueueOrder(EnqueueOrderRequest request)
+    
+    // [HttpPost("InitiateDeliveries")]
+    // private async Task<InitiateDeliveriesResponse> InitiateDeliveries(InitiateDeliveriesRequest requests)
     // {
-    //     Console.WriteLine($"DispatchController.EnqueueOrder -> {request}");
-    //     var availableDrones = await GetAvailableDrones();
-    //     var drones = availableDrones as DroneRecord[] ?? availableDrones.ToArray();
-    //     if (!drones.Any())
-    //     {
-    //         Console.WriteLine($"\n\nNo available drones at this time.");
-    //         return new AssignDeliveryResponse {OrderId = request.OrderId, Success = false};
-    //     }
-    //     Console.WriteLine($"\n\nAvailable drones are:\n{string.Join("\n", drones.Select(x => x.ToString()))}");
-    //     return await InitiateDelivery(new Order{Id = request.OrderId, DeliveryLocation = request.OrderLocation}, drones.First());
+    //     Console.WriteLine("!!!!!!" + requests);
+    //     var responses = new List<AssignDeliveryResponse>();
+    //     // foreach (var (drone, order) in requests)
+    //     // {
+    //     //     Console.WriteLine($"In DispatchController.AssignDeliveryResponse, order :{order.ToJson()}, drone: {drone.ToJson()}");
+    //     //     drone.OrderId = order.Id;
+    //     //     drone.State = DroneState.Delivering;
+    //     //     await _fleet.UpdateAsync(drone);
+    //     //     var assignDeliveryResponse = await _dispatchToSimDroneGateway.AssignDelivery(new AssignDeliveryRequest
+    //     //     {
+    //     //         DroneId = drone.DroneId,
+    //     //         OrderId = order.Id,
+    //     //         OrderLocation = order.DeliveryLocation
+    //     //     });
+    //     //     if (assignDeliveryResponse != null) responses.Add(assignDeliveryResponse);
+    //     // }
+    //     return new InitiateDeliveriesResponse();
     // }
-    [HttpPost("InitiateDeliveries")]
-    private async Task<AssignDeliveryResponse?> InitiateDeliveries(Order order, DroneRecord drone)
-    {
-        Console.WriteLine($"In DispatchController.AssignDeliveryResponse, order :{order.ToJson()}, drone: {drone.ToJson()}");
-        drone.OrderId = order.Id;
-        drone.State = DroneState.Delivering;
-        await _fleet.UpdateAsync(drone);
-        var assignDeliveryResponse = await _dispatchToSimDroneGateway.AssignDelivery(new AssignDeliveryRequest
-        {
-            DroneId = drone.DroneId,
-            OrderId = order.Id,
-            OrderLocation = order.DeliveryLocation
-        });
-        return assignDeliveryResponse;
-    }
 
     private async Task<IEnumerable<DroneRecord>> GetAvailableDrones()
     {
@@ -221,7 +201,6 @@ public class DispatchController : ControllerBase
          return response;
     }
 
-    [HttpPost("InitiateDelivery")]
 
     [HttpPost("{id:length(24)}")]
     public async Task<ActionResult<DroneRecord>> GetDroneById(string requestedDroneId)

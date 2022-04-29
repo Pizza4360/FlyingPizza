@@ -1,6 +1,8 @@
 using DatabaseAccess;
 using Domain.DTO;
+using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.FrontEndDispatchCommunication;
+using Domain.DTO.SchedulerDispatch;
 using Domain.Entities;
 using Domain.GatewayDefinitions;
 using Domain.RepositoryDefinitions;
@@ -16,13 +18,15 @@ public class Scheduler
     private readonly FleetRepository _fleet;
     private readonly OrderRepository _orders;
     private readonly SchedulerToDispatchGateway _gateway;
-    private const int RefreshInterval = 30000;
+    private const int RefreshInterval = 2000;
     private Timer _timer;
     private async void DequeueCallback(object _) => await TryDequeueOrders();
 
     [HttpPost("Initialize")]
     public async Task Initialize()
     {
+        // var dto = new PingDto {S = "Malc"};
+        // Console.WriteLine(_gateway.Ping(dto));
         Console.WriteLine("Hello World!");
         while (true)
         {
@@ -50,7 +54,7 @@ public class Scheduler
         // _timer = new Timer(DequeueCallback, null, 0, RefreshInterval);
     }
 
-    private async Task<string> TryDequeueOrders()
+    private async Task<InitiateDeliveriesResponse?> TryDequeueOrders()
     {
         Console.WriteLine("Trying to dequeue some orders...");
         var orders = await GetUnfulfilledOrders();
@@ -65,10 +69,10 @@ public class Scheduler
                 OrderId = order.Id,
                 OrderLocation = order.DeliveryLocation
             };
-        var orderRequests = enqueueOrderRequests as EnqueueOrderRequest[] ?? enqueueOrderRequests.ToArray();
-        Console.WriteLine($"Matched some drones with deliveries...\n{orderRequests.ToJson()}");
-        var responseString = await _gateway.InitiateDeliveries(orderRequests);
-        Console.WriteLine(responseString);
+        // List<EnqueueOrderRequest> orderRequests = Ini
+        Console.WriteLine($"Matched some drones with deliveries...\n{enqueueOrderRequests.ToJson()}");
+        var responseString = await _gateway.InitiateDeliveries(new InitiateDeliveriesRequest{Requests = enqueueOrderRequests.ToList()});
+        Console.WriteLine(responseString.ToJson());
         return responseString;
     }
     private async Task<IEnumerable<Order>> GetUnfulfilledOrders()
@@ -96,12 +100,21 @@ public class SchedulerToDispatchGateway : BaseGateway<Scheduler>
     {
         DispatchUrl = "http://localhost:83" + "/Dispatch";
     }
-    public async Task<PingDto?> Ping(PingDto ready)
-        => await SendMessagePost<PingDto, PingDto>($"{DispatchUrl}/Ping", new PingDto {
-            S = "Malc"
-        });
+    // public async Task<PingDto?> Ping(PingDto ready)
+    //     => await SendMessagePost<PingDto, PingDto>($"{DispatchUrl}/Ping", new PingDto {
+    //         S = "Malc"
+    //     });
 
-    public async Task<string?> InitiateDeliveries(IEnumerable<EnqueueOrderRequest> request) => 
-        await SendMessagePost<IEnumerable<EnqueueOrderRequest>, string>
-            ($"{DispatchUrl}/InitiateDeliveries",  request );
+    public async Task<InitiateDeliveriesResponse?> InitiateDeliveries(InitiateDeliveriesRequest requests)
+    {
+        // foreach (var request in requests)
+        // {
+        InitiateDeliveriesResponse response = (await SendMessagePost
+                <InitiateDeliveriesRequest, InitiateDeliveriesResponse>
+                ($"{DispatchUrl}/InitiateDeliveries", requests));
+            // responses.Add(response);
+        // }
+
+        return response;
+    }
 }

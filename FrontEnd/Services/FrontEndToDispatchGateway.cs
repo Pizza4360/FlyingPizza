@@ -16,8 +16,8 @@ public class FrontEndToDispatchGateway : BaseGateway<App>
     
     public async Task<PingDto> Ping(PingDto ready)
         => await SendMessagePost<PingDto, PingDto>($"{DispatchUrl}/Ping", new PingDto {
-                    S = "Malc"
-                });
+            S = "Malc"
+        });
 
     public async Task<EnqueueOrderResponse> EnqueueOrder(EnqueueOrderRequest request) => 
         await SendMessagePost<EnqueueOrderRequest, EnqueueOrderResponse>($"{DispatchUrl}/EnqueueOrder",  request );
@@ -32,9 +32,9 @@ public class FrontEndToDispatchGateway : BaseGateway<App>
 
     public async Task<AddDroneResponse> AddDrone(AddDroneRequest request) 
         => await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DispatchUrl}/AddDrone", new AddDroneRequest {
-        DroneId = request.DroneId,
-        DroneUrl = request.DroneUrl
-    });
+            DroneId = request.DroneId,
+            DroneUrl = request.DroneUrl
+        });
 
 
     public async Task<CancelDeliveryResponse> CancelDelivery(string id) =>
