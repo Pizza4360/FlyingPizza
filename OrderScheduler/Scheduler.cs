@@ -31,24 +31,31 @@ public class Scheduler
         }
     }
 
-    private async Task<string> TryDequeueOrders()
+    private async Task<List<EnqueueOrderResponse?>> TryDequeueOrders()
     {
         Console.WriteLine("Trying to dequeue some orders...");
-        var orders = await GetUnfulfilledOrders();
-        var responseString = await _gateway.TryDequeueOrders(from drone in await GetAvailableDrones()
-            from order in orders
-            select new EnqueueOrderRequest
-            {
-                OrderId = order.Id,
-                OrderLocation = order.DeliveryLocation
-            });
-        Console.WriteLine(responseString);
-        return responseString;
+        var requests = new List<EnqueueOrderResponse?>();
+        if (requests == null) throw new ArgumentNullException(nameof(requests));
+        foreach (var (order, drone) in (await GetUnfulfilledOrders())
+                 .Zip(await GetAvailableDrones()))
+        {
+            requests.Add(
+                await _gateway.AssignOrder(new EnqueueOrderRequest
+                    {
+                        OrderId = order.Id,
+                        OrderLocation = order.DeliveryLocation
+                    }
+                ));
+        }
+        return requests;
     }
     private async Task<IEnumerable<Order>> GetUnfulfilledOrders()
     {
-        var orders = from o in await _orders.GetAllAsync()
-            where !o.HasBeenDelivered && o.DroneId.Equals(string.Empty)
+        var allOrders = await _orders.GetAllAsync();
+        
+        var orders = from o in allOrders
+            where !o.HasBeenDelivered 
+                  && o.DroneId.Equals(string.Empty)
             select o;
         Console.WriteLine(string.Join(",", orders));
         return orders;
@@ -61,11 +68,15 @@ public class Scheduler
         foreach (var drone in drones)
         {
             var droneRecord = await _gateway.HealthCheck(drone); 
-            if(droneRecord != null 
-               && droneRecord.State == DroneState.Ready
+            if(droneRecord is {State: DroneState.Ready} 
                && string.IsNullOrEmpty(droneRecord.OrderId))
             {
+                Console.WriteLine($"drone {droneRecord.BadgeNumber} at {droneRecord.DroneUrl} is healthy.");
                 roster.Add(drone);
+            }
+            else
+            {
+                Console.WriteLine($"drone {droneRecord.BadgeNumber} at {droneRecord.DroneUrl} is not healthy.");
             }
         }
         return roster;
@@ -97,7 +108,13 @@ public class SchedulerToDispatchGateway : BaseGateway<Scheduler>
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return false;
+            return null;
         }
+    }
+
+    public async Task<EnqueueOrderResponse?> AssignOrder(EnqueueOrderRequest request)
+    {
+        return await SendMessagePost<EnqueueOrderRequest, EnqueueOrderResponse>($"{DispatchUrl}/InitiateDelivery",
+            request);
     }
 }

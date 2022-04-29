@@ -9,17 +9,17 @@ namespace FrontEnd.Services;
 
 public class FrontEndToDatabaseGateway : BaseGateway<App>
 {
-    private string DispatchUrl{ get; } 
+    private string DbUrl{ get; } 
     public FrontEndToDatabaseGateway(/*string ipAddress*/)
     {
-        DispatchUrl = "http://localhost:80/DatabaseAccess";
+        DbUrl = "http://localhost:80/DatabaseAccess";
     }
     
     public async Task<List<DroneRecord>> GetFleet()
     {
         Console.WriteLine("Getting fleet...");
-        Console.WriteLine($"SendMessageGet<List<DroneRecord>>({DispatchUrl}/GetFleet");
-        var response = await SendMessageGet<List<DroneRecord>>($"{DispatchUrl}/GetFleet");
+        Console.WriteLine($"SendMessageGet<List<DroneRecord>>({DbUrl}/GetFleet");
+        var response = await SendMessageGet<List<DroneRecord>>($"{DbUrl}/GetFleet");
         Console.WriteLine("Got back" + string.Join("\n", response));
         return response;
     }
@@ -29,15 +29,13 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
 
     public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request)
     {
-        Console.Write("before SendMessagePost");
-
-        return await SendMessagePost<CreateOrderRequest, CreateOrderResponse>($"{DispatchUrl}/CreateOrder", request);
-
+        Console.Write($"before FrontEndToDatabaseGateway.SendMessagePost, request = {request}");
+        return await SendMessagePost<CreateOrderRequest, CreateOrderResponse>($"{DbUrl}/CreateOrder", request);
     }
 
     public async Task<DroneRecord> GetDrone(string id)
-        => await SendMessagePost<string, DroneRecord>($"{DispatchUrl}/GetDrone", id);
+        => await SendMessagePost<string, DroneRecord>($"{DbUrl}/GetDrone", id);
     
     public async Task<Order> GetOrder(string id)
-        => await SendMessagePost<string, Order>($"{DispatchUrl}/GetOrder", id );
+        => await SendMessagePost<string, Order>($"{DbUrl}/GetOrder", id );
 }

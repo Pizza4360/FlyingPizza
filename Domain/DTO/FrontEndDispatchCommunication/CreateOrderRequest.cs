@@ -11,4 +11,5 @@ public class CreateOrderRequest
     public DateTime TimeOrdered{get;set;}
     private GeoLocation _location;
     public GeoLocation DeliveryLocation{get;set;}
+    public OrderState State { get; set; }
 }

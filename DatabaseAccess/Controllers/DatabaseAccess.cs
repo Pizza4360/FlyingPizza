@@ -2,6 +2,7 @@ using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace DatabaseAccess.Controllers;
 
@@ -35,6 +36,7 @@ public class DatabaseAccess : ControllerBase
     [HttpPost("CreateOrder")]
     public async Task<CreateOrderResponse> CreateOrder(Order order)
     {
+        Console.WriteLine($"\n\n\n\n\nadding order: {order.ToJson()}\n\n\n\n\n");
         await _orders.CreateAsync(order);
         return new CreateOrderResponse();
     }

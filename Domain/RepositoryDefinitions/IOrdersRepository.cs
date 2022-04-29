@@ -1,8 +1,10 @@
-﻿using Domain.Entities;
+﻿using System.Threading.Tasks;
+using Domain.DTO;
+using Domain.Entities;
 
 namespace Domain.RepositoryDefinitions;
 
 public interface IOrdersRepository : IBaseRepository<Order>
 {
-
+    Task UpdateAsync(string requestOrderId, OrderState assigned);
 }

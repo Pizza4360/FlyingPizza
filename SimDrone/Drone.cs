@@ -70,6 +70,18 @@ public class Drone : DroneRecord
         State = state;
         return await PatchDroneStatus();
     }
+
+    private async Task<UpdateDroneStatusResponse?> UpdateOrderId(DroneState state)
+    {
+        if(State == DroneState.Delivering && state == DroneState.Returning)
+        {
+            Destination = HomeLocation;
+        }
+        State = state;
+        return await PatchDroneStatus();
+    }
+    
+    // OrderState ??
     
     private static decimal HaversineInMeters(GeoLocation locationA, GeoLocation locationB)
     {

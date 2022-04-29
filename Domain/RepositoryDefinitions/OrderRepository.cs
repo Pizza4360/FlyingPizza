@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Domain.DTO;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
 using Microsoft.Extensions.Options;
@@ -67,5 +68,14 @@ public class OrderRepository : IOrdersRepository
             .Update.Set(o => o.TimeDelivered, order.TimeDelivered);
 
         return await _collection.UpdateOneAsync(Builders<Order>.Filter.Eq(o => o.Id.Equals(order.Id), true), update, new UpdateOptions {IsUpsert = false});
+    }
+
+    public async Task UpdateAsync(string requestOrderId, OrderState state)
+    {
+        var order = await GetByIdAsync(requestOrderId);
+        var filterDefinition = Builders<Order>.Filter.Eq(o => o.Id.Equals(order.Id), true);
+        var update = Builders<Order>
+            .Update.Set(o => o.State, state);
+        await _collection.UpdateOneAsync(filterDefinition, update, new UpdateOptions {IsUpsert = false});
     }
 }

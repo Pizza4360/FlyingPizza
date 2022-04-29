@@ -2,6 +2,6 @@
 {
     public class EnqueueOrderResponse
     {
-        public bool IsEnqueued{get;set;}
+        public bool IsAssigned{get;set;}
     }
 }

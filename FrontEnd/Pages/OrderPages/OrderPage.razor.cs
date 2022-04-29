@@ -60,7 +60,8 @@ partial class OrderPage : ComponentBase
             TimeOrdered = DateTime.Now,
             CustomerName = CustomerName,
             DeliveryLocation = DeliveryLocation,
-            DeliveryAddress = DeliveryAddress
+            DeliveryAddress = DeliveryAddress,
+            State = OrderState.Waiting
         });
 
         Console.Write("AHHHHHH~~~~~~~~~~");

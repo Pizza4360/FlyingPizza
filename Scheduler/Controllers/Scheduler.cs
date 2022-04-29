@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.GatewayDefinitions;
 using Domain.RepositoryDefinitions;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace Scheduler.Controllers;
 
@@ -15,7 +16,7 @@ public class Scheduler
     private readonly FleetRepository _fleet;
     private readonly OrderRepository _orders;
     private readonly SchedulerToDispatchGateway _gateway;
-    private const int RefreshInterval = 2000;
+    private const int RefreshInterval = 30000;
     private Timer _timer;
     private async void DequeueCallback(object _) => await TryDequeueOrders();
 
@@ -53,20 +54,27 @@ public class Scheduler
     {
         Console.WriteLine("Trying to dequeue some orders...");
         var orders = await GetUnfulfilledOrders();
-        var responseString = await _gateway.TryDequeueOrders(from drone in await GetAvailableDrones()
+        Console.WriteLine(string.Join("\n", orders.ToJson()));
+        var availableDrones = GetAvailableDrones();
+        Console.WriteLine(string.Join("\n", availableDrones.ToJson()));
+        var enqueueOrderRequests = from drone in await availableDrones
             from order in orders
+            where order.State == OrderState.Waiting
             select new EnqueueOrderRequest
             {
                 OrderId = order.Id,
                 OrderLocation = order.DeliveryLocation
-            });
+            };
+        var orderRequests = enqueueOrderRequests as EnqueueOrderRequest[] ?? enqueueOrderRequests.ToArray();
+        Console.WriteLine($"Matched some drones with deliveries...\n{orderRequests.ToJson()}");
+        var responseString = await _gateway.InitiateDeliveries(orderRequests);
         Console.WriteLine(responseString);
         return responseString;
     }
     private async Task<IEnumerable<Order>> GetUnfulfilledOrders()
     {
         var orders = from o in await _orders.GetAllAsync()
-            where o != null && !o.HasBeenDelivered && o.DroneId.Equals(string.Empty)
+            where o != null && o.State == OrderState.Waiting
             select o;
         Console.WriteLine(string.Join(",", orders));
         return orders;
@@ -93,7 +101,7 @@ public class SchedulerToDispatchGateway : BaseGateway<Scheduler>
             S = "Malc"
         });
 
-    public async Task<string?> TryDequeueOrders(IEnumerable<EnqueueOrderRequest> request) => 
+    public async Task<string?> InitiateDeliveries(IEnumerable<EnqueueOrderRequest> request) => 
         await SendMessagePost<IEnumerable<EnqueueOrderRequest>, string>
-            ($"{DispatchUrl}/TryDequeueOrders",  request );
+            ($"{DispatchUrl}/InitiateDeliveries",  request );
 }
