@@ -11,7 +11,7 @@ public class FrontEndToDispatchGateway : BaseGateway<App>
     private string DispatchUrl{ get; } 
     public FrontEndToDispatchGateway(/*string ipAddress*/)
     {
-        DispatchUrl = "http://localhost:83" + "/Dispatch";
+            DispatchUrl = "http://localhost:83" + "/Dispatch";
     }
     
     public async Task<PingDto> Ping(PingDto ready)

@@ -45,13 +45,7 @@ public class Drone : DroneRecord
    
     private async Task<UpdateDroneStatusResponse?> PatchDroneStatus()
     {
-        var response = await _controller.UpdateDroneStatus(
-            new UpdateDroneStatusRequest
-            {
-                DroneId = DroneId,
-                State = State,
-                Location = CurrentLocation
-            });
+        var response = await _controller.UpdateDroneStatus(Update());
         return response;
     }
 
@@ -162,6 +156,12 @@ public class Drone : DroneRecord
     {
         await UpdateStatus(DroneState.Delivering);
         await TravelTo(request.OrderLocation);
+        _controller.CompleteDelivery(
+        new CompleteOrderRequest{
+            DroneId = DroneId,
+            OrderId = OrderId,
+            Time = DateTime.Now
+        });
         Console.WriteLine("Done with delivery, returning home.");
         await UpdateStatus(DroneState.Returning);
         await TravelTo(HomeLocation);

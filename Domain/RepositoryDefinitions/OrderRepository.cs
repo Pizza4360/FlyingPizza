@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.Entities;
@@ -43,8 +44,8 @@ public class OrderRepository : IOrdersRepository
     }
 
     public async Task<Order> GetByIdAsync(string id) =>
-        await _collection.Find(x => x.DroneId == id).FirstOrDefaultAsync();
-
+        await _collection.Find(x => x.OrderId == id).FirstOrDefaultAsync();
+    
     public async Task<List<Order>> GetAllAsync() => (await _collection.FindAsync(_ => true)).ToList();
 
     public Task<bool> 
@@ -60,22 +61,27 @@ public class OrderRepository : IOrdersRepository
 
     public async Task<bool> RemoveAsync(string id) =>
         (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
-    
 
-    public async Task<UpdateResult> UpdateAsync(Order order)
+    public Task UpdateAsync(string id, OrderUpdate update)
     {
-        var update = Builders<Order>
-            .Update.Set(o => o.TimeDelivered, order.TimeDelivered);
-
-        return await _collection.UpdateOneAsync(Builders<Order>.Filter.Eq(o => o.Id.Equals(order.Id), true), update, new UpdateOptions {IsUpsert = false});
+        throw new NotImplementedException();
     }
 
-    public async Task UpdateAsync(string requestOrderId, OrderState state)
+    public Task UpdateAsync<T>(string id, T update)
     {
-        var order = await GetByIdAsync(requestOrderId);
-        var filterDefinition = Builders<Order>.Filter.Eq(o => o.Id.Equals(order.Id), true);
-        var update = Builders<Order>
-            .Update.Set(o => o.State, state);
-        await _collection.UpdateOneAsync(filterDefinition, update, new UpdateOptions {IsUpsert = false});
+        throw new NotImplementedException();
+    }
+
+
+    public async Task<UpdateResult> UpdateAsync(OrderUpdate update)
+    {
+        var filter = Builders<Order>.Filter
+            .Eq(o => o.OrderId, update.OrderId);
+        var definition = Builders<Order>.Update
+            .Set(o => o.DroneId, update.DroneId)
+            .Set(o => o.State, update.State)
+            .Set(o => o.TimeDelivered, update.TimeDelivered)
+            .Set(o => o.HasBeenDelivered, update.HasBeenDelivered);
+        return await _collection.UpdateOneAsync(filter, definition, new UpdateOptions {IsUpsert = false});
     }
 }

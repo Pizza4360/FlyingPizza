@@ -1,4 +1,5 @@
 using DatabaseAccess;
+using Dispatch.Services;
 using Domain.RepositoryDefinitions;
 using Microsoft.Extensions.Options;
 
@@ -41,6 +42,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHostedService<PingerService>();
 
 // Get path to file holding connection string
 Console.WriteLine(DateTime.Now);

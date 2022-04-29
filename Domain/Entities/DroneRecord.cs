@@ -44,6 +44,15 @@ namespace Domain.Entities
         [JsonPropertyName("DispatchUrl")]
         public string DispatchUrl { get; set; }
 
+        public DroneUpdate Update() => new DroneUpdate
+        {
+            CurrentLocation = CurrentLocation,
+            Destination = Destination,
+            DroneId = DroneId,
+            OrderId = OrderId,
+            State = State
+        };
+        
         public override string ToString()
         {
             return $"Id:{DroneId}" +

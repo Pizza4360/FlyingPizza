@@ -15,6 +15,7 @@ public enum DroneState
     Returning,
     Dead,
     Charging,
+    Assigned
 }
 public static class DroneStateExtensions
 {

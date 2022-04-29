@@ -1,4 +1,5 @@
-﻿using Domain.DTO.DroneDispatchCommunication;
+﻿using Domain.DTO;
+using Domain.DTO.DroneDispatchCommunication;
 using Domain.GatewayDefinitions;
 using SimDrone.Controllers;
 
@@ -19,14 +20,17 @@ public class DroneToDispatchGateway : BaseGateway<SimDroneController>
         // Added for mocking reasons, no way around it
         new HttpClient(handler);
     }
-    
-    public async Task<CompleteOrderResponse?> CompleteOrder(CompleteOrderRequest request) => await SendMessagePost<CompleteOrderRequest, CompleteOrderResponse>( 
-        $"{EndPoint}/CompleteOrder", request);
 
-    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(UpdateDroneStatusRequest request)
+    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(DroneUpdate request)
     {
         Console.WriteLine($"Drone is updating status to url {EndPoint}");
-        return await SendMessagePost<UpdateDroneStatusRequest, UpdateDroneStatusResponse>
+        return await SendMessagePost<DroneUpdate, UpdateDroneStatusResponse>
                 ($"{EndPoint}/UpdateDroneStatus", request);
+    }
+
+    public async Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest request)
+    {
+        return await SendMessagePost<CompleteOrderRequest, CompleteOrderResponse>(
+            $"{EndPoint}/CompleteOrder", request);
     }
 }

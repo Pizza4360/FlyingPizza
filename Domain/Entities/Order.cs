@@ -9,8 +9,12 @@ namespace Domain.Entities;
 [BsonDiscriminator("Order")]
 public class Order : BaseEntity
 {
+    
     [BsonElement("DroneId")]
     public string DroneId { get; set; }
+    
+    [BsonElement("OrderId")]
+    public string OrderId { get; set; }
     
     [BsonElement("State")]
     [JsonPropertyName("State")]
@@ -51,14 +55,19 @@ public class Order : BaseEntity
     [BsonRepresentation(BsonType.DateTime)]
     [BsonIgnoreIfNull]
     public DateTime? TimeDelivered { get; set; }
-
-    [BsonElement("BadgeNumber")]
-    [JsonPropertyName("BadgeNumber")]
-    [BsonRepresentation(BsonType.String)]
-    public Guid BadgeNumber { get; set; }
+    
 
     [BsonElement("HasBeenDelivered")]
     [JsonPropertyName("HasBeenDelivered")]
     [BsonIgnoreIfNull]
     public bool HasBeenDelivered => TimeDelivered != null;
+
+    public OrderUpdate Update() => new OrderUpdate
+    {
+        DroneId = DroneId,
+        HasBeenDelivered = HasBeenDelivered,
+        OrderId = OrderId,
+        State = State,
+        TimeDelivered = TimeDelivered
+    };
 }

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Domain.DTO;
 using MongoDB.Driver;
 
 namespace Domain.RepositoryDefinitions;
 
-public interface IBaseRepository<DomainEntity>
+public interface IBaseRepository<DomainEntity, Update>
 {
     /// <summary>
     /// Creates a new domain entity in the repository
@@ -39,5 +40,6 @@ public interface IBaseRepository<DomainEntity>
     /// </summary>
     /// <param name="entity"></param>
     /// <returns>The entity, as it was updated</returns>
-    public Task<UpdateResult> UpdateAsync(DomainEntity entity);
+    Task<UpdateResult> UpdateAsync(Update update);
+
 }
