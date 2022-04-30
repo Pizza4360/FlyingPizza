@@ -18,7 +18,6 @@ public class DispatchController : ControllerBase
     private readonly IFleetRepository _fleet;
     private readonly IOrdersRepository _orders;
     private readonly DispatchToSimDroneGateway _dispatchToSimDroneGateway;
-    private const int RefreshInterval = 200000;
     private bool isInitiatingDrone = false;
 
 
@@ -44,16 +43,7 @@ public class DispatchController : ControllerBase
         _stopwatch = new Stopwatch();
         _stopwatch.Start();
     }
-
-    private async Task On()
-    {
-        if (_stopwatch.ElapsedMilliseconds > RefreshInterval)
-        {
-            _stopwatch.Stop();
-            _stopwatch.Reset();
-            _stopwatch.Start();
-        }
-    }
+    
 
     [HttpPost("AssgnmentCheck")]
     public async Task<PingDto> AssgnmentCheck(PingDto p)

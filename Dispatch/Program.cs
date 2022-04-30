@@ -17,20 +17,32 @@ builder.Services.AddCors(options =>
 
 
 #region repositories
-
+        
+var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
+var databaseName = Environment.GetEnvironmentVariable("DatabaseName");
+var fleet = Environment.GetEnvironmentVariable("Fleet");
+var orders = Environment.GetEnvironmentVariable("Orders");
+        
+        
+var ordersRepositorySettings = new RepositorySettings
+{
+    ConnectionString = connectionString,
+    DatabaseName = databaseName,
+    CollectionName = orders,
+};
 builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton<IOrdersRepository>(provider =>
+builder.Services.AddSingleton<IOrdersRepository>(provider => new OrderRepository(ordersRepositorySettings));
+        
+var fleetRepositorySettings = new RepositorySettings
 {
-    return new OrderRepository(provider.GetService<IOptions<OrdersDatabaseSettings>>());
-});
+    ConnectionString = connectionString,
+    DatabaseName = databaseName,
+    CollectionName = fleet,
+};
+builder.Services.AddSingleton<IFleetRepository>(provider => new FleetRepository(fleetRepositorySettings));
 
-builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
-builder.Services.AddSingleton<IFleetRepository>(provider =>
-{
-    return new FleetRepository(provider.GetService<IOptions<FleetDatabaseSettings>>());
-});
-
-builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
 #endregion repositories
 

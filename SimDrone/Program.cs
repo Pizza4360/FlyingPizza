@@ -1,6 +1,6 @@
 using Domain.GatewayDefinitions;
 using SimDrone;
-
+Console.WriteLine(Environment.GetEnvironmentVariable("Hello"));
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
     options.AddPolicy(name: "*", policy => policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod()));

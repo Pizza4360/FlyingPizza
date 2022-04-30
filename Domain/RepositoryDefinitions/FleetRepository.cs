@@ -25,7 +25,7 @@ public class FleetRepository : IFleetRepository
         _collection = mongoDatabase.GetCollection<DroneRecord>(
             fleetSettings.Value.CollectionName);
     }
-    public FleetRepository(FleetDatabaseSettings settings) //: Domain.InterfaceDefinitions.Repositories
+    public FleetRepository(RepositorySettings settings) //: Domain.InterfaceDefinitions.Repositories
     {
         var mongoClient = new MongoClient(
             settings.ConnectionString);

@@ -26,7 +26,7 @@ public class OrderRepository : IOrdersRepository
             ordersSettings.Value.CollectionName);
         Console.WriteLine($"this should be 'Orders'>>>{ordersSettings.Value.CollectionName}<<<");
     }
-    public OrderRepository(OrdersDatabaseSettings settings) //: Domain.InterfaceDefinitions.Repositories
+    public OrderRepository(RepositorySettings settings) //: Domain.InterfaceDefinitions.Repositories
     {
         var mongoClient = new MongoClient(
             settings.ConnectionString);
