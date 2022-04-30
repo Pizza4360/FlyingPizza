@@ -32,7 +32,8 @@ public class Program
 
         builder.Services.AddSingleton(new HttpClient());
 
-        builder.Services.AddSingleton(new ConvertAddressToGeoLocation());
+        builder.Services.AddScoped( _ =>
+            new ConvertAddressToGeoLocation(builder.Configuration.GetValue<string>("ApiKey")));
 
         builder.Services.AddScoped<DialogService>();
 

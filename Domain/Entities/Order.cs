@@ -15,16 +15,7 @@ public class Order : BaseEntity
 
     [BsonElement("State")]
     [JsonPropertyName("State")]
-    public OrderState State { get; set; } /*
-    {
-        get =>
-        TimeDelivered == null
-        ? OrderState.Delivered
-        : !string.IsNullOrEmpty(DroneId)
-            ? OrderState.Waiting
-            : OrderState.Assigned;
-        set => State = value;
-    }*/
+    public OrderState State { get; set; }
 
     [BsonElement("Items")]
     [JsonPropertyName("Items")]

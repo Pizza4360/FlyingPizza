@@ -4,6 +4,7 @@ using Domain;
 using Domain.DTO;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
+using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -11,9 +12,9 @@ namespace FrontEnd.Pages.OrderPages;
 
 partial class OrderPage : ComponentBase
 {
-    public string CustomerName;
+    private string _customerName;
 
-    public string DeliveryAddress;
+    private string _deliveryAddress;
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
@@ -24,10 +25,9 @@ partial class OrderPage : ComponentBase
 
     protected override void OnInitialized()
     {
-        Converter = new ConvertAddressToGeoLocation();
     }
 
-    public async Task<AddDroneResponse> AddDrone()
+    private async Task<AddDroneResponse> AddDrone()
     {
         return await FrontEndToDispatchGateway.AddDrone(new AddDroneRequest
         {
@@ -39,19 +39,19 @@ partial class OrderPage : ComponentBase
         });
     }
 
-    public async Task makeOrder()
+    private async Task MakeOrder()
     {
-        var DeliveryLocation = await Converter.CoordsFromAddress(DeliveryAddress);
+        var deliveryLocation = await Converter.CoordsFromAddress(_deliveryAddress);
 
-        var OrderId = BaseEntity.GenerateNewId();
+        var orderId = BaseEntity.GenerateNewId();
 
         await FrontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest
         {
-            OrderId = OrderId,
+            OrderId = orderId,
             TimeOrdered = DateTime.Now,
-            CustomerName = CustomerName,
-            DeliveryLocation = DeliveryLocation,
-            DeliveryAddress = DeliveryAddress,
+            CustomerName = _customerName,
+            DeliveryLocation = deliveryLocation,
+            DeliveryAddress = _deliveryAddress,
             State = OrderState.Waiting
         });
 
@@ -59,8 +59,8 @@ partial class OrderPage : ComponentBase
 
         var dispatchResponse = FrontEndToDispatchGateway.EnqueueOrder(new EnqueueOrderRequest
         {
-            OrderLocation = DeliveryLocation,
-            OrderId = OrderId
+            OrderLocation = deliveryLocation,
+            OrderId = orderId
         });
 
         Console.WriteLine(dispatchResponse);

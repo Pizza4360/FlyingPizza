@@ -9,21 +9,22 @@ namespace FrontEnd.Services;
 
 public class ConvertAddressToGeoLocation
 {
-    private const string _urlStart = "https://maps.googleapis.com/maps/api/";
-    private readonly HttpClient httpClient = new();
+    private const string UrlStart = "https://maps.googleapis.com/maps/api/";
+    private readonly HttpClient _httpClient = new();
 
-    public ConvertAddressToGeoLocation()
+    public ConvertAddressToGeoLocation(string apiKey)
     {
-        ApiKey = Environment.GetEnvironmentVariable("ApiKey");
+        Console.WriteLine("ConvertAddressToGeoLocation ->" + apiKey);
+        ApiKey = apiKey;
     }
 
-    public string ApiKey { get; set; }
+    private string ApiKey { get; }
 
 
     public async Task<GeoLocation> CoordsFromAddress(string address)
     {
-        var url = _urlStart + "geocode/json?address=" + HttpUtility.UrlEncode(address) + ",&key=" + ApiKey;
-        var req = await httpClient.GetStringAsync(url);
+        var url = UrlStart + "geocode/json?address=" + HttpUtility.UrlEncode(address) + ",&key=" + ApiKey;
+        var req = await _httpClient.GetStringAsync(url);
 
         Console.Write("RETURNED FROM RED: " + req);
 

@@ -32,8 +32,8 @@ public static class DroneStateExtensions
         { DroneState.Delivering, "Delivering" },
         { DroneState.Returning, "Returning" },
         { DroneState.Dead, "Dead" },
-        { DroneState.Assigned, "Assigned" },
-        { DroneState.Charging, "Charging" }
+        { DroneState.Charging, "Charging" },
+        { DroneState.Assigned, "Assigned" }
     };
     public static string GetColor(this DroneState state) => StateToColorDict[state];
     public static string ToString(this DroneState state) => StateToStringDict[state];

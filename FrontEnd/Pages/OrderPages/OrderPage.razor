@@ -1,6 +1,6 @@
 ﻿@page "/order"
 @using FrontEnd.Services
-@using ConvertAddressToGeoLocation = Domain.ConvertAddressToGeoLocation
+@using ConvertAddressToGeoLocation = Services.ConvertAddressToGeoLocation
 @inject NavigationManager NavigationManager
 @inject FrontEndToDatabaseGateway FrontEndToDatabaseGateway
 @inject FrontEndToDispatchGateway FrontEndToDispatchGateway
@@ -12,12 +12,12 @@
 
 <div class="right">
     <b>Customer Name: </b>
-    <RadzenTextBox id="CUST_NAME" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput="@(e => CustomerName = e.Value.ToString())"/>
+    <RadzenTextBox id="CUST_NAME" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput="@(e => _customerName = e.Value.ToString())"/>
     <br/>
     <b>Address: </b>
-    <RadzenTextBox id="ADDRESS" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput="@(e => DeliveryAddress = e.Value.ToString())"/>
+    <RadzenTextBox id="ADDRESS" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput="@(e => _deliveryAddress = e.Value.ToString())"/>
     <br/>
-    <RadzenButton id="ORDER_SUBMIT" Click="@(args => makeOrder())" Style="width: 200px" Text="Create Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary"/>
+    <RadzenButton id="ORDER_SUBMIT" Click="@(args => MakeOrder())" Style="width: 200px" Text="Create Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary"/>
     <RadzenButton id="ADD_DRONE" Click="@(args => AddDrone())" Style="width: 200px" Text="ADD DRONE" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary"/>
 
 </div>
