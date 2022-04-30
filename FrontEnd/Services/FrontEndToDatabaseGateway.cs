@@ -10,9 +10,9 @@ namespace FrontEnd.Services;
 public class FrontEndToDatabaseGateway : BaseGateway<App>
 {
     private string DbUrl{ get; } 
-    public FrontEndToDatabaseGateway(/*string ipAddress*/)
+    public FrontEndToDatabaseGateway(string dbUrl)
     {
-        DbUrl = "http://localhost:80/DatabaseAccess";
+        DbUrl = dbUrl;
     }
     
     public async Task<List<DroneRecord>> GetFleet()

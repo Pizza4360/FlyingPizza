@@ -1,11 +1,10 @@
 ﻿@page "/order"
 @using FrontEnd.Services
 @using Domain
-@inject FrontEndToDispatchGateway _gateway 
-@inject NavigationManager _navigationManager
-@inject FrontEndToDatabaseGateway _frontEndToDatabaseGateway
-@inject FrontEndToDispatchGateway _frontEndToDispatchGateway
-@inject Domain.ConvertAddressToGeoLocation converter
+@inject NavigationManager NavigationManager
+@inject FrontEndToDatabaseGateway FrontEndToDatabaseGateway
+@inject FrontEndToDispatchGateway FrontEndToDispatchGateway
+@inject Domain.ConvertAddressToGeoLocation Converter
 
 <div class="status-bar">
     <b>Create New Order</b>

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +16,8 @@ partial class TrackingPage : ComponentBase
     private const int RefreshInterval = 2000;
     private Timer _timer;
     public bool connection;
-    public FrontEndToDatabaseGateway _FrontEndToDatabaseGateway;
+    [Inject]
+    public FrontEndToDatabaseGateway _FrontEndToDatabaseGateway { get; set; }
     public string dropDownLabel;
     public DroneRecord[] Fleet;
     public DroneRecord[] filteredDrones;
@@ -29,7 +31,7 @@ partial class TrackingPage : ComponentBase
     {
         if (firstRender)
         {
-            _FrontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
+            Console.WriteLine($"_frontEndToDatabaseGateway == null ?" + _frontEndToDatabaseGateway == null);
             await JsRuntime.InvokeVoidAsync("initGoogleMap", new { Lat = 39.74386695629378, Lng = -105.00610500179027 });
         }
     }

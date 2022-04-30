@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Domain;
 using Domain.DTO;
@@ -15,8 +16,6 @@ partial class OrderPage : ComponentBase
     [Inject]
     public IJSRuntime JsRuntime {get;set; }
 
-
-
     public string DeliveryAddress;
     public string CustomerName;
 
@@ -29,17 +28,11 @@ partial class OrderPage : ComponentBase
     }
     protected override void OnInitialized()
     {
-        _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
-        _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
-         converter = new ConvertAddressToGeoLocation();
+         Converter = new ConvertAddressToGeoLocation();
     }
 
-    public FrontEndToDispatchGateway GetGateway()
-        => new FrontEndToDispatchGateway();
-
-
     public async Task<AddDroneResponse> AddDrone() {
-        return await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
+        return await FrontEndToDispatchGateway.AddDrone(new AddDroneRequest
         {
             DroneId = BaseEntity.GenerateNewId(),
             BadgeNumber = Guid.NewGuid(),
@@ -51,11 +44,11 @@ partial class OrderPage : ComponentBase
     public async Task makeOrder()
     {
 
-        var DeliveryLocation = await converter.CoordsFromAddress(DeliveryAddress);
+        var DeliveryLocation = await Converter.CoordsFromAddress(DeliveryAddress);
 
         string OrderId = BaseEntity.GenerateNewId();
 
-        await _frontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest {
+        await FrontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest {
             OrderId = OrderId,
             TimeOrdered = DateTime.Now,
             CustomerName = CustomerName,
@@ -66,7 +59,7 @@ partial class OrderPage : ComponentBase
 
         Console.Write("AHHHHHH~~~~~~~~~~");
 
-        var dispatchResponse = _gateway.EnqueueOrder(new EnqueueOrderRequest
+        var dispatchResponse = FrontEndToDispatchGateway.EnqueueOrder(new EnqueueOrderRequest
         {
             OrderLocation = DeliveryLocation,
             OrderId = OrderId,
@@ -74,6 +67,6 @@ partial class OrderPage : ComponentBase
             
         Console.WriteLine(dispatchResponse);
         // Navigate to page to display users current order. 
-        _navigationManager.NavigateTo("/userPage", false);
+        NavigationManager.NavigateTo("/userPage", false);
     }
 }

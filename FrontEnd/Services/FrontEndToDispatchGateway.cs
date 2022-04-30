@@ -9,9 +9,9 @@ namespace FrontEnd.Services;
 public class FrontEndToDispatchGateway : BaseGateway<App>
 {
     private string DispatchUrl{ get; } 
-    public FrontEndToDispatchGateway(/*string ipAddress*/)
+    public FrontEndToDispatchGateway(string dispatchUrl)
     {
-            DispatchUrl = "http://localhost:83" + "/Dispatch";
+            DispatchUrl = dispatchUrl;
     }
     
     public async Task<PingDto> Ping(PingDto ready)
