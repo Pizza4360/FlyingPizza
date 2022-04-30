@@ -4,9 +4,7 @@ namespace Domain.DTO.FrontEndDispatchCommunication;
 
 public class CancelDeliveryResponse
 {
-    [JsonPropertyName("OrderId")]
-    public string OrderId { get; set; }
-    
-    [JsonPropertyName("IsCancelled")]
-    public bool IsCancelled { get; set; }
+    [JsonPropertyName("OrderId")] public string OrderId { get; set; }
+
+    [JsonPropertyName("IsCancelled")] public bool IsCancelled { get; set; }
 }

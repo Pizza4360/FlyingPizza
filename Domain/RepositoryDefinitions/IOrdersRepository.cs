@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
-using Domain.DTO;
+﻿using Domain.DTO;
 using Domain.Entities;
 
 namespace Domain.RepositoryDefinitions;
 
-public interface IOrdersRepository: IBaseRepository<Order, OrderUpdate>
+public interface IOrdersRepository : IBaseRepository<Order, OrderUpdate>
 {
 }

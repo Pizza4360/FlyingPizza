@@ -1,7 +1,6 @@
-﻿namespace Domain.DTO.FrontEndDispatchCommunication
+﻿namespace Domain.DTO.FrontEndDispatchCommunication;
+
+public class EnqueueOrderResponse
 {
-    public class EnqueueOrderResponse
-    {
-        public bool IsAssigned{get;set;}
-    }
+    public bool IsAssigned { get; set; }
 }

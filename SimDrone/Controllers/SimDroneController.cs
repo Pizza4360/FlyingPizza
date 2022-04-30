@@ -12,13 +12,15 @@ public class SimDroneController : ControllerBase
 {
     private static Drone _drone;
     private static DroneToDispatchGateway _gateway;
-    private bool IsInitiatead = false;
+    private bool IsInitiatead;
 
     [HttpPost("InitDrone")]
     public async Task<InitDroneResponse> InitDrone(
         InitDroneRequest initDroneRequest)
     {
-        var responseString = IsInitiatead ? "This drone is already initialized" : "This drone is ready to be initialized to a fleet.";
+        var responseString = IsInitiatead
+            ? "This drone is already initialized"
+            : "This drone is ready to be initialized to a fleet.";
         Console.WriteLine($"SimDroneController.InitDrone -> {initDroneRequest}\tresponse -> {responseString}");
         return new InitDroneResponse
         {
@@ -42,7 +44,7 @@ public class SimDroneController : ControllerBase
             State = _drone.State
         };
     }
-    
+
     [HttpPost("AssignFleet")]
     public async Task<AssignFleetResponse> AssignFleet(AssignFleetRequest assignFleetRequest)
     {
@@ -58,7 +60,7 @@ public class SimDroneController : ControllerBase
                 HomeLocation = assignFleetRequest.HomeLocation,
                 DroneId = assignFleetRequest.DroneId,
                 OrderId = null
-            }, _gateway, 
+            }, _gateway,
             this);
         Console.WriteLine($"SimDrone successfully initialized.\nDrone -->{_drone}");
         IsInitiatead = true;
@@ -70,7 +72,7 @@ public class SimDroneController : ControllerBase
         };
     }
 
-        
+
     [HttpPost("AssignDelivery")]
     public async Task<AssignDeliveryResponse> AssignDelivery(
         AssignDeliveryRequest assignDeliveryRequest)
@@ -82,7 +84,9 @@ public class SimDroneController : ControllerBase
 
     [HttpPost("UpdateDroneStatus")]
     public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(DroneUpdate updateDroneStatusRequest)
-        => await _gateway.UpdateDroneStatus(updateDroneStatusRequest);
+    {
+        return await _gateway.UpdateDroneStatus(updateDroneStatusRequest);
+    }
 
     public async Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest request)
     {

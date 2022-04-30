@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.Entities;
@@ -14,7 +13,9 @@ namespace DatabaseAccess;
 public class OrderRepository : IOrdersRepository
 {
     private readonly IMongoCollection<Order> _collection;
-    public OrderRepository(IOptions<OrdersDatabaseSettings>? ordersSettings) //: Domain.InterfaceDefinitions.Repositories
+
+    public
+        OrderRepository(IOptions<OrdersDatabaseSettings>? ordersSettings) //: Domain.InterfaceDefinitions.Repositories
     {
         var mongoClient = new MongoClient(
             ordersSettings.Value.ConnectionString);
@@ -26,39 +27,38 @@ public class OrderRepository : IOrdersRepository
             ordersSettings.Value.CollectionName);
         Console.WriteLine($"this should be 'Orders'>>>{ordersSettings.Value.CollectionName}<<<");
     }
-    
+
+    public OrderRepository(RepositorySettings settings) //: Domain.InterfaceDefinitions.Repositories
+    {
+        var mongoClient = new MongoClient(
+            settings.ConnectionString);
+
+        var mongoDatabase = mongoClient.GetDatabase(
+            settings.DatabaseName);
+
+        _collection = mongoDatabase.GetCollection<Order>(
+            settings.CollectionName);
+        Console.WriteLine($"this should be 'Orders'>>>{settings.CollectionName}<<<");
+    }
+
     public async Task CreateAsync(Order newOrder)
     {
         await _collection.InsertOneAsync(newOrder);
     }
 
-    public async Task<Order> GetByIdAsync(string id) =>
-        await _collection.Find(x => x.OrderId == id).FirstOrDefaultAsync();
-    
-    public async Task<List<Order>> GetAllAsync() => (await _collection.FindAsync(_ => true)).ToList();
-
-    public Task<bool> 
-        Update(Order order)
+    public async Task<Order> GetByIdAsync(string id)
     {
-        var result = _collection.ReplaceOneAsync(
-            new BsonDocument("_id", order.DroneId),
-            options: new ReplaceOptions { IsUpsert = true },
-            replacement: order);
-        result.Wait();
-        return Task.FromResult<bool>(result.IsCompletedSuccessfully);
+        return await _collection.Find(x => x.OrderId == id).FirstOrDefaultAsync();
     }
 
-    public async Task<bool> RemoveAsync(string id) =>
-        (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
-
-    public Task UpdateAsync(string id, OrderUpdate update)
+    public async Task<List<Order>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return (await _collection.FindAsync(_ => true)).ToList();
     }
 
-    public Task UpdateAsync<T>(string id, T update)
+    public async Task<bool> RemoveAsync(string id)
     {
-        throw new NotImplementedException();
+        return (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
     }
 
 
@@ -73,5 +73,26 @@ public class OrderRepository : IOrdersRepository
             .Set(o => o.TimeDelivered, update.TimeDelivered)
             .Set(o => o.HasBeenDelivered, update.HasBeenDelivered);
         return await _collection.UpdateOneAsync(filter, definition, new UpdateOptions {IsUpsert = false});
+    }
+
+    public Task<bool>
+        Update(Order order)
+    {
+        var result = _collection.ReplaceOneAsync(
+            new BsonDocument("_id", order.DroneId),
+            options: new ReplaceOptions {IsUpsert = true},
+            replacement: order);
+        result.Wait();
+        return Task.FromResult(result.IsCompletedSuccessfully);
+    }
+
+    public Task UpdateAsync(string id, OrderUpdate update)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync<T>(string id, T update)
+    {
+        throw new NotImplementedException();
     }
 }

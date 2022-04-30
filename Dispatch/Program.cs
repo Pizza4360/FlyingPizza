@@ -1,30 +1,47 @@
 using DatabaseAccess;
 using Dispatch.Services;
 using Domain.RepositoryDefinitions;
-using Microsoft.Extensions.Options;
 
 Console.WriteLine("hello world!!!");
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
-    options.AddPolicy(name: "CORS", policy => policy.WithOrigins("https://localhost:44364", 
-    "http://localhost:5001", "http://localhost:81", "http://localhost:82",
-    "http://localhost:83",
-    "http://localhost:84",
-    "http://localhost:85",
-    "http://localhost:86",
-    "http://localhost:87",
-    "http://localhost:88").AllowAnyHeader().AllowAnyMethod()));
+    options.AddPolicy("CORS", policy => policy.WithOrigins("https://localhost:44364",
+        "http://localhost:5001", "http://localhost:81", "http://localhost:82",
+        "http://localhost:83",
+        "http://localhost:84",
+        "http://localhost:85",
+        "http://localhost:86",
+        "http://localhost:87",
+        "http://localhost:88").AllowAnyHeader().AllowAnyMethod()));
 
 
 #region repositories
 
+var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
+var databaseName = Environment.GetEnvironmentVariable("DatabaseName");
+var fleet = Environment.GetEnvironmentVariable("Fleet");
+var orders = Environment.GetEnvironmentVariable("Orders");
+
+
+var ordersRepositorySettings = new RepositorySettings
+{
+    ConnectionString = connectionString,
+    DatabaseName = databaseName,
+    CollectionName = orders
+};
 builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton<IOrdersRepository>(provider => new OrderRepository(provider.GetService<IOptions<OrdersDatabaseSettings>>()));
+builder.Services.AddSingleton<IOrdersRepository>(provider => new OrderRepository(ordersRepositorySettings));
 
-builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
-builder.Services.AddSingleton<IFleetRepository>(provider => new FleetRepository(provider.GetService<IOptions<FleetDatabaseSettings>>()));
+var fleetRepositorySettings = new RepositorySettings
+{
+    ConnectionString = connectionString,
+    DatabaseName = databaseName,
+    CollectionName = fleet
+};
+builder.Services.AddSingleton<IFleetRepository>(provider => new FleetRepository(fleetRepositorySettings));
 
-builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
 #endregion repositories
 
@@ -42,10 +59,7 @@ builder.Services.AddHostedService<PingerService>();
 Console.WriteLine(DateTime.Now);
 
 
-
-
 var app = builder.Build();
-
 
 
 // Configure the HTTP request pipeline.

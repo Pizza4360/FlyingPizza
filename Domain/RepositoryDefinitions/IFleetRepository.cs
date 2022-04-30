@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Domain.DTO;
+﻿using Domain.DTO;
 using Domain.Entities;
 
 namespace Domain.RepositoryDefinitions;
