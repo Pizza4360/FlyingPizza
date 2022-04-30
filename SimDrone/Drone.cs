@@ -28,7 +28,6 @@ public class Drone : DroneRecord
     {
         DroneId = record.DroneId;
         HomeLocation = record.HomeLocation;
-        BadgeNumber = record.BadgeNumber;
         DroneUrl = record.DroneUrl;
         _controller = controller;
         State = DroneState.Ready;

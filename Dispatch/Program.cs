@@ -19,16 +19,10 @@ builder.Services.AddCors(options =>
 #region repositories
 
 builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton<IOrdersRepository>(provider =>
-{
-    return new OrderRepository(provider.GetService<IOptions<OrdersDatabaseSettings>>());
-});
+builder.Services.AddSingleton<IOrdersRepository>(provider => new OrderRepository(provider.GetService<IOptions<OrdersDatabaseSettings>>()));
 
 builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
-builder.Services.AddSingleton<IFleetRepository>(provider =>
-{
-    return new FleetRepository(provider.GetService<IOptions<FleetDatabaseSettings>>());
-});
+builder.Services.AddSingleton<IFleetRepository>(provider => new FleetRepository(provider.GetService<IOptions<FleetDatabaseSettings>>()));
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 

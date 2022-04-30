@@ -1,30 +1,24 @@
-﻿
-
-using Newtonsoft.Json.Linq;
-using System;
-using System.IO;
-using System.Net;
+﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Domain.DTO;
+using Newtonsoft.Json.Linq;
 
-namespace Domain
+namespace FrontEnd.Services
 {
     public class ConvertAddressToGeoLocation
     {
-        public string ApiKey { get; set; }
-        private const string _urlStart = "https://maps.googleapis.com/maps/api/";
+        private string ApiKey { get; set; }
+        private const string UrlStart = "https://maps.googleapis.com/maps/api/";
         private HttpClient httpClient = new HttpClient();
 
-         public ConvertAddressToGeoLocation() {
-             ApiKey = "AIzaSyABM05Ov28GgnvCE6fvNUT0hmPB7Ol6kuI";
+         public ConvertAddressToGeoLocation(string apiKey) {
+             ApiKey = apiKey;
          }
-
-        //  "MapsApiKey": "https://maps.googleapis.com/maps/api/geocode/json?address=1600+Est%C3%A2ncia+Sergipe,&key=AIzaSyABM05Ov28GgnvCE6fvNUT0hmPB7Ol6kuI",
-
+         
         public async Task<GeoLocation> CoordsFromAddress(string address)
         {
-            var url = _urlStart + "geocode/json?address=" + System.Web.HttpUtility.UrlEncode(address) + ",&key=" + ApiKey;
+            var url = UrlStart + "geocode/json?address=" + System.Web.HttpUtility.UrlEncode(address) + ",&key=" + ApiKey;
             var req = await httpClient.GetStringAsync(url);
 
             Console.Write("RETURNED FROM RED: " + req);

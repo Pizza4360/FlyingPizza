@@ -15,7 +15,6 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
-
         builder.RootComponents.Add<App>("#app");
 
         builder.Services.AddScoped(
@@ -30,14 +29,7 @@ public class Program
 
         builder.Services.AddSingleton(new FrontEndToDispatchGateway());
         builder.Services.AddSingleton(new FrontEndToDatabaseGateway());
-
-        builder.Services.AddSingleton(new HttpClient());
-
-        builder.Services.AddSingleton(new ConvertAddressToGeoLocation());
-       /* { 
-           ApiKey = builder.Configuration.GetValue<string>("MapsApiKey")
-        });*/
-
+        builder.Services.AddSingleton(new ConvertAddressToGeoLocation("AIzaSyABM05Ov28GgnvCE6fvNUT0hmPB7Ol6kuI"));
         builder.Services.AddScoped<DialogService>();
 
         await builder.Build().RunAsync();

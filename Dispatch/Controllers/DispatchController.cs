@@ -99,14 +99,12 @@ public class DispatchController : ControllerBase
         Console.WriteLine($"DispatchController.AddDrone({addDroneRequest})");
 
         if ((await _fleet.GetAllAsync())
-            .Any(x => x.BadgeNumber == addDroneRequest.BadgeNumber
-                      || x.DroneUrl == addDroneRequest.DroneUrl
+            .Any(x => x.DroneUrl == addDroneRequest.DroneUrl
                       || x.DroneId == addDroneRequest.DroneUrl))
         {
             Console.WriteLine("Either the DroneUrl or DroneId you are trying to use is taken by another drone.");
             return new AddDroneResponse
             {
-                BadgeNumber = addDroneRequest.BadgeNumber,
                 Success = false
             };
         }
@@ -123,7 +121,7 @@ public class DispatchController : ControllerBase
             $"Response from _dispatchToSimDroneGateway.InitDrone({initDroneRequest})\n\t->{{DroneId:{initDroneResponse.DroneId},Okay:{initDroneResponse.Okay}}}");
         if (!initDroneResponse.Okay)
         {
-            return new AddDroneResponse {BadgeNumber = addDroneRequest.BadgeNumber, Success = false};
+            return new AddDroneResponse {Success = false};
         }
 
         var assignFleetRequest = new AssignFleetRequest
@@ -131,7 +129,6 @@ public class DispatchController : ControllerBase
             DroneId = addDroneRequest.DroneId,
             DroneIp = addDroneRequest.DroneUrl,
             DispatchIp = addDroneRequest.DispatchUrl,
-            BadgeNumber = addDroneRequest.BadgeNumber,
             HomeLocation = addDroneRequest.HomeLocation
         };
 
@@ -144,22 +141,17 @@ public class DispatchController : ControllerBase
 
         if (assignFleetResponse is {IsInitializedAndAssigned: false})
         {
-            Console.WriteLine($"FAILURE! new drone {addDroneRequest.BadgeNumber} was not initiated.");
-            return new AddDroneResponse
-            {
-                BadgeNumber = addDroneRequest.BadgeNumber,
-                Success = false
-            };
+            Console.WriteLine($"FAILURE! new drone {addDroneRequest.DroneId} was not initiated.");
+            return new AddDroneResponse { Success = false };
         }
 
-        Console.WriteLine($"success! Saving new drone {addDroneRequest.BadgeNumber} to repository.");
+        Console.WriteLine($"success! Saving new drone {addDroneRequest.DroneId} to repository.");
 
         var droneRecord = new DroneRecord
         {
             OrderId = "",
             DroneId = addDroneRequest.DroneId,
             DroneUrl = addDroneRequest.DroneUrl,
-            BadgeNumber = addDroneRequest.BadgeNumber,
             Destination = addDroneRequest.HomeLocation,
             CurrentLocation = addDroneRequest.HomeLocation,
             HomeLocation = addDroneRequest.HomeLocation,
@@ -172,11 +164,7 @@ public class DispatchController : ControllerBase
 
         Console.WriteLine($"\n\n\n\nabout to YEET this drone record:\n{droneRecord.ToJson()}");
         isInitiatingDrone = false;
-        return new AddDroneResponse
-        {
-            BadgeNumber = addDroneRequest.BadgeNumber,
-            Success = true
-        };
+        return new AddDroneResponse { Success = true };
     }
 
     [HttpPost("CompleteOrder")]

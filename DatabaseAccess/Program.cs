@@ -28,8 +28,7 @@ public class Program
         builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
         builder.Services.AddSingleton<IFleetRepository>(provider => new FleetRepository(provider.GetService<IOptions<FleetDatabaseSettings>>()));
 
-        builder.Services.AddControllers()
-               .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+        builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
         #endregion repositories
 

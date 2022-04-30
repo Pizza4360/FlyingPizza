@@ -14,9 +14,6 @@ public class AssignFleetRequest
     [JsonPropertyName("DispatchUrl")]
     public string DispatchIp{get;set;}
 
-    [JsonPropertyName("BadgeNumber")]
-    public Guid BadgeNumber { get; set; }    
-            
     [JsonPropertyName("HomeLocation")]
     public GeoLocation HomeLocation { get; set; }
 }

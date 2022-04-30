@@ -24,13 +24,15 @@ public static class DroneStateExtensions
         { DroneState.Delivering, "#98f5ff" },
         { DroneState.Returning, "#8A2BE2" },
         { DroneState.Dead, "#FF0000" },
-        { DroneState.Charging, "#FF9A08" }
+        { DroneState.Charging, "#FF9A08" },
+        { DroneState.Assigned, "#FF9A08" }
     };
     private static readonly Dictionary<DroneState, string> StateToStringDict = new(){
         { DroneState.Ready, "Ready" },
         { DroneState.Delivering, "Delivering" },
         { DroneState.Returning, "Returning" },
         { DroneState.Dead, "Dead" },
+        { DroneState.Assigned, "Assigned" },
         { DroneState.Charging, "Charging" }
     };
     public static string GetColor(this DroneState state) => StateToColorDict[state];

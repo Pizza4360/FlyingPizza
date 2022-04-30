@@ -31,7 +31,7 @@ partial class OrderPage : ComponentBase
     {
         _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
         _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
-         converter = new ConvertAddressToGeoLocation();
+         converter = new ConvertAddressToGeoLocation("AIzaSyABM05Ov28GgnvCE6fvNUT0hmPB7Ol6kuI");
     }
 
     public FrontEndToDispatchGateway GetGateway()
@@ -42,7 +42,6 @@ partial class OrderPage : ComponentBase
         return await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
         {
             DroneId = BaseEntity.GenerateNewId(),
-            BadgeNumber = Guid.NewGuid(),
             HomeLocation = new GeoLocation{ Latitude = 39.74386695629378m, Longitude = -105.00610500179027m },
             DroneUrl = "http://localhost:85",
             DispatchUrl = "http://localhost:83"

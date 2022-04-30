@@ -168,28 +168,28 @@
     }
     
     function updateAll(currentMarkers){
-        for(badgeNumber in markers){ // find out which markers are deleted, remove them
-            if(!(badgeNumber in currentMarkers)){
-                console.log(badgeNumber + " is no longer a valid markers! removing " + markers[badgeNumber])
-                removeMarker(badgeNumber)
+        for(droneId in markers){ // find out which markers are deleted, remove them
+            if(!(droneId in currentMarkers)){
+                console.log(droneId + " is no longer a valid markers! removing " + markers[droneId])
+                removeMarker(droneId)
             }
         }
-        for(var badgeNumber in currentMarkers) { 
-            if(!(badgeNumber in markers)){ // find out which are new, add them
-                console.log(badgeNumber + " is not in known markers! inserting {" + currentMarkers[badgeNumber])
-                addMarker(badgeNumber, currentMarkers[badgeNumber])
+        for(var droneId in currentMarkers) { 
+            if(!(droneId in markers)){ // find out which are new, add them
+                console.log(droneId + " is not in known markers! inserting {" + currentMarkers[droneId])
+                addMarker(droneId, currentMarkers[droneId])
             } else { // must check if the marker is in a new location
-                newMarker = currentMarkers[badgeNumber]
+                newMarker = currentMarkers[droneId]
                 if(
-                    newMarker["lat"] !== markers[badgeNumber].position.lat ||
-                    newMarker["lng"] !== markers[badgeNumber].position.lng
+                    newMarker["lat"] !== markers[droneId].position.lat ||
+                    newMarker["lng"] !== markers[droneId].position.lng
                 ){
-                    console.log("drone " + badgeNumber + " has moved from (" + markers[badgeNumber].getPosition().lat() + "," + markers[badgeNumber].getPosition().lng() + ") to (" + newMarker["lat"] + "," + newMarker["lng"] + ")")
-                    updateMarker(badgeNumber, newMarker["lat"],  newMarker["lng"]);
-                } if(newMarker["color"] !== markers[badgeNumber].Circle.fillColor) {
-                    console.log(markers[badgeNumber].Circle.fillColor + " vs " + newMarker["color"]);
-                    markers[badgeNumber].Circle.setMap(null);
-                    markers[badgeNumber].Circle = new google.maps.Circle({
+                    console.log("drone " + droneId + " has moved from (" + markers[droneId].getPosition().lat() + "," + markers[droneId].getPosition().lng() + ") to (" + newMarker["lat"] + "," + newMarker["lng"] + ")")
+                    updateMarker(droneId, newMarker["lat"],  newMarker["lng"]);
+                } if(newMarker["color"] !== markers[droneId].Circle.fillColor) {
+                    console.log(markers[droneId].Circle.fillColor + " vs " + newMarker["color"]);
+                    markers[droneId].Circle.setMap(null);
+                    markers[droneId].Circle = new google.maps.Circle({
                         center: {lat: newMarker["lat"].lat - 16, lng: newMarker["lng"] - 16},
                         radius: 150,
                         map: map,
@@ -197,7 +197,7 @@
                         fillColor: newMarker["color"],
                         fillOpacity: .75
                     });
-                    markers[badgeNumber].Circle.bindTo('center', markers[badgeNumber], 'position');
+                    markers[droneId].Circle.bindTo('center', markers[droneId], 'position');
                 }
             }
         }
