@@ -1,10 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using Domain.DTO.FrontEndDispatchCommunication;
-using Domain.Entities;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-
-namespace Domain.DTO.DroneDispatchCommunication;
+﻿namespace Domain.DTO.DroneDispatchCommunication;
 //
 // public class UpdateDroneStatusRequest
 // {

@@ -6,7 +6,7 @@
     background-color: #3f7cac;
     padding: 1.5rem !important;
     color: white;
-    text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
     font-size: 1.5rem;
     font-weight: 700;
 }
@@ -14,7 +14,7 @@
 .right {
     border-radius: 0.5rem;
     background-color: #1e1e24;
-    box-shadow: 0 3px 4px rgba(0,0,0,0.4);
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.4);
     margin-top: 1.5rem;
     float: left;
     padding: 0.5rem !important;

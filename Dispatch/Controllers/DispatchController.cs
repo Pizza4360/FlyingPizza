@@ -13,15 +13,17 @@ namespace Dispatch.Controllers;
 [Route("[controller]")]
 public class DispatchController : ControllerBase
 {
+    private readonly DispatchToSimDroneGateway _dispatchToSimDroneGateway;
+
+    private readonly IFleetRepository _fleet;
+
     // private readonly ILogger<DispatchController> _logger;
     private readonly GeoLocation _homeLocation;
-    private readonly IFleetRepository _fleet;
     private readonly IOrdersRepository _orders;
-    private readonly DispatchToSimDroneGateway _dispatchToSimDroneGateway;
-    private bool isInitiatingDrone = false;
 
 
-    private Stopwatch _stopwatch;
+    private readonly Stopwatch _stopwatch;
+    private bool isInitiatingDrone;
 
     // private async void DequeueCallback(object _) => await TryDequeueOrders();
     public DispatchController(
@@ -43,15 +45,12 @@ public class DispatchController : ControllerBase
         _stopwatch = new Stopwatch();
         _stopwatch.Start();
     }
-    
+
 
     [HttpPost("AssgnmentCheck")]
     public async Task<PingDto> AssgnmentCheck(PingDto p)
     {
-        if (isInitiatingDrone)
-        {
-            return p;
-        }
+        if (isInitiatingDrone) return p;
         Console.WriteLine("Trying to dequeue some orders...");
         var orders = (from o in await GetUnfulfilledOrders() where string.IsNullOrEmpty(o.DroneId) select o).ToList();
         // Console.WriteLine(string.Join("\n", orders.ToJson()));
@@ -72,8 +71,8 @@ public class DispatchController : ControllerBase
         {
             Console.WriteLine($"Matched some drones with deliveries...\n{assignments.ToJson()}");
             var responseString = await InitiateDelivery(delivery);
-            if(responseString.Success)
-            Console.WriteLine(responseString.ToJson());
+            if (responseString.Success)
+                Console.WriteLine(responseString.ToJson());
         }
 
         return p;
@@ -112,9 +111,7 @@ public class DispatchController : ControllerBase
         Console.WriteLine(
             $"Response from _dispatchToSimDroneGateway.InitDrone({initDroneRequest})\n\t->{{DroneId:{initDroneResponse.DroneId},Okay:{initDroneResponse.Okay}}}");
         if (!initDroneResponse.Okay)
-        {
             return new AddDroneResponse {BadgeNumber = addDroneRequest.BadgeNumber, Success = false};
-        }
 
         var assignFleetRequest = new AssignFleetRequest
         {
@@ -179,7 +176,8 @@ public class DispatchController : ControllerBase
             TimeDelivered = request.Time,
             DroneId = request.DroneId
         };
-        Console.WriteLine($"order {order.OrderId} has been delivered? {order.HasBeenDelivered} @ time {order.TimeDelivered}");
+        Console.WriteLine(
+            $"order {order.OrderId} has been delivered? {order.HasBeenDelivered} @ time {order.TimeDelivered}");
         var result = await _orders.UpdateAsync(order.Update());
         return new CompleteOrderResponse
         {
@@ -195,9 +193,10 @@ public class DispatchController : ControllerBase
             Console.WriteLine("request in Dispatch.InitiateDelivery is null!! ");
             return new AssignDeliveryResponse {DroneId = request.DroneId, Success = false};
         }
+
         Console.WriteLine("!!!!!!" + request.ToJson());
         Console.WriteLine($"In DispatchController.AssignDeliveryResponse, order :{request.ToJson()}");
-        
+
         var order = await _orders.GetByIdAsync(request.OrderId);
         var drone = await _fleet.GetByIdAsync(request.DroneId);
 
@@ -211,10 +210,10 @@ public class DispatchController : ControllerBase
         Console.WriteLine($"{s1}\n{s2}");
         order.State = OrderState.Assigned;
         drone.State = DroneState.Assigned;
-        
+
         await _fleet.UpdateAsync(drone.Update());
         await _orders.UpdateAsync(order.Update());
-        
+
         return await _dispatchToSimDroneGateway.AssignDelivery(request);
     }
 
@@ -223,9 +222,10 @@ public class DispatchController : ControllerBase
     private async Task<IEnumerable<Order>> GetUnfulfilledOrders()
     {
         var orders = await _orders.GetAllAsync();
-        Console.WriteLine($"All the orders: {orders.Count()}");
-        var unassignmedOrders = orders.Where(o => !o.HasBeenDelivered && o is {State: OrderState.Waiting} && string.IsNullOrEmpty(o.DroneId));
-        return unassignmedOrders;
+        Console.WriteLine($"All the orders: {orders.Count}");
+        var unassignedOrders = orders.Where(o =>
+            !o.HasBeenDelivered && o is {State: OrderState.Waiting} && string.IsNullOrEmpty(o.DroneId));
+        return unassignedOrders;
     }
 
     [NonAction]
@@ -283,10 +283,7 @@ public class DispatchController : ControllerBase
         Console.WriteLine($"DispatchController.Get -> {requestedDroneId}");
         var droneRecord = await _fleet.GetByIdAsync(requestedDroneId);
 
-        if (droneRecord is null)
-        {
-            return NotFound();
-        }
+        if (droneRecord is null) return NotFound();
 
         return droneRecord;
     }

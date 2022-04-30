@@ -2,6 +2,6 @@
 
 public class CreateOrderResponse
 {
-    public string OrderId{get;set;}
-    public bool IsCompletedSuccessfullly {get;set;}
+    public string OrderId { get; set; }
+    public bool IsCompletedSuccessfullly { get; set; }
 }

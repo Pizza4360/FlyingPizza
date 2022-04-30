@@ -1,7 +1,6 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Domain;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +14,7 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
-        Console.WriteLine("the dispatch url is: " +builder.Configuration.GetValue<string>("dispatchUrl"));
+        Console.WriteLine("the dispatch url is: " + builder.Configuration.GetValue<string>("dispatchUrl"));
 
         builder.RootComponents.Add<App>("#app");
 
@@ -27,7 +26,8 @@ public class Program
 
         builder.Services.AddSingleton(new GlobalDataSvc());
 
-        builder.Services.AddScoped(_ => new FrontEndToDispatchGateway(builder.Configuration.GetValue<string>("dispatchUrl")));
+        builder.Services.AddScoped(_ =>
+            new FrontEndToDispatchGateway(builder.Configuration.GetValue<string>("dispatchUrl")));
         builder.Services.AddScoped(_ => new FrontEndToDatabaseGateway(builder.Configuration.GetValue<string>("dbUrl")));
 
         builder.Services.AddSingleton(new HttpClient());
@@ -37,8 +37,5 @@ public class Program
         builder.Services.AddScoped<DialogService>();
 
         await builder.Build().RunAsync();
-
-
-
     }
 }

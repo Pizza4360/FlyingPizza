@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using Domain.GatewayDefinitions;
 using System.Threading.Tasks;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
+using Domain.GatewayDefinitions;
 
 namespace FrontEnd.Services;
 
 public class FrontEndToDatabaseGateway : BaseGateway<App>
 {
-    private string DbUrl{ get; } 
     public FrontEndToDatabaseGateway(string dbUrl)
     {
         DbUrl = dbUrl;
     }
-    
+
+    private string DbUrl { get; }
+
     public async Task<List<DroneRecord>> GetFleet()
     {
         Console.WriteLine("Getting fleet...");
@@ -34,8 +35,12 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
     }
 
     public async Task<DroneRecord> GetDrone(string id)
-        => await SendMessagePost<string, DroneRecord>($"{DbUrl}/GetDrone", id);
-    
+    {
+        return await SendMessagePost<string, DroneRecord>($"{DbUrl}/GetDrone", id);
+    }
+
     public async Task<Order> GetOrder(string id)
-        => await SendMessagePost<string, Order>($"{DbUrl}/GetOrder", id );
+    {
+        return await SendMessagePost<string, Order>($"{DbUrl}/GetOrder", id);
+    }
 }

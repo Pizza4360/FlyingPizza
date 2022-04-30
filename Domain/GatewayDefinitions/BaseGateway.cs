@@ -5,25 +5,18 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-
 namespace Domain.GatewayDefinitions;
 
 public class BaseGateway<T1> : IBaseGateway<T1>
 {
-    public HttpClient _httpClient;
     private IBaseGateway<T1> _baseGatewayImplementation;
+    public HttpClient _httpClient;
 
     public BaseGateway()
     {
         _httpClient = new HttpClient();
     }
 
-    public async Task<TResponse> SendMessageGet<TResponse>(string url)
-    {
-        Console.WriteLine($"HttpMethods.Get<TResponse>({url})");
-        return await HttpMethods.Get<TResponse>(url);
-    }
-    
     public async Task<TResponse> SendMessagePost<TRequest, TResponse>(string url, TRequest requestDto,
         bool isDebug = true)
     {
@@ -33,5 +26,11 @@ public class BaseGateway<T1> : IBaseGateway<T1>
         Console.WriteLine($"\n\n\t\tReceived:{await r.Content.ReadAsStringAsync()}\n\n\n");
         var dto = await r.Content.ReadFromJsonAsync<TResponse>();
         return dto;
+    }
+
+    public async Task<TResponse> SendMessageGet<TResponse>(string url)
+    {
+        Console.WriteLine($"HttpMethods.Get<TResponse>({url})");
+        return await HttpMethods.Get<TResponse>(url);
     }
 }

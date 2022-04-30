@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Http.Headers;
 using System.Net.NetworkInformation;
 using Domain.DTO;
@@ -7,15 +6,15 @@ namespace Dispatch.Services;
 
 public class PingerService : BackgroundService
 {
-    private readonly Ping Pinger;
     private readonly ILogger Logger;
+    private readonly Ping Pinger;
 
     public PingerService()
     {
         Pinger = new Ping();
     }
 
-    protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var _httpClient = new HttpClient();
         var DispatchUrl = "http://localhost:83" + "/Dispatch";
@@ -25,7 +24,8 @@ public class PingerService : BackgroundService
             try
             {
                 _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var t = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/AssgnmentCheck/",new PingDto{S="Hi"}, cancellationToken: stoppingToken);
+                var t = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/AssgnmentCheck/", new PingDto {S = "Hi"},
+                    stoppingToken);
                 // var pingTask = Pinger.SendPingAsync(IPAddress.Parse("192.168.1.100:83//Ping"), 5000);
                 var cancelTask = Task.Delay(5000, stoppingToken);
                 //double await so exceptions from either task will bubble up

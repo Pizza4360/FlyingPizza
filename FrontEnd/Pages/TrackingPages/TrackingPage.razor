@@ -1,12 +1,11 @@
 ﻿@page "/tracking"
 @using FrontEnd.Services
-@using Domain.Entities
 @inject FrontEndToDatabaseGateway _frontEndToDatabaseGateway;
 @*https://www.radzen.com/documentation/blazor/googlemap/*@
 @*https://blazor.radzen.com/googlemap*@
 
 <div class="quick-look">
-    <div class="status-bar" >
+    <div class="status-bar">
         <b>Tracking Page</b>
     </div>
     @if (connection)
@@ -27,11 +26,12 @@
 <div class="content">
     <div class="drone-bar">
         <div class="selection-bar">
-             <div class="dropdown"> @dropDownLabel
+            <div class="dropdown">
+                @dropDownLabel
                 <span class="oi oi-menu" style="color: white; font-size:20px"></span>
 
                 <div class="dropdown-content">
-                    <btn @onclick="@(args => DisplayDroneAsync("Delivering"))">Delivering</btn> 
+                    <btn @onclick="@(args => DisplayDroneAsync("Delivering"))">Delivering</btn>
                     <btn @onclick="@(args => DisplayDroneAsync("Returning"))">Returning</btn>
                     <btn @onclick="@(args => DisplayDroneAsync("Dead"))">Dead</btn>
                     <btn @onclick="@(args => DisplayDroneAsync("Ready"))">Ready</btn>
@@ -42,25 +42,26 @@
         </div>
 
         <ul class="drone-fleet">
-        @if (filteredDrones != null)
-        {
-            @foreach (var drone in filteredDrones)
+            @if (filteredDrones != null)
             {
-                <!--Creates a block for each drone with id, status, more info button and a drone img-->
-                <li style="background-image: url('../images/drone.jpg')">
-                    <div class="drone-status">
-                        <span class="title" >ID: 
-                            <br> @drone.BadgeNumber.ToString().Substring(0, 4)... <br>
-                        </span>
-                        <span class="price" style="background-color: @Color(drone)">@drone.State</span>
-                       @* <span class="more">
+                @foreach (var drone in filteredDrones)
+                {
+                    <!--Creates a block for each drone with id, status, more info button and a drone img-->
+                    <li style="background-image: url('../images/drone.jpg')">
+                        <div class="drone-status">
+                            <span class="title">
+                                ID:
+                                <br> @drone.BadgeNumber.ToString().Substring(0, 4)... <br>
+                            </span>
+                            <span class="price" style="background-color: @Color(drone)">@drone.State</span>
+                            @* <span class="more">
                             <RadzenButton style="background-color: #3b3b3b" Icon="add_circle_outline" Click=@(args => GoToDrone(drone)) />
                         </span>*@
-                    </div>
-                </li>
+                        </div>
+                    </li>
+                }
             }
-        }
-    </ul>
+        </ul>
 
     </div>
     <div class="map" id="map"></div>
@@ -70,7 +71,7 @@
 
 @code {
     int test = 0;
-    int zoom = 15;
+    readonly int zoom = 15;
     bool showMSU;
     EventConsole console;
 
@@ -85,8 +86,8 @@
     }
 
     void onBoxClick()
-    {     
+    {
         showMSU = !showMSU;
     }
-}
 
+}

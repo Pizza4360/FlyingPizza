@@ -14,25 +14,24 @@ namespace FrontEnd.Pages.TrackingPages;
 partial class TrackingPage : ComponentBase
 {
     private const int RefreshInterval = 2000;
-    private Timer _timer;
-    public bool connection;
-    [Inject]
-    public FrontEndToDatabaseGateway _FrontEndToDatabaseGateway { get; set; }
-    public string dropDownLabel;
-    public DroneRecord[] Fleet;
-    public DroneRecord[] filteredDrones;
     private Stopwatch _stopwatch;
     private int _stopwatchInterval = 10000;
+    private Timer _timer;
+    public bool connection;
+    public string dropDownLabel;
+    public DroneRecord[] filteredDrones;
+    public DroneRecord[] Fleet;
 
-    [Inject]
-    public IJSRuntime JsRuntime {get;set; }
+    [Inject] public FrontEndToDatabaseGateway _FrontEndToDatabaseGateway { get; set; }
+
+    [Inject] public IJSRuntime JsRuntime { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            Console.WriteLine($"_frontEndToDatabaseGateway == null ?" + _frontEndToDatabaseGateway == null);
-            await JsRuntime.InvokeVoidAsync("initGoogleMap", new { Lat = 39.74386695629378, Lng = -105.00610500179027 });
+            Console.WriteLine("_frontEndToDatabaseGateway == null ?" + _frontEndToDatabaseGateway == null);
+            await JsRuntime.InvokeVoidAsync("initGoogleMap", new {Lat = 39.74386695629378, Lng = -105.00610500179027});
         }
     }
 
@@ -42,7 +41,8 @@ partial class TrackingPage : ComponentBase
         await Temp();
     }
 
-    protected Task Temp() {
+    protected Task Temp()
+    {
         _timer = new Timer(MarkerUpdateCallback, null, 0, RefreshInterval);
         _stopwatch = new Stopwatch();
         _stopwatch.Start();
@@ -60,26 +60,22 @@ partial class TrackingPage : ComponentBase
         }
         catch
         {
-
         }
     }
 
-    private async void MarkerUpdateCallback(object _) => await UpdateDroneMarkers();
-    public class JsMarker
+    private async void MarkerUpdateCallback(object _)
     {
-        public string title{get;set;}
-        public double lat{get;set;}
-        public double lng{get;set;}
-        public string color{get; set;}
+        await UpdateDroneMarkers();
     }
 
     private async Task UpdateDroneMarkers()
     {
         var droneRecords = await _frontEndToDatabaseGateway.GetFleet();
-        var markers = droneRecords.Select(x => 
-            new JsMarker{
-                lat = (double)x.CurrentLocation.Latitude,
-                lng = (double)x.CurrentLocation.Longitude,
+        var markers = droneRecords.Select(x =>
+            new JsMarker
+            {
+                lat = (double) x.CurrentLocation.Latitude,
+                lng = (double) x.CurrentLocation.Longitude,
                 title = x.Id,
                 color = x.State.GetColor()
             }).ToDictionary(x => x.title, x => x);
@@ -89,5 +85,13 @@ partial class TrackingPage : ComponentBase
     public string Color(DroneRecord drone)
     {
         return drone.State.GetColor();
+    }
+
+    public class JsMarker
+    {
+        public string title { get; set; }
+        public double lat { get; set; }
+        public double lng { get; set; }
+        public string color { get; set; }
     }
 }

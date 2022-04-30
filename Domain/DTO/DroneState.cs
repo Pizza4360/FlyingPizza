@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-using Domain.DTO.DroneDispatchCommunication;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.IdGenerators;
+﻿using System.Collections.Generic;
 
 namespace Domain.DTO;
 
@@ -17,22 +11,34 @@ public enum DroneState
     Charging,
     Assigned
 }
+
 public static class DroneStateExtensions
 {
-    private static readonly Dictionary<DroneState, string> StateToColorDict = new(){
-        { DroneState.Ready, "#13FF00" },
-        { DroneState.Delivering, "#98f5ff" },
-        { DroneState.Returning, "#8A2BE2" },
-        { DroneState.Dead, "#FF0000" },
-        { DroneState.Charging, "#FF9A08" }
+    private static readonly Dictionary<DroneState, string> StateToColorDict = new()
+    {
+        {DroneState.Ready, "#13FF00"},
+        {DroneState.Delivering, "#98f5ff"},
+        {DroneState.Returning, "#8A2BE2"},
+        {DroneState.Dead, "#FF0000"},
+        {DroneState.Charging, "#FF9A08"}
     };
-    private static readonly Dictionary<DroneState, string> StateToStringDict = new(){
-        { DroneState.Ready, "Ready" },
-        { DroneState.Delivering, "Delivering" },
-        { DroneState.Returning, "Returning" },
-        { DroneState.Dead, "Dead" },
-        { DroneState.Charging, "Charging" }
+
+    private static readonly Dictionary<DroneState, string> StateToStringDict = new()
+    {
+        {DroneState.Ready, "Ready"},
+        {DroneState.Delivering, "Delivering"},
+        {DroneState.Returning, "Returning"},
+        {DroneState.Dead, "Dead"},
+        {DroneState.Charging, "Charging"}
     };
-    public static string GetColor(this DroneState state) => StateToColorDict[state];
-    public static string ToString(this DroneState state) => StateToStringDict[state];
+
+    public static string GetColor(this DroneState state)
+    {
+        return StateToColorDict[state];
+    }
+
+    public static string ToString(this DroneState state)
+    {
+        return StateToStringDict[state];
+    }
 }
