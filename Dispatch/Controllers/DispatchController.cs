@@ -97,7 +97,7 @@ public class DispatchController : ControllerBase
         addDroneRequest.DispatchUrl = "http://localhost:83";
         addDroneRequest.HomeLocation = new GeoLocation
             {Latitude = 39.74386695629378m, Longitude = -105.00610500179027m};
-        Console.WriteLine($"DispatchController.AddDrone({addDroneRequest})");
+        Console.WriteLine($"\n\n\n\nDispatchController.AddDrone({addDroneRequest})\n\n\n\n");
 
         if ((await _fleet.GetAllAsync())
             .Any(x => x.BadgeNumber == addDroneRequest.BadgeNumber
@@ -121,7 +121,7 @@ public class DispatchController : ControllerBase
         var initDroneResponse = _dispatchToSimDroneGateway
             .InitDrone(initDroneRequest).Result;
         Console.WriteLine(
-            $"Response from _dispatchToSimDroneGateway.InitDrone({initDroneRequest})\n\t->{{DroneId:{initDroneResponse.DroneId},Okay:{initDroneResponse.Okay}}}");
+            $"\n\n\n\nResponse from _dispatchToSimDroneGateway.InitDrone({initDroneRequest})\n\t->{{DroneId:{initDroneResponse.DroneId},Okay:{initDroneResponse.Okay}}}\n\n\n\n");
         if (!initDroneResponse.Okay)
             return new AddDroneResponse {BadgeNumber = addDroneRequest.BadgeNumber, Success = false};
 
@@ -129,17 +129,17 @@ public class DispatchController : ControllerBase
         {
             DroneId = addDroneRequest.DroneId,
             DroneIp = addDroneRequest.DroneUrl,
-            DispatchIp = addDroneRequest.DispatchUrl,
+            DispatchUrl = addDroneRequest.DispatchUrl,
             BadgeNumber = addDroneRequest.BadgeNumber,
             HomeLocation = addDroneRequest.HomeLocation
         };
 
-        Console.WriteLine($"Proceeding with _dispatchToSimDroneGateway.AssignFleet({assignFleetRequest.ToJson()}");
+        Console.WriteLine($"\n\n\n\nProceeding with _dispatchToSimDroneGateway.AssignFleet({assignFleetRequest.ToJson()}\n\n\n\n");
         var assignFleetResponse = _dispatchToSimDroneGateway.AssignFleet(assignFleetRequest).Result;
         var responseString = assignFleetResponse != null
             ? assignFleetResponse.IsInitializedAndAssigned.ToString()
             : "null";
-        Console.WriteLine($"\t_dispatchToSimDroneGateway.AssignFleet - response -> {responseString}");
+        Console.WriteLine($"\n\n\n\n_dispatchToSimDroneGateway.AssignFleet - response -> {responseString}\n\n\n\n");
 
         if (assignFleetResponse is {IsInitializedAndAssigned: false})
         {
@@ -151,7 +151,7 @@ public class DispatchController : ControllerBase
             };
         }
 
-        Console.WriteLine($"success! Saving new drone {addDroneRequest.BadgeNumber} to repository.");
+        Console.WriteLine($"\n\n\n\nsuccess! Saving new drone {addDroneRequest.BadgeNumber} to repository.\n\n\n\n");
 
         var droneRecord = new DroneRecord
         {

@@ -34,7 +34,7 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
 
     public async Task<AssignFleetResponse?> AssignFleet(AssignFleetRequest assignFleetRequest)
     {
-        if (assignFleetRequest.DispatchIp is null or "")
+        if (assignFleetRequest.DispatchUrl is null or "")
         {
             Console.WriteLine("A Dispatch Ip Address is requred!");
             return new AssignFleetResponse
@@ -45,9 +45,9 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
         }
 
         var droneUrl = $"{assignFleetRequest.DroneIp}/SimDrone/AssignFleet";
-        Console.WriteLine($"Sending {assignFleetRequest.DispatchIp} to the drone @ {droneUrl} so it can talk to us...");
+        Console.WriteLine($"Sending {assignFleetRequest.DispatchUrl} to the drone @ {droneUrl} so it can talk to us...");
         Console.WriteLine(
-            $"\n\n\n\n\n!!!!!!!!!!!assignFleetRequest.DispatchUrl = {assignFleetRequest.DispatchIp}\n\n\n\n\n");
+            $"\n\n\n\n\n!!!!!!!!!!!assignFleetRequest.DispatchUrl = {assignFleetRequest.DispatchUrl}\n\n\n\n\n");
 
         var response = SendMessagePost<AssignFleetRequest, AssignFleetResponse>(
             droneUrl, assignFleetRequest);

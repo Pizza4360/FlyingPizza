@@ -2,7 +2,6 @@ using DecimalMath;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Domain.GatewayDefinitions;
 using MongoDB.Bson;
 using SimDrone.Controllers;
 
@@ -16,7 +15,7 @@ public class Drone : DroneRecord
     private const decimal RadToDegFactor = 180 / DecimalEx.Pi;
 
     private readonly SimDroneController _controller;
-    public Drone(DroneRecord record, IBaseGateway<SimDroneController> gateway, SimDroneController controller)
+    public Drone(DroneRecord record, SimDroneController controller)
     {
         DroneId = record.DroneId;
         HomeLocation = record.HomeLocation;
@@ -25,6 +24,7 @@ public class Drone : DroneRecord
         State = DroneState.Ready;
         CurrentLocation = HomeLocation;
         Destination = record.Destination;
+        DispatchUrl = record.DispatchUrl;
     }
 
     public override string ToString()
@@ -59,7 +59,7 @@ public class Drone : DroneRecord
 
     private async Task<UpdateDroneStatusResponse?> PatchDroneStatus()
     {
-        var response = await _controller.UpdateDroneStatus(Update());
+        var response = await _controller.UpdateDroneStatus(this);
         return response;
     }
 
