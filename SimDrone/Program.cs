@@ -1,3 +1,5 @@
+using Domain.Services;
+
 Console.WriteLine(Environment.GetEnvironmentVariable("Hello"));
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
@@ -5,6 +7,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHostedService<PingerService>();
 
 // OffSet a gateway for drone to send status updates
 //TODO: changed since wouldn't compile, may need to add constructor later

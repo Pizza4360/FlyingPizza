@@ -31,7 +31,7 @@ public class SimDroneController : ControllerBase
     }
 
     [HttpPost("HealthCheck")]
-    public async Task<DroneRecord> HealthCheck(string s)
+    public async Task<DroneRecord> HealthCheck(PingDto s)
     {
         return new DroneRecord
         {

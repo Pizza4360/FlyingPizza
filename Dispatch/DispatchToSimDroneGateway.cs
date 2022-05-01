@@ -1,6 +1,7 @@
 ﻿using Dispatch.Controllers;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
+using Domain.Entities;
 using Domain.GatewayDefinitions;
 using Domain.RepositoryDefinitions;
 
@@ -67,11 +68,16 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
 
     public async Task<bool> HealthCheck(string droneUrl)
     {
-        var url = await Endpoint(droneUrl);
-        if (url == null)
+        try
         {
+            var url = await Endpoint(droneUrl);
+            await SendMessagePost<PingDto, DroneRecord>(droneUrl, new PingDto {S = "revive"});
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
             return false;
         }
-        return (await SendMessagePost<PingDto, PingDto>(droneUrl, new PingDto {S = "revive"})).S.Equals("Okay");
     }
 }

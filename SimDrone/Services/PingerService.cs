@@ -11,6 +11,7 @@ using Domain.Entities;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson.IO;
+using MongoDB.Bson.Serialization;
 using SimDrone;
 
 namespace Domain.Services;
@@ -18,42 +19,57 @@ namespace Domain.Services;
 public class PingerService : BackgroundService
 {
     private readonly ILogger Logger;
-    private readonly string DroneUrl;
+    private string DroneUrl;
     private readonly string DispatchUrl;
     private DroneRecord record;
     public const string RecordFile = "DroneRecord.json";
+    public bool KeepPingingDispatch = true;
 
-
-    public PingerService()
-    {
-        string text = File.ReadAllText($@"{RecordFile}");
-        var record = JsonSerializer.Deserialize<DroneRecord>(text);
-        DroneUrl = record.DroneUrl;
-    }
+    private HttpClient _httpClient = new();
+    
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if(File.Exists(RecordFile))
+        if (KeepPingingDispatch && File.Exists(RecordFile))
         {
-            var keepPingingDispatch = true;
-            var _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            while (keepPingingDispatch)
+            try
             {
-                await Task.Delay(3000, stoppingToken);
-                try
+                Console.WriteLine($"\n\n'{RecordFile}' is present. Trying to revive\n\n");
+                Console.WriteLine($"Reading file '{RecordFile}'");
+                string text = File.ReadAllText($@"{RecordFile}");
+                Console.WriteLine($"drone record was persisted as:");
+                var record = BsonSerializer.Deserialize<DroneRecord>(text);
+                Console.WriteLine($"{text}");
+                
+                DroneUrl = record.DroneUrl;
+                while (KeepPingingDispatch)
                 {
-                    var r = await _httpClient.PostAsJsonAsync($"{DroneUrl}/Revive/", record, stoppingToken);
-                    Console.WriteLine($"\n\n\t\tReceived:{await r.Content.ReadAsStringAsync(stoppingToken)}\n\n\n");
-                    keepPingingDispatch = await r.Content.ReadFromJsonAsync<bool>(cancellationToken: stoppingToken);
+                    try
+                    {
+                        await Task.Delay(3000, stoppingToken);
+                        var r = await _httpClient.PostAsJsonAsync($"{DroneUrl}/Revive/", record, stoppingToken);
+                        Console.WriteLine($"\n\n\t\tReceived:{await r.Content.ReadAsStringAsync(stoppingToken)}\n\n\n");
+                        KeepPingingDispatch = await r.Content.ReadFromJsonAsync<bool>(cancellationToken: stoppingToken);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        Console.WriteLine("No valid response from dispatch...");
+                    }
                     var cancelTask = Task.Delay(5000, stoppingToken);
                     await Task.Yield();
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
         }
+        else
+        {
+            Console.WriteLine($"\n\n'{RecordFile}' not found present. Waiting for request to join \n\n");
+            KeepPingingDispatch = true;
+        }
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 }
