@@ -69,18 +69,23 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
 
     public async Task<bool> HealthCheck(string droneId)
     {
+        var url = await Endpoint(droneId);
+        DroneRecord droneRecord;
+        Console.WriteLine($"DispatchToSimDroneGateway.HealthCheck with url {url}/SimDrone/HealthCheck");
         try
         {
-            var url = await Endpoint(droneId);
-            Console.WriteLine($"DispatchToSimDroneGateway.Healcheck with url {url}/SimDrone/HealthCheck");
-            var droneRecord = await SendMessagePost<PingDto, DroneRecord>($"{url}/SimDrone/HealthCheck", new PingDto {S = "HealthCheck"});
+            droneRecord = await SendMessagePost<PingDto, DroneRecord>($"{url}/SimDrone/HealthCheck", new PingDto {S = "HealthCheck"});
             Console.WriteLine("Awaiting for response...");
-            return droneRecord is {State: DroneState.Ready};
+            if (droneRecord is {State: DroneState.Ready})
+                return true;
         }
         catch (Exception e)
         {
+            // Todo, find a way to update the drone without all other update params and only ID, set it to DroneState.Dead
+            Console.WriteLine($"Setting drone {droneId} offline.");
+            await _fleet.SetDroneOffline(droneId);
             Console.WriteLine($"HealthCheck failed for drone at {droneId}. Reason: {e}");
-            return false;
         }
+        return false;
     }
 }

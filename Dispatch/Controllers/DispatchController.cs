@@ -271,11 +271,9 @@ public class DispatchController : ControllerBase
             var availabledDrones = new List<DroneRecord>();
             foreach (var drone in drones)
             {
-                if (await _dispatchToSimDroneGateway.HealthCheck(drone.DroneId))
-                {
-                    Console.WriteLine($"drone at {drone.DroneUrl} is healthy");
-                    availabledDrones.Add(drone);
-                }
+                if (!await _dispatchToSimDroneGateway.HealthCheck(drone.DroneId)) continue;
+                Console.WriteLine($"drone at {drone.DroneUrl} is healthy");
+                availabledDrones.Add(drone);
             }
 
             return availabledDrones;

@@ -78,4 +78,13 @@ public class FleetRepository : IFleetRepository
         return (await _collection.Find(_ => true).ToListAsync()).ToDictionary(droneRecord => droneRecord.DroneId,
             droneRecord => droneRecord.DroneUrl);
     }
+    
+    public async Task SetDroneOffline(string droneId)
+    {
+        Console.WriteLine($"FleetRepository.SetDroneOffline({droneId})");
+        var filter = Builders<DroneRecord>.Filter.Eq(d => d.DroneId, droneId);
+        var definition = Builders<DroneRecord>.Update
+            .Set(d => d.State, DroneState.Dead);
+        await _collection.UpdateOneAsync(filter, definition, new UpdateOptions {IsUpsert = false});
+    }
 }
