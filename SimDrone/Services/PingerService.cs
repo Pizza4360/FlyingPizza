@@ -1,28 +1,19 @@
-using System;
-using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Net.NetworkInformation;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.Entities;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using MongoDB.Bson.IO;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
-using SimDrone;
+using SimDrone.Controllers;
 
 namespace Domain.Services;
 
 public class PingerService : BackgroundService
 {
+    private SimDroneController _controller;
     private readonly ILogger Logger;
     private string DroneUrl;
-    private readonly string DispatchUrl;
+    private string DispatchUrl;
     private DroneRecord record;
-    public const string RecordFile = "DroneRecord.json";
     public bool KeepPingingDispatch = true;
 
     private HttpClient _httpClient = new();
@@ -30,46 +21,51 @@ public class PingerService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (KeepPingingDispatch && File.Exists(RecordFile))
+        if (KeepPingingDispatch && File.Exists(DroneRecord.File()))
         {
             try
             {
-                Console.WriteLine($"\n\n'{RecordFile}' is present. Trying to revive\n\n");
-                Console.WriteLine($"Reading file '{RecordFile}'");
-                string text = File.ReadAllText($@"{RecordFile}");
+                Console.WriteLine($"\n\n'{DroneRecord.File()}' is present. Trying to revive\n\n");
+                Console.WriteLine($"Reading file '{DroneRecord.File()}'");
+                string text = File.ReadAllText($@"{DroneRecord.File()}");
                 Console.WriteLine($"drone record was persisted as:");
-                var record = BsonSerializer.Deserialize<DroneRecord>(text);
+                record = BsonSerializer.Deserialize<DroneRecord>(text);
                 Console.WriteLine($"{text}");
-                
+                DispatchUrl = record.DispatchUrl;
                 DroneUrl = record.DroneUrl;
                 while (KeepPingingDispatch)
                 {
+                    Thread.Sleep(3000);
+                    Console.WriteLine($"Sending a ping to {$"{DispatchUrl}/Dispatch/Revive"}");
                     try
                     {
                         await Task.Delay(3000, stoppingToken);
-                        var r = await _httpClient.PostAsJsonAsync($"{DroneUrl}/Revive/", record, stoppingToken);
+                        var r = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/Dispatch/Revive", record, stoppingToken);
                         Console.WriteLine($"\n\n\t\tReceived:{await r.Content.ReadAsStringAsync(stoppingToken)}\n\n\n");
                         KeepPingingDispatch = await r.Content.ReadFromJsonAsync<bool>(cancellationToken: stoppingToken);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        Console.WriteLine(e);
                         Console.WriteLine("No valid response from dispatch...");
                     }
                     var cancelTask = Task.Delay(5000, stoppingToken);
                     await Task.Yield();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine("Could not parse drone record");
             }
         }
         else
         {
-            Console.WriteLine($"\n\n'{RecordFile}' not found present. Waiting for request to join \n\n");
+            Console.WriteLine($"\n\n'{DroneRecord.File()}' not found present. Waiting for request to join \n\n");
             KeepPingingDispatch = true;
         }
-        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        KeepPingingDispatch = false;
+        var rejoinUrl = $"{DroneUrl}/SimDrone/RejoinFleet";
+        Console.WriteLine($"Dispatch allowed rejoining! Sending rejoin messagage to {rejoinUrl}");
+        _httpClient.PostAsJsonAsync(rejoinUrl, new ReviveRequest{Record = record});
+        Console.WriteLine($"Successfully revived!");
     }
 }

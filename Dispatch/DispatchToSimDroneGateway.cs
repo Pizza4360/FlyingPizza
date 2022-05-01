@@ -20,6 +20,7 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
     // private IOrdersRepository _orders;
     private async Task<string> Endpoint(string currentDroneId)
     {
+        Console.WriteLine($"Getting by drone id {currentDroneId}");
         return (await _fleet.GetByIdAsync(currentDroneId)).DroneUrl;
     }
 
@@ -45,7 +46,7 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
             };
         }
 
-        var droneUrl = $"{assignFleetRequest.DroneIp}/SimDrone/AssignFleet";
+        var droneUrl = $"{assignFleetRequest.DroneUrl}/SimDrone/AssignFleet";
         Console.WriteLine($"Sending {assignFleetRequest.DispatchUrl} to the drone @ {droneUrl} so it can talk to us...");
         Console.WriteLine(
             $"\n\n\n\n\n!!!!!!!!!!!assignFleetRequest.DispatchUrl = {assignFleetRequest.DispatchUrl}\n\n\n\n\n");
@@ -66,17 +67,19 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
             $"{url}/SimDrone/AssignDelivery", assignDeliveryRequest);
     }
 
-    public async Task<bool> HealthCheck(string droneUrl)
+    public async Task<bool> HealthCheck(string droneId)
     {
         try
         {
-            var url = await Endpoint(droneUrl);
-            await SendMessagePost<PingDto, DroneRecord>(droneUrl, new PingDto {S = "revive"});
-            return true;
+            var url = await Endpoint(droneId);
+            Console.WriteLine($"DispatchToSimDroneGateway.Healcheck with url {url}/SimDrone/HealthCheck");
+            var droneRecord = await SendMessagePost<PingDto, DroneRecord>($"{url}/SimDrone/HealthCheck", new PingDto {S = "HealthCheck"});
+            Console.WriteLine("Awaiting for response...");
+            return droneRecord is {State: DroneState.Ready};
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            Console.WriteLine($"HealthCheck failed for drone at {droneId}. Reason: {e}");
             return false;
         }
     }

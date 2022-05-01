@@ -30,6 +30,14 @@ public class SimDroneController : ControllerBase
         };
     }
 
+    [HttpPost("RejoinFleet")]
+    public async Task RejoinFleet(ReviveRequest request)
+    {
+        Console.WriteLine($"SimDroneController.RejoinFleet({request.Record})");
+        await JoinFleet(request.Record);
+    }
+    
+    
     [HttpPost("HealthCheck")]
     public async Task<DroneRecord> HealthCheck(PingDto s)
     {
@@ -46,7 +54,7 @@ public class SimDroneController : ControllerBase
         };
     }
 
-    [HttpPost("Revive")]
+    [NonAction]
     public async Task<bool> Revive(DroneRecord record)
     {
         Console.WriteLine($"\n\n\nSimDroneController.Revive...");
@@ -54,7 +62,6 @@ public class SimDroneController : ControllerBase
         {
             _gateway = new DroneToDispatchGateway(record.DispatchUrl);
         }
-
         return await _gateway.Revive(record);
     }
         
@@ -65,23 +72,21 @@ public class SimDroneController : ControllerBase
                           $"CurrentLocation = {assignFleetRequest.HomeLocation}," +
                           $"Destination = {assignFleetRequest.HomeLocation}," +
                           $"DispatchUrl = {assignFleetRequest.DispatchUrl}," +
-                          $"DroneUrl = {assignFleetRequest.DroneIp}," +
+                          $"DroneUrl = {assignFleetRequest.DroneUrl}," +
                           $"HomeLocation = {assignFleetRequest.HomeLocation}," +
                           $"{assignFleetRequest.ToJson()}");
         // Console.WriteLine($"{assignFleetRequest.DispatchUrl}");
-        _gateway = new DroneToDispatchGateway(assignFleetRequest.DispatchUrl);
         var droneRecord = new DroneRecord
         {
             CurrentLocation = assignFleetRequest.HomeLocation,
             Destination = assignFleetRequest.HomeLocation,
             DispatchUrl = assignFleetRequest.DispatchUrl,
-            DroneUrl = assignFleetRequest.DroneIp,
+            DroneUrl = assignFleetRequest.DroneUrl,
             HomeLocation = assignFleetRequest.HomeLocation,
             DroneId = assignFleetRequest.DroneId,
             OrderId = null
         };
-        _drone = new Drone(droneRecord,
-            this);
+        await JoinFleet(droneRecord);
         Console.WriteLine($"\n\n\nSimDrone successfully initialized.\nDrone -->{_drone}");
         IsInitiatead = true;
         //todo write current drone record to file
@@ -92,6 +97,14 @@ public class SimDroneController : ControllerBase
             DroneId = assignFleetRequest.DroneId,
             IsInitializedAndAssigned = true
         };
+    }
+
+    [NonAction]
+    private Task JoinFleet(DroneRecord record)
+    {
+        _drone = new Drone(record,this);
+        _gateway = new DroneToDispatchGateway(record.DispatchUrl);
+        return Task.CompletedTask;
     }
 
     [NonAction]

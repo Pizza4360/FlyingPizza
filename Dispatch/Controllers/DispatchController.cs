@@ -49,14 +49,26 @@ public class DispatchController : ControllerBase
     [HttpPost("Revive")]
     public async Task<bool> Revive(DroneRecord record)
     {
+        var unsuccessful = true;
+        Console.WriteLine("\n\nGot a request to revive a drone.");
         var possibleDrones = (await _fleet.GetAllAsync()).Where(x => x.DroneId.Equals(record.DroneId)).ToList();
-        if (!possibleDrones.Any() || possibleDrones.Count != 1 
-                                  || ! (await _dispatchToSimDroneGateway.HealthCheck(possibleDrones.First().DroneUrl)))
+        Console.WriteLine($"Possible drones are: [{string.Join(",", possibleDrones)}]");
+        if (!possibleDrones.Any()) {
+            Console.WriteLine($"All my drones are active right now.  Super suspicious..\ndrone -> {record.ToJson()}");
+        } 
+        else if (possibleDrones.Count > 1)
         {
-            return false;
+            Console.WriteLine("More than one drone is defined with that ID. Super ambiguous and suspicious...");
         }
-        await _fleet.UpdateAsync(possibleDrones.First().Update());
-        return true;
+        else
+        {
+            Console.WriteLine($"\nDrone matched {record.BadgeNumber}. Reviving drone.");
+            record.State = DroneState.Ready;
+            await _fleet.UpdateAsync(record.Update());
+            unsuccessful = false;
+        }
+
+        return unsuccessful;
     }
 
     [HttpPost("AssgnmentCheck")]
@@ -128,7 +140,7 @@ public class DispatchController : ControllerBase
         var assignFleetRequest = new AssignFleetRequest
         {
             DroneId = addDroneRequest.DroneId,
-            DroneIp = addDroneRequest.DroneUrl,
+            DroneUrl = addDroneRequest.DroneUrl,
             DispatchUrl = addDroneRequest.DispatchUrl,
             BadgeNumber = addDroneRequest.BadgeNumber,
             HomeLocation = addDroneRequest.HomeLocation
@@ -256,7 +268,17 @@ public class DispatchController : ControllerBase
                       && d.State == DroneState.Ready
                       && string.IsNullOrEmpty(d.OrderId)
                 select d;
-            return drones;
+            var availabledDrones = new List<DroneRecord>();
+            foreach (var drone in drones)
+            {
+                if (await _dispatchToSimDroneGateway.HealthCheck(drone.DroneId))
+                {
+                    Console.WriteLine($"drone at {drone.DroneUrl} is healthy");
+                    availabledDrones.Add(drone);
+                }
+            }
+
+            return availabledDrones;
         }
         catch (Exception e)
         {
