@@ -27,7 +27,7 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
     public async Task<InitDroneResponse?> InitDrone(InitDroneRequest request)
     {
         var url = $"{request.DroneUrl}/SimDrone/InitDrone";
-        Console.WriteLine($"\n\n\nurl:{url}\n\n");
+        Console.WriteLine($"\n\n\nurl:{url}\n");
 
 
         return await SendMessagePost<InitDroneRequest, InitDroneResponse>(
@@ -49,7 +49,7 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
         var droneUrl = $"{assignFleetRequest.DroneUrl}/SimDrone/AssignFleet";
         Console.WriteLine($"Sending {assignFleetRequest.DispatchUrl} to the drone @ {droneUrl} so it can talk to us...");
         Console.WriteLine(
-            $"\n\n\n\n\n!!!!!!!!!!!assignFleetRequest.DispatchUrl = {assignFleetRequest.DispatchUrl}\n\n\n\n\n");
+            $"\n\n\n\n\n!!!!!!!!!!!assignFleetRequest.DispatchUrl = {assignFleetRequest.DispatchUrl}\n\n\n\n");
 
         var response = SendMessagePost<AssignFleetRequest, AssignFleetResponse>(
             droneUrl, assignFleetRequest);
@@ -62,7 +62,7 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
     public async Task<AssignDeliveryResponse?> AssignDelivery(AssignDeliveryRequest assignDeliveryRequest)
     {
         var url = await Endpoint(assignDeliveryRequest.DroneId);
-        Console.WriteLine($"\n\nChoosing drone {assignDeliveryRequest.DroneId} url:{url}\n\n\n");
+        Console.WriteLine($"\n\nChoosing drone {assignDeliveryRequest.DroneId} url:{url}\n\n");
         return await SendMessagePost<AssignDeliveryRequest, AssignDeliveryResponse>(
             $"{url}/SimDrone/AssignDelivery", assignDeliveryRequest);
     }

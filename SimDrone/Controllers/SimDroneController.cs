@@ -35,6 +35,7 @@ public class SimDroneController : ControllerBase
     {
         Console.WriteLine($"SimDroneController.RejoinFleet({request.Record})");
         await JoinFleet(request.Record);
+        _drone.GoHome();
     }
     
     
@@ -57,7 +58,7 @@ public class SimDroneController : ControllerBase
     [NonAction]
     public async Task<bool> Revive(DroneRecord record)
     {
-        Console.WriteLine($"\n\n\nSimDroneController.Revive...");
+        Console.WriteLine($"\nSimDroneController.Revive...");
         if (_gateway == null || string.IsNullOrEmpty(_gateway.EndPoint))
         {
             _gateway = new DroneToDispatchGateway(record.DispatchUrl);
@@ -68,7 +69,7 @@ public class SimDroneController : ControllerBase
     [HttpPost("AssignFleet")]
     public async Task<AssignFleetResponse> AssignFleet(AssignFleetRequest assignFleetRequest)
     {
-        Console.WriteLine($"\n\n\nSimDroneController.AssignFleet -> " +
+        Console.WriteLine($"\nSimDroneController.AssignFleet -> " +
                           $"CurrentLocation = {assignFleetRequest.HomeLocation}," +
                           $"Destination = {assignFleetRequest.HomeLocation}," +
                           $"DispatchUrl = {assignFleetRequest.DispatchUrl}," +
@@ -87,7 +88,7 @@ public class SimDroneController : ControllerBase
             OrderId = null
         };
         await JoinFleet(droneRecord);
-        Console.WriteLine($"\n\n\nSimDrone successfully initialized.\nDrone -->{_drone}");
+        Console.WriteLine($"\nSimDrone successfully initialized.\nDrone -->{_drone}");
         IsInitiatead = true;
         //todo write current drone record to file
         await PersistRecord(droneRecord);
@@ -110,7 +111,7 @@ public class SimDroneController : ControllerBase
     [NonAction]
     private async Task PersistRecord(DroneRecord droneRecord)
     {
-        Console.WriteLine("\n\n\nSaving drone state...");
+        Console.WriteLine("\nSaving drone state...");
         RecordFile = "test.txt";
         if (!System.IO.File.Exists(RecordFile))
         {

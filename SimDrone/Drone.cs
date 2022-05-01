@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DecimalMath;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
@@ -63,10 +64,10 @@ public class Drone : DroneRecord
         return response;
     }
 
-    private void UpdateLocation(GeoLocation location)
+    private void UpdateLocation(GeoLocation location, bool sendUpdateToDispatch = true)
     {
         CurrentLocation = location;
-        PatchDroneStatus();
+        if (sendUpdateToDispatch) PatchDroneStatus();
     }
 
     private async Task<UpdateDroneStatusResponse?> UpdateStatus(DroneState state)
@@ -153,17 +154,19 @@ public class Drone : DroneRecord
         Console.WriteLine($"Starting at {CurrentLocation.Latitude}");
         var buffer = new GeoLocation[5];
         buffer[0] = CurrentLocation;
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
         for (var i = 0; !CurrentLocation.Equals(endingLocation); i++)
         {
-            Console.WriteLine($"{HaversineInMeters(CurrentLocation, endingLocation)} meters away");
             var bearing = Bearing(CurrentLocation.Latitude, CurrentLocation.Longitude, endingLocation.Latitude,
                 endingLocation.Longitude);
-            Console.WriteLine($"bearing between = {bearing}");
+            // Console.WriteLine($"bearing between = {bearing}");
             buffer[i % 5] = CurrentLocation = GetNextLocation(CurrentLocation, bearing, DroneStepSizeInKilometers);
-            Console.WriteLine($"{CurrentLocation}");
-            if (i % 100 != 0) continue;
-            UpdateLocation(CurrentLocation);
-            Thread.Sleep(500);
+            // Console.WriteLine($"{CurrentLocation}");
+            // if (i % 300 != 0) continue;
+            UpdateLocation(CurrentLocation, stopwatch.ElapsedMilliseconds <= 2000);
+            Console.WriteLine($"{HaversineInMeters(CurrentLocation, endingLocation)} meters away");
+            // Thread.Sleep(2000);
         }
     }
 
@@ -180,9 +183,7 @@ public class Drone : DroneRecord
                 Time = DateTime.Now
             });
         Console.WriteLine("Done with delivery, returning home.");
-        await UpdateStatus(DroneState.Returning);
-        await TravelTo(HomeLocation);
-        await UpdateStatus(DroneState.Ready);
+        GoHome();
         OrderId = request.OrderId;
         return new AssignDeliveryResponse
         {
@@ -190,5 +191,12 @@ public class Drone : DroneRecord
             OrderId = OrderId,
             Success = true
         };
+    }
+
+    public async Task GoHome()
+    {
+        await UpdateStatus(DroneState.Returning);
+        await TravelTo(HomeLocation);
+        await UpdateStatus(DroneState.Ready);
     }
 }
