@@ -1,18 +1,19 @@
+using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Net.NetworkInformation;
+using System.Threading;
+using System.Threading.Tasks;
 using Domain.DTO;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Dispatch.Services;
 
 public class PingerService : BackgroundService
 {
     private readonly ILogger Logger;
-    private readonly Ping Pinger;
-
-    public PingerService()
-    {
-        Pinger = new Ping();
-    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

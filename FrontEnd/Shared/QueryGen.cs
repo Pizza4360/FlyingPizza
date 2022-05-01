@@ -10,17 +10,17 @@
             if (arrayName == "" && filterType == "" && filterVal == "" && sort == "")
             {
                 connectionString = "http://localhost:8080/" + collName;
-            return connectionString;
+                return connectionString;
             }
             else if(sort != "" && arrayName == "" && filterType == "" && filterVal == "")
             {
                 connectionString = "http://localhost:8080/" + collName + "?sort={" + sort + "}";
-            return connectionString;
+                return connectionString;
             }
             else if (filterType != "" && filterVal != "" && sort == "" && arrayName == "")
             {
                 connectionString = "http://localhost:8080/" + collName + "?filter={'" + filterType + "':'" + filterVal + "'}";
-            return connectionString;
+                return connectionString;
             }
             else if (filterType != "" && filterVal != "" && sort != "" && arrayName == "")
             {

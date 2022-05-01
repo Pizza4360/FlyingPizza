@@ -1,5 +1,6 @@
 ﻿using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
+using Domain.Entities;
 using Domain.GatewayDefinitions;
 using SimDrone.Controllers;
 
@@ -13,7 +14,7 @@ public class DroneToDispatchGateway : BaseGateway<SimDroneController>
         EndPoint = dispatchUrl + "/Dispatch";
     }
 
-    public string EndPoint { get; }
+    public string EndPoint { get; set; }
 
     public void ChangeHandler(HttpMessageHandler handler)
     {
@@ -32,5 +33,11 @@ public class DroneToDispatchGateway : BaseGateway<SimDroneController>
     {
         return await SendMessagePost<CompleteOrderRequest, CompleteOrderResponse>(
             $"{EndPoint}/CompleteOrder", request);
+    }
+
+    public async Task<bool> Revive(DroneRecord record)
+    {
+        return await SendMessagePost<DroneRecord, bool>(
+            $"{EndPoint}/Revive", record);
     }
 }

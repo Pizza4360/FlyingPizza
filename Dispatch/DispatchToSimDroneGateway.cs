@@ -1,4 +1,5 @@
 ﻿using Dispatch.Controllers;
+using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.GatewayDefinitions;
 using Domain.RepositoryDefinitions;
@@ -62,5 +63,15 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
         Console.WriteLine($"\n\nChoosing drone {assignDeliveryRequest.DroneId} url:{url}\n\n\n");
         return await SendMessagePost<AssignDeliveryRequest, AssignDeliveryResponse>(
             $"{url}/SimDrone/AssignDelivery", assignDeliveryRequest);
+    }
+
+    public async Task<bool> HealthCheck(string droneUrl)
+    {
+        var url = await Endpoint(droneUrl);
+        if (url == null)
+        {
+            return false;
+        }
+        return (await SendMessagePost<PingDto, PingDto>(droneUrl, new PingDto {S = "revive"})).S.Equals("Okay");
     }
 }

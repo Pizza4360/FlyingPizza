@@ -13,6 +13,7 @@ public class SimDroneController : ControllerBase
     private static Drone _drone;
     private static DroneToDispatchGateway _gateway;
     private bool IsInitiatead;
+    private string RecordFile = "DroneRecord.json";
 
     [HttpPost("InitDrone")]
     public async Task<InitDroneResponse> InitDrone(
@@ -45,6 +46,17 @@ public class SimDroneController : ControllerBase
         };
     }
 
+    [HttpPost("Revive")]
+    public async Task<bool> Revive(DroneRecord record)
+    {
+        if (_gateway == null || string.IsNullOrEmpty(_gateway.EndPoint))
+        {
+            _gateway = new DroneToDispatchGateway(record.DispatchUrl);
+        }
+
+        return await _gateway.Revive(record);
+    }
+        
     [HttpPost("AssignFleet")]
     public async Task<AssignFleetResponse> AssignFleet(AssignFleetRequest assignFleetRequest)
     {
@@ -64,12 +76,27 @@ public class SimDroneController : ControllerBase
             this);
         Console.WriteLine($"SimDrone successfully initialized.\nDrone -->{_drone}");
         IsInitiatead = true;
+        //todo write current drone record to file
+        PersistRecord();
         return new AssignFleetResponse
         {
             FirstState = DroneState.Ready,
             DroneId = assignFleetRequest.DroneId,
             IsInitializedAndAssigned = true
         };
+    }
+
+    [NonAction]
+    private async Task PersistRecord()
+    {
+        RecordFile = "test.txt";
+        if (!System.IO.File.Exists(RecordFile))
+        {
+            System.IO.File.Create(RecordFile);
+        }
+        await using var writer = new StreamWriter(RecordFile, false);
+        await writer.WriteAsync(_drone.ToJson());
+        writer.Close();
     }
 
 
@@ -85,6 +112,7 @@ public class SimDroneController : ControllerBase
     [HttpPost("UpdateDroneStatus")]
     public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(DroneUpdate updateDroneStatusRequest)
     {
+        //todo write current drone record to file
         return await _gateway.UpdateDroneStatus(updateDroneStatusRequest);
     }
 

@@ -46,6 +46,18 @@ public class DispatchController : ControllerBase
         _stopwatch.Start();
     }
 
+    [HttpPost("Revive")]
+    public async Task<bool> Revive(DroneRecord record)
+    {
+        var possibleDrones = (await _fleet.GetAllAsync()).Where(x => x.DroneId.Equals(record.DroneId)).ToList();
+        if (!possibleDrones.Any() || possibleDrones.Count != 1 
+                                  || ! (await _dispatchToSimDroneGateway.HealthCheck(possibleDrones.First().DroneUrl)))
+        {
+            return false;
+        }
+        await _fleet.UpdateAsync(possibleDrones.First().Update());
+        return true;
+    }
 
     [HttpPost("AssgnmentCheck")]
     public async Task<PingDto> AssgnmentCheck(PingDto p)
