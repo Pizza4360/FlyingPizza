@@ -60,7 +60,8 @@ public class PingerService : BackgroundService
         else
         {
             Console.WriteLine($"\n\n'{DroneRecord.File()}' not found present. Waiting for request to join \n\n");
-            KeepPingingDispatch = true;
+            KeepPingingDispatch = false;
+            return;
         }
         KeepPingingDispatch = false;
         var rejoinUrl = $"{DroneUrl}/SimDrone/RejoinFleet";

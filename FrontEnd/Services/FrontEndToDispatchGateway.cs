@@ -37,11 +37,7 @@ public class FrontEndToDispatchGateway : BaseGateway<App>
 
     public async Task<AddDroneResponse> AddDrone(AddDroneRequest request)
     {
-        return await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DispatchUrl}/AddDrone", new AddDroneRequest
-        {
-            DroneId = request.DroneId,
-            DroneUrl = request.DroneUrl
-        });
+        return await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DispatchUrl}/AddDrone", request);
     }
 
 

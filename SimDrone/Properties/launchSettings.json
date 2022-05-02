@@ -12,7 +12,7 @@
     "SimDrone": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
+      "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7117;http://localhost:85",
       "environmentVariables": {

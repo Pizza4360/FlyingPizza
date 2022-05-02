@@ -106,10 +106,10 @@ public class DispatchController : ControllerBase
     public async Task<AddDroneResponse> AddDrone(AddDroneRequest addDroneRequest)
     {
         isInitiatingDrone = true;
-        addDroneRequest.DispatchUrl = "http://localhost:83";
+        addDroneRequest.DispatchUrl = "http://67.176.84.231:83";
         addDroneRequest.HomeLocation = new GeoLocation
             {Latitude = 39.74386695629378m, Longitude = -105.00610500179027m};
-        Console.WriteLine($"\n\n\n\nDispatchController.AddDrone({addDroneRequest})\n\n\n\n");
+        Console.WriteLine($"\n\n\n\nDispatchController.AddDrone({addDroneRequest.ToJson()})\n\n\n\n");
 
         if ((await _fleet.GetAllAsync())
             .Any(x => x.BadgeNumber == addDroneRequest.BadgeNumber

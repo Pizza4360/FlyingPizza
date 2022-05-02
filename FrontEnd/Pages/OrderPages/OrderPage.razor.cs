@@ -7,6 +7,7 @@ using Domain.Entities;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using MongoDB.Bson;
 
 namespace FrontEnd.Pages.OrderPages;
 
@@ -15,6 +16,7 @@ partial class OrderPage : ComponentBase
     private string _customerName;
 
     private string _deliveryAddress;
+    private string DroneUrl;
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
@@ -29,14 +31,16 @@ partial class OrderPage : ComponentBase
 
     private async Task<AddDroneResponse> AddDrone()
     {
-        return await FrontEndToDispatchGateway.AddDrone(new AddDroneRequest
+        var addDroneRequest = new AddDroneRequest
         {
             DroneId = BaseEntity.GenerateNewId(),
             BadgeNumber = Guid.NewGuid(),
             HomeLocation = new GeoLocation {Latitude = 39.74386695629378m, Longitude = -105.00610500179027m},
-            DroneUrl = "http://localhost:85",
+            DroneUrl = DroneUrl,
             DispatchUrl = "http://localhost:83"
-        });
+        };
+        Console.WriteLine($"sending {addDroneRequest.ToJson()}");
+        return await FrontEndToDispatchGateway.AddDrone(addDroneRequest);
     }
 
     private async Task MakeOrder()

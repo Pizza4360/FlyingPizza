@@ -42,6 +42,8 @@ public class DroneRecord : BaseEntity
     [JsonPropertyName("DispatchUrl")]
     public string DispatchUrl { get; set; }
 
+    public const string RecordFile = "DroneRecord.json";
+
     public DroneUpdate Update()
     {
         return new()

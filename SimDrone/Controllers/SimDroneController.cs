@@ -112,14 +112,14 @@ public class SimDroneController : ControllerBase
     private async Task PersistRecord(DroneRecord droneRecord)
     {
         Console.WriteLine("\nSaving drone state...");
-        RecordFile = "test.txt";
-        if (!System.IO.File.Exists(RecordFile))
-        {
-            System.IO.File.Create(RecordFile);
-        }
-        await using var writer = new StreamWriter(RecordFile, false);
-        await writer.WriteAsync(_drone.ToJson());
-        writer.Close();
+        // if (!System.IO.File.Exists(DroneRecord.RecordFile))
+        // {
+        //     System.IO.File.Create(DroneRecord.RecordFile);
+        // }
+        // await using var writer = new StreamWriter(DroneRecord.RecordFile, false);
+        // await writer.WriteAsync(_drone.ToJson());
+        // writer.Close();
+        Console.WriteLine("Done");
     }
 
 
@@ -139,6 +139,7 @@ public class SimDroneController : ControllerBase
         return await _gateway.UpdateDroneStatus(updateDroneStatusRequest.Update());
     }
 
+    [NonAction]
     public async Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest request)
     {
         return await _gateway.CompleteDelivery(request);

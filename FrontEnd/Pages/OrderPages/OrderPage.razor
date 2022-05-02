@@ -18,6 +18,12 @@
     <RadzenTextBox id="ADDRESS" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput="@(e => _deliveryAddress = e.Value.ToString())"/>
     <br/>
     <RadzenButton id="ORDER_SUBMIT" Click="@(args => MakeOrder())" Style="width: 200px" Text="Create Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary"/>
+
+
+    <br/>
+    <br/>
+    <b>Add Drone: </b>
+    <RadzenTextBox id="drone_url" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => DroneUrl = e.Value.ToString()) />
     <RadzenButton id="ADD_DRONE" Click="@(args => AddDrone())" Style="width: 200px" Text="ADD DRONE" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary"/>
 
 </div>
