@@ -9,25 +9,13 @@ namespace Domain.Entities;
 [BsonDiscriminator("Order")]
 public class Order : BaseEntity
 {
-    
-    [BsonElement("DroneId")]
-    public string DroneId { get; set; }
-    
-    [BsonElement("OrderId")]
-    public string OrderId { get; set; }
-    
+    [BsonElement("DroneId")] public string DroneId { get; set; }
+
+    [BsonElement("OrderId")] public string OrderId { get; set; }
+
     [BsonElement("State")]
     [JsonPropertyName("State")]
-    public OrderState State { get; set; }/*
-    {
-        get =>
-        TimeDelivered == null
-        ? OrderState.Delivered
-        : !string.IsNullOrEmpty(DroneId)
-            ? OrderState.Waiting
-            : OrderState.Assigned;
-        set => State = value;
-    }*/
+    public OrderState State { get; set; }
 
     [BsonElement("Items")]
     [JsonPropertyName("Items")]
@@ -55,19 +43,22 @@ public class Order : BaseEntity
     [BsonRepresentation(BsonType.DateTime)]
     [BsonIgnoreIfNull]
     public DateTime? TimeDelivered { get; set; }
-    
+
 
     [BsonElement("HasBeenDelivered")]
     [JsonPropertyName("HasBeenDelivered")]
     [BsonIgnoreIfNull]
     public bool HasBeenDelivered => TimeDelivered != null;
 
-    public OrderUpdate Update() => new OrderUpdate
+    public OrderUpdate Update()
     {
-        DroneId = DroneId,
-        HasBeenDelivered = HasBeenDelivered,
-        OrderId = OrderId,
-        State = State,
-        TimeDelivered = TimeDelivered
-    };
+        return new()
+        {
+            DroneId = DroneId,
+            HasBeenDelivered = HasBeenDelivered,
+            OrderId = OrderId,
+            State = State,
+            TimeDelivered = TimeDelivered
+        };
+    }
 }

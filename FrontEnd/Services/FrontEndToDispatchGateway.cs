@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.GatewayDefinitions;
@@ -8,19 +7,25 @@ namespace FrontEnd.Services;
 
 public class FrontEndToDispatchGateway : BaseGateway<App>
 {
-    private string DispatchUrl{ get; } 
     public FrontEndToDispatchGateway(string dispatchUrl)
     {
-            DispatchUrl = dispatchUrl;
+        DispatchUrl = dispatchUrl;
     }
-    
+
+    private string DispatchUrl { get; }
+
     public async Task<PingDto> Ping(PingDto ready)
-        => await SendMessagePost<PingDto, PingDto>($"{DispatchUrl}/Ping", new PingDto {
+    {
+        return await SendMessagePost<PingDto, PingDto>($"{DispatchUrl}/Ping", new PingDto
+        {
             S = "Malc"
         });
+    }
 
-    public async Task<EnqueueOrderResponse> EnqueueOrder(EnqueueOrderRequest request) => 
-        await SendMessagePost<EnqueueOrderRequest, EnqueueOrderResponse>($"{DispatchUrl}/EnqueueOrder",  request );
+    public async Task<EnqueueOrderResponse> EnqueueOrder(EnqueueOrderRequest request)
+    {
+        return await SendMessagePost<EnqueueOrderRequest, EnqueueOrderResponse>($"{DispatchUrl}/EnqueueOrder", request);
+    }
 
     /*public void RemoveDrone(HttpMessageHandler handler)
     {
@@ -30,18 +35,22 @@ public class FrontEndToDispatchGateway : BaseGateway<App>
     }*/
 
 
-    public async Task<AddDroneResponse> AddDrone(AddDroneRequest request) 
-        => await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DispatchUrl}/AddDrone", new AddDroneRequest {
+    public async Task<AddDroneResponse> AddDrone(AddDroneRequest request)
+    {
+        return await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DispatchUrl}/AddDrone", new AddDroneRequest
+        {
             DroneId = request.DroneId,
             DroneUrl = request.DroneUrl
         });
+    }
 
 
-    public async Task<CancelDeliveryResponse> CancelDelivery(string id) =>
-          await SendMessagePost<CancelDeliveryRequest, CancelDeliveryResponse>($"{DispatchUrl}/CancelDelivery",
+    public async Task<CancelDeliveryResponse> CancelDelivery(string id)
+    {
+        return await SendMessagePost<CancelDeliveryRequest, CancelDeliveryResponse>($"{DispatchUrl}/CancelDelivery",
             new CancelDeliveryRequest
             {
                 OrderId = id
             });
+    }
 }
-

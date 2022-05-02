@@ -11,10 +11,15 @@ public enum OrderState
 
 public static class OrderStateExtensions
 {
-    private static readonly Dictionary<OrderState, string> StateToStringDict = new(){
-        { OrderState.Waiting, "Ready" },
-        { OrderState.Assigned, "Assigned" },
-        { OrderState.Delivered, "Delivered" }
+    private static readonly Dictionary<OrderState, string> StateToStringDict = new()
+    {
+        {OrderState.Waiting, "Ready"},
+        {OrderState.Assigned, "Assigned"},
+        {OrderState.Delivered, "Delivered"}
     };
-    public static string ToString(this OrderState state) => StateToStringDict[state];
+
+    public static string ToString(this OrderState state)
+    {
+        return StateToStringDict[state];
+    }
 }

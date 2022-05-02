@@ -1,17 +1,9 @@
-using System;
-using Domain.DTO;
-using Domain.Entities;
-using Domain.InterfaceImplementations.Gateways;
-using FluentAssertions;
-using SimDrone;
-using Xunit;
-
 namespace Tests.Controllers.Unit;
 
 public class RealDroneTests
 {
     // DO NOT UNCOMMENT THIS UNLESS WIFI INTO TELLO SDK DRONE
-    
+
     // [Fact]
     // public void imScared()
     // {
@@ -42,5 +34,6 @@ public class RealDroneTests
     //     var testTello = new TelloDrone(droneRecord, testGateway, false);
     //     var result = testTello.DeliverOrder(otherTable);
     //     result.Should().BeTrue();
-    }
+}
+
 }
