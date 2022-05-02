@@ -18,6 +18,7 @@ partial class OrderPage : ComponentBase
 
     public string DeliveryAddress;
     public string CustomerName;
+    public string DroneInput;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -54,6 +55,7 @@ partial class OrderPage : ComponentBase
             CustomerName = CustomerName,
             DeliveryLocation = DeliveryLocation,
             DeliveryAddress = DeliveryAddress,
+            DroneInput = DroneInput,
             State = OrderState.Waiting
         });
 
