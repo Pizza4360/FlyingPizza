@@ -13,16 +13,12 @@ namespace FrontEnd.Pages.OrderPages;
 partial class OrderPage : ComponentBase
 {
     private string _customerName;
-
-<<<<<<< HEAD
     public string DeliveryAddress;
     public string CustomerName;
     public string DroneInput;
-=======
-    private string _deliveryAddress;
+    public GeoLocation DeliveryLocation;
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
->>>>>>> 6d20d48abdbe4b6f1e4fc2718815dc3e8a9aa048
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -45,39 +41,34 @@ partial class OrderPage : ComponentBase
         });
     }
 
-    private async Task MakeOrder()
+
+    private async Task makeOrder()
     {
-        var deliveryLocation = await Converter.CoordsFromAddress(_deliveryAddress);
+        var deliveryLocation = await Converter.CoordsFromAddress(DeliveryAddress);
 
-        var orderId = BaseEntity.GenerateNewId();
+            var orderId = BaseEntity.GenerateNewId();
 
-        await FrontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest
-        {
-            OrderId = orderId,
-            TimeOrdered = DateTime.Now,
-<<<<<<< HEAD
-            CustomerName = CustomerName,
-            DeliveryLocation = DeliveryLocation,
-            DeliveryAddress = DeliveryAddress,
-            DroneInput = DroneInput,
-=======
-            CustomerName = _customerName,
-            DeliveryLocation = deliveryLocation,
-            DeliveryAddress = _deliveryAddress,
->>>>>>> 6d20d48abdbe4b6f1e4fc2718815dc3e8a9aa048
-            State = OrderState.Waiting
-        });
+            await FrontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest
+            {
+                OrderId = orderId,
+                TimeOrdered = DateTime.Now,
+                CustomerName = CustomerName,
+                DeliveryLocation = DeliveryLocation,
+                DeliveryAddress = DeliveryAddress,
+                DroneInput = DroneInput,
+                State = OrderState.Waiting
+            });
 
-        Console.Write("AHHHHHH~~~~~~~~~~");
+            Console.Write("AHHHHHH~~~~~~~~~~");
 
-        var dispatchResponse = FrontEndToDispatchGateway.EnqueueOrder(new EnqueueOrderRequest
-        {
-            OrderLocation = deliveryLocation,
-            OrderId = orderId
-        });
+            var dispatchResponse = FrontEndToDispatchGateway.EnqueueOrder(new EnqueueOrderRequest
+            {
+                OrderLocation = deliveryLocation,
+                OrderId = orderId
+            });
 
-        Console.WriteLine(dispatchResponse);
-        // Navigate to page to display users current order. 
-        NavigationManager.NavigateTo("/userPage", false);
+            Console.WriteLine(dispatchResponse);
+            // Navigate to page to display users current order. 
+            NavigationManager.NavigateTo("/userPage", false);
     }
 }
