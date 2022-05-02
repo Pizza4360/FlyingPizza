@@ -10,8 +10,6 @@ public class AssignFleetRequest
     [JsonPropertyName("DroneUrl")] public string DroneUrl { get; set; }
 
     [JsonPropertyName("DispatchUrl")] public string DispatchUrl { get; set; }
-
-    [JsonPropertyName("BadgeNumber")] public Guid BadgeNumber { get; set; }
-
+    
     [JsonPropertyName("HomeLocation")] public GeoLocation HomeLocation { get; set; }
 }
