@@ -13,7 +13,7 @@ partial class FleetView : ComponentBase
 {
     public DroneRecord[] Fleet;
     public int size;
-    public Boolean connection;
+    public bool connection;
     public string color;
 
     [Inject]

@@ -7,11 +7,68 @@
 @inject FrontEndToDispatchGateway _frontEndToDispatchGateway
 @inject Domain.ConvertAddressToGeoLocation converter
 
-<div class="status-bar">
-    <b>Create New Order</b>
+<div class="quick-look">
+    <div class="status-bar" >
+        <b>Management Page</b>
+    </div>
+    @if (connection)
+    {
+        <div class="connection-bar" data-hover="Database: Connected">
+            <span class="oi oi-circle-check" style="color: #08af08"></span>
+        </div>
+    }
+    else
+    {
+        <div class="connection-bar" data-hover="Database: No Connection">
+            <span class="oi oi-circle-x" style="color: #FC401E"></span>
+        </div>
+    }
+
 </div>
 
-<div class="right">
+<div class="content">
+    <div class="order-container"> 
+        <div class="order-bar"> 
+            <div class="title"> Order Manager</div>
+
+            <div class="input">
+                <b>Customer Name: </b>
+                <RadzenTextBox id="CUST_NAME" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => CustomerName = e.Value.ToString()) />
+                <br />
+                <b>Address: </b> 
+                <RadzenTextBox id="ADDRESS" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => DeliveryAddress = e.Value.ToString()) />
+                <br />
+                <RadzenButton id="ORDER_SUBMIT" Click=@(args => makeOrder()) Style="width: 200px" Text="Create Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
+            </div>
+
+            <div class="input">
+                <b>Order Id: </b>
+                <RadzenTextBox id="CUST_NAME" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => CustomerName = e.Value.ToString()) />  
+                <br />
+                <RadzenButton id="ORDER_SUBMIT" Click=@(args => makeOrder()) Style="width: 200px" Text="Cancel Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
+            </div>
+
+        </div>
+        
+        <div class="order-badges"> BADGES </div>
+    </div>
+
+    <div class="drone-container"> 
+        <div class="drone-bar">
+            <div class="title"> DRONE BAR </div>
+
+        </div>
+        <div class="drone-badges"> </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+@*<div class="right">
     <b>Customer Name: </b>
     <RadzenTextBox id="CUST_NAME" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => CustomerName = e.Value.ToString()) />
     <br />
@@ -21,4 +78,4 @@
     <RadzenButton id="ORDER_SUBMIT" Click=@(args => makeOrder()) Style="width: 200px" Text="Create Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
     <RadzenButton id="ADD_DRONE" Click=@(args => AddDrone()) Style="width: 200px" Text="ADD DRONE" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
 
-</div>
+</div>*@

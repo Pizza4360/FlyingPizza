@@ -1,24 +1,102 @@
 ﻿
-.status-bar {
-    border-radius: 0.5rem;
-    flex-grow: 1;
-    overflow-y: auto;
-    background-color: #3f7cac;
-    padding: 1.5rem !important;
-    color: white;
-    text-shadow: 0 2px 2px rgba(0,0,0,0.5);
-    font-size: 1.5rem;
-    font-weight: 700;
+
+.content {
+    display: flex;
+    margin-top: 0.5rem;
+    padding: 0px;
 }
 
-.right {
+.order-container {
+    float: left;
+    flex-grow: 1;
+    display: flex;
+    height: 750px;
+    margin-right: 0.25rem;
     border-radius: 0.5rem;
     background-color: #1e1e24;
-    box-shadow: 0 3px 4px rgba(0,0,0,0.4);
-    margin-top: 1.5rem;
-    float: left;
-    padding: 0.5rem !important;
-    line-height: 3;
-    text-align: right;
-    color: white;
 }
+    .order-container .order-bar{
+        float:left;
+
+    }
+    .order-bar .title {
+        height: 60px;
+        border-radius: 0.5rem;
+        background-color: #35353a;
+        padding-left: 0.5rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        margin: 0.5rem 0.25rem 0.5rem 0.5rem;
+        color: white;
+        text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    .order-bar .input {
+        border-radius: 0.5rem;
+        background-color: #35353a;
+        box-shadow: 0 3px 4px rgba(0,0,0,0.4);
+        margin: 0.5rem 0.25rem 0.5rem 0.5rem;
+        padding: 0.5rem !important;
+        line-height: 3;
+        text-align: right;
+        color: white;
+    }
+
+    .order-container .order-badges {
+        flex-grow: 1;
+/*        height: 60px;
+*/        border-radius: 0.5rem;
+        background-color: cadetblue;
+        padding-left: 0.5rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        margin: 0.5rem 0.5rem 0.5rem 0.25rem;
+        color: white;
+        text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+.drone-container {
+    flex-grow: 1;
+    height: 750px;
+    display: flex;
+    margin-left: 0.25rem;
+    border-radius: 0.5rem;
+    background-color: #1e1e24;
+}
+
+    .drone-container .drone-bar {
+        float: left;
+    }
+
+    .drone-bar .title {
+        height: 60px;
+        border-radius: 0.5rem;
+        background-color: #35353a;
+        padding-left: 0.5rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        margin: 0.5rem 0.25rem 0.5rem 0.5rem;
+        color: white;
+        text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    .drone-container .drone-badges {
+        flex-grow: 1;
+        /*        height: 60px;
+    */ border-radius: 0.5rem;
+        background-color: cadetblue;
+        padding-left: 0.5rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        margin: 0.5rem 0.5rem 0.5rem 0.25rem;
+        color: white;
+        text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+        font-size: 24px;
+        font-weight: 700;
+    }

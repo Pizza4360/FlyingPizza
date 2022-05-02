@@ -5,6 +5,69 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.quick-look {
+    border-radius: 0.5rem;
+    display: flex;
+    padding: 0px !important;
+}
+
+.connection-bar {
+    position: relative;
+    z-index: 1;
+    width: 70px;
+    border-radius: 0.5rem;
+    background-color: #1e1e24;
+    /*Spaces connection div from status bar*/
+    margin-left: 5px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+    .connection-bar:before {
+        content: attr(data-hover);
+        visibility: hidden;
+        opacity: 0;
+        width: 70px;
+        background-color: #696969;
+        text-align: center;
+        border-radius: 5px;
+        padding: 5px 0;
+        transition: opacity 1s ease-in-out;
+        position: absolute;
+        z-index: 1;
+        left: 0;
+        top: 110%;
+        color: white;
+        text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .connection-bar:hover:before {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .connection-bar:hover {
+        transform: scale(1.02);
+    }
+
+.status-bar {
+    border-radius: 0.5rem;
+    flex-grow: 1;
+    background-color: #3f7cac;
+    padding: 1.5rem !important;
+    color: #fcfffd;
+    text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
 a, .btn-link {
     color: #0366d6;
 }

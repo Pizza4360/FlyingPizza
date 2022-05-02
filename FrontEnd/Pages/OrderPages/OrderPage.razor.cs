@@ -19,11 +19,24 @@ partial class OrderPage : ComponentBase
 
     public string DeliveryAddress;
     public string CustomerName;
-    protected override void OnInitialized()
+    public DroneRecord[] Fleet;
+    public bool connection;
+    protected override async void OnInitialized()
     {
-        _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
-        _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
-         converter = new ConvertAddressToGeoLocation();
+        
+        try
+        {
+            _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
+            _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
+            converter = new ConvertAddressToGeoLocation();
+            Fleet = (await _frontEndToDatabaseGateway.GetFleet()).ToArray();
+            connection = true;
+        }
+        catch
+        {
+
+        }
+
     }
 
     public FrontEndToDispatchGateway GetGateway()
