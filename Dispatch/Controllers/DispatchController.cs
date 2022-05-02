@@ -18,8 +18,10 @@ public class DispatchController : ControllerBase
     private readonly IFleetRepository _fleet;
 
     // private readonly ILogger<DispatchController> _logger;
-    private readonly GeoLocation _homeLocation;
     private readonly IOrdersRepository _orders;
+    private readonly GeoLocation _homeLocation;
+    private readonly string _dispatchUrl;
+    private readonly SettingsRepository _settings;
 
 
     private readonly Stopwatch _stopwatch;
@@ -28,20 +30,15 @@ public class DispatchController : ControllerBase
     // private async void DequeueCallback(object _) => await TryDequeueOrders();
     public DispatchController(
         IFleetRepository droneRepo,
-        // DroneGateway droneGateway,
-        IOrdersRepository orderRepo
-        // GeoLocation homeLocation,
-        // Queue<AssignDeliveryRequest> unfilledOrders
+        IOrdersRepository orderRepo,
+        SettingsRepository settings
     )
     {
+        _settings = settings;
+        _dispatchUrl = Environment.GetEnvironmentVariable("DISPATCH_URL") ?? throw new InvalidOperationException(); 
         _fleet = droneRepo;
         _orders = orderRepo;
         _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(droneRepo /*, orderRepo*/);
-        _homeLocation = new GeoLocation
-        {
-            Latitude = 39.74364421910773m,
-            Longitude = -105.00858710385576m
-        };
         _stopwatch = new Stopwatch();
         _stopwatch.Start();
     }
@@ -106,9 +103,8 @@ public class DispatchController : ControllerBase
     public async Task<AddDroneResponse> AddDrone(AddDroneRequest addDroneRequest)
     {
         isInitiatingDrone = true;
-        addDroneRequest.DispatchUrl = "http://localhost:83";
-        addDroneRequest.HomeLocation = new GeoLocation
-            {Latitude = 39.74386695629378m, Longitude = -105.00610500179027m};
+        addDroneRequest.DispatchUrl = _dispatchUrl;
+        addDroneRequest.HomeLocation = await _settings.GetHomeLocation();
         Console.WriteLine($"\n\n\n\nDispatchController.AddDrone({addDroneRequest})\n\n\n\n");
 
         if ((await _fleet.GetAllAsync())

@@ -1,5 +1,6 @@
 using DatabaseAccess;
 using Dispatch.Services;
+using Domain.DTO;
 using Domain.RepositoryDefinitions;
 
 Console.WriteLine("hello world!!!");
@@ -14,13 +15,19 @@ builder.Services.AddCors(options =>
         "http://localhost:87",
         "http://localhost:88").AllowAnyHeader().AllowAnyMethod()));
 
+var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME");
+var fleet = Environment.GetEnvironmentVariable("FLEET_COLLECTION_NAME");
+var orders = Environment.GetEnvironmentVariable("ORDERS_COLLECTION_NAME");
+var settings = Environment.GetEnvironmentVariable("SETTINGS");
 
+Console.WriteLine($"connectionString = {connectionString}" +
+                  $"databaseName = {databaseName}" +
+                  $"fleet = {fleet}" +
+                  $"orders = {orders}" +
+                  $"settings = {settings}");
 #region repositories
 
-var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
-var databaseName = Environment.GetEnvironmentVariable("DatabaseName");
-var fleet = Environment.GetEnvironmentVariable("Fleet");
-var orders = Environment.GetEnvironmentVariable("Orders");
 
 
 var ordersRepositorySettings = new RepositorySettings
@@ -29,8 +36,15 @@ var ordersRepositorySettings = new RepositorySettings
     DatabaseName = databaseName,
     CollectionName = orders
 };
+var settingsRepositorySettings = new RepositorySettings
+{
+    ConnectionString = connectionString,
+    DatabaseName = databaseName,
+    CollectionName = settings
+};
 builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton<IOrdersRepository>(provider => new OrderRepository(ordersRepositorySettings));
+builder.Services.AddSingleton( new SettingsRepository(settingsRepositorySettings));
+builder.Services.AddSingleton<IOrdersRepository>(_ => new OrderRepository(ordersRepositorySettings));
 
 var fleetRepositorySettings = new RepositorySettings
 {
@@ -79,3 +93,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

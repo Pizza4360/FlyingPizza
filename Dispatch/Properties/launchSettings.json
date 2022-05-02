@@ -12,15 +12,17 @@
     "Dispatch": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
+      "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7102;http://localhost:83",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ConnectionString": "mongodb+srv://capstone:Ms2KqQKc5U3gFydE@cluster0.rjlgf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-        "DatabaseName": "Capstone",
-        "Fleet": "FleetCompositeTest",
-        "Orders": "OrdersCompositeTest"
+        "SETTINGS": "Settings",
+        "DISPATCH_URL": "http://localhost:83",
+        "CONNECTION_STRING": "mongodb+srv://capstone:Ms2KqQKc5U3gFydE@cluster0.rjlgf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+        "DATABASE_NAME": "Capstone",
+        "FLEET_COLLECTION_NAME": "FleetCompositeTest",
+        "ORDERS_COLLECTION_NAME": "OrdersCompositeTest",
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "IIS Express": {
