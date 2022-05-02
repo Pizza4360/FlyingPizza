@@ -14,9 +14,15 @@ partial class OrderPage : ComponentBase
 {
     private string _customerName;
 
+<<<<<<< HEAD
+    public string DeliveryAddress;
+    public string CustomerName;
+    public string DroneInput;
+=======
     private string _deliveryAddress;
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
+>>>>>>> 6d20d48abdbe4b6f1e4fc2718815dc3e8a9aa048
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -49,9 +55,16 @@ partial class OrderPage : ComponentBase
         {
             OrderId = orderId,
             TimeOrdered = DateTime.Now,
+<<<<<<< HEAD
+            CustomerName = CustomerName,
+            DeliveryLocation = DeliveryLocation,
+            DeliveryAddress = DeliveryAddress,
+            DroneInput = DroneInput,
+=======
             CustomerName = _customerName,
             DeliveryLocation = deliveryLocation,
             DeliveryAddress = _deliveryAddress,
+>>>>>>> 6d20d48abdbe4b6f1e4fc2718815dc3e8a9aa048
             State = OrderState.Waiting
         });
 
