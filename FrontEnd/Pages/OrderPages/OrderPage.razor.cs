@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Domain;
 using Domain.DTO;
@@ -22,7 +23,9 @@ partial class OrderPage : ComponentBase
     public DroneRecord[] Fleet;
     public Order[] Orders;
     public bool connection;
-    public int counter = 0;
+    public Order selectedOrder;
+    public string visibility = "hidden";
+    public string placeholder = "...";
     protected override async Task OnInitializedAsync()
     {
         try
@@ -42,10 +45,10 @@ partial class OrderPage : ComponentBase
 
     }
 
-
-    public FrontEndToDispatchGateway GetGateway()
-        => new FrontEndToDispatchGateway();
-
+    public void displaySelected(Order selected) {
+        selectedOrder = selected;
+        visibility = "visible";
+    }
 
     public async Task<AddDroneResponse> AddDrone() {
         return await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest

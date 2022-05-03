@@ -37,7 +37,7 @@
                     <b>Address: </b> 
                     <RadzenTextBox id="ADDRESS" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => DeliveryAddress = e.Value.ToString()) />
                     <br />     
-                    <button class="btn" style="width: 190px"> Create Order </button>
+                    <button class="btn" style="width: 190px" @onclick=@makeOrder> Create Order </button>
                 </div>
 
                 <div class="input" style="height: 130px">
@@ -45,6 +45,23 @@
                     <RadzenTextBox id="CUST_NAME" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => CustomerName = e.Value.ToString()) />  
                     <br />
                     <button class="btn" style="width: 190px"> Cancel Order </button>
+                </div>
+
+                <div class ="input" style="visibility: @visibility; text-align: left; font-size: 20px; line-height: 2;">
+                    <div class="exit">
+                        <button class="btn" style="padding: 0px 4px 0px 4px;" @onclick=@(args => @visibility = "hidden")>X</button>
+
+                    </div>
+
+                    @if (selectedOrder != null)
+                    {
+                        <div>ID: @selectedOrder.BadgeNumber</div>
+                        <div>Delivery Location: @selectedOrder.DeliveryAddress</div>
+                        <div>Customer Name: @selectedOrder.CustomerName</div>
+                        <div>Order Time: @selectedOrder.TimeOrdered</div>
+                    }
+
+
                 </div>
             </div>
                  
@@ -55,11 +72,10 @@
                         @foreach (var order in Orders)
                         {
                             <!--Creates a block for each drone with id, status, more info button and a drone img-->
-                            <li style="background-image: url('../images/order.jpg')">
+                            <li style="background-image: url('../images/order.jpg')" @onclick="@(args => displaySelected(@order))">
                                 <div class="drone-status">
-                                    <span class="title" >Order ID: @order.BadgeNumber.ToString().Substring(0, 6)...
-                                    </span>
-                                    <b>@order.DeliveryAddress</b>                                  
+                                    <span class="title" >Order ID: @order.BadgeNumber.ToString().Substring(0, 8)...</span>
+                                    <span class="address">@order.DeliveryAddress</span>                                  
                                 </div>
                             </li>
                         }

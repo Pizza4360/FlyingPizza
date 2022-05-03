@@ -13,6 +13,16 @@
     font-weight: 700;
 }
 
+    .btn:active {
+        transform: scale(0.97);
+    }
+
+.exit{
+    margin-left: 88%;
+    line-height: 1;
+}
+
+
 .grid-container {
     float: left;
     width: 50%;
@@ -114,6 +124,9 @@
         .drone-fleet > li:hover {
             transform: scale(1.01);
         }
+        .drone-fleet > li:active {
+            transform: scale(0.95);
+        }
 
 
 .drone-status {
@@ -160,3 +173,16 @@
         padding: 0rem 0.7rem;
         line-height: 2rem;
     }
+
+    .drone-status .address {
+        color: #3f7cac;
+        font-size: 21px;
+        text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+        position: absolute;
+        bottom: 0.25rem;
+        left: 0.3rem;
+        padding: 0rem 0.3rem;
+        line-height: 1.3rem;
+    }
+
+    

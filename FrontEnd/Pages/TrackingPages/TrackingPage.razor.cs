@@ -36,10 +36,10 @@ partial class TrackingPage : ComponentBase
     {
         _FrontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
         await DisplayDroneAsync("Delivering");
-        //await Temp();
+        await startTimer();
     }
 
-    protected Task Temp() {
+    protected Task startTimer() {
         _timer = new Timer(MarkerUpdateCallback, null, 0, RefreshInterval);
         return Task.CompletedTask;
     }
