@@ -21,9 +21,9 @@ partial class OrderPage : ComponentBase
     public string CustomerName;
     public DroneRecord[] Fleet;
     public bool connection;
-    protected override async void OnInitialized()
+    public int counter = 0;
+    protected override async Task OnInitializedAsync()
     {
-        
         try
         {
             _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
@@ -38,6 +38,7 @@ partial class OrderPage : ComponentBase
         }
 
     }
+
 
     public FrontEndToDispatchGateway GetGateway()
         => new FrontEndToDispatchGateway();

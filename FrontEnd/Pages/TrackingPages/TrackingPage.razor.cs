@@ -36,7 +36,7 @@ partial class TrackingPage : ComponentBase
     {
         _FrontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
         await DisplayDroneAsync("Delivering");
-        await Temp();
+        //await Temp();
     }
 
     protected Task Temp() {
