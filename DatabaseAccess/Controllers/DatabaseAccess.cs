@@ -31,7 +31,16 @@ public class DatabaseAccess : ControllerBase
         Console.WriteLine("Got back" + string.Join("\n", fleet));
         return fleet;
     }
-    
+
+    [HttpGet("GetOrder")]
+    public async Task<List<Order>> GetOrder()
+    {
+        Console.WriteLine("got a request to get the orders...");
+        var orders = await _orders.GetAllAsync();
+        Console.WriteLine("Got back" + string.Join("\n", orders));
+        return orders;
+    }
+
     [HttpPost("CreateOrder")]
     public async Task<CreateOrderResponse> CreateOrder(Order order)
     {
@@ -45,9 +54,9 @@ public class DatabaseAccess : ControllerBase
         return _fleet.GetByIdAsync(id).Result;
     }
 
-    [HttpGet("GetOrder")]
+    /*[HttpGet("GetOrder")]
     public Order GetOrder(string id)
     {
         return _orders.GetByIdAsync(id).Result;
-    }
+    }*/
 }

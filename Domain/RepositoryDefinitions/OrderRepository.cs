@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
@@ -76,4 +77,8 @@ public class OrderRepository : IOrdersRepository
 
         return updateDefinition;
     }
+
+    public async Task<List<Order>> GetAllAsync() =>
+        await _collection.Find(_ => true).ToListAsync();
+
 }
