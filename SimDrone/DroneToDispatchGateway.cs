@@ -22,11 +22,11 @@ public class DroneToDispatchGateway : BaseGateway<SimDroneController>
         new HttpClient(handler);
     }
 
-    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(DroneUpdate request)
+    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(DroneUpdate droneUpdate)
     {
         Console.WriteLine($"Drone is updating status to url {EndPoint}");
         return await SendMessagePost<DroneUpdate, UpdateDroneStatusResponse>
-            ($"{EndPoint}/UpdateDroneStatus", request);
+            ($"{EndPoint}/UpdateDroneStatus", droneUpdate);
     }
 
     public async Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest request)
@@ -35,9 +35,9 @@ public class DroneToDispatchGateway : BaseGateway<SimDroneController>
             $"{EndPoint}/CompleteOrder", request);
     }
 
-    public async Task<bool> Revive(DroneRecord record)
+    public async Task<bool> Recover(DroneRecord record)
     {
         return await SendMessagePost<DroneRecord, bool>(
-            $"{EndPoint}/Revive", record);
+            $"{EndPoint}/Recover", record);
     }
 }

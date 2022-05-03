@@ -23,10 +23,10 @@ public class Program
 
         #region repositories
 
-        var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
-        var databaseName = Environment.GetEnvironmentVariable("DatabaseName");
-        var fleet = Environment.GetEnvironmentVariable("Fleet");
-        var orders = Environment.GetEnvironmentVariable("Orders");
+        var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+        var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME");
+        var fleet = Environment.GetEnvironmentVariable("FLEET_COLLECTION_NAME");
+        var orders = Environment.GetEnvironmentVariable("ORDERS_COLLECTION_NAME");
 
 
         var ordersRepositorySettings = new RepositorySettings
@@ -35,7 +35,6 @@ public class Program
             DatabaseName = databaseName,
             CollectionName = orders
         };
-        builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
         builder.Services.AddSingleton<IOrdersRepository>(provider => new OrderRepository(ordersRepositorySettings));
 
         var fleetRepositorySettings = new RepositorySettings

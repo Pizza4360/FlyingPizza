@@ -7,12 +7,12 @@ namespace FrontEnd.Services;
 
 public class FrontEndToDispatchGateway : BaseGateway<App>
 {
+    private string DispatchUrl { get; }
+
     public FrontEndToDispatchGateway(string dispatchUrl)
     {
         DispatchUrl = dispatchUrl;
     }
-
-    private string DispatchUrl { get; }
 
     public async Task<PingDto> Ping(PingDto ready)
     {
@@ -21,25 +21,15 @@ public class FrontEndToDispatchGateway : BaseGateway<App>
             S = "Malc"
         });
     }
+    
 
-    public async Task<EnqueueOrderResponse> EnqueueOrder(EnqueueOrderRequest request)
+    public async Task<AddDroneResponse> AddDrone(string droneUrl)
     {
-        return await SendMessagePost<EnqueueOrderRequest, EnqueueOrderResponse>($"{DispatchUrl}/EnqueueOrder", request);
+        return await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DispatchUrl}/AddDrone", new AddDroneRequest
+        {
+            DroneUrl = droneUrl,
+        });
     }
-
-    /*public void RemoveDrone(HttpMessageHandler handler)
-    {
-        // Added for mocking reasons, no way around it
-        // TODO: what why?
-        // HttpClient = new HttpClient(handler);
-    }*/
-
-
-    public async Task<AddDroneResponse> AddDrone(AddDroneRequest request)
-    {
-        return await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DispatchUrl}/AddDrone", request);
-    }
-
 
     public async Task<CancelDeliveryResponse> CancelDelivery(string id)
     {

@@ -2,7 +2,7 @@ using Domain.Entities;
 
 namespace Domain.DTO;
 
-public class ReviveRequest
+public class DroneRecoveryRequest
 {
     public DroneRecord Record { get; set; } 
 }

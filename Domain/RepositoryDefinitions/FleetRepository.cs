@@ -36,7 +36,7 @@ public class FleetRepository : IFleetRepository
 
         _collection = mongoDatabase.GetCollection<DroneRecord>(
             settings.CollectionName);
-        Console.WriteLine($"this should be 'Orders'>>>{settings.CollectionName}<<<");
+        Console.WriteLine($"this should be 'Fleet'>>>{settings.CollectionName}<<<");
     }
 
 

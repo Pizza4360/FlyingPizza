@@ -8,9 +8,6 @@ namespace Domain.Entities;
 public class DroneRecord : BaseEntity
 {
     public static string File() => "DroneRecord.json";
-    [BsonElement("BadgeNumber")]
-    [JsonPropertyName("BadgeNumber")]
-    public Guid BadgeNumber { get; set; }
 
     [BsonElement("OrderId")]
     [JsonPropertyName("OrderId")]
@@ -69,8 +66,7 @@ public class DroneRecord : BaseEntity
         if (o == null ||
             o.GetType() != GetType()) return false;
         var oo = (DroneRecord) o;
-        return oo.BadgeNumber == BadgeNumber &&
-               oo.CurrentLocation.Equals(CurrentLocation) &&
+        return oo.CurrentLocation.Equals(CurrentLocation) &&
                oo.Destination.Equals(Destination) &&
                oo.State.Equals(State) &&
                oo.DispatchUrl.Equals(DispatchUrl);

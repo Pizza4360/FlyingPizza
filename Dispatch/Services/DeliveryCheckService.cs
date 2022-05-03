@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Dispatch.Services;
 
-public class PingerService : BackgroundService
+public class DeliveryCheckService : BackgroundService
 {
     private readonly ILogger Logger;
 
@@ -25,7 +25,7 @@ public class PingerService : BackgroundService
             try
             {
                 _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var t = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/AssgnmentCheck/", new PingDto {S = "Hi"},
+                var t = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/AssignmentCheck/", new PingDto {S = "Hi"},
                     stoppingToken);
                 // var pingTask = Pinger.SendPingAsync(IPAddress.Parse("192.168.1.100:83//Ping"), 5000);
                 var cancelTask = Task.Delay(5000, stoppingToken);

@@ -11,13 +11,11 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
 {
     private readonly IFleetRepository _fleet;
 
-    public DispatchToSimDroneGateway(IFleetRepository fleet /*, IOrdersRepository orders*/)
+    public DispatchToSimDroneGateway(IFleetRepository fleet)
     {
         _fleet = fleet;
-        // _orders = orders;
     }
 
-    // private IOrdersRepository _orders;
     private async Task<string> Endpoint(string currentDroneId)
     {
         Console.WriteLine($"Getting by drone id {currentDroneId}");
@@ -59,12 +57,11 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
         return response.Result;
     }
 
-    public async Task<AssignDeliveryResponse?> AssignDelivery(AssignDeliveryRequest assignDeliveryRequest)
+    public async Task<AssignDeliveryResponse?> AssignDelivery(AssignDeliveryRequest assignDeliveryRequest, string droneUrl)
     {
-        var url = await Endpoint(assignDeliveryRequest.DroneId);
-        Console.WriteLine($"\n\nChoosing drone {assignDeliveryRequest.DroneId} url:{url}\n\n");
+        Console.WriteLine($"\n\nChoosing drone {assignDeliveryRequest.DroneId} url:{droneUrl}\n\n");
         return await SendMessagePost<AssignDeliveryRequest, AssignDeliveryResponse>(
-            $"{url}/SimDrone/AssignDelivery", assignDeliveryRequest);
+            $"{droneUrl}/SimDrone/AssignDelivery", assignDeliveryRequest);
     }
 
     public async Task<bool> HealthCheck(string droneId)
@@ -81,7 +78,6 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
         }
         catch (Exception e)
         {
-            // Todo, find a way to update the drone without all other update params and only ID, set it to DroneState.Dead
             Console.WriteLine($"Setting drone {droneId} offline.");
             await _fleet.SetDroneOffline(droneId);
             Console.WriteLine($"HealthCheck failed for drone at {droneId}. Reason: {e}");

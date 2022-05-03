@@ -16,10 +16,10 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:80",
       "environmentVariables": {
-        "ConnectionString": "mongodb+srv://capstone:Ms2KqQKc5U3gFydE@cluster0.rjlgf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-        "DatabaseName": "Capstone",
-        "Fleet": "FleetCompositeTest",
-        "Orders": "OrdersCompositeTest",
+        "CONNECTION_STRING": "mongodb+srv://capstone:Ms2KqQKc5U3gFydE@cluster0.rjlgf.mongodb.net/CapstoneGroup",
+        "DATABASE_NAME": "Capstone",
+        "FLEET_COLLECTION_NAME": "FleetCompositeTest",
+        "ORDERS_COLLECTION_NAME": "OrdersCompositeTest",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },

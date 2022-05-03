@@ -2,7 +2,6 @@ using DatabaseAccess;
 using Dispatch.Services;
 using Domain.RepositoryDefinitions;
 
-Console.WriteLine("hello world!!!");
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
     options.AddPolicy("CORS", policy => policy.WithOrigins("https://localhost:44364",
@@ -14,23 +13,19 @@ builder.Services.AddCors(options =>
         "http://localhost:87",
         "http://localhost:88").AllowAnyHeader().AllowAnyMethod()));
 
+var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME");
+var fleet = Environment.GetEnvironmentVariable("FLEET_COLLECTION_NAME");
+var orders = Environment.GetEnvironmentVariable("ORDERS_COLLECTION_NAME");
 
 #region repositories
-
-var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
-var databaseName = Environment.GetEnvironmentVariable("DatabaseName");
-var fleet = Environment.GetEnvironmentVariable("Fleet");
-var orders = Environment.GetEnvironmentVariable("Orders");
-
-
 var ordersRepositorySettings = new RepositorySettings
 {
     ConnectionString = connectionString,
     DatabaseName = databaseName,
     CollectionName = orders
 };
-builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton<IOrdersRepository>(provider => new OrderRepository(ordersRepositorySettings));
+builder.Services.AddSingleton<IOrdersRepository>(_ => new OrderRepository(ordersRepositorySettings));
 
 var fleetRepositorySettings = new RepositorySettings
 {
@@ -53,14 +48,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHostedService<PingerService>();
-
-// Get path to file holding connection string
-Console.WriteLine(DateTime.Now);
-
+builder.Services.AddHostedService<DeliveryCheckService>();
 
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -79,3 +69,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

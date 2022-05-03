@@ -7,5 +7,5 @@ public class AddDroneResponse
 {
     [JsonPropertyName("Success")] public bool Success { get; set; }
 
-    [JsonPropertyName("BadgeNumber")] public Guid BadgeNumber { get; set; }
+    [JsonPropertyName("DroneId")] public string DroneId { get; set; }
 }
