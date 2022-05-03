@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Domain;
 using Domain.DTO;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
@@ -12,11 +11,9 @@ namespace FrontEnd.Pages.OrderPages;
 
 partial class OrderPage : ComponentBase
 {
-    private string _customerName;
     public string DeliveryAddress;
     public string CustomerName;
     public string DroneInput;
-    public GeoLocation DeliveryLocation;
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
@@ -31,43 +28,33 @@ partial class OrderPage : ComponentBase
 
     private async Task<AddDroneResponse> AddDrone()
     {
-        return await FrontEndToDispatchGateway.AddDrone(new AddDroneRequest
-        {
-            DroneId = BaseEntity.GenerateNewId(),
-            HomeLocation = new GeoLocation {Latitude = 39.74386695629378m, Longitude = -105.00610500179027m},
-            DroneUrl = "http://localhost:85",
-            DispatchUrl = "http://localhost:83"
-        });
+        return await FrontEndToDispatchGateway.AddDrone(DroneInput);
     }
 
-
-    private async Task makeOrder()
+    private async Task MakeOrder()
     {
         var deliveryLocation = await Converter.CoordsFromAddress(DeliveryAddress);
 
-            var orderId = BaseEntity.GenerateNewId();
-
-            await FrontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest
-            {
-                OrderId = orderId,
-                TimeOrdered = DateTime.Now,
-                CustomerName = CustomerName,
-                DeliveryLocation = DeliveryLocation,
-                DeliveryAddress = DeliveryAddress,
-                DroneInput = DroneInput,
-                State = OrderState.Waiting
-            });
-
-            Console.Write("AHHHHHH~~~~~~~~~~");
-
-            var dispatchResponse = FrontEndToDispatchGateway.EnqueueOrder(new EnqueueOrderRequest
-            {
-                OrderLocation = deliveryLocation,
-                OrderId = orderId
-            });
-
-            Console.WriteLine(dispatchResponse);
-            // Navigate to page to display users current order. 
-            NavigationManager.NavigateTo("/userPage", false);
+        var orderId = BaseEntity.GenerateNewId();
+        
+        await FrontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest
+        {
+            OrderId = orderId,
+            TimeOrdered = DateTime.Now,
+            CustomerName = CustomerName,
+            DeliveryLocation = deliveryLocation,
+            DeliveryAddress = DeliveryAddress,
+            DroneInput = DroneInput,
+            State = OrderState.Waiting
+        });
+        
+        //var dispatchResponse = FrontEndToDispatchGateway.EnqueueOrder(new EnqueueOrderRequest
+        //{
+        //    OrderLocation = deliveryLocation,
+        //    OrderId = orderId
+        //});
+        
+        // Navigate to page to display users current order. 
+        NavigationManager.NavigateTo("/tracking", false);
     }
 }

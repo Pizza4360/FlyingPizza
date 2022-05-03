@@ -35,7 +35,6 @@ public class Program
             DatabaseName = databaseName,
             CollectionName = orders
         };
-        builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
         builder.Services.AddSingleton<IOrdersRepository>(provider => new OrderRepository(ordersRepositorySettings));
 
         var fleetRepositorySettings = new RepositorySettings

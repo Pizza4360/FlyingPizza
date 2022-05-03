@@ -11,13 +11,11 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
 {
     private readonly IFleetRepository _fleet;
 
-    public DispatchToSimDroneGateway(IFleetRepository fleet /*, IOrdersRepository orders*/)
+    public DispatchToSimDroneGateway(IFleetRepository fleet)
     {
         _fleet = fleet;
-        // _orders = orders;
     }
 
-    // private IOrdersRepository _orders;
     private async Task<string> Endpoint(string currentDroneId)
     {
         Console.WriteLine($"Getting by drone id {currentDroneId}");

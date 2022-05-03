@@ -1,16 +1,11 @@
-using System.Net.Http.Headers;
 using Domain.DTO;
 using Domain.Entities;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
-using SimDrone.Controllers;
 
 namespace Domain.Services;
 
 public class PingerService : BackgroundService
 {
-    private SimDroneController _controller;
-    private readonly ILogger Logger;
     private string DroneUrl;
     private string DispatchUrl;
     private DroneRecord record;

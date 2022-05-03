@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.FrontEndDispatchCommunication;
@@ -16,31 +15,25 @@ public class DispatchController : ControllerBase
     private readonly DispatchToSimDroneGateway _dispatchToSimDroneGateway;
 
     private readonly IFleetRepository _fleet;
-
-    // private readonly ILogger<DispatchController> _logger;
     private readonly IOrdersRepository _orders;
     private readonly GeoLocation _homeLocation;
     private readonly string _dispatchUrl;
-    private readonly SettingsRepository _settings;
-
-
-    private readonly Stopwatch _stopwatch;
     private bool isInitiatingDrone;
 
-    // private async void DequeueCallback(object _) => await TryDequeueOrders();
     public DispatchController(
         IFleetRepository droneRepo,
-        IOrdersRepository orderRepo,
-        SettingsRepository settings
+        IOrdersRepository orderRepo
     )
     {
-        _settings = settings;
         _dispatchUrl = Environment.GetEnvironmentVariable("DISPATCH_URL") ?? throw new InvalidOperationException(); 
         _fleet = droneRepo;
         _orders = orderRepo;
-        _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(droneRepo /*, orderRepo*/);
-        _stopwatch = new Stopwatch();
-        _stopwatch.Start();
+        _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(droneRepo);
+        _homeLocation = new GeoLocation
+            {
+                Latitude = decimal.Parse(Environment.GetEnvironmentVariable("HOME_LATITUDE")),
+                Longitude = decimal.Parse(Environment.GetEnvironmentVariable("HOME_LONGITUDE"))
+            };
     }
 
     [HttpPost("Revive")]
@@ -104,8 +97,8 @@ public class DispatchController : ControllerBase
     {
         isInitiatingDrone = true;
         addDroneRequest.DispatchUrl = _dispatchUrl;
-        addDroneRequest.HomeLocation = await _settings.GetHomeLocation();
-        Console.WriteLine($"\n\n\n\nDispatchController.AddDrone({addDroneRequest})\n\n\n\n");
+        addDroneRequest.HomeLocation = _homeLocation;
+        addDroneRequest.DroneId = BaseEntity.GenerateNewId();
 
         if ((await _fleet.GetAllAsync())
             .Any(x => x.DroneId == addDroneRequest.DroneId
@@ -208,7 +201,6 @@ public class DispatchController : ControllerBase
     {
         if (request == null)
         {
-            Console.WriteLine("request in Dispatch.InitiateDelivery is null!! ");
             return new AssignDeliveryResponse {DroneId = request.DroneId, Success = false};
         }
 

@@ -1,9 +1,7 @@
 using DatabaseAccess;
 using Dispatch.Services;
-using Domain.DTO;
 using Domain.RepositoryDefinitions;
 
-Console.WriteLine("hello world!!!");
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
     options.AddPolicy("CORS", policy => policy.WithOrigins("https://localhost:44364",
@@ -19,31 +17,14 @@ var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME");
 var fleet = Environment.GetEnvironmentVariable("FLEET_COLLECTION_NAME");
 var orders = Environment.GetEnvironmentVariable("ORDERS_COLLECTION_NAME");
-var settings = Environment.GetEnvironmentVariable("SETTINGS");
 
-Console.WriteLine($"connectionString = {connectionString}" +
-                  $"databaseName = {databaseName}" +
-                  $"fleet = {fleet}" +
-                  $"orders = {orders}" +
-                  $"settings = {settings}");
 #region repositories
-
-
-
 var ordersRepositorySettings = new RepositorySettings
 {
     ConnectionString = connectionString,
     DatabaseName = databaseName,
     CollectionName = orders
 };
-var settingsRepositorySettings = new RepositorySettings
-{
-    ConnectionString = connectionString,
-    DatabaseName = databaseName,
-    CollectionName = settings
-};
-builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton( new SettingsRepository(settingsRepositorySettings));
 builder.Services.AddSingleton<IOrdersRepository>(_ => new OrderRepository(ordersRepositorySettings));
 
 var fleetRepositorySettings = new RepositorySettings
@@ -69,12 +50,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHostedService<PingerService>();
 
-// Get path to file holding connection string
-Console.WriteLine(DateTime.Now);
-
-
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

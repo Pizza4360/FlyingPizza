@@ -15,7 +15,7 @@
 
 <body>
 <script async
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABM05Ov28GgnvCE6fvNUT0hmPB7Ol6kuI&callback=initMap">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABM05Ov28GgnvCE6fvNUT0hmPB7Ol6kuI&callback=initGoogleMap">
 </script>
 <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
 <div id="app">Loading...</div>
@@ -35,16 +35,11 @@
     }
 
     function codeAddress(address) {
-
-        //return address;
-        /*geocoder.geocode(address).then((result) => { const { results } = result;
-            return result; */
         geocoder.geocode({'address': address}, function (results, status) {
             if (status == 'OK') {
                 return "OK"
             } else {
                 return "NOT OK"
-                //alert('Geocode was not successful for the following reason: ' + status);
             }
         })
     }
@@ -222,8 +217,6 @@
         markers[id].setMap(map)
         markers[id].setPosition(new google.maps.LatLng(lat, lng))
     }
-
-    window.initMap = initMap;
 </script>
 </body>
 

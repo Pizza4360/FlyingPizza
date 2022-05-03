@@ -13,7 +13,6 @@ public class SimDroneController : ControllerBase
     private static Drone _drone;
     private static DroneToDispatchGateway _gateway;
     private bool IsInitiatead;
-    private string RecordFile = "DroneRecord.json";
 
     [HttpPost("InitDrone")]
     public async Task<InitDroneResponse> InitDrone(
@@ -35,7 +34,7 @@ public class SimDroneController : ControllerBase
     {
         Console.WriteLine($"SimDroneController.RejoinFleet({request.Record})");
         await JoinFleet(request.Record);
-        _drone.GoHome();
+        await _drone.TravelTo(request.Record.HomeLocation);
     }
     
     
@@ -69,13 +68,6 @@ public class SimDroneController : ControllerBase
     [HttpPost("AssignFleet")]
     public async Task<AssignFleetResponse> AssignFleet(AssignFleetRequest assignFleetRequest)
     {
-        Console.WriteLine($"\nSimDroneController.AssignFleet -> " +
-                          $"CurrentLocation = {assignFleetRequest.HomeLocation}," +
-                          $"Destination = {assignFleetRequest.HomeLocation}," +
-                          $"DispatchUrl = {assignFleetRequest.DispatchUrl}," +
-                          $"DroneUrl = {assignFleetRequest.DroneUrl}," +
-                          $"HomeLocation = {assignFleetRequest.HomeLocation}," +
-                          $"{assignFleetRequest.ToJson()}");
         // Console.WriteLine($"{assignFleetRequest.DispatchUrl}");
         var droneRecord = new DroneRecord
         {
@@ -103,7 +95,7 @@ public class SimDroneController : ControllerBase
     [NonAction]
     private Task JoinFleet(DroneRecord record)
     {
-        _drone = new Drone(record,this);
+        _drone = new Drone(record, _gateway, this);
         _gateway = new DroneToDispatchGateway(record.DispatchUrl);
         return Task.CompletedTask;
     }
@@ -112,22 +104,26 @@ public class SimDroneController : ControllerBase
     private async Task PersistRecord(DroneRecord droneRecord)
     {
         Console.WriteLine("\nSaving drone state...");
-        RecordFile = "test.txt";
-        if (!System.IO.File.Exists(RecordFile))
+
+        FileStream file;
+        if (!System.IO.File.Exists(DroneRecord.File()))
         {
-            System.IO.File.Create(RecordFile);
+            file = System.IO.File.Create(DroneRecord.File());
         }
-        await using var writer = new StreamWriter(RecordFile, false);
+        else
+        {
+            file = System.IO.File.Open(DroneRecord.File(), FileMode.Open);
+        }
+        await using var writer = new StreamWriter(file);
         await writer.WriteAsync(_drone.ToJson());
         writer.Close();
+        file.Close();
     }
 
 
     [HttpPost("AssignDelivery")]
-    public async Task<AssignDeliveryResponse> AssignDelivery(
-        AssignDeliveryRequest assignDeliveryRequest)
+    public async Task<AssignDeliveryResponse> AssignDelivery(AssignDeliveryRequest assignDeliveryRequest)
     {
-        Console.WriteLine($"SimDroneController.AssignDelivery -> {assignDeliveryRequest}");
         return await _drone.DeliverOrder(assignDeliveryRequest);
     }
 

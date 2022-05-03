@@ -1,8 +1,8 @@
-using System.Diagnostics;
 using DecimalMath;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using Domain.GatewayDefinitions;
 using MongoDB.Bson;
 using SimDrone.Controllers;
 
@@ -16,7 +16,7 @@ public class Drone : DroneRecord
     private const decimal RadToDegFactor = 180 / DecimalEx.Pi;
 
     private readonly SimDroneController _controller;
-    public Drone(DroneRecord record, SimDroneController controller)
+    public Drone(DroneRecord record, IBaseGateway<SimDroneController> gateway, SimDroneController controller)
     {
         DroneId = record.DroneId;
         HomeLocation = record.HomeLocation;
@@ -25,7 +25,6 @@ public class Drone : DroneRecord
         State = DroneState.Ready;
         CurrentLocation = HomeLocation;
         Destination = record.Destination;
-        DispatchUrl = record.DispatchUrl;
     }
 
     public override string ToString()
@@ -64,10 +63,10 @@ public class Drone : DroneRecord
         return response;
     }
 
-    private void UpdateLocation(GeoLocation location, bool sendUpdateToDispatch = true)
+    private void UpdateLocation(GeoLocation location)
     {
         CurrentLocation = location;
-        if (sendUpdateToDispatch) PatchDroneStatus();
+        PatchDroneStatus();
     }
 
     private async Task<UpdateDroneStatusResponse?> UpdateStatus(DroneState state)
@@ -149,24 +148,22 @@ public class Drone : DroneRecord
         return ToDegrees(DecimalEx.ATan2(dLong, dPhi) + 360.0m) % 360;
     }
 
-    private async Task TravelTo(GeoLocation endingLocation)
+    public async Task TravelTo(GeoLocation endingLocation)
     {
         Console.WriteLine($"Starting at {CurrentLocation.Latitude}");
         var buffer = new GeoLocation[5];
         buffer[0] = CurrentLocation;
-        Stopwatch stopwatch = new Stopwatch();
-        stopwatch.Start();
         for (var i = 0; !CurrentLocation.Equals(endingLocation); i++)
         {
+            Console.WriteLine($"{HaversineInMeters(CurrentLocation, endingLocation)} meters away");
             var bearing = Bearing(CurrentLocation.Latitude, CurrentLocation.Longitude, endingLocation.Latitude,
                 endingLocation.Longitude);
-            // Console.WriteLine($"bearing between = {bearing}");
+            Console.WriteLine($"bearing between = {bearing}");
             buffer[i % 5] = CurrentLocation = GetNextLocation(CurrentLocation, bearing, DroneStepSizeInKilometers);
-            // Console.WriteLine($"{CurrentLocation}");
-            // if (i % 300 != 0) continue;
-            UpdateLocation(CurrentLocation, stopwatch.ElapsedMilliseconds <= 2000);
-            Console.WriteLine($"{HaversineInMeters(CurrentLocation, endingLocation)} meters away");
-            // Thread.Sleep(2000);
+            Console.WriteLine($"{CurrentLocation}");
+            if (i % 100 != 0) continue;
+            UpdateLocation(CurrentLocation);
+            Thread.Sleep(500);
         }
     }
 
@@ -183,7 +180,9 @@ public class Drone : DroneRecord
                 Time = DateTime.Now
             });
         Console.WriteLine("Done with delivery, returning home.");
-        GoHome();
+        await UpdateStatus(DroneState.Returning);
+        await TravelTo(HomeLocation);
+        await UpdateStatus(DroneState.Ready);
         OrderId = request.OrderId;
         return new AssignDeliveryResponse
         {
@@ -191,12 +190,5 @@ public class Drone : DroneRecord
             OrderId = OrderId,
             Success = true
         };
-    }
-
-    public async Task GoHome()
-    {
-        await UpdateStatus(DroneState.Returning);
-        await TravelTo(HomeLocation);
-        await UpdateStatus(DroneState.Ready);
     }
 }

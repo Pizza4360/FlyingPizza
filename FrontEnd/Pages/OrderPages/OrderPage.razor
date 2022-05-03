@@ -20,7 +20,7 @@
     <b>Drone Input: </b>
     <RadzenTextBox id="drone_url" Style="width: 200px" Placeholder="..." AutoComplete="false" @oninput=@(e => DroneInput = e.Value.ToString()) />
     <br />
-    <RadzenButton id="ORDER_SUBMIT" Click=@(args => makeOrder()) Style="width: 200px" Text="Create Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
+    <RadzenButton id="ORDER_SUBMIT" Click=@(args => MakeOrder()) Style="width: 200px" Text="Create Order" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
     <RadzenButton id="ADD_DRONE" Click=@(args => AddDrone()) Style="width: 200px" Text="ADD DRONE" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Primary" />
 
 </div>
