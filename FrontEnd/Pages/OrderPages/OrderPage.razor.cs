@@ -20,6 +20,7 @@ partial class OrderPage : ComponentBase
     public string DeliveryAddress;
     public string CustomerName;
     public DroneRecord[] Fleet;
+    public Order[] Orders;
     public bool connection;
     public int counter = 0;
     protected override async Task OnInitializedAsync()
@@ -29,6 +30,8 @@ partial class OrderPage : ComponentBase
             _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
             _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
             converter = new ConvertAddressToGeoLocation();
+
+            Orders = (await _frontEndToDatabaseGateway.GetOrder()).ToArray();
             Fleet = (await _frontEndToDatabaseGateway.GetFleet()).ToArray();
             connection = true;
         }
@@ -78,5 +81,10 @@ partial class OrderPage : ComponentBase
             
         Console.WriteLine(dispatchResponse);
 
+    }
+
+    public string Color(DroneRecord drone)
+    {
+        return drone.State.GetColor();
     }
 }

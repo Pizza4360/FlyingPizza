@@ -4,53 +4,65 @@
     padding: 0px;
 }
 
-.sub-container {
+.btn {
+    background-color: #3f7cac;
+    border-radius: 0.5rem;
+    color: white;
+    text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.grid-container {
     float: left;
     width: 50%;
-    min-width: 490px;
-    display: flex;
     height: 750px;
-    margin-right: 0.25rem;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 70px auto;
     border-radius: 0.5rem;
     background-color: #1e1e24;
 }
 
-.side-bar {
-float: left;
-flex-shrink: 1;
-min-width: 360px;
+.container-title {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    height: 60px;
+    border-radius: 0.5rem;
+    background-color: #35353a;
+    padding-left: 0.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin: 0.5rem 0.5rem 1rem 0.5rem;
+    color: white;
+    text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+    font-size: 24px;
+    font-weight: 700;
 }
 
-    .side-bar .title {
-        height: 60px;
-        border-radius: 0.5rem;
-        background-color: #35353a;
-        padding-left: 0.5rem;
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-        margin: 0.5rem 0.25rem 1rem 0.5rem;
-        color: white;
-        text-shadow: 0 2px 2px rgba(0,0,0,0.5);
-        font-size: 24px;
-        font-weight: 700;
-    }
 
-    .side-bar .input {
-        border-radius: 0.5rem;
-        background-color: #35353a;
-        box-shadow: 0 3px 4px rgba(0,0,0,0.4);
-        margin: 1rem 0.25rem 1rem 0.5rem;
-        padding: 0.5rem !important;
-        line-height: 3;
-        text-align: right;
-        color: white;
-    }
+.input {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    border-radius: 0.5rem;
+    background-color: #35353a;
+    box-shadow: 0 3px 4px rgba(0,0,0,0.4);
+    margin: 1rem 0.25rem 1rem 0.5rem;
+    padding: 0.5rem !important;
+    line-height: 3;
+    text-align: right;
+    color: white;
+}
 
 .info-cards {
-    width: 50%;
+    grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 4;
+    height: 650px;
     border-radius: 0.5rem;
     background-color: #1e1e24;
-    margin: 0.5rem 0.5rem 0.5rem 0.25rem;
+    margin: 1rem 0.5rem 0.5rem 0.25rem;
     color: white;
     text-shadow: 0 2px 2px rgba(0,0,0,0.5);
     font-size: 24px;
@@ -88,7 +100,7 @@ min-width: 360px;
     }
 
     .drone-fleet > li {
-        width: 300px;
+        width: 322px;
         height: 10rem !important;
         position: relative;
         z-index: 0;
