@@ -13,19 +13,39 @@ partial class OrderPage : ComponentBase
 {
     public string DeliveryAddress;
     public string CustomerName;
-    public string DroneInput;
+    public DroneRecord[] Fleet;
+    public Order[] Orders;
+    public bool connection;
+    public Order selectedOrder;
+    public string visibility = "hidden";
+    public string orderToCancel;
+    public string defaultText = "";
 
-    [Inject] public IJSRuntime JsRuntime { get; set; }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender) await JsRuntime.InvokeVoidAsync("initGeocoder");
+        try
+        {
+            _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
+            _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
+            converter = new ConvertAddressToGeoLocation();
+            await GetOrders();
+            await GetFleet();
+            connection = true;
+        }
+        catch
+        {
+
+        }
     }
 
-    protected override void OnInitialized()
+    public async Task GetOrders()
     {
+        Orders = (await _frontEndToDatabaseGateway.GetOrder()).ToArray();
     }
 
+    public async Task GetFleet()
+    {
+        Fleet = (await _frontEndToDatabaseGateway.GetFleet()).ToArray();
     private async Task<AddDroneResponse> AddDrone()
     {
         return await FrontEndToDispatchGateway.AddDrone(DroneInput);
@@ -47,14 +67,44 @@ partial class OrderPage : ComponentBase
             DroneInput = DroneInput,
             State = OrderState.Waiting
         });
-        
-        //var dispatchResponse = FrontEndToDispatchGateway.EnqueueOrder(new EnqueueOrderRequest
-        //{
-        //    OrderLocation = deliveryLocation,
-        //    OrderId = orderId
-        //});
-        
-        // Navigate to page to display users current order. 
-        // NavigationManager.NavigateTo("/tracking", false);
+            
+        Console.WriteLine(dispatchResponse);
+
+    }
+
+    public async Task CancelOrder()
+    {
+        if (orderToCancel == null)
+        {
+            orderToCancel = selectedOrder.Id;
+        }
+        defaultText = orderToCancel;
+
+        var dispatchResponse = await _frontEndToDatabaseGateway.CancelOrder(new CancelDeliveryRequest
+        {
+           OrderId = orderToCancel
+        });
+        await GetOrders();
+        orderToCancel = null;
+        defaultText = "";
+        Console.WriteLine(dispatchResponse);
+    }
+
+    public void OnInfoClose(){
+        visibility = "hidden";
+        defaultText = "";
+        selectedOrder = null;
+    }
+
+    public void DisplaySelected(Order selected)
+    {
+        selectedOrder = selected;
+        defaultText = selectedOrder.Id;
+        visibility = "visible";
+    }
+
+    public string Color(DroneRecord drone)
+    {
+        return drone.State.GetColor();
     }
 }

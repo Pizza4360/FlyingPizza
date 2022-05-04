@@ -31,6 +31,15 @@ public class DatabaseAccess : ControllerBase
         return fleet;
     }
 
+    [HttpGet("GetOrder")]
+    public async Task<List<Order>> GetOrder()
+    {
+        Console.WriteLine("got a request to get the orders...");
+        var orders = await _orders.GetAllAsync();
+        Console.WriteLine("Got back" + string.Join("\n", orders));
+        return orders;
+    }
+
     [HttpPost("CreateOrder")]
     public async Task<CreateOrderResponse> CreateOrder(Order order)
     {
