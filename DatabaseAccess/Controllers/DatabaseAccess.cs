@@ -41,6 +41,14 @@ public class DatabaseAccess : ControllerBase
         return orders;
     }
 
+    [HttpPost("CancelOrder")]
+    public async Task<CancelDeliveryResponse> CancelOrder(string OrderId)
+    {
+        Console.WriteLine("got a request to get the orders...");
+        await _orders.RemoveAsync(OrderId);
+        return new CancelDeliveryResponse();
+    }
+
     [HttpPost("CreateOrder")]
     public async Task<CreateOrderResponse> CreateOrder(Order order)
     {

@@ -41,6 +41,9 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
 
     }
 
+    public async Task<CancelDeliveryResponse> CancelOrder(CancelDeliveryRequest request)
+        => await SendMessagePost<CancelDeliveryRequest, CancelDeliveryResponse>($"{DispatchUrl}/CancelOrder", request);
+
     public async Task<DroneRecord> GetDrone(string id)
         => await SendMessagePost<string, DroneRecord>($"{DispatchUrl}/GetDrone", id);
 }

@@ -37,25 +37,32 @@
                     <b>Address: </b> 
                     <RadzenTextBox id="ADDRESS" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => DeliveryAddress = e.Value.ToString()) />
                     <br />     
-                    <button class="btn" style="width: 190px" @onclick=@makeOrder> Create Order </button>
+                    <button class="btn" style="width: 190px" @onclick=@MakeOrder> Create Order </button>
                 </div>
 
                 <div class="input" style="height: 130px">
                     <b>Order Id: </b>
-                    <RadzenTextBox id="CUST_NAME" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => CustomerName = e.Value.ToString()) />  
-                    <br />
-                    <button class="btn" style="width: 190px"> Cancel Order </button>
+                    @if (selectedOrder != null)
+                    {
+                    <RadzenTextBox value="@defaultText" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => orderToCancel = e.Value.ToString()) />
+
+                } else
+                {
+                    <RadzenTextBox value="@defaultText" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => orderToCancel = e.Value.ToString()) />
+                }
+                <br />
+                    <button class="btn" style="width: 190px" @onclick=@CancelOrder> Cancel Order </button>
                 </div>
 
                 <div class ="input" style="visibility: @visibility; text-align: left; font-size: 20px; line-height: 2;">
                     <div class="exit">
-                        <button class="btn" style="padding: 0px 4px 0px 4px;" @onclick=@(args => @visibility = "hidden")>X</button>
+                        <button class="btn" style="padding: 0px 4px 0px 4px; float:right;" @onclick=@OnInfoClose>X</button>
 
                     </div>
 
                     @if (selectedOrder != null)
                     {
-                        <div>ID: @selectedOrder.BadgeNumber</div>
+                        <div>ID: @selectedOrder.Id</div>
                         <div>Delivery Location: @selectedOrder.DeliveryAddress</div>
                         <div>Customer Name: @selectedOrder.CustomerName</div>
                         <div>Order Time: @selectedOrder.TimeOrdered</div>
@@ -72,9 +79,9 @@
                         @foreach (var order in Orders)
                         {
                             <!--Creates a block for each drone with id, status, more info button and a drone img-->
-                            <li style="background-image: url('../images/order.jpg')" @onclick="@(args => displaySelected(@order))">
+                            <li style="background-image: url('../images/order.jpg')" @onclick="@(args => DisplaySelected(@order))">
                                 <div class="drone-status">
-                                    <span class="title" >Order ID: @order.BadgeNumber.ToString().Substring(0, 8)...</span>
+                                    <span class="title" >Order ID: @order.Id.Substring(0,8)...</span>
                                     <span class="address">@order.DeliveryAddress</span>                                  
                                 </div>
                             </li>
@@ -91,7 +98,7 @@
                 <b>Drone Url: </b>
                 <RadzenTextBox id="CUST_NAME" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => CustomerName = e.Value.ToString()) />
                 <br />   
-                <button class="btn" style="width: 190px"> Add Drone </button>
+                <button class="btn" style="width: 190px" @onclick=@AddDrone> Add Drone </button>
             </div>
 
             <div class="input" style="height: 120px">

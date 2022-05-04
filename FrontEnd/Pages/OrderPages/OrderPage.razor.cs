@@ -25,7 +25,9 @@ partial class OrderPage : ComponentBase
     public bool connection;
     public Order selectedOrder;
     public string visibility = "hidden";
-    public string placeholder = "...";
+    public string orderToCancel;
+    public string defaultText = "";
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -33,25 +35,28 @@ partial class OrderPage : ComponentBase
             _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
             _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
             converter = new ConvertAddressToGeoLocation();
-
-            Orders = (await _frontEndToDatabaseGateway.GetOrder()).ToArray();
-            Fleet = (await _frontEndToDatabaseGateway.GetFleet()).ToArray();
+            await GetOrders();
+            await GetFleet();
             connection = true;
         }
         catch
         {
 
         }
-
     }
 
-    public void displaySelected(Order selected) {
-        selectedOrder = selected;
-        visibility = "visible";
+    public async Task GetOrders()
+    {
+        Orders = (await _frontEndToDatabaseGateway.GetOrder()).ToArray();
+    }
+
+    public async Task GetFleet()
+    {
+        Fleet = (await _frontEndToDatabaseGateway.GetFleet()).ToArray();
     }
 
     public async Task<AddDroneResponse> AddDrone() {
-        return await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
+        var response = await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
         {
             DroneId = BaseEntity.GenerateNewId(),
             BadgeNumber = Guid.NewGuid(),
@@ -59,9 +64,11 @@ partial class OrderPage : ComponentBase
             DroneUrl = "http://localhost:85",
             DispatchUrl = "http://localhost:83"
         });
-        
+        await GetFleet();
+        return response;
     }
-    public async Task makeOrder()
+
+    public async Task MakeOrder()
     {
 
         var DeliveryLocation = await converter.CoordsFromAddress(DeliveryAddress);
@@ -76,6 +83,8 @@ partial class OrderPage : ComponentBase
             DeliveryAddress = DeliveryAddress
         });
 
+        await GetOrders();
+
         var dispatchResponse = _gateway.EnqueueOrder(new EnqueueOrderRequest
         {
             OrderLocation = DeliveryLocation,
@@ -84,6 +93,37 @@ partial class OrderPage : ComponentBase
             
         Console.WriteLine(dispatchResponse);
 
+    }
+
+    public async Task CancelOrder()
+    {
+        if (orderToCancel == null)
+        {
+            orderToCancel = selectedOrder.Id;
+        }
+        defaultText = orderToCancel;
+
+        var dispatchResponse = await _frontEndToDatabaseGateway.CancelOrder(new CancelDeliveryRequest
+        {
+           OrderId = orderToCancel
+        });
+        await GetOrders();
+        orderToCancel = null;
+        defaultText = "";
+        Console.WriteLine(dispatchResponse);
+    }
+
+    public void OnInfoClose(){
+        visibility = "hidden";
+        defaultText = "";
+        selectedOrder = null;
+    }
+
+    public void DisplaySelected(Order selected)
+    {
+        selectedOrder = selected;
+        defaultText = selectedOrder.Id;
+        visibility = "visible";
     }
 
     public string Color(DroneRecord drone)
