@@ -55,6 +55,6 @@ partial class OrderPage : ComponentBase
         //});
         
         // Navigate to page to display users current order. 
-        NavigationManager.NavigateTo("/tracking", false);
+        // NavigationManager.NavigateTo("/tracking", false);
     }
 }

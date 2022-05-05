@@ -15,7 +15,6 @@ partial class TrackingPage : ComponentBase
 {
     private const int RefreshInterval = 2000;
     private Stopwatch _stopwatch;
-    private int _stopwatchInterval = 10000;
     private Timer _timer;
     public bool connection;
     public string dropDownLabel;
@@ -60,6 +59,7 @@ partial class TrackingPage : ComponentBase
         }
         catch
         {
+            // ignored
         }
     }
 
@@ -74,8 +74,8 @@ partial class TrackingPage : ComponentBase
         var markers = droneRecords.Select(x =>
             new JsMarker
             {
-                lat = (double) x.CurrentLocation.Latitude,
-                lng = (double) x.CurrentLocation.Longitude,
+                lat = x.CurrentLocation.Latitude,
+                lng = x.CurrentLocation.Longitude,
                 title = x.Id,
                 color = x.State.GetColor()
             }).ToDictionary(x => x.title, x => x);
@@ -90,8 +90,8 @@ partial class TrackingPage : ComponentBase
     public class JsMarker
     {
         public string title { get; set; }
-        public double lat { get; set; }
-        public double lng { get; set; }
+        public decimal lat { get; set; }
+        public decimal lng { get; set; }
         public string color { get; set; }
     }
 }

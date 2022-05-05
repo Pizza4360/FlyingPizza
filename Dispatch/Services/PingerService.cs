@@ -18,14 +18,14 @@ public class PingerService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var _httpClient = new HttpClient();
-        var DispatchUrl = "http://localhost:83" + "/Dispatch";
+        var DispatchUrl = "http://localhost:83/Dispatch";
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(3000, stoppingToken);
             try
             {
                 _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var t = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/AssgnmentCheck/", new PingDto {S = "Hi"},
+                var t = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/AssignmentCheck/", new PingDto {S = "Hi"},
                     stoppingToken);
                 // var pingTask = Pinger.SendPingAsync(IPAddress.Parse("192.168.1.100:83//Ping"), 5000);
                 var cancelTask = Task.Delay(5000, stoppingToken);
