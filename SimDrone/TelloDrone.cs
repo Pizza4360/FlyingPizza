@@ -1,9 +1,11 @@
-/*using System.Net;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Domain.DTO;
+using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
-using Domain.InterfaceImplementations.Gateways;
+using Domain.GatewayDefinitions;
+using SimDrone.Controllers;
 
 namespace SimDrone;
 
@@ -42,11 +44,10 @@ public class TelloDrone : Drone
         return value / LongToCm;
     }
 
-    public TelloDrone(DroneRecord record, DroneToDispatchGateway gateway, bool offline = true) : base(record, gateway)
+    public TelloDrone(DroneRecord record,IDroneToDispatchGateway gateway, SimDroneController controller, bool offline = true) : base(record,gateway,controller)
     {
         Route = new List<GeoLocation>();
         Id = record.Id;
-        BadgeNumber = record.BadgeNumber;
         State = DroneState.Ready;
         CurrentLocation = record.HomeLocation;
         Destination = record.Destination;
@@ -78,6 +79,17 @@ public class TelloDrone : Drone
         PointToTelloCommands(HomeLocation.Latitude, HomeLocation.Longitude);
         return Route.ToArray();
 
+    }
+
+    public new async Task<AssignDeliveryResponse> DeliverOrder(AssignDeliveryRequest request)
+    {
+        var successful = DeliverOrder(request.OrderLocation);
+        return new AssignDeliveryResponse
+        {
+            DroneId = request.DroneId,
+            OrderId = request.OrderId,
+            Success = successful
+        };
     }
 
     public bool DeliverOrder(GeoLocation customerLocation)
@@ -178,9 +190,9 @@ public class TelloDrone : Drone
 
                 tempY += amount;
                 tempCommand = _direction + amount;
-                amount = 0;
                 commands.Add(tempCommand);
                 Route.Add(new GeoLocation {Latitude = CmToArc(tempX), Longitude = CmToArc(tempY)});
+                amount = 0;
             }
 
             amount = 0;
@@ -202,10 +214,10 @@ public class TelloDrone : Drone
                 }
 
                 tempX -= amount;
-                amount = 0;
                 tempCommand = _direction + amount;
                 commands.Add(tempCommand);
                 Route.Add(new GeoLocation {Latitude = CmToArc(tempX), Longitude = CmToArc(tempY)});
+                amount = 0;
             }
 
             amount = 0;
@@ -227,10 +239,11 @@ public class TelloDrone : Drone
                 }
 
                 tempX += amount;
-                amount = 0;
+
                 tempCommand = _direction + amount;
                 commands.Add(tempCommand);
                 Route.Add(new GeoLocation {Latitude = CmToArc(tempX), Longitude = CmToArc(tempY)});
+                amount = 0;
             }
 
 
@@ -252,10 +265,10 @@ public class TelloDrone : Drone
                 }
 
                 tempY -= amount;
-                amount = 0;
                 tempCommand = _direction + amount;
                 commands.Add(tempCommand);
                 Route.Add(new GeoLocation {Latitude = CmToArc(tempX), Longitude = CmToArc(tempY)});
+                amount = 0;
             }
 
             amount = 0;
@@ -266,12 +279,13 @@ public class TelloDrone : Drone
                 Longitude = CmToArc(tempY)
             };
         }
+        Console.WriteLine(string.Join("\n", commands));
         return commands.ToArray();
     }
 
     public override string ToString()
     {
-        return $"ID:{BadgeNumber}\nlocation:{CurrentLocation}\nDestination:{Destination}\nStatus:{State}";
+        return $"location:{CurrentLocation}\nDestination:{Destination}\nStatus:{State}";
     }
     
    
@@ -366,14 +380,10 @@ public class TelloDrone : Drone
         await _socket?.SendAsync(bytes, bytes.Length)!;
         var response = await _socket.ReceiveAsync();
         var telloResp = Encoding.ASCII.GetChars(response.Buffer);
-        Console.WriteLine(telloResp.ToString());
-        if (telloResp.ToString() == "error")
-        {
-            return false;
-        }
-
-        return true;
+        var responseString = new string(telloResp);
+        Console.WriteLine(responseString);
+        return responseString.Contains("ok");
+        // If ok is not sent, an error or invalid command occurs, shuts down automatically
     }
 
-}*/
-
+}
