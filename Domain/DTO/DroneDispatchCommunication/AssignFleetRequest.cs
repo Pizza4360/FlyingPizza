@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
@@ -9,14 +8,11 @@ public class AssignFleetRequest
     public string DroneId { get; set; }
 
     [JsonPropertyName("DroneUrl")]
-    public string DroneIp {get;set;}
-            
-    [JsonPropertyName("DispatchUrl")]
-    public string DispatchIp{get;set;}
+    public string DroneUrl { get; set; }
 
-    [JsonPropertyName("BadgeNumber")]
-    public Guid BadgeNumber { get; set; }    
-            
+    [JsonPropertyName("DispatchUrl")]
+    public string DispatchUrl { get; set; }
+    
     [JsonPropertyName("HomeLocation")]
     public GeoLocation HomeLocation { get; set; }
 }

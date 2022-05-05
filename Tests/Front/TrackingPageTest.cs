@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Bunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xunit;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Radzen;
-using Radzen.Blazor;
+using TestContext = Bunit.TestContext;
 
 namespace Tests.Front;
-[TestClass]
 
+[TestClass]
 public class TrackingPageTest
 {
     [Fact]
     public static void TestTrackingPage()
     {
-        using var cxt = new Bunit.TestContext();
-        
-        
+        using var cxt = new TestContext();
     }
-
 }

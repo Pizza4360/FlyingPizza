@@ -12,60 +12,93 @@ namespace Dispatch.Controllers;
 [Route("[controller]")]
 public class DispatchController : ControllerBase
 {
-    // private readonly ILogger<DispatchController> _logger;
-    private readonly GeoLocation _homeLocation;
-    private readonly Queue<AssignDeliveryRequest> _unfilledOrders;
+    private readonly DispatchToSimDroneGateway _dispatchToSimDroneGateway;
+
     private readonly IFleetRepository _fleet;
     private readonly IOrdersRepository _orders;
-    private readonly DispatchToSimDroneGateway _dispatchToSimDroneGateway;
-        
+    private readonly GeoLocation _homeLocation;
+    private readonly string _dispatchUrl;
+    private bool isInitiatingDrone;
+
     public DispatchController(
         IFleetRepository droneRepo,
-        // DroneGateway droneGateway,
         IOrdersRepository orderRepo
-        // GeoLocation homeLocation,
-        // Queue<AssignDeliveryRequest> unfilledOrders
-        )
+    )
     {
+        _dispatchUrl = Environment.GetEnvironmentVariable("DISPATCH_URL") ?? throw new InvalidOperationException(); 
         _fleet = droneRepo;
         _orders = orderRepo;
-        _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(droneRepo/*, orderRepo*/);
-        _unfilledOrders = new Queue<AssignDeliveryRequest>();
+        _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(droneRepo);
         _homeLocation = new GeoLocation
-        {
-            Latitude = 39.74364421910773m,
-            Longitude = -105.00858710385576m
-        };
+            {
+                Latitude = decimal.Parse(Environment.GetEnvironmentVariable("HOME_LATITUDE")),
+                Longitude = decimal.Parse(Environment.GetEnvironmentVariable("HOME_LONGITUDE"))
+            };
     }
 
-        
-    [HttpPost("Ping")]
-    public async Task<string> Ping(PingDto name)
+    [HttpPost("Revive")]
+    public async Task<bool> Revive(DroneRecord record)
     {
-        var greeting = $"Hello, {name} from Dispatch";
-        // Response.AppendHeader("Access-Control-Allow-Origin", "*");
-        // .WriteAsJsonAsync() 
-        Console.WriteLine(greeting);
-        return greeting;
+        var unsuccessful = true;
+        Console.WriteLine("\n\nGot a request to revive a drone.");
+        var possibleDrones = (await _fleet.GetAllAsync()).Where(x => x.DroneId.Equals(record.DroneId)).ToList();
+        Console.WriteLine($"Possible drones are: [{string.Join(",", possibleDrones)}]");
+        if (!possibleDrones.Any()) {
+            Console.WriteLine($"All my drones are active right now.  Super suspicious..\ndrone -> {record.ToJson()}");
+        } 
+        else if (possibleDrones.Count > 1)
+        {
+            Console.WriteLine("More than one drone is defined with that ID. Super ambiguous and suspicious...");
+        }
+        else
+        {
+            Console.WriteLine($"\nDrone matched {record.DroneId}. Reviving drone.");
+            record.State = DroneState.Ready;
+            await _fleet.UpdateAsync(record.Update());
+            unsuccessful = false;
+        }
+
+        return unsuccessful;
     }
-    
+
+    [HttpPost("AssignmentCheck")]
+    public async Task<PingDto> AssignmentCheck(PingDto p)
+    {
+        if (isInitiatingDrone) return p;
+        var orders = (from o in await GetUnfulfilledOrders() where string.IsNullOrEmpty(o.DroneId) select o).ToList();
+        var availableDrones =
+            (from d in await GetAvailableDrones() where string.IsNullOrEmpty(d.OrderId) select d).ToList();
+        var unfulfilledOrders = await GetUnfulfilledOrders();
+        foreach (var (drone, order) in availableDrones.Zip(unfulfilledOrders))
+        {
+            var assignment = new AssignDeliveryRequest
+                {DroneId = drone.DroneId, OrderId = order.OrderId, OrderLocation = order.DeliveryLocation};
+            InitiateDelivery(assignment);
+        }
+        return p;
+    }
+
     [HttpPost("AddDrone")]
     public async Task<AddDroneResponse> AddDrone(AddDroneRequest addDroneRequest)
     {
-        Console.WriteLine($"DispatchController.AddDrone({addDroneRequest})");
+        isInitiatingDrone = true;
+        addDroneRequest.DispatchUrl = _dispatchUrl;
+        addDroneRequest.HomeLocation = _homeLocation;
+        addDroneRequest.DroneId = BaseEntity.GenerateNewId();
 
-        if((await _fleet.GetAllAsync())
-           .Any(x => x.BadgeNumber == addDroneRequest.BadgeNumber 
-                  || x.DroneUrl == addDroneRequest.DroneUrl
-                  || x.DroneId == addDroneRequest.DroneUrl))
+        if ((await _fleet.GetAllAsync())
+            .Any(x => x.DroneId == addDroneRequest.DroneId
+                      || x.DroneUrl == addDroneRequest.DroneUrl
+                      || x.DroneId == addDroneRequest.DroneUrl))
         {
             Console.WriteLine("Either the DroneUrl or DroneId you are trying to use is taken by another drone.");
             return new AddDroneResponse
             {
-                BadgeNumber = addDroneRequest.BadgeNumber,
+                DroneId = addDroneRequest.DroneId,
                 Success = false
             };
         }
+
         var initDroneRequest = new InitDroneRequest
         {
             DroneId = addDroneRequest.DroneId,
@@ -73,151 +106,188 @@ public class DispatchController : ControllerBase
         };
 
         var initDroneResponse = _dispatchToSimDroneGateway
-           .InitDrone( initDroneRequest ).Result;
-        Console.WriteLine($"Response from _dispatchToSimDroneGateway.InitDrone({initDroneRequest})\n\t->{{DroneId:{initDroneResponse.DroneId},Okay:{initDroneResponse.Okay}}}");
+            .InitDrone(initDroneRequest).Result;
+        Console.WriteLine(
+            $"\n\n\n\nResponse from _dispatchToSimDroneGateway.InitDrone({initDroneRequest})\n\t->{{DroneId:{initDroneResponse.DroneId},Okay:{initDroneResponse.Okay}}}\n\n\n\n");
         if (!initDroneResponse.Okay)
-        {
-            return new AddDroneResponse { BadgeNumber = addDroneRequest.BadgeNumber, Success = false };
-        }
+            return new AddDroneResponse {DroneId = addDroneRequest.DroneId, Success = false};
 
         var assignFleetRequest = new AssignFleetRequest
         {
             DroneId = addDroneRequest.DroneId,
-            DroneIp = addDroneRequest.DroneUrl,
-            DispatchIp = addDroneRequest.DispatchUrl,
-            BadgeNumber = addDroneRequest.BadgeNumber,
+            DroneUrl = addDroneRequest.DroneUrl,
+            DispatchUrl = addDroneRequest.DispatchUrl,
             HomeLocation = addDroneRequest.HomeLocation
         };
 
-        Console.WriteLine($"Proceeding with _dispatchToSimDroneGateway.AssignFleet({assignFleetRequest.ToJson()}");
+        Console.WriteLine($"\n\n\n\nProceeding with _dispatchToSimDroneGateway.AssignFleet({assignFleetRequest.ToJson()}\n\n\n\n");
         var assignFleetResponse = _dispatchToSimDroneGateway.AssignFleet(assignFleetRequest).Result;
-        var responseString = assignFleetResponse != null ? assignFleetResponse.IsInitializedAndAssigned.ToString() : "null";
-        Console.WriteLine($"\t_dispatchToSimDroneGateway.AssignFleet - response -> {responseString}");
+        var responseString = assignFleetResponse != null
+            ? assignFleetResponse.IsInitializedAndAssigned.ToString()
+            : "null";
+        Console.WriteLine($"\n\n\n\n_dispatchToSimDroneGateway.AssignFleet - response -> {responseString}\n\n\n\n");
 
-        if(assignFleetResponse is {IsInitializedAndAssigned: false})
+        if (assignFleetResponse is {IsInitializedAndAssigned: false})
         {
-            Console.WriteLine($"FAILURE! new drone {addDroneRequest.BadgeNumber} was not initiated.");
+            Console.WriteLine($"FAILURE! new drone {addDroneRequest.DroneId} was not initiated.");
             return new AddDroneResponse
             {
-                BadgeNumber = addDroneRequest.BadgeNumber,
+                DroneId = addDroneRequest.DroneId,
                 Success = false
             };
         }
-        Console.WriteLine($"success! Saving new drone {addDroneRequest.BadgeNumber} to repository.");
+
+        Console.WriteLine($"\n\n\n\nsuccess! Saving new drone {addDroneRequest.DroneId} to repository.\n\n\n\n");
 
         var droneRecord = new DroneRecord
         {
-            OrderId = null,
-            DroneId = addDroneRequest.DroneId,
+            OrderId = "",
             DroneUrl = addDroneRequest.DroneUrl,
-            BadgeNumber = addDroneRequest.BadgeNumber,
+            DroneId = addDroneRequest.DroneId,
             Destination = addDroneRequest.HomeLocation,
             CurrentLocation = addDroneRequest.HomeLocation,
             HomeLocation = addDroneRequest.HomeLocation,
             DispatchUrl = addDroneRequest.DispatchUrl,
-            State = assignFleetResponse.FirstState
+            State = DroneState.Ready
         };
 
         await _fleet.CreateAsync(
             droneRecord);
 
         Console.WriteLine($"\n\n\n\nabout to YEET this drone record:\n{droneRecord.ToJson()}");
+        isInitiatingDrone = false;
         return new AddDroneResponse
         {
-            BadgeNumber = addDroneRequest.BadgeNumber,
+            DroneId = addDroneRequest.DroneId,
             Success = true
         };
     }
-    
+
     [HttpPost("CompleteOrder")]
-    public async Task<bool> CompleteOrder(CompleteOrderRequest completeOrderRequest)
+    public async Task<CompleteOrderResponse> CompleteOrder(CompleteOrderRequest request)
     {
-        Console.WriteLine($"DispatchController.CompleteOrder -> {completeOrderRequest}");
         var order = new Order
         {
-            DroneId = completeOrderRequest.OrderId,
-            TimeDelivered = DateTime.Now
+            OrderId = request.OrderId,
+            State = OrderState.Delivered,
+            TimeDelivered = request.Time,
+            DroneId = request.DroneId
         };
-        return await _orders.UpdateAsync(order);
+        Console.WriteLine(
+            $"order {order.OrderId} has been delivered? {order.HasBeenDelivered} @ time {order.TimeDelivered}");
+        var result = await _orders.UpdateAsync(order.Update());
+        return new CompleteOrderResponse
+        {
+            IsAcknowledged = result.IsAcknowledged
+        };
     }
 
-    [HttpPost("EnqueueOrder")]
-    public async Task<AssignDeliveryResponse?> EnqueueOrder(EnqueueOrderRequest enqueueOrderRequest)
+    [HttpPost("AssignDelivery")]
+    private async Task<AssignDeliveryResponse> InitiateDelivery(AssignDeliveryRequest request)
     {
-        Console.WriteLine($"DispatchController.EqueueOrder -> {enqueueOrderRequest}");
-        List<DroneRecord> availableDrones;
-        do
+        if (request == null)
         {
-            Thread.Sleep(3000);
-            availableDrones = _fleet.GetAllAsync()
-                                        .Result;
+            return new AssignDeliveryResponse {DroneId = request.DroneId, Success = false};
         }
-        while (availableDrones.Count == 0);
-        Console.WriteLine($"\n\nAvailable drones are:\n{string.Join("\n", availableDrones.Select(x => x.ToString()))}");
-        var droneId = availableDrones.First().DroneId;
-        return _dispatchToSimDroneGateway.AssignDelivery(new AssignDeliveryRequest
+
+        // Console.WriteLine("!!!!!!" + request.ToJson());
+        // Console.WriteLine($"In DispatchController.AssignDeliveryResponse, order :{request.ToJson()}");
+
+        var order = await _orders.GetByIdAsync(request.OrderId);
+        var drone = await _fleet.GetByIdAsync(request.DroneId);
+
+        // var s1 = $"drone.OrderId {drone.OrderId} -> ";
+        // var s2 = $"order.DroneId {order.DroneId} -> ";
+        order.DroneId = drone.DroneId;
+        drone.OrderId = order.OrderId;
+        // s1 += $"{drone.OrderId}";
+        // s2 += $"{order.DroneId}";
+        //
+        // Console.WriteLine($"{s1}\n{s2}");
+        order.State = OrderState.Assigned;
+        drone.State = DroneState.Assigned;
+
+        await _fleet.UpdateAsync(drone.Update());
+        await _orders.UpdateAsync(order.Update());
+
+        return await _dispatchToSimDroneGateway.AssignDelivery(request);
+    }
+
+
+    [NonAction]
+    private async Task<IEnumerable<Order>> GetUnfulfilledOrders()
+    {
+        var orders = await _orders.GetAllAsync();
+        // Console.WriteLine($"All the orders: {orders.Count}");
+        var unassignedOrders = orders.Where(o =>
+            !o.HasBeenDelivered && o is {State: OrderState.Waiting} && string.IsNullOrEmpty(o.DroneId));
+        return unassignedOrders;
+    }
+
+    [NonAction]
+    private async Task<IEnumerable<DroneRecord>> GetAvailableDrones()
+    {
+        if (isInitiatingDrone)
         {
-            DroneId = droneId,
-            OrderId = enqueueOrderRequest.OrderId,
-            OrderLocation = enqueueOrderRequest.OrderLocation
-        }).Result;
+            Console.WriteLine("Thread lock, cannot read drones at this time.");
+            return new List<DroneRecord>();
+        }
+        try
+        {
+            Console.WriteLine("DequeueOrders...");
+            var drones = from d in await _fleet.GetAllAsync()
+                where d != null
+                      && d.State == DroneState.Ready
+                      && string.IsNullOrEmpty(d.OrderId)
+                select d;
+            var availabledDrones = new List<DroneRecord>();
+            foreach (var drone in drones)
+            {
+                if (!await _dispatchToSimDroneGateway.HealthCheck(drone.DroneId)) continue;
+                Console.WriteLine($"drone at {drone.DroneUrl} is healthy");
+                availabledDrones.Add(drone);
+            }
+
+            return availabledDrones;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return new List<DroneRecord>();
+        }
     }
 
     [HttpPost("PostInitialStatus")]
-    public async Task<UpdateDroneStatusResponse> PostInitialStatus(UpdateDroneStatusRequest initialStatusRequest)
+    public async Task<UpdateDroneStatusResponse> PostInitialStatus(DroneUpdate initialStatusRequest)
     {
-        Console.WriteLine($"DispatchController.PostInitialStatus -> {initialStatusRequest}");
+        // Console.WriteLine($"DispatchController.PostInitialStatus -> {initialStatusRequest}");
         return await UpdateDroneStatus(initialStatusRequest);
     }
-        
-    [HttpPost("UpdateDroneStatus")]
-    public async Task<UpdateDroneStatusResponse> UpdateDroneStatus(UpdateDroneStatusRequest droneStatusRequest)
-    {
-        Console.WriteLine($"DispatchController.UpdateDroneStatus -> {droneStatusRequest.ToJson()}");
-        var droneRecord = new DroneRecord
-        {
-            DroneId = droneStatusRequest.DroneId,
-            CurrentLocation = droneStatusRequest.Location,
-            State = droneStatusRequest.State
-        };
 
+    [HttpPost("UpdateDroneStatus")]
+    public async Task<UpdateDroneStatusResponse> UpdateDroneStatus(DroneUpdate droneStatusRequest)
+    {
+        // Console.WriteLine($"DispatchController.UpdateDroneStatus -> {droneStatusRequest.ToJson()}");
+        var updateResult = await _fleet.UpdateAsync(droneStatusRequest);
         var response = new UpdateDroneStatusResponse
         {
             DroneId = droneStatusRequest.DroneId,
-            IsCompletedSuccessfully = false
+            IsCompletedSuccessfully = updateResult.IsAcknowledged && updateResult.ModifiedCount == 1
         };
-
-        Console.WriteLine($"DispatchController.UpdateDroneStatus -> {droneStatusRequest.ToJson()}");
-        if (droneStatusRequest.State != DroneState.Ready ||
-            _unfilledOrders.Count <= 0)
-        {
-            Console.WriteLine($"\n\n\nDrone {droneStatusRequest.DroneId} is still delivering an order. Updating the status tho....");
-            response.IsCompletedSuccessfully = await _fleet.UpdateAsync(droneRecord);
-            Console.WriteLine($"The status of {droneStatusRequest.DroneId}'s db update is {response.IsCompletedSuccessfully}\n\n\n");
-        }
-        else
-        {
-            var orderDto = _unfilledOrders.Dequeue();
-            Console.WriteLine($"Drone i{droneStatusRequest.DroneId} is ready for the next order, and we have more. Resending to order {orderDto.OrderId}\n\n\n");
-            orderDto.DroneId = droneStatusRequest.DroneId;
-            _dispatchToSimDroneGateway.AssignDelivery(orderDto);
-            response.IsCompletedSuccessfully = await _fleet.UpdateAsync(droneRecord);
-        }
+        // Console.WriteLine($"DispatchController.UpdateDroneStatus -> {droneStatusRequest.ToJson()}");
 
         return response;
     }
 
-        
+
     [HttpPost("{id:length(24)}")]
     public async Task<ActionResult<DroneRecord>> GetDroneById(string requestedDroneId)
     {
-        Console.WriteLine($"DispatchController.Get -> {requestedDroneId}");
+        // Console.WriteLine($"DispatchController.Get -> {requestedDroneId}");
         var droneRecord = await _fleet.GetByIdAsync(requestedDroneId);
 
-        if (droneRecord is null)
-        {
-            return NotFound();
-        }
+        if (droneRecord is null) return NotFound();
+
         return droneRecord;
     }
 }

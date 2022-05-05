@@ -1,4 +1,6 @@
-﻿using Domain.DTO.DroneDispatchCommunication;
+﻿using Domain.DTO;
+using Domain.DTO.DroneDispatchCommunication;
+using Domain.Entities;
 using Domain.GatewayDefinitions;
 using SimDrone.Controllers;
 
@@ -6,27 +8,36 @@ namespace SimDrone;
 
 public class DroneToDispatchGateway : BaseGateway<SimDroneController>
 {
-    public string EndPoint{get;}
-
     public DroneToDispatchGateway(string dispatchUrl)
     {
-        Console.WriteLine($"\n\n\n\nThis drone will talk to Dispatch at {dispatchUrl}\n\n\n\n");
+        Console.WriteLine($"\nThis drone will talk to Dispatch at {dispatchUrl}");
         EndPoint = dispatchUrl + "/Dispatch";
     }
-    
+
+    public string EndPoint { get; set; }
+
     public void ChangeHandler(HttpMessageHandler handler)
     {
         // Added for mocking reasons, no way around it
         new HttpClient(handler);
     }
-    
-    public async Task<CompleteOrderResponse?> CompleteOrder(CompleteOrderRequest request) => await SendMessagePost<CompleteOrderRequest, CompleteOrderResponse>( 
-        $"{EndPoint}/CompleteOrder", request);
 
-    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(UpdateDroneStatusRequest request)
+    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(DroneUpdate request)
     {
         Console.WriteLine($"Drone is updating status to url {EndPoint}");
-        return await SendMessagePost<UpdateDroneStatusRequest, UpdateDroneStatusResponse>
-                ($"{EndPoint}/UpdateDroneStatus", request);
+        return await SendMessagePost<DroneUpdate, UpdateDroneStatusResponse>
+            ($"{EndPoint}/UpdateDroneStatus", request);
+    }
+
+    public async Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest request)
+    {
+        return await SendMessagePost<CompleteOrderRequest, CompleteOrderResponse>(
+            $"{EndPoint}/CompleteOrder", request);
+    }
+
+    public async Task<bool> Revive(DroneRecord record)
+    {
+        return await SendMessagePost<DroneRecord, bool>(
+            $"{EndPoint}/Revive", record);
     }
 }
