@@ -35,6 +35,10 @@ public class Program
         builder.Services.AddScoped(_ => new FrontEndToDatabaseGateway(dbAccessUrl));
 
         builder.Services.AddScoped( _ => new ConvertAddressToGeoLocation(apiKey));
+        
+        var homeLat = decimal.Parse(builder.Configuration.GetValue<string>("HOME_LATITUDE"));
+        var homeLon = decimal.Parse(builder.Configuration.GetValue<string>("HOME_LONGITUDE"));
+        builder.Services.AddScoped( _ => new GeoLocation{Latitude = homeLat, Longitude = homeLon});
 
         builder.Services.AddScoped<DialogService>();
 

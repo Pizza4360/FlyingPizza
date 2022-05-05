@@ -22,15 +22,19 @@ partial class TrackingPage : ComponentBase
     public DroneRecord[] Fleet;
 
     [Inject] public FrontEndToDatabaseGateway _FrontEndToDatabaseGateway { get; set; }
-
+    [Inject] public GeoLocation HomeLocation { get; set; }
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            Console.WriteLine($"Home location is {HomeLocation.Latitude}, {HomeLocation.Longitude}");
             Console.WriteLine("_frontEndToDatabaseGateway == null ?" + _frontEndToDatabaseGateway == null);
-            await JsRuntime.InvokeVoidAsync("initGoogleMap", new {Lat = 39.74386695629378, Lng = -105.00610500179027});
+            await JsRuntime.InvokeVoidAsync("initGoogleMap", 
+                new {lat = HomeLocation.Latitude, lng = HomeLocation.Longitude}
+                );
+            // await JsRuntime.InvokeVoidAsync("initGoogleMap", HomeLocation);
         }
     }
 
