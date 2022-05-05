@@ -8,5 +8,5 @@ public class AssignDeliveryResponse
 
     [JsonPropertyName("DroneId")] public string DroneId { get; set; }
 
-    [JsonPropertyName("Success")] public bool Success { get; set; }
+    [JsonPropertyName("Success")] public bool WillDeliverOrder { get; set; }
 }

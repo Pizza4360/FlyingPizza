@@ -17,7 +17,7 @@
       "applicationUrl": "https://localhost:7102;http://localhost:83",
       "environmentVariables": {
         "SETTINGS": "Settings",
-        "DISPATCH_URL": "http://localhost:83",
+        "DISPATCH_URL": "http://18.234.215.143:83",
         "CONNECTION_STRING": "mongodb+srv://capstone:Ms2KqQKc5U3gFydE@cluster0.rjlgf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
         "DATABASE_NAME": "Capstone",
         "FLEET_COLLECTION_NAME": "FleetCompositeTest",

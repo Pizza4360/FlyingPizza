@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Domain.DTO;
 using Domain.Entities;
 using MongoDB.Bson.Serialization;
@@ -10,8 +11,14 @@ public class DroneRecoveryService : BackgroundService
     private string _dispatchUrl;
     private DroneRecord _record;
     private bool _keepPingingDispatch = true;
-
     private HttpClient _httpClient = new();
+    private Stopwatch _stopwatch;
+
+    public DroneRecoveryService()
+    {
+        _stopwatch = new Stopwatch();
+        _stopwatch.Start();
+    }
     
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,11 +37,13 @@ public class DroneRecoveryService : BackgroundService
                 _droneUrl = _record.DroneUrl;
                 while (_keepPingingDispatch)
                 {
-                    Thread.Sleep(3000);
+                    if(_stopwatch.ElapsedMilliseconds <= 3000) continue;
+                    _stopwatch.Reset();
+                    _stopwatch.Start();
                     Console.WriteLine($"Sending a ping to {_dispatchUrl}/Dispatch/Recover");
                     try
                     {
-                        await Task.Delay(3000, stoppingToken);
+                        // await Task.Delay(3000, stoppingToken);
                         var r = await _httpClient.PostAsJsonAsync($"{_dispatchUrl}/Dispatch/Recover", _record, stoppingToken);
                         Console.WriteLine($"\n\n\t\tReceived:{await r.Content.ReadAsStringAsync(stoppingToken)}\n\n\n");
                         _keepPingingDispatch = await r.Content.ReadFromJsonAsync<bool>(cancellationToken: stoppingToken);

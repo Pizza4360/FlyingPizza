@@ -1,35 +1,33 @@
-using System;
-using System.Net.Http;
+using System.Diagnostics;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Net.NetworkInformation;
-using System.Threading;
-using System.Threading.Tasks;
-using Domain.DTO;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Dispatch.Services;
 
 public class DeliveryCheckService : BackgroundService
 {
-    private readonly ILogger Logger;
-
+    private readonly Stopwatch _stopwatch;
+    private readonly string _endpoint;
+    
+    public DeliveryCheckService()
+    {
+        var url = Environment.GetEnvironmentVariable("DISPATCH_URL") ?? throw new Exception("The environment variable 'DISPATCH_URL' must be provided to run this program");
+        _endpoint =  $"{url}/Dispatch/AssignmentCheck/";
+        _stopwatch = new Stopwatch();
+        _stopwatch.Start();
+    }
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var _httpClient = new HttpClient();
-        var DispatchUrl = "http://localhost:83" + "/Dispatch";
+        var httpClient = new HttpClient();
+        
         while (!stoppingToken.IsCancellationRequested)
         {
-            await Task.Delay(3000, stoppingToken);
+            if(_stopwatch.ElapsedMilliseconds <= 3000) continue;
+            _stopwatch.Reset();
+            _stopwatch.Start();
             try
             {
-                _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var t = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/AssignmentCheck/", new PingDto {S = "Hi"},
-                    stoppingToken);
-                // var pingTask = Pinger.SendPingAsync(IPAddress.Parse("192.168.1.100:83//Ping"), 5000);
-                var cancelTask = Task.Delay(5000, stoppingToken);
-                //double await so exceptions from either task will bubble up
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var t = await httpClient.PostAsync(_endpoint, null, stoppingToken);
                 await Task.Yield();
             }
             catch (Exception ex)

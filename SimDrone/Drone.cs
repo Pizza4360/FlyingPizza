@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DecimalMath;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
@@ -10,7 +11,7 @@ namespace SimDrone;
 
 public class Drone : DroneRecord
 {
-    private const decimal DroneStepSizeInKilometers = .0004m;
+    private const decimal DroneStepSizeInKilometers = .00004m;
     private const decimal RadiusEarthKilometres = 6371.01m;
     private const decimal DegToRadFactor = DecimalEx.Pi / 180;
     private const decimal RadToDegFactor = 180 / DecimalEx.Pi;
@@ -18,6 +19,7 @@ public class Drone : DroneRecord
     private readonly SimDroneController _controller;
     public Drone(DroneRecord record, IBaseGateway<SimDroneController> gateway, SimDroneController controller)
     {
+        
         DroneId = record.DroneId;
         HomeLocation = record.HomeLocation;
         DroneUrl = record.DroneUrl;
@@ -58,39 +60,28 @@ public class Drone : DroneRecord
         return x > 0 ? x : -x;
     }
 
-    private async Task<UpdateDroneStatusResponse?> PatchDroneStatus()
+    private async Task PatchDroneStatus()
     {
-        var response = await _controller.UpdateDroneStatus(this);
-        return response;
+        await _controller.UpdateDroneStatus(this);
     }
 
-    private void UpdateLocation(GeoLocation location)
+    private async Task UpdateLocation(GeoLocation? location = null)
     {
-        CurrentLocation = location;
-        PatchDroneStatus();
+        CurrentLocation = location ?? CurrentLocation;
+        await PatchDroneStatus();
     }
     
-    private async Task<UpdateDroneStatusResponse?> UpdateStatus(DroneState state)
+    private async Task UpdateStatus(DroneState state)
     {
         if (State == DroneState.Delivering && state == DroneState.Returning)
         {
             Destination = HomeLocation;
             OrderId = null;
         }
-
         State = state;
-        return await PatchDroneStatus();
+        await PatchDroneStatus();
     }
-
-    private async Task<UpdateDroneStatusResponse?> UpdateOrderId(DroneState state)
-    {
-        if (State == DroneState.Delivering && state == DroneState.Returning) Destination = HomeLocation;
-        State = state;
-        return await PatchDroneStatus();
-    }
-
-    // OrderState ??
-
+    
     private static decimal HaversineInMeters(GeoLocation locationA, GeoLocation locationB)
     {
         decimal longitude = locationA.Longitude,
@@ -148,48 +139,47 @@ public class Drone : DroneRecord
 
         return ToDegrees(DecimalEx.ATan2(dLong, dPhi) + 360.0m) % 360;
     }
+    private const int RefreshInterval = 1000;
 
     public async Task TravelTo(GeoLocation endingLocation)
     {
+        Destination = endingLocation;
         Console.WriteLine($"Starting at {CurrentLocation.Latitude}");
-        var buffer = new GeoLocation[5];
-        buffer[0] = CurrentLocation;
+        var timer = new Timer(PatchStatusCallback, null, RefreshInterval, RefreshInterval);
         for (var i = 0; !CurrentLocation.Equals(endingLocation); i++)
         {
             Console.WriteLine($"{HaversineInMeters(CurrentLocation, endingLocation)} meters away");
             var bearing = Bearing(CurrentLocation.Latitude, CurrentLocation.Longitude, endingLocation.Latitude,
                 endingLocation.Longitude);
             Console.WriteLine($"bearing between = {bearing}");
-            buffer[i % 5] = CurrentLocation = GetNextLocation(CurrentLocation, bearing, DroneStepSizeInKilometers);
+            CurrentLocation = GetNextLocation(CurrentLocation, bearing, DroneStepSizeInKilometers);
             Console.WriteLine($"{CurrentLocation}");
-            if (i % 100 != 0) continue;
-            UpdateLocation(CurrentLocation);
-            Thread.Sleep(500);
         }
+        await timer.DisposeAsync();
     }
 
-    public async Task<AssignDeliveryResponse> DeliverOrder(AssignDeliveryRequest request)
+    private async void PatchStatusCallback(object _)
     {
+        await UpdateLocation();
+    }
+
+    public async Task DeliverOrder(AssignDeliveryRequest request)
+    {
+        if (!SimDroneController.IsValidTransition(DroneCommand.DeliverOrder)
+            || SimDroneController.GetTransition(State, DroneCommand.DeliverOrder) != DroneState.Delivering
+            || request.DroneId != DroneId)
+        {
+            throw new Exception("THIS SHOULDN'T BE HAPPENING!!!");
+        }
         OrderId = request.OrderId;
         await UpdateStatus(DroneState.Delivering);
         await TravelTo(request.OrderLocation);
-        _controller.CompleteDelivery(
-            new CompleteOrderRequest
-            {
-                DroneId = DroneId,
-                OrderId = OrderId,
-                Time = DateTime.Now
-            });
+        await SimDroneController.CompleteDelivery(
+            new CompleteOrderRequest { DroneId = DroneId, OrderId = OrderId, Time = DateTime.Now });
         Console.WriteLine("Done with delivery, returning home.");
         await UpdateStatus(DroneState.Returning);
         await TravelTo(HomeLocation);
         await UpdateStatus(DroneState.Ready);
-        OrderId = request.OrderId;
-        return new AssignDeliveryResponse
-        {
-            DroneId = DroneId,
-            OrderId = OrderId,
-            Success = true
-        };
+        OrderId = "";
     }
 }

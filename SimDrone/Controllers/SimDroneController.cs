@@ -110,7 +110,7 @@ public class SimDroneController : ControllerBase
     }
 
     [NonAction]
-    private async Task PersistRecord(DroneRecord droneRecord)
+    private static async Task PersistRecord(DroneRecord droneRecord)
     {
         Console.WriteLine("\nSaving drone drone record...");
         var file = !System.IO.File.Exists(DroneRecord.File()) 
@@ -123,23 +123,50 @@ public class SimDroneController : ControllerBase
         Console.WriteLine("Done.");
     }
 
-
     [HttpPost("AssignDelivery")]
-    public async Task<AssignDeliveryResponse> AssignDelivery(AssignDeliveryRequest assignDeliveryRequest)
+    public Task<AssignDeliveryResponse> AssignDelivery(AssignDeliveryRequest request)
     {
-        return await _drone.DeliverOrder(assignDeliveryRequest);
+        var response = new AssignDeliveryResponse
+        {
+            DroneId = _drone.DroneId,
+            OrderId = request.OrderId,
+            WillDeliverOrder = false
+        };
+        if (!IsValidTransition(DroneCommand.AssignDelivery) || request.DroneId != _drone.DroneId)
+        {
+            return Task.FromResult(response);
+        }
+        _drone.State =
+            DroneStateExtensions.ValidTransitions[
+                new Tuple<DroneState, DroneCommand>(DroneState.Ready, DroneCommand.AssignDelivery)];
+        _ = _drone.DeliverOrder(request);
+        response.WillDeliverOrder = true;
+        return Task.FromResult(response);
     }
 
+    [NonAction]
+    public static bool IsValidTransition(DroneCommand command)
+    {
+        return DroneStateExtensions.ValidTransitions.ContainsKey(
+            new Tuple<DroneState, DroneCommand>(_drone.State, command));
+    }
 
     [HttpPost("UpdateDroneStatus")]
-    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(DroneRecord drone)
+    public async Task UpdateDroneStatus(DroneRecord drone)
     {
         await PersistRecord(drone);
-        return await _gateway.UpdateDroneStatus(drone.Update());
+        await _gateway.UpdateDroneStatus(drone.Update());
     }
 
-    public async Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest request)
+    [NonAction]
+    public static async Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest request)
     {
         return await _gateway.CompleteDelivery(request);
+    }
+
+    [NonAction]
+    public static DroneState GetTransition(DroneState state, DroneCommand command)
+    {
+        return DroneStateExtensions.ValidTransitions[new Tuple<DroneState, DroneCommand>(state, command)];
     }
 }

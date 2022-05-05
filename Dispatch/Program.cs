@@ -4,14 +4,7 @@ using Domain.RepositoryDefinitions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
-    options.AddPolicy("CORS", policy => policy.WithOrigins("https://localhost:44364",
-        "http://localhost:5001", "http://localhost:81", "http://localhost:82",
-        "http://localhost:83",
-        "http://localhost:84",
-        "http://localhost:85",
-        "http://localhost:86",
-        "http://localhost:87",
-        "http://localhost:88").AllowAnyHeader().AllowAnyMethod()));
+    options.AddPolicy("CORS", policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME");
@@ -40,8 +33,7 @@ builder.Services.AddControllers()
 
 #endregion repositories
 
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+// builder.Logging.AddConsole();
 
 // Add builder.Services to the container.
 builder.Services.AddControllers();
@@ -50,6 +42,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHostedService<DeliveryCheckService>();
 
+builder.Logging.ClearProviders();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
