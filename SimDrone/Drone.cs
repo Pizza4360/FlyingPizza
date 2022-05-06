@@ -15,8 +15,8 @@ public class Drone : DroneRecord
     private const decimal DegToRadFactor = DecimalEx.Pi / 180;
     private const decimal RadToDegFactor = 180 / DecimalEx.Pi;
 
-    private readonly SimDroneController _controller;
-    public Drone(DroneRecord record, IBaseGateway<SimDroneController> gateway, SimDroneController controller)
+    private SimDroneController _controller;
+    public Drone(DroneRecord record, IDroneToDispatchGateway gateway, SimDroneController controller)
     {
         DroneId = record.DroneId;
         HomeLocation = record.HomeLocation;
@@ -190,5 +190,9 @@ public class Drone : DroneRecord
             OrderId = OrderId,
             Success = true
         };
+    }
+    public void changeController(SimDroneController sim)
+    {
+        _controller = sim;
     }
 }

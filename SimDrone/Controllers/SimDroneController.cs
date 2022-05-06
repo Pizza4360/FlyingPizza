@@ -1,6 +1,7 @@
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using Domain.GatewayDefinitions;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 
@@ -11,7 +12,7 @@ namespace SimDrone.Controllers;
 public class SimDroneController : ControllerBase
 {
     private static Drone _drone;
-    private static DroneToDispatchGateway _gateway;
+    private static IDroneToDispatchGateway _gateway;
     private bool IsInitiatead;
 
     [HttpPost("InitDrone")]
@@ -58,7 +59,7 @@ public class SimDroneController : ControllerBase
     public async Task<bool> Revive(DroneRecord record)
     {
         Console.WriteLine($"\nSimDroneController.Revive...");
-        if (_gateway == null || string.IsNullOrEmpty(_gateway.EndPoint))
+        if (_gateway == null || string.IsNullOrEmpty(_gateway.GetEndPoint()))
         {
             _gateway = new DroneToDispatchGateway(record.DispatchUrl);
         }
@@ -138,5 +139,14 @@ public class SimDroneController : ControllerBase
     public async Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest request)
     {
         return await _gateway.CompleteDelivery(request);
+    }
+    public void ChangeGateway(IDroneToDispatchGateway mockedGate)
+    {
+        _gateway = mockedGate;
+    }
+
+    public void ChangeDrone(Drone newDrone)
+    {
+        _drone = newDrone;
     }
 }

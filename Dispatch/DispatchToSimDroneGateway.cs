@@ -7,7 +7,7 @@ using Domain.RepositoryDefinitions;
 
 namespace Dispatch;
 
-public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
+public class DispatchToSimDroneGateway : BaseGateway<DispatchController>, IDispatchToSimDroneGateway
 {
     private readonly IFleetRepository _fleet;
 

@@ -6,7 +6,7 @@ using SimDrone.Controllers;
 
 namespace SimDrone;
 
-public class DroneToDispatchGateway : BaseGateway<SimDroneController>
+public class DroneToDispatchGateway : BaseGateway<SimDroneController>, IDroneToDispatchGateway
 {
     public DroneToDispatchGateway(string dispatchUrl)
     {
@@ -15,6 +15,11 @@ public class DroneToDispatchGateway : BaseGateway<SimDroneController>
     }
 
     public string EndPoint { get; set; }
+
+    public string GetEndPoint()
+    {
+        return EndPoint;
+    }
 
     public void ChangeHandler(HttpMessageHandler handler)
     {
