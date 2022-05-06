@@ -15,30 +15,17 @@ public class OrderRepository : IOrdersRepository
     private readonly IMongoCollection<Order> _collection;
 
     public
-        OrderRepository(IOptions<OrdersDatabaseSettings>? ordersSettings) //: Domain.InterfaceDefinitions.Repositories
+        OrderRepository(ODDSSettings settings) //: Domain.InterfaceDefinitions.Repositories
     {
         var mongoClient = new MongoClient(
-            ordersSettings.Value.ConnectionString);
+            settings.CONNECTION_STRING);
 
         var mongoDatabase = mongoClient.GetDatabase(
-            ordersSettings.Value.DatabaseName);
+            settings.DATABASE_NAME);
 
         _collection = mongoDatabase.GetCollection<Order>(
-            ordersSettings.Value.CollectionName);
-        Console.WriteLine($"this should be 'Orders'>>>{ordersSettings.Value.CollectionName}<<<");
-    }
-
-    public OrderRepository(RepositorySettings settings) //: Domain.InterfaceDefinitions.Repositories
-    {
-        var mongoClient = new MongoClient(
-            settings.ConnectionString);
-
-        var mongoDatabase = mongoClient.GetDatabase(
-            settings.DatabaseName);
-
-        _collection = mongoDatabase.GetCollection<Order>(
-            settings.CollectionName);
-        Console.WriteLine($"this should be 'Orders'>>>{settings.CollectionName}<<<");
+            settings.ORDERS_COLLECTION_NAME);
+        Console.WriteLine($"this should be 'Orders'>>>{settings.ORDERS_COLLECTION_NAME}<<<");
     }
 
     public async Task CreateAsync(Order newOrder)
