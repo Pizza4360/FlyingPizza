@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.Entities;
 using Microsoft.AspNetCore.Components;
@@ -23,15 +24,16 @@ partial class FleetView : ComponentBase
             size = Fleet.Length;
             connection = true;
         }
-        catch
+        catch(Exception e)
         {
+            Console.WriteLine($"{e}");
         }
     }
 
     public async Task GoToDrone(DroneRecord drone)
     {
         globalData.currDrone = drone;
-        await dialogService.OpenAsync<DetailedDrone>("View SimDrone");
+        await dialogService.OpenAsync<DetailedDrone>("View Drone");
     }
 
     public string Color(DroneRecord drone)

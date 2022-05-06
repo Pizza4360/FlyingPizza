@@ -6,19 +6,27 @@ using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain.DTO;
+using Domain.RepositoryDefinitions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 
 namespace Dispatch.Services;
 
 public class PingerService : BackgroundService
 {
     private readonly ILogger Logger;
-
+    private readonly string _dispatchUrl; 
+    public PingerService(ODDSSettings settings)
+    {
+        _dispatchUrl = settings.DISPATCH_URL;
+    }
+    
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var _httpClient = new HttpClient();
-        var DispatchUrl = "http://localhost:83/Dispatch";
+        var port = _dispatchUrl.Split(":").Last();
+        var DispatchUrl = $"http://localhost:{port}/Dispatch";
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(3000, stoppingToken);

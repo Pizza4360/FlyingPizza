@@ -2,6 +2,7 @@ using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
+using Domain.GatewayDefinitions;
 using Domain.RepositoryDefinitions;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -12,7 +13,7 @@ namespace Dispatch.Controllers;
 [Route("[controller]")]
 public class DispatchController : ControllerBase
 {
-    private readonly DispatchToSimDroneGateway _dispatchToSimDroneGateway;
+    private IDispatchToSimDroneGateway _dispatchToSimDroneGateway;
 
     private readonly IFleetRepository _fleet;
     private readonly IOrdersRepository _orders;
@@ -289,5 +290,9 @@ public class DispatchController : ControllerBase
         if (droneRecord is null) return NotFound();
 
         return droneRecord;
+    }
+    public void ChangeGateway(IDispatchToSimDroneGateway mockedGate)
+    {
+        _dispatchToSimDroneGateway = mockedGate;
     }
 }

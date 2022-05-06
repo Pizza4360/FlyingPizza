@@ -18,15 +18,12 @@ public class Program
 
         builder.RootComponents.Add<App>("#app");
 
-        var dbAccessUrl = builder.Configuration.GetValue<string>("REMOTE_DB_URL");
+        // var dbAccessUrl = builder.Configuration.GetValue<string>("REMOTE_DB_URL");
+        var dbAccessUrl = builder.Configuration.GetValue<string>("LOCAL_DB_URL");
         var dispatchUrl = builder.Configuration.GetValue<string>("DISPATCH_URL");
         var apiKey = builder.Configuration.GetValue<string>("API_KEY");
 
-        builder.Services.AddScoped(
-            _ => new HttpClient
-            {
-                BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
-            });
+        builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
         builder.Services.AddSingleton(new GlobalDataSvc());
 
@@ -36,9 +33,11 @@ public class Program
 
         builder.Services.AddScoped( _ => new ConvertAddressToGeoLocation(apiKey));
         
-        var homeLat = decimal.Parse(builder.Configuration.GetValue<string>("HOME_LATITUDE"));
-        var homeLon = decimal.Parse(builder.Configuration.GetValue<string>("HOME_LONGITUDE"));
-        builder.Services.AddScoped( _ => new GeoLocation{Latitude = homeLat, Longitude = homeLon});
+        builder.Services.AddScoped(_ => new GeoLocation
+        {
+            Latitude = builder.Configuration.GetValue<decimal>("HOME_LATITUDE"),
+            Longitude = builder.Configuration.GetValue<decimal>("HOME_LONGITUDE")
+        });
 
         builder.Services.AddScoped<DialogService>();
 

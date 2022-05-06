@@ -1,3 +1,4 @@
+using Domain.DTO;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;

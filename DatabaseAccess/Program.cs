@@ -11,9 +11,7 @@ public class Program
         // OffSet services to the container.
         builder.Services.AddCors(options =>
             options.AddPolicy("CORS",
-                policy => policy
-                    .WithOrigins("https://localhost:44364", "http://localhost:5001", "http://localhost:81",
-                        "http://localhost:87", "*").AllowAnyHeader().AllowAnyMethod()));
+                policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -23,27 +21,19 @@ public class Program
 
         #region repositories
 
-        var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
-        var databaseName = Environment.GetEnvironmentVariable("DatabaseName");
-        var fleet = Environment.GetEnvironmentVariable("Fleet");
-        var orders = Environment.GetEnvironmentVariable("Orders");
-
-
-        var ordersRepositorySettings = new RepositorySettings
+        var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+        var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME");
+        var ODDSSettingsSettings = new RepositorySettings
         {
             ConnectionString = connectionString,
             DatabaseName = databaseName,
-            CollectionName = orders
+            CollectionName = "Settings"
         };
-        builder.Services.AddSingleton<IOrdersRepository>(provider => new OrderRepository(ordersRepositorySettings));
+        builder.Services.AddSingleton(_ => new ODDSSettings(ODDSSettingsSettings));
 
-        var fleetRepositorySettings = new RepositorySettings
-        {
-            ConnectionString = connectionString,
-            DatabaseName = databaseName,
-            CollectionName = fleet
-        };
-        builder.Services.AddSingleton<IFleetRepository>(provider => new FleetRepository(fleetRepositorySettings));
+        builder.Services.AddSingleton<IOrdersRepository, OrderRepository>();
+
+        builder.Services.AddSingleton<IFleetRepository, FleetRepository>();
 
         builder.Services.AddControllers()
             .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);

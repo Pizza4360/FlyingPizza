@@ -14,29 +14,17 @@ public class FleetRepository : IFleetRepository
 {
     private readonly IMongoCollection<DroneRecord> _collection;
 
-    public FleetRepository(IOptions<FleetDatabaseSettings> fleetSettings)
+    public FleetRepository(ODDSSettings settings) 
     {
         var mongoClient = new MongoClient(
-            fleetSettings.Value.ConnectionString);
+            settings.CONNECTION_STRING);
 
         var mongoDatabase = mongoClient.GetDatabase(
-            fleetSettings.Value.DatabaseName);
+            settings.DATABASE_NAME);
 
         _collection = mongoDatabase.GetCollection<DroneRecord>(
-            fleetSettings.Value.CollectionName);
-    }
-
-    public FleetRepository(RepositorySettings settings) //: Domain.InterfaceDefinitions.Repositories
-    {
-        var mongoClient = new MongoClient(
-            settings.ConnectionString);
-
-        var mongoDatabase = mongoClient.GetDatabase(
-            settings.DatabaseName);
-
-        _collection = mongoDatabase.GetCollection<DroneRecord>(
-            settings.CollectionName);
-        Console.WriteLine($"this should be 'Fleet'>>>{settings.CollectionName}<<<");
+            settings.FLEET_COLLECTION_NAME);
+        Console.WriteLine($"this should be 'Fleet'>>>{settings.FLEET_COLLECTION_NAME}<<<");
     }
 
 

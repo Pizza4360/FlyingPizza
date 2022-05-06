@@ -24,10 +24,7 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
         Console.WriteLine("Got back" + string.Join("\n", response));
         return response;
     }
-
-    /*   public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request)
-           => await SendMessagePost<CreateOrderRequest, CreateOrderResponse>($"{DispatchUrl}/EnqueueOrder", request);*/
-
+    
     public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request)
     {
         Console.Write($"before FrontEndToDatabaseGateway.SendMessagePost, request = {request}");

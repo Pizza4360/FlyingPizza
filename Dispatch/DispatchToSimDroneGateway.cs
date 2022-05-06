@@ -7,7 +7,7 @@ using Domain.RepositoryDefinitions;
 
 namespace Dispatch;
 
-public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
+public class DispatchToSimDroneGateway : BaseGateway<DispatchController>, IDispatchToSimDroneGateway
 {
     private readonly IFleetRepository _fleet;
 
@@ -85,5 +85,9 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>
             Console.WriteLine($"HealthCheck failed for drone at {droneId}. Reason: {e}");
         }
         return false;
+    }
+    public void ChangeHandle(HttpMessageHandler handle)
+    {
+        _httpClient = new HttpClient(handle);
     }
 }
