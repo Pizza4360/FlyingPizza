@@ -1,3 +1,4 @@
+using DatabaseAccess.Services;
 using Domain.DTO;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
@@ -11,16 +12,17 @@ namespace DatabaseAccess.Controllers;
 [Route("[controller]")]
 public class DatabaseAccess : ControllerBase
 {
-    private readonly ILogger<DatabaseAccess> _logger;
     private readonly IFleetRepository _fleet;
     private readonly IOrdersRepository _orders;
+    private readonly string _apiKey;
+    private readonly GeoLocation HomeLocation;
 
-    public DatabaseAccess(
-        ILogger<DatabaseAccess> logger, IFleetRepository fleet, IOrdersRepository orders)
+    public DatabaseAccess(ODDSSettings settings)
     {
-        _logger = logger;
-        _fleet = fleet;
-        _orders = orders;
+        _fleet = settings.GetFleetCollection();
+        _orders = settings.GetOrdersCollection();
+        _apiKey = settings.API_KEY;
+        HomeLocation = settings.HOME_LOCATION;
     }
 
     [HttpGet("GetFleet")]
@@ -35,10 +37,20 @@ public class DatabaseAccess : ControllerBase
     [HttpPost("CreateOrder")]
     public async Task<CreateOrderResponse> CreateOrder(Order order)
     {
+        order.DeliveryLocation = await LocationParser.Parse(_apiKey, order.DeliveryAddress);
         Console.WriteLine($"\n\n\n\n\nadding order: {order.ToJson()}\n\n\n\n\n");
         await _orders.CreateAsync(order);
         return new CreateOrderResponse();
     }
+    
+    [HttpPost("GetHomeLocation")]
+    public async Task<GeoLocation> GetHomeLocation(Order order)
+    {
+        Console.WriteLine($"\n\n\n\nGetting HomeLocation:");
+        return HomeLocation;
+    }
+    
+    
 
     [HttpGet("GetDrone")]
     public DroneRecord GetDrone(string id)

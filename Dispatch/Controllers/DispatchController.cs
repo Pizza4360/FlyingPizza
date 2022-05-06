@@ -21,20 +21,13 @@ public class DispatchController : ControllerBase
     private readonly string _dispatchUrl;
     private bool isInitiatingDrone;
 
-    public DispatchController(
-        IFleetRepository droneRepo,
-        IOrdersRepository orderRepo
-    )
+    public DispatchController(ODDSSettings settings)
     {
         _dispatchUrl = Environment.GetEnvironmentVariable("DISPATCH_URL") ?? throw new InvalidOperationException(); 
-        _fleet = droneRepo;
-        _orders = orderRepo;
-        _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(droneRepo);
-        _homeLocation = new GeoLocation
-            {
-                Latitude = decimal.Parse(Environment.GetEnvironmentVariable("HOME_LATITUDE")),
-                Longitude = decimal.Parse(Environment.GetEnvironmentVariable("HOME_LONGITUDE"))
-            };
+        _fleet = settings.GetFleetCollection();
+        _orders = settings.GetOrdersCollection();
+        _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(_fleet);
+        _homeLocation = settings.HOME_LOCATION;
     }
 
     [HttpPost("Revive")]

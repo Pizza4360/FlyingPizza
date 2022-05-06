@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace DatabaseAccess;
@@ -25,6 +24,11 @@ public class FleetRepository : IFleetRepository
         _collection = mongoDatabase.GetCollection<DroneRecord>(
             settings.FLEET_COLLECTION_NAME);
         Console.WriteLine($"this should be 'Fleet'>>>{settings.FLEET_COLLECTION_NAME}<<<");
+    }
+
+    public FleetRepository(IMongoCollection<DroneRecord> getCollection)
+    {
+        _collection = getCollection;
     }
 
 

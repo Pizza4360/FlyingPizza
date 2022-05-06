@@ -1,5 +1,7 @@
+using System;
 using DatabaseAccess;
 using Domain.DTO;
+using Domain.Entities;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -12,10 +14,10 @@ public class ODDSSettings
         var mongoClient = new MongoClient(
             dbSettings.ConnectionString);
 
-        var mongoDatabase = mongoClient.GetDatabase(
+        _mongoDatabase = mongoClient.GetDatabase(
             dbSettings.DatabaseName);
 
-        var query = (mongoDatabase.GetCollection<ODDSSettings>("Settings").Find(x => true)).First();
+        var query = (_mongoDatabase.GetCollection<ODDSSettings>("Settings").Find(x => true)).First();
         DISPATCH_URL = query.DISPATCH_URL;
         DATABASE_NAME = query.DATABASE_NAME;
         FLEET_COLLECTION_NAME = query.FLEET_COLLECTION_NAME;
@@ -28,6 +30,7 @@ public class ODDSSettings
 
     }
     public string _id = "settings";
+    private IMongoDatabase _mongoDatabase;
     public string DISPATCH_URL { get; set;}
     public string DATABASE_ACCESS_URL { get; set; }
     public string FLEET_COLLECTION_NAME { get; set;}
@@ -36,4 +39,16 @@ public class ODDSSettings
     public string API_KEY { get; set;}
     public string CONNECTION_STRING { get; set;}
     public string DATABASE_NAME { get; set;}
+
+    public IFleetRepository GetFleetCollection()
+    {
+        Console.WriteLine($"Getting '{FLEET_COLLECTION_NAME}'");
+        return new FleetRepository(_mongoDatabase.GetCollection<DroneRecord>(FLEET_COLLECTION_NAME));
+    }
+
+    public IOrdersRepository GetOrdersCollection()
+    {
+        Console.WriteLine($"Getting '{ORDERS_COLLECTION_NAME}'");
+        return new OrderRepository(_mongoDatabase.GetCollection<Order>(ORDERS_COLLECTION_NAME));
+    }
 }

@@ -28,8 +28,14 @@ public class OrderRepository : IOrdersRepository
         Console.WriteLine($"this should be 'Orders'>>>{settings.ORDERS_COLLECTION_NAME}<<<");
     }
 
+    public OrderRepository(IMongoCollection<Order> getCollection)
+    {
+        _collection = getCollection;
+    }
+
     public async Task CreateAsync(Order newOrder)
     {
+        Console.WriteLine($"creating:\n{newOrder.ToJson()}");
         await _collection.InsertOneAsync(newOrder);
     }
 

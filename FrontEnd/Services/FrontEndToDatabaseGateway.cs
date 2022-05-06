@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Domain.DTO;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using Domain.GatewayDefinitions;
@@ -39,5 +40,15 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
     public async Task<Order> GetOrder(string id)
     {
         return await SendMessagePost<string, Order>($"{DbUrl}/GetOrder", id);
+    }
+
+    public async Task<string> GetApiKey()
+    {
+        return await SendMessageGet<string>($"{DbUrl}/GetApiKey");
+    }
+
+    public async Task<GeoLocation> GetHomeLocation()
+    {
+        return await SendMessageGet<GeoLocation>($"{DbUrl}/GetHomeLocation");
     }
 }

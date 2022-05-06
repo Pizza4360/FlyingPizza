@@ -20,18 +20,14 @@ public class Program
 
         // var dbAccessUrl = builder.Configuration.GetValue<string>("REMOTE_DB_URL");
         var dbAccessUrl = builder.Configuration.GetValue<string>("LOCAL_DB_URL");
-        var dispatchUrl = builder.Configuration.GetValue<string>("DISPATCH_URL");
-        var apiKey = builder.Configuration.GetValue<string>("API_KEY");
 
+        builder.Services.AddSingleton(_ => new FrontEndToDatabaseGateway(dbAccessUrl));
+        
         builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
+        
         builder.Services.AddSingleton(new GlobalDataSvc());
 
-        builder.Services.AddScoped(_ => new FrontEndToDispatchGateway(dispatchUrl));
-
-        builder.Services.AddScoped(_ => new FrontEndToDatabaseGateway(dbAccessUrl));
-
-        builder.Services.AddScoped( _ => new ConvertAddressToGeoLocation(apiKey));
+        builder.Services.AddScoped<FrontEndToDispatchGateway>();
         
         builder.Services.AddScoped(_ => new GeoLocation
         {

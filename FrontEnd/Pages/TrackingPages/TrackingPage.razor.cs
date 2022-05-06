@@ -29,12 +29,11 @@ partial class TrackingPage : ComponentBase
     {
         if (firstRender)
         {
+            HomeLocation = await _FrontEndToDatabaseGateway.GetHomeLocation();
             Console.WriteLine($"Home location is {HomeLocation.Latitude}, {HomeLocation.Longitude}");
             Console.WriteLine("_frontEndToDatabaseGateway == null ?" + _frontEndToDatabaseGateway == null);
             await JsRuntime.InvokeVoidAsync("initGoogleMap", 
-                new {lat = HomeLocation.Latitude, lng = HomeLocation.Longitude}
-                );
-            // await JsRuntime.InvokeVoidAsync("initGoogleMap", HomeLocation);
+                new {lat = HomeLocation.Latitude, lng = HomeLocation.Longitude});
         }
     }
 

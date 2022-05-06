@@ -33,28 +33,16 @@ partial class OrderPage : ComponentBase
 
     private async Task MakeOrder()
     {
-        var deliveryLocation = await Converter.CoordsFromAddress(DeliveryAddress);
-
         var orderId = BaseEntity.GenerateNewId();
-        
         await FrontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest
         {
             OrderId = orderId,
             TimeOrdered = DateTime.Now,
             CustomerName = CustomerName,
-            DeliveryLocation = deliveryLocation,
+            DeliveryLocation = null,
             DeliveryAddress = DeliveryAddress,
             DroneInput = DroneInput,
             State = OrderState.Waiting
         });
-        
-        //var dispatchResponse = FrontEndToDispatchGateway.EnqueueOrder(new EnqueueOrderRequest
-        //{
-        //    OrderLocation = deliveryLocation,
-        //    OrderId = orderId
-        //});
-        
-        // Navigate to page to display users current order. 
-        // NavigationManager.NavigateTo("/tracking", false);
     }
 }
