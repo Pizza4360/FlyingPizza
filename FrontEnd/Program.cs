@@ -18,8 +18,8 @@ public class Program
 
         builder.RootComponents.Add<App>("#app");
 
-        var dbAccessUrl = builder.Configuration.GetValue<string>("REMOTE_DB_URL");
-        // var dbAccessUrl = builder.Configuration.GetValue<string>("LOCAL_DB_URL");
+        // var dbAccessUrl = builder.Configuration.GetValue<string>("REMOTE_DB_URL");
+        var dbAccessUrl = builder.Configuration.GetValue<string>("LOCAL_DB_URL");
 
         builder.Services.AddSingleton(_ => new FrontEndToDatabaseGateway(dbAccessUrl));
         

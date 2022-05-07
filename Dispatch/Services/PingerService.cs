@@ -32,6 +32,7 @@ public class PingerService : BackgroundService
             await Task.Delay(3000, stoppingToken);
             try
             {
+                Console.WriteLine($"Ping to {DispatchUrl}");
                 _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var t = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/AssignmentCheck/", new PingDto {S = "Hi"},
                     stoppingToken);

@@ -13,7 +13,7 @@ partial class OrderPage : ComponentBase
 {
     public string DeliveryAddress;
     public string CustomerName;
-    public string DroneInput;
+    public string DroneUrl;
     public Order[] Orders;
 
     public bool connection;
@@ -52,7 +52,7 @@ partial class OrderPage : ComponentBase
 
     private async Task AddDrone()
     {
-        await DatabaseGateway.AddDrone(DroneInput);
+        await DatabaseGateway.AddDrone(DroneUrl);
     }
 
     public async Task MakeOrder()
@@ -65,7 +65,7 @@ partial class OrderPage : ComponentBase
             CustomerName = CustomerName,
             DeliveryLocation = null,
             DeliveryAddress = DeliveryAddress,
-            DroneId = DroneInput,
+            DroneId = DroneUrl,
             State = OrderState.Waiting
         });
         await GetOrders(); 

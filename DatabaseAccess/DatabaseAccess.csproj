@@ -10,6 +10,7 @@
     <ItemGroup>
         <Compile Remove="Repositories\**" />
         <Content Remove="Repositories\**" />
+        <Content Include="Properties\launchSettings.json" />
         <EmbeddedResource Remove="Repositories\**" />
         <None Remove="Repositories\**" />
     </ItemGroup>

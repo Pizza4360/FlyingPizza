@@ -92,7 +92,7 @@
         <div>
             <div class="input" style="height: 120px">
                 <b>Drone Url: </b>
-                <RadzenTextBox id="CUST_NAME" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => CustomerName = e.Value.ToString()) />
+                <RadzenTextBox id="CUST_NAME" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => DroneUrl = e.Value.ToString()) />
                 <br />   
                 <button class="btn" style="width: 190px" @onclick=@AddDrone> Add Drone </button>
             </div>

@@ -74,7 +74,7 @@ public class DatabaseAccess : ControllerBase
     public async Task AddDrone(PingDto ping)
     {
         var droneUrl = ping.S;
-        //Console.WriteLine($"\n\n\n\n\n\ngot a new DRONE!!!\n@{droneUrl}");
+        Console.WriteLine($"\n\n\n\n\n\ngot a new DRONE!!!\n@{droneUrl}");
         var drone = new DroneRecord
         {
             DroneId = BaseEntity.GenerateNewId(),
