@@ -1,5 +1,5 @@
 using Domain.Services;
-
+Console.WriteLine("CurrentDirectory in Main: {0}", System.IO.Directory.GetCurrentDirectory());
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
     options.AddPolicy("*", policy => policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod()));
