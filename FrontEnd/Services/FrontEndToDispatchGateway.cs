@@ -26,15 +26,7 @@ public class FrontEndToDispatchGateway : BaseGateway<App>
     {
         return await SendMessagePost<EnqueueOrderRequest, EnqueueOrderResponse>($"{DispatchUrl}/EnqueueOrder", request);
     }
-
-    public async Task<AddDroneResponse> AddDrone(string droneUrl)
-    {
-        return await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DispatchUrl}/AddDrone", new AddDroneRequest
-        {
-            DroneUrl = droneUrl,
-        });
-    }
-
+    
     public async Task<CancelDeliveryResponse> CancelDelivery(string id)
     {
         return await SendMessagePost<CancelDeliveryRequest, CancelDeliveryResponse>($"{DispatchUrl}/CancelDelivery",

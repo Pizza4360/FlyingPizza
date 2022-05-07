@@ -33,4 +33,15 @@ public class BaseGateway<T1> : IBaseGateway<T1>
         Console.WriteLine($"HttpMethods.Get<TResponse>({url})");
         return await HttpMethods.Get<TResponse>(url);
     }
+    
+    public async Task<TResponse> SendMessageGet<TRequest, TResponse>(string url, TRequest requestDto,
+        bool isDebug = true)
+    {
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        Console.WriteLine($"\n\n\nGET\n\t\tIP Url: {url}\n\t\tSent: {requestDto.ToJson()}");
+        var r = await _httpClient.PostAsJsonAsync(url, requestDto);
+        Console.WriteLine($"\n\n\t\tReceived:{await r.Content.ReadAsStringAsync()}\n\n\n");
+        var dto = await r.Content.ReadFromJsonAsync<TResponse>();
+        return dto;
+    }
 }

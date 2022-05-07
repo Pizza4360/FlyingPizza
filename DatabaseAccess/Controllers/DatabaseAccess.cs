@@ -15,6 +15,7 @@ public class DatabaseAccess : ControllerBase
     private readonly IFleetRepository _fleet;
     private readonly IOrdersRepository _orders;
     private readonly string _apiKey;
+    private readonly string DispatchUrl;
     private readonly GeoLocation HomeLocation;
 
     public DatabaseAccess(ODDSSettings settings)
@@ -23,6 +24,7 @@ public class DatabaseAccess : ControllerBase
         _orders = settings.GetOrdersCollection();
         _apiKey = settings.API_KEY;
         HomeLocation = settings.HOME_LOCATION;
+        DispatchUrl = settings.DISPATCH_URL;
     }
 
     [HttpGet("GetFleet")]
@@ -43,19 +45,32 @@ public class DatabaseAccess : ControllerBase
         return new CreateOrderResponse();
     }
     
-    [HttpPost("GetHomeLocation")]
-    public async Task<GeoLocation> GetHomeLocation(Order order)
+    [HttpGet("GetHomeLocation")]
+    public async Task<GeoLocation> GetHomeLocation()
     {
         Console.WriteLine($"\n\n\n\nGetting HomeLocation:");
         return HomeLocation;
     }
+  
     
+    [HttpGet("AddDrone")]
+    public async Task AddDrone(DroneRecord drone)
+    {
+        drone.DroneId = BaseEntity.GenerateNewId();
+        await _fleet.CreateAsync(drone);
+    }
     
-
     [HttpGet("GetDrone")]
     public DroneRecord GetDrone(string id)
     {
         return _fleet.GetByIdAsync(id).Result;
+    }
+
+
+    [HttpGet("GetDispatchUrl")]
+    public string GetDispatchUrl()
+    {
+        return DispatchUrl;
     }
 
     [HttpGet("GetOrder")]

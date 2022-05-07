@@ -28,20 +28,20 @@ partial class OrderPage : ComponentBase
 
     private async Task<AddDroneResponse> AddDrone()
     {
-        return await FrontEndToDispatchGateway.AddDrone(DroneInput);
+        return await DatabaseGateway.AddDrone(DroneInput);
     }
 
     private async Task MakeOrder()
     {
         var orderId = BaseEntity.GenerateNewId();
-        await FrontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest
+        await DatabaseGateway.CreateOrder(new CreateOrderRequest
         {
             OrderId = orderId,
             TimeOrdered = DateTime.Now,
             CustomerName = CustomerName,
             DeliveryLocation = null,
             DeliveryAddress = DeliveryAddress,
-            DroneInput = DroneInput,
+            DroneId = "",
             State = OrderState.Waiting
         });
     }
