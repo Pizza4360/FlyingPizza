@@ -69,7 +69,7 @@ public class SimDroneController : ControllerBase
     [HttpPost("AssignFleet")]
     public async Task<AssignFleetResponse> AssignFleet(AssignFleetRequest assignFleetRequest)
     {
-        // Console.WriteLine($"{assignFleetRequest.DispatchUrl}");
+        Console.WriteLine($"AssignFleet -------------> {assignFleetRequest.DispatchUrl}");
         var droneRecord = new DroneRecord
         {
             CurrentLocation = assignFleetRequest.HomeLocation,
@@ -78,7 +78,7 @@ public class SimDroneController : ControllerBase
             DroneUrl = assignFleetRequest.DroneUrl,
             HomeLocation = assignFleetRequest.HomeLocation,
             DroneId = assignFleetRequest.DroneId,
-            OrderId = null
+            OrderId = ""
         };
         await JoinFleet(droneRecord);
         Console.WriteLine($"\nSimDrone successfully initialized.\nDrone -->{_drone}");
@@ -104,6 +104,8 @@ public class SimDroneController : ControllerBase
     [NonAction]
     private async Task PersistRecord(DroneRecord droneRecord)
     {
+        _drone.DispatchUrl ??= droneRecord.DispatchUrl;
+        _drone.DispatchUrl = droneRecord.DispatchUrl;
         Console.WriteLine("\nSaving drone state...");
 
         FileStream file;

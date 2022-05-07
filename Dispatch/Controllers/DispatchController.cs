@@ -27,9 +27,10 @@ public class DispatchController : ControllerBase
         _orders = settings.GetOrdersCollection();
         _homeLocation = settings.HOME_LOCATION;
         _dispatchUrl = settings.DISPATCH_URL;
+        _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(_fleet);
     }
 
-    [HttpPost("Revive")]
+    [HttpPost("Recover")]
     public async Task<bool> Revive(DroneRecord record)
     {
         var unsuccessful = true;
@@ -74,9 +75,10 @@ public class DispatchController : ControllerBase
         return p;
     }
 
+    [NonAction]
     private async Task GetNewDrones()
     {
-        foreach (var drone in (await _fleet.GetAllAsync()).Where(d => string.IsNullOrEmpty(d.DispatchUrl)))
+        foreach (var drone in (await _fleet.GetAllAsync()).Where(d => d.State == DroneState.Unititialized))
         {
             await AddDrone(drone);
         }
@@ -88,7 +90,7 @@ public class DispatchController : ControllerBase
         _isInitiatingDrone = true;
         drone.DispatchUrl = _dispatchUrl;
         drone.HomeLocation = _homeLocation;
-        
+        Console.WriteLine($"DISPATCH_URL = {_dispatchUrl}");
         var initDroneRequest = new InitDroneRequest
         {
             DroneId = drone.DroneId,
@@ -106,7 +108,7 @@ public class DispatchController : ControllerBase
         {
             DroneId = drone.DroneId,
             DroneUrl = drone.DroneUrl,
-            DispatchUrl = drone.DispatchUrl,
+            DispatchUrl = _dispatchUrl,
             HomeLocation = drone.HomeLocation
         };
 
@@ -123,23 +125,12 @@ public class DispatchController : ControllerBase
         }
 
         Console.WriteLine($"\n\n\n\nsuccess! Saving new drone {drone.DroneId} to repository.\n\n\n\n");
+        drone.State = DroneState.Ready;
+        drone.OrderId = "";
+        drone.DispatchUrl = _dispatchUrl;
+        await _fleet.UpdateAsync(drone.Update());
 
-        var droneRecord = new DroneRecord
-        {
-            OrderId = "",
-            DroneUrl = drone.DroneUrl,
-            DroneId = drone.DroneId,
-            Destination = drone.HomeLocation,
-            CurrentLocation = drone.HomeLocation,
-            HomeLocation = drone.HomeLocation,
-            DispatchUrl = drone.DispatchUrl,
-            State = DroneState.Ready
-        };
-
-        await _fleet.CreateAsync(
-            droneRecord);
-
-        Console.WriteLine($"\n\n\n\nabout to YEET this drone record:\n{droneRecord.ToJson()}");
+        Console.WriteLine($"\n\n\n\nabout to YEET this drone record:\n{drone.ToJson()}");
     }
 
     [HttpPost("CompleteOrder")]
@@ -269,6 +260,7 @@ public class DispatchController : ControllerBase
 
         return droneRecord;
     }
+    [NonAction]
     public void ChangeGateway(IDispatchToSimDroneGateway mockedGate)
     {
         _dispatchToSimDroneGateway = mockedGate;

@@ -18,20 +18,14 @@ public class Program
 
         builder.RootComponents.Add<App>("#app");
 
-        var dbAccessUrl = builder.Configuration.GetValue<string>("REMOTE_DB_URL");
-        // var dbAccessUrl = builder.Configuration.GetValue<string>("LOCAL_DB_URL");
+        // var dbAccessUrl = builder.Configuration.GetValue<string>("REMOTE_DB_URL");
+        var dbAccessUrl = builder.Configuration.GetValue<string>("LOCAL_DB_URL");
 
         builder.Services.AddSingleton(_ => new FrontEndToDatabaseGateway(dbAccessUrl));
         
         builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         
         builder.Services.AddSingleton(new GlobalDataSvc());
-        
-        builder.Services.AddScoped(_ => new GeoLocation
-        {
-            Latitude = builder.Configuration.GetValue<decimal>("HOME_LATITUDE"),
-            Longitude = builder.Configuration.GetValue<decimal>("HOME_LONGITUDE")
-        });
 
         builder.Services.AddScoped<DialogService>();
 

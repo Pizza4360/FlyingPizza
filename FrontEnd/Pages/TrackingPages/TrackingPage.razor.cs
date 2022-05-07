@@ -22,7 +22,7 @@ partial class TrackingPage : ComponentBase
     public DroneRecord[] Fleet;
 
     [Inject] public FrontEndToDatabaseGateway _frontEndToDatabaseGateway { get; set; }
-    [Inject] public GeoLocation HomeLocation { get; set; }
+    public GeoLocation HomeLocation { get; set; }
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

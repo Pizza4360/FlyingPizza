@@ -17,7 +17,8 @@ public class ODDSSettings
         _mongoDatabase = mongoClient.GetDatabase(
             dbSettings.DatabaseName);
 
-        var query = (_mongoDatabase.GetCollection<ODDSSettings>("Settings").Find(x => true)).First();
+        var query = _mongoDatabase.GetCollection<ODDSSettings>("Settings")
+            .Find(x => x._id.Equals(dbSettings.CollectionName)).First();
         DISPATCH_URL = query.DISPATCH_URL;
         DATABASE_NAME = query.DATABASE_NAME;
         FLEET_COLLECTION_NAME = query.FLEET_COLLECTION_NAME;
