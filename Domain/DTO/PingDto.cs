@@ -1,6 +1,8 @@
-﻿namespace Domain.DTO;
+﻿using Newtonsoft.Json;
+
+namespace Domain.DTO;
 
 public class PingDto
 {
-    public string S { get; set; }
+    [JsonProperty("S")] public string S { get; set; }
 }

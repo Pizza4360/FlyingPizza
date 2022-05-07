@@ -2,7 +2,7 @@ using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
 using Microsoft.AspNetCore.Mvc;
-
+using MongoDB.Bson;
 namespace DatabaseAccess.Controllers;
 
 [ApiController]
@@ -27,7 +27,7 @@ public class DatabaseAccess : ControllerBase
     public async Task<List<DroneRecord>> GetFleet()
     {
         Console.WriteLine("got a request to get the fleet...");
-        var fleet =  await _fleet.GetAllAsync();
+        var fleet = await _fleet.GetAllAsync();
         Console.WriteLine("Got back" + string.Join("\n", fleet));
         return fleet;
     }
@@ -52,6 +52,7 @@ public class DatabaseAccess : ControllerBase
     [HttpPost("CreateOrder")]
     public async Task<CreateOrderResponse> CreateOrder(Order order)
     {
+        Console.WriteLine($"\n\n\n\n\nadding order: {order.ToJson()}\n\n\n\n\n");
         await _orders.CreateAsync(order);
         return new CreateOrderResponse();
     }

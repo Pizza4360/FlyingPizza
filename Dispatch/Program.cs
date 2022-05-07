@@ -1,35 +1,41 @@
 using DatabaseAccess;
+using Dispatch.Services;
 using Domain.RepositoryDefinitions;
-using Microsoft.Extensions.Options;
 
-Console.WriteLine("hello world!!!");
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
-    options.AddPolicy(name: "CORS", policy => policy.WithOrigins("https://localhost:44364", 
-    "http://localhost:5001", "http://localhost:81", "http://localhost:82",
-    "http://localhost:83",
-    "http://localhost:84",
-    "http://localhost:85",
-    "http://localhost:86",
-    "http://localhost:87",
-    "http://localhost:88").AllowAnyHeader().AllowAnyMethod()));
+    options.AddPolicy("CORS", policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
-
+var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME");
+var fleet = Environment.GetEnvironmentVariable("FLEET_COLLECTION_NAME");
+var orders = Environment.GetEnvironmentVariable("ORDERS_COLLECTION_NAME");
+Console.WriteLine($"" +
+                  $"{connectionString}\n" +
+                  $"{databaseName}\n" +
+                  $"{fleet}\n" +
+                  $"{orders}\n");
 #region repositories
-
-builder.Services.Configure<OrdersDatabaseSettings>(builder.Configuration.GetSection("OrdersDb"));
-builder.Services.AddSingleton<IOrdersRepository>(provider =>
+var ordersRepositorySettings = new RepositorySettings
 {
-    return new OrderRepository(provider.GetService<IOptions<OrdersDatabaseSettings>>());
-});
+    ConnectionString = connectionString,
+    DatabaseName = databaseName,
+    CollectionName = orders
+};
 
-builder.Services.Configure<FleetDatabaseSettings>(builder.Configuration.GetSection("FleetDb"));
-builder.Services.AddSingleton<IFleetRepository>(provider =>
+
+builder.Services.AddSingleton<IOrdersRepository>(_ => new OrderRepository(ordersRepositorySettings));
+
+var fleetRepositorySettings = new RepositorySettings
 {
-    return new FleetRepository(provider.GetService<IOptions<FleetDatabaseSettings>>());
-});
+    ConnectionString = connectionString,
+    DatabaseName = databaseName,
+    CollectionName = fleet
+};
+builder.Services.AddSingleton<IFleetRepository>(provider => new FleetRepository(fleetRepositorySettings));
 
-builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
 #endregion repositories
 
@@ -41,16 +47,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// Get path to file holding connection string
-Console.WriteLine(DateTime.Now);
-
-
-
+builder.Services.AddHostedService(_ => new PingerService{DispatchUrl = Environment.GetEnvironmentVariable("DISPATCH_URL")});
 
 var app = builder.Build();
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -69,3 +68,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

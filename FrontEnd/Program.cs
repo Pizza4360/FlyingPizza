@@ -1,7 +1,7 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Domain;
+using Domain.DTO;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,31 +18,30 @@ public class Program
 
         builder.RootComponents.Add<App>("#app");
 
+        var dbAccessUrl = builder.Configuration.GetValue<string>("REMOTE_DB_URL");
+        var dispatchUrl = builder.Configuration.GetValue<string>("DISPATCH_URL");
+        var apiKey = builder.Configuration.GetValue<string>("API_KEY");
+
         builder.Services.AddScoped(
             _ => new HttpClient
             {
-                BaseAddress = new Uri(builder
-                                     .HostEnvironment
-                                     .BaseAddress)
+                BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
             });
 
         builder.Services.AddSingleton(new GlobalDataSvc());
 
-        builder.Services.AddSingleton(new FrontEndToDispatchGateway());
-        builder.Services.AddSingleton(new FrontEndToDatabaseGateway());
+        builder.Services.AddScoped(_ => new FrontEndToDispatchGateway(dispatchUrl));
 
-        builder.Services.AddSingleton(new HttpClient());
+        builder.Services.AddScoped(_ => new FrontEndToDatabaseGateway(dbAccessUrl));
 
-        builder.Services.AddSingleton(new ConvertAddressToGeoLocation());
-       /* { 
-           ApiKey = builder.Configuration.GetValue<string>("MapsApiKey")
-        });*/
+        builder.Services.AddScoped( _ => new ConvertAddressToGeoLocation(apiKey));
+        
+        var homeLat = decimal.Parse(builder.Configuration.GetValue<string>("HOME_LATITUDE"));
+        var homeLon = decimal.Parse(builder.Configuration.GetValue<string>("HOME_LONGITUDE"));
+        builder.Services.AddScoped( _ => new GeoLocation{Latitude = homeLat, Longitude = homeLon});
 
         builder.Services.AddScoped<DialogService>();
 
         await builder.Build().RunAsync();
-
-
-
     }
 }

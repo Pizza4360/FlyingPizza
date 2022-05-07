@@ -1,12 +1,11 @@
 ﻿@page "/tracking"
 @using FrontEnd.Services
-@using Domain.Entities
 @inject FrontEndToDatabaseGateway _frontEndToDatabaseGateway;
 @*https://www.radzen.com/documentation/blazor/googlemap/*@
 @*https://blazor.radzen.com/googlemap*@
 
 <div class="quick-look">
-    <div class="status-bar" >
+    <div class="status-bar">
         <b>Tracking Page</b>
     </div>
     @if (connection)
@@ -27,11 +26,12 @@
 <div class="content">
     <div class="drone-bar">
         <div class="selection-bar">
-             <div class="dropdown"> @dropDownLabel
+            <div class="dropdown">
+                @dropDownLabel
                 <span class="oi oi-menu" style="color: white; font-size:20px"></span>
 
                 <div class="dropdown-content">
-                    <btn @onclick="@(args => DisplayDroneAsync("Delivering"))">Delivering</btn> 
+                    <btn @onclick="@(args => DisplayDroneAsync("Delivering"))">Delivering</btn>
                     <btn @onclick="@(args => DisplayDroneAsync("Returning"))">Returning</btn>
                     <btn @onclick="@(args => DisplayDroneAsync("Dead"))">Dead</btn>
                     <btn @onclick="@(args => DisplayDroneAsync("Ready"))">Ready</btn>

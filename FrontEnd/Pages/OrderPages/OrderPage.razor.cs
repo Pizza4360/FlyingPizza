@@ -1,46 +1,19 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Domain;
 using Domain.DTO;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using MongoDB.Bson;
-using Newtonsoft.Json.Linq;
 
 namespace FrontEnd.Pages.OrderPages;
 
 partial class OrderPage : ComponentBase
 {
-    [Inject]
-    public IJSRuntime JsRuntime {get;set; }
-
     public string DeliveryAddress;
     public string CustomerName;
-    public DroneRecord[] Fleet;
-    public Order[] Orders;
-    public bool connection;
-    public Order selectedOrder;
-    public string visibility = "hidden";
-    public string orderToCancel;
-    public string defaultText = "";
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            _frontEndToDatabaseGateway = new FrontEndToDatabaseGateway();
-            _frontEndToDispatchGateway = new FrontEndToDispatchGateway();
-            converter = new ConvertAddressToGeoLocation();
-            await GetOrders();
-            await GetFleet();
-            connection = true;
-        }
-        catch
-        {
+    public string DroneInput;
 
         }
     }

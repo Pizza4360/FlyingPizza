@@ -16,6 +16,10 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:80",
       "environmentVariables": {
+        "ConnectionString": "<SECRET>",
+        "DatabaseName":"Capstone",
+        "Fleet": "Fleet",
+        "Orders":"Orders",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },

@@ -1,20 +1,13 @@
-﻿using System.Data;
-using System.Text.Json.Serialization;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using Domain;
+﻿using System.Text.Json.Serialization;
 
-namespace Domain.DTO.DroneDispatchCommunication
+namespace Domain.DTO.DroneDispatchCommunication;
+
+public class AssignFleetResponse
 {
-    public class AssignFleetResponse
-    {
-        [JsonPropertyName("DroneId")]
-        public string DroneId{get;set; }
+    [JsonPropertyName("DroneId")] public string DroneId { get; set; }
 
-        [JsonPropertyName("IsInitializedAndAssigned")]
-        public bool IsInitializedAndAssigned{get;set;}
+    [JsonPropertyName("IsInitializedAndAssigned")]
+    public bool IsInitializedAndAssigned { get; set; }
 
-        [JsonPropertyName("FirstState")]
-        public DroneState FirstState { get; set; }
-    }
+    [JsonPropertyName("FirstState")] public DroneState FirstState { get; set; }
 }
