@@ -24,11 +24,12 @@ partial class OrderPage : ComponentBase
 
     protected override void OnInitialized()
     {
+        
     }
 
-    private async Task<AddDroneResponse> AddDrone()
+    private async Task AddDrone()
     {
-        return await DatabaseGateway.AddDrone(DroneInput);
+        await DatabaseGateway.AddDrone(DroneInput);
     }
 
     private async Task MakeOrder()

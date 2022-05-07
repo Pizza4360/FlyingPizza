@@ -41,6 +41,7 @@ partial class TrackingPage : ComponentBase
     {
         await DisplayDroneAsync("Delivering");
         await Temp();
+        await UpdateDroneMarkers();
     }
 
     protected Task Temp()

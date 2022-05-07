@@ -28,6 +28,14 @@ public class BaseGateway<T1> : IBaseGateway<T1>
         return dto;
     }
 
+    public async Task SendMessagePost<TRequest>(string url, TRequest requestDto,
+        bool isDebug = true)
+    {
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        Console.WriteLine($"\n\n\nSendMessage\n\t\tIP Url: {url}\n\t\tSent: {requestDto.ToJson()}");
+        await _httpClient.PostAsJsonAsync(url, requestDto);
+    }
+    
     public async Task<TResponse> SendMessageGet<TResponse>(string url)
     {
         Console.WriteLine($"HttpMethods.Get<TResponse>({url})");

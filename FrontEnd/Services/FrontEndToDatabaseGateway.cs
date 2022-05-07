@@ -52,12 +52,9 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
         return await SendMessageGet<GeoLocation>($"{DbUrl}/GetHomeLocation");
     }
 
-    public async Task<AddDroneResponse> AddDrone(string droneUrl)
+    public async Task AddDrone(string droneUrl)
     {
-        return await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DbUrl}/AddDrone", new AddDroneRequest
-        {
-            DroneUrl = droneUrl,
-        });
+        await SendMessagePost($"{DbUrl}/AddDrone", new PingDto{S=droneUrl});
     }
 
     

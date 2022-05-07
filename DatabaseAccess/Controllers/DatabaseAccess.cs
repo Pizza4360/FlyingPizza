@@ -53,10 +53,23 @@ public class DatabaseAccess : ControllerBase
     }
   
     
-    [HttpGet("AddDrone")]
-    public async Task AddDrone(DroneRecord drone)
+    [HttpPost("AddDrone")]
+    public async Task AddDrone(PingDto ping)
     {
-        drone.DroneId = BaseEntity.GenerateNewId();
+        var droneUrl = ping.S;
+        Console.WriteLine($"\n\n\n\n\n\ngot a new DRONE!!!\n@{droneUrl}");
+        var drone = new DroneRecord
+        {
+            DroneId = BaseEntity.GenerateNewId(),
+            DroneUrl = droneUrl,
+            HomeLocation = HomeLocation,
+            CurrentLocation = HomeLocation,
+            Destination = HomeLocation,
+            State = DroneState.Unititialized,
+            OrderId = null,
+            DispatchUrl = ""
+        };
+        Console.WriteLine($"About to YEET this drone record...{drone}\n\n\n\n\n");
         await _fleet.CreateAsync(drone);
     }
     

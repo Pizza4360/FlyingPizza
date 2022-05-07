@@ -19,15 +19,14 @@ public class DispatchController : ControllerBase
     private readonly IOrdersRepository _orders;
     private readonly GeoLocation _homeLocation;
     private readonly string _dispatchUrl;
-    private bool isInitiatingDrone;
+    private bool _isInitiatingDrone;
 
     public DispatchController(ODDSSettings settings)
     {
-        _dispatchUrl = Environment.GetEnvironmentVariable("DISPATCH_URL") ?? throw new InvalidOperationException(); 
         _fleet = settings.GetFleetCollection();
         _orders = settings.GetOrdersCollection();
-        _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(_fleet);
         _homeLocation = settings.HOME_LOCATION;
+        _dispatchUrl = settings.DISPATCH_URL;
     }
 
     [HttpPost("Revive")]
@@ -58,8 +57,8 @@ public class DispatchController : ControllerBase
     [HttpPost("AssignmentCheck")]
     public async Task<PingDto> AssignmentCheck(PingDto p)
     {
-        GetNewDrones();
-        if (isInitiatingDrone) return p;
+        await GetNewDrones();
+        if (_isInitiatingDrone) return p;
         var orders = (from o in await GetUnfulfilledOrders() where string.IsNullOrEmpty(o.DroneId) select o).ToList();
         var availableDrones =
             (from d in await GetAvailableDrones() where string.IsNullOrEmpty(d.OrderId) select d).ToList();
@@ -86,17 +85,10 @@ public class DispatchController : ControllerBase
     [NonAction]
     public async Task AddDrone(DroneRecord drone)
     {
-        isInitiatingDrone = true;
+        _isInitiatingDrone = true;
         drone.DispatchUrl = _dispatchUrl;
         drone.HomeLocation = _homeLocation;
-
-        if ((await _fleet.GetAllAsync())
-            .Any(x => x.DroneId == drone.DroneId
-                      || x.DroneUrl == drone.DroneUrl))
-        {
-            Console.WriteLine("Either the DroneUrl or DroneId you are trying to use is taken by another drone.");
-        }
-
+        
         var initDroneRequest = new InitDroneRequest
         {
             DroneId = drone.DroneId,
@@ -214,7 +206,7 @@ public class DispatchController : ControllerBase
     [NonAction]
     private async Task<IEnumerable<DroneRecord>> GetAvailableDrones()
     {
-        if (isInitiatingDrone)
+        if (_isInitiatingDrone)
         {
             Console.WriteLine("Thread lock, cannot read drones at this time.");
             return new List<DroneRecord>();
