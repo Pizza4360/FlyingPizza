@@ -7,7 +7,7 @@ namespace Domain.Entities;
 
 public class DroneRecord : BaseEntity
 {
-    public static string File() => "DroneRecord.json";
+    public static string File() => "drone_data/DroneRecord.json";
 
     [BsonElement("OrderId")]
     [JsonPropertyName("OrderId")]
