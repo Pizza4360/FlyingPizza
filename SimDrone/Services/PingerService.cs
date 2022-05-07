@@ -31,11 +31,11 @@ public class PingerService : BackgroundService
                 while (KeepPingingDispatch)
                 {
                     Thread.Sleep(3000);
-                    Console.WriteLine($"Sending a ping to {$"{DispatchUrl}/Dispatch/Revive"}");
+                    Console.WriteLine($"Sending a ping to {$"{DispatchUrl}/Dispatch/Recover"}");
                     try
                     {
                         await Task.Delay(3000, stoppingToken);
-                        var r = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/Dispatch/Revive", record, stoppingToken);
+                        var r = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/Dispatch/Recover", record, stoppingToken);
                         Console.WriteLine($"\n\n\t\tReceived:{await r.Content.ReadAsStringAsync(stoppingToken)}\n\n\n");
                         KeepPingingDispatch = await r.Content.ReadFromJsonAsync<bool>(cancellationToken: stoppingToken);
                     }
@@ -62,6 +62,6 @@ public class PingerService : BackgroundService
         var rejoinUrl = $"{DroneUrl}/SimDrone/RejoinFleet";
         Console.WriteLine($"Dispatch allowed rejoining! Sending rejoin messagage to {rejoinUrl}");
         _httpClient.PostAsJsonAsync(rejoinUrl, new ReviveRequest{Record = record});
-        Console.WriteLine($"Successfully revived!");
+        Console.WriteLine($"Successfully recovered and rejoined the fleet!");
     }
 }
