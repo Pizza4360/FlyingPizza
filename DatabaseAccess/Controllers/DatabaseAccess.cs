@@ -18,13 +18,13 @@ public class DatabaseAccess : ControllerBase
     private readonly string DispatchUrl;
     private readonly GeoLocation HomeLocation;
 
-    public DatabaseAccess(ODDSSettings settings)
+    public DatabaseAccess(IODDSSettings settings)
     {
         _fleet = settings.GetFleetCollection();
         _orders = settings.GetOrdersCollection();
-        _apiKey = settings.API_KEY;
-        HomeLocation = settings.HOME_LOCATION;
-        DispatchUrl = settings.DISPATCH_URL;
+        _apiKey = settings.GetAPIKey();
+        HomeLocation = settings.GetHomeLocation();
+        DispatchUrl = settings.GetDispatchUrl();
     }
 
     [HttpGet("GetFleet")]

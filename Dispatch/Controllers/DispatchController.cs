@@ -21,12 +21,12 @@ public class DispatchController : ControllerBase
     private readonly string _dispatchUrl;
     private bool _isInitiatingDrone;
 
-    public DispatchController(ODDSSettings settings)
+    public DispatchController(IODDSSettings settings)
     {
         _fleet = settings.GetFleetCollection();
         _orders = settings.GetOrdersCollection();
-        _homeLocation = settings.HOME_LOCATION;
-        _dispatchUrl = settings.DISPATCH_URL;
+        _homeLocation = settings.GetHomeLocation();
+        _dispatchUrl = settings.GetDispatchUrl();
         _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(_fleet);
     }
 

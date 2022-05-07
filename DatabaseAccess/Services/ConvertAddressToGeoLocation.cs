@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Net;
+using System.Web;
 using Domain.DTO;
 using Newtonsoft.Json.Linq;
 
@@ -7,7 +8,7 @@ namespace DatabaseAccess.Services;
 public static class LocationParser
 {
     private const string UrlStart = "https://maps.googleapis.com/maps/api/";
-    private static readonly HttpClient HttpClient = new();
+    private static HttpClient HttpClient = new();
 
     public static async Task<GeoLocation> Parse(string apiKey, string address)
     {
@@ -19,5 +20,10 @@ public static class LocationParser
         var lng = decimal.Parse(Convert.ToString(js["results"]?[0]?["geometry"]?["location"]?["lng"]) ?? string.Empty);
         var lat = decimal.Parse(Convert.ToString(js["results"]?[0]?["geometry"]?["location"]?["lat"]) ?? string.Empty);
         return new GeoLocation {Latitude = lat, Longitude = lng};
+    }
+
+    public static void ChangeHandler(HttpMessageHandler handler)
+    {
+        HttpClient = new HttpClient(handler);
     }
 }

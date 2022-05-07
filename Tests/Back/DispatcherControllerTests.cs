@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DatabaseAccess;
 using Dispatch.Controllers;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
@@ -8,6 +9,7 @@ using Domain.Entities;
 using Domain.GatewayDefinitions;
 using Domain.RepositoryDefinitions;
 using FluentAssertions;
+using Microsoft.AspNetCore.Authentication;
 using MongoDB.Driver;
 using Moq;
 using Xunit;
@@ -35,67 +37,94 @@ public class DispatcherControllerTests
 
     private void SetupEnvironment()
     {
+        _testOrderDb = new List<Order>() {};
+        _testFleetDb = new List<DroneRecord>() {};
         Environment.SetEnvironmentVariable("DISPATCH_URL", "bogus");
         Environment.SetEnvironmentVariable("HOME_LATITUDE", "0");
         Environment.SetEnvironmentVariable("HOME_LONGITUDE", "0");
     }
     [Fact]
-    public async Task add_drone_should_create_drone_and_respond()
+    public void add_drone_should_create_drone_and_respond()
     {
         SetupEnvironment();
         var mockFleetRepo = new Mock<IFleetRepository>();
         var mockOrderRepo = new Mock<IOrdersRepository>();
         var mockGateway = new Mock<IDispatchToSimDroneGateway>();
-        var dispatcher = new DispatchController(mockFleetRepo.Object,mockOrderRepo.Object);
-        _testFleetDb = new List<DroneRecord>(){};
+        var mockResult = new Mock<UpdateResult>();
         mockGateway.Setup(x => x.InitDrone(It.IsAny<InitDroneRequest>())).Returns(Task.FromResult(Constants.TestInitDroneResponse));
         mockGateway.Setup(x => x.AssignFleet(It.IsAny<AssignFleetRequest>()))
             .Returns(Task.FromResult(Constants.TestAssignFleetResponse));
         mockFleetRepo.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(_testFleetDb));
         mockFleetRepo.Setup(x => x.CreateAsync(It.IsAny<DroneRecord>())).Returns(Task.CompletedTask).Callback(TestAddDrone);
+        mockFleetRepo.Setup(x => x.UpdateAsync(It.IsAny<DroneUpdate>())).Returns(Task.FromResult(mockResult.Object)).Callback(TestAddDrone);
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object); 
+        var dispatcher = new DispatchController(mockODDS.Object);
         dispatcher.ChangeGateway(mockGateway.Object);
-        var response = await dispatcher.AddDrone(Constants.TestAddDroneRequest);
-        response.Should().NotBeNull();
-        response.Success.Should().BeTrue();
+        // Have to make new record since it mutates reference given
+        var resultTask = dispatcher.AddDrone(new DroneRecord
+        {
+            CurrentLocation = Constants.TestRecord.CurrentLocation,
+            Destination = Constants.TestRecord.Destination,
+            DispatchUrl = Constants.TestRecord.DispatchUrl,
+            DroneId = Constants.TestRecord.DroneId,
+            DroneUrl = Constants.TestRecord.DroneUrl,
+            HomeLocation = Constants.TestRecord.HomeLocation,
+            Id = Constants.TestRecord.Id,
+            OrderId = Constants.TestRecord.OrderId,
+            State = Constants.TestRecord.State
+        });
+        resultTask.Wait();
         _testFleetDb.Count.Should().BeGreaterThan(0);
         // One of the only non-mutated members
         _testFleetDb[0].DroneUrl.Should().BeEquivalentTo(Constants.TestAddDroneRequest.DroneUrl);
     }
 
     [Fact]
-    public async Task complete_valid_order_should_be_true()
+    public void complete_valid_order_should_be_true()
     {
         SetupEnvironment();
         var mockResult = new Mock<UpdateResult>(); // nasty Mongo object mocked for use to ignore update
         mockResult.Setup(x => x.IsAcknowledged).Returns(true);
-        _testOrderDb = new List<Order>(){Constants.TestOrder};
+        _testOrderDb.Add(Constants.TestOrder);
         var mockFleetRepo = new Mock<IFleetRepository>();
         var mockOrderRepo = new Mock<IOrdersRepository>();
         mockOrderRepo.Setup(x => x.UpdateAsync(It.IsAny<OrderUpdate>()))
             .Returns(Task.FromResult(mockResult.Object)).Callback(FinishOrder);
-        var dispatcher = new DispatchController(mockFleetRepo.Object,mockOrderRepo.Object);
-        var response = await dispatcher.CompleteOrder(Constants.TestCompleteOrderRequest);
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object);
+        var dispatcher = new DispatchController(mockODDS.Object);
+        var responseTask = dispatcher.CompleteOrder(Constants.TestCompleteOrderRequest);
+        responseTask.Wait();
+        var response = responseTask.Result;
         response.Should().BeEquivalentTo(Constants.TestCompleteOrderResponse);
     }
 
     [Fact]
-    public async Task get_drone_by_id_should_get_drone_record()
+    public void get_drone_by_id_should_get_drone_record()
     {
         SetupEnvironment();
-        _testFleetDb = new List<DroneRecord>(){Constants.TestRecord};
+        _testFleetDb.Add(Constants.TestRecord);
         var mockGateway = new Mock<IDispatchToSimDroneGateway>();
         var mockFleetRepo = new Mock<IFleetRepository>();
         var mockOrderRepo = new Mock<IOrdersRepository>();
         mockFleetRepo.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns<string>(y => Task.FromResult(_testFleetDb.FindLast(x => x.DroneId == y)));
-        var dispatcher = new DispatchController(mockFleetRepo.Object, mockOrderRepo.Object);
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object);
+        var dispatcher = new DispatchController(mockODDS.Object);
         dispatcher.ChangeGateway(mockGateway.Object);
-        var response = await dispatcher.GetDroneById(Constants.TestRecord.DroneId);
+        var responseTask = dispatcher.GetDroneById(Constants.TestRecord.DroneId);
+        responseTask.Wait();
+        var response = responseTask.Result;
         response.Value.Should().NotBeNull();
         response.Value.Should().BeEquivalentTo(Constants.TestRecord);
     }
     
     [Fact]
-    public async Task revive_should_change_db_record_to_ready()
+    public void revive_should_change_db_record_to_ready()
     {
         SetupEnvironment();
         var mockMongoQuery = new Mock<UpdateResult>();
@@ -112,13 +141,18 @@ public class DispatcherControllerTests
             HomeLocation = Constants.TestRecordDead.HomeLocation,
             Id = Constants.TestRecordDead.Id
         };
-        _testFleetDb = new List<DroneRecord>(){deadRecord};
+        _testFleetDb.Add(deadRecord);
         var mockFleetRepo = new Mock<IFleetRepository>();
         var mockOrderRepo = new Mock<IOrdersRepository>();
         mockFleetRepo.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(_testFleetDb));
         mockFleetRepo.Setup(x => x.UpdateAsync(It.IsAny<DroneUpdate>())).Returns(Task.FromResult(mockMongoQuery.Object)).Callback(TestFlipDrone);
-        var dispatcher = new DispatchController(mockFleetRepo.Object, mockOrderRepo.Object);
-        var response = await dispatcher.Revive(deadRecord);
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object);
+        var dispatcher = new DispatchController(mockODDS.Object);
+        var responseTask = dispatcher.Revive(deadRecord);
+        responseTask.Wait();
+        var response = responseTask.Result;
         response.Should().BeFalse();
         // Unsuccessful instead of successful being the return is interesting
         _testFleetDb.Should().Contain(Constants.TestRecord);
@@ -126,12 +160,12 @@ public class DispatcherControllerTests
     }
     
     [Fact]
-    public async Task assign_check_should_pull_order_and_drone_and_initiate_delivery()
+    public void assign_check_should_pull_order_and_drone_and_initiate_delivery()
     {
         SetupEnvironment();
         var mockMongoQuery = new Mock<UpdateResult>();
-        _testOrderDb = new List<Order>() {Constants.TestOrder};
-        _testFleetDb = new List<DroneRecord>(){Constants.TestRecord};
+        _testOrderDb.Add(Constants.TestOrder);
+        _testFleetDb.Add(Constants.TestRecord);
         var mockGateway = new Mock<IDispatchToSimDroneGateway>();
         var mockFleetRepo = new Mock<IFleetRepository>();
         var mockOrderRepo = new Mock<IOrdersRepository>();
@@ -143,15 +177,20 @@ public class DispatcherControllerTests
         mockOrderRepo.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(_testOrderDb));
         mockOrderRepo.Setup(x => x.UpdateAsync(It.IsAny<OrderUpdate>())).Returns(Task.FromResult(mockMongoQuery.Object));
         mockFleetRepo.Setup(x => x.UpdateAsync(It.IsAny<DroneUpdate>())).Returns(Task.FromResult(mockMongoQuery.Object));
-        var dispatcher = new DispatchController(mockFleetRepo.Object, mockOrderRepo.Object);
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object);
+        var dispatcher = new DispatchController(mockODDS.Object);
         dispatcher.ChangeGateway(mockGateway.Object);
-        var response = await dispatcher.AssignmentCheck(Constants.TestPingDto);
+        var responseTask = dispatcher.AssignmentCheck(Constants.TestPingDto);
+        responseTask.Wait();
+        var response = responseTask.Result;
         response.Should().NotBeNull();
         response.Should().BeEquivalentTo(Constants.TestPingDto);
     }
 
     [Fact]
-    public async Task post_init_status_should_update_starting_fleet_db()
+    public void post_init_status_should_update_starting_fleet_db()
     {
         SetupEnvironment();
         var mockMongoQuery = new Mock<UpdateResult>();
@@ -168,15 +207,21 @@ public class DispatcherControllerTests
             HomeLocation = Constants.TestRecordDead.HomeLocation,
             Id = Constants.TestRecordDead.Id
         };
-        _testFleetDb = new List<DroneRecord>(){deadRecord}; var mockGateway = new Mock<IDispatchToSimDroneGateway>();
+        _testFleetDb.Add(deadRecord);
+        var mockGateway = new Mock<IDispatchToSimDroneGateway>();
         var mockFleetRepo = new Mock<IFleetRepository>();
         var mockOrderRepo = new Mock<IOrdersRepository>();
         mockMongoQuery.Setup(x => x.IsAcknowledged).Returns(true);
         mockMongoQuery.Setup(x => x.ModifiedCount).Returns(_testFleetDb.Count);
         mockFleetRepo.Setup(x => x.UpdateAsync(It.IsAny<DroneUpdate>())).Returns(Task.FromResult(mockMongoQuery.Object)).Callback(TestFlipDrone);
-        var dispatcher = new DispatchController(mockFleetRepo.Object, mockOrderRepo.Object);
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object);
+        var dispatcher = new DispatchController(mockODDS.Object);
         dispatcher.ChangeGateway(mockGateway.Object);
-        var response = await dispatcher.PostInitialStatus(Constants.TestUpdate);
+        var responseTask = dispatcher.PostInitialStatus(Constants.TestUpdate);
+        responseTask.Wait();
+        var response = responseTask.Result;
         response.Should().NotBeNull();
         response.Should().BeEquivalentTo(Constants.TestUpdateResponse);
         _testFleetDb.Should().Contain(Constants.TestRecord);
@@ -184,7 +229,7 @@ public class DispatcherControllerTests
     }
 
     [Fact]
-    public async Task update_drone_status_should_change_fleet_db()
+    public void update_drone_status_should_change_fleet_db()
     {
         SetupEnvironment();
         var mockMongoQuery = new Mock<UpdateResult>();
@@ -201,16 +246,21 @@ public class DispatcherControllerTests
             HomeLocation = Constants.TestRecordDead.HomeLocation,
             Id = Constants.TestRecordDead.Id
         };
-        _testFleetDb = new List<DroneRecord>(){deadRecord}; 
+        _testFleetDb.Add(deadRecord); 
         var mockGateway = new Mock<IDispatchToSimDroneGateway>();
         var mockFleetRepo = new Mock<IFleetRepository>();
         var mockOrderRepo = new Mock<IOrdersRepository>();
         mockMongoQuery.Setup(x => x.IsAcknowledged).Returns(true);
         mockMongoQuery.Setup(x => x.ModifiedCount).Returns(_testFleetDb.Count);
         mockFleetRepo.Setup(x => x.UpdateAsync(It.IsAny<DroneUpdate>())).Returns(Task.FromResult(mockMongoQuery.Object)).Callback(TestFlipDrone);
-        var dispatcher = new DispatchController(mockFleetRepo.Object, mockOrderRepo.Object);
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object);
+        var dispatcher = new DispatchController(mockODDS.Object);
         dispatcher.ChangeGateway(mockGateway.Object);
-        var response = await dispatcher.UpdateDroneStatus(Constants.TestUpdate);
+        var responseTask = dispatcher.UpdateDroneStatus(Constants.TestUpdate);
+        responseTask.Wait();
+        var response = responseTask.Result;
         response.Should().NotBeNull();
         response.Should().BeEquivalentTo(Constants.TestUpdateResponse);
     }

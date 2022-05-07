@@ -73,6 +73,19 @@ public class HttpHandlerFactory
                 Content = new StringContent("")
             });
     }
+    public void StringAll()
+    {
+        var setup = new Mock<HttpMessageHandler>();
+        setup.Protected().Setup<Task<HttpResponseMessage>>(
+                "SendAsync", 
+                ItExpr.IsAny<HttpRequestMessage>(), 
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ReturnsAsync(new HttpResponseMessage {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("this is a string")
+            });
+    }
     public void jsonAll(Object o)
     {
         var setup = new Mock<HttpMessageHandler>();

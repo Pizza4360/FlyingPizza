@@ -95,7 +95,9 @@ public class SimDroneControllerTests
         sim.ChangeDrone(testDrone);
         var response = await sim.HealthCheck(Constants.TestPingDto);
         response.Should().NotBeNull();
-        response.Should().BeEquivalentTo(Constants.TestRecord);
+        response.DroneId.Should().BeEquivalentTo(Constants.TestRecord.DroneId);
+        response.DroneUrl.Should().BeEquivalentTo(Constants.TestRecord.DroneUrl);
+        response.Destination.Should().BeEquivalentTo(Constants.TestRecord.HomeLocation);
     }
     
     
