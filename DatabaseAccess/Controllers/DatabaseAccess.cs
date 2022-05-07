@@ -30,25 +30,25 @@ public class DatabaseAccess : ControllerBase
     [HttpGet("GetFleet")]
     public async Task<List<DroneRecord>> GetFleet()
     {
-        Console.WriteLine("got a request to get the fleet...");
+        //Console.WriteLine("got a request to get the fleet...");
         var fleet =  await _fleet.GetAllAsync();
-        Console.WriteLine("Got back" + string.Join("\n", fleet));
+        //Console.WriteLine("Got back" + string.Join("\n", fleet));
         return fleet;
     }
 
-    [HttpGet("GetOrder")]
-    public async Task<List<Order>> GetOrder()
+    [HttpGet("GetOrders")]
+    public async Task<List<Order>> GetOrders()
     {
-        Console.WriteLine("got a request to get the orders...");
+        //Console.WriteLine("got a request to get the orders...");
         var orders = await _orders.GetAllAsync();
-        Console.WriteLine("Got back" + string.Join("\n", orders));
+        //Console.WriteLine("Got back" + string.Join("\n", orders));
         return orders;
     }
 
     [HttpPost("CancelOrder")]
     public async Task<CancelDeliveryResponse> CancelOrder(string OrderId)
     {
-        Console.WriteLine("got a request to get the orders...");
+        //Console.WriteLine("got a request to get the orders...");
         await _orders.RemoveAsync(OrderId);
         return new CancelDeliveryResponse();
     }
@@ -57,7 +57,7 @@ public class DatabaseAccess : ControllerBase
     public async Task<CreateOrderResponse> CreateOrder(Order order)
     {
         order.DeliveryLocation = await LocationParser.Parse(_apiKey, order.DeliveryAddress);
-        Console.WriteLine($"\n\n\n\n\nadding order: {order.ToJson()}\n\n\n\n\n");
+        //Console.WriteLine($"\n\n\n\n\nadding order: {order.ToJson()}\n\n\n\n\n");
         await _orders.CreateAsync(order);
         return new CreateOrderResponse();
     }
@@ -65,7 +65,7 @@ public class DatabaseAccess : ControllerBase
     [HttpGet("GetHomeLocation")]
     public async Task<GeoLocation> GetHomeLocation()
     {
-        Console.WriteLine($"\n\n\n\nGetting HomeLocation:");
+        //Console.WriteLine($"\n\n\n\nGetting HomeLocation:");
         return HomeLocation;
     }
   
@@ -74,7 +74,7 @@ public class DatabaseAccess : ControllerBase
     public async Task AddDrone(PingDto ping)
     {
         var droneUrl = ping.S;
-        Console.WriteLine($"\n\n\n\n\n\ngot a new DRONE!!!\n@{droneUrl}");
+        //Console.WriteLine($"\n\n\n\n\n\ngot a new DRONE!!!\n@{droneUrl}");
         var drone = new DroneRecord
         {
             DroneId = BaseEntity.GenerateNewId(),
@@ -86,7 +86,7 @@ public class DatabaseAccess : ControllerBase
             OrderId = null,
             DispatchUrl = ""
         };
-        Console.WriteLine($"About to YEET this drone record...{drone}\n\n\n\n\n");
+        //Console.WriteLine($"About to YEET this drone record...{drone}\n\n\n\n\n");
         await _fleet.CreateAsync(drone);
     }
     
@@ -103,8 +103,8 @@ public class DatabaseAccess : ControllerBase
         return DispatchUrl;
     }
 
-    [HttpGet("GetOrder")]
-    public Order GetOrder(string id)
+    [HttpGet("GetOrderById")]
+    public Order GetOrderById(string id)
     {
         return _orders.GetByIdAsync(id).Result;
     }

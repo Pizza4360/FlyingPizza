@@ -25,9 +25,9 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
         return response;
     }
 
-    public async Task<List<Order>> GetOrder()
+    public async Task<List<Order>> GetOrders()
     {
-        var response = await SendMessageGet<List<Order>>($"{DbUrl}/GetOrder");
+        var response = await SendMessageGet<List<Order>>($"{DbUrl}/GetOrders");
         return response;
     }
     public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request)

@@ -26,10 +26,24 @@ partial class OrderPage : ComponentBase
 
     public string defaultText ="";
     public DroneRecord[] Fleet;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {          
+            await GetOrders();
+            await GetFleet();
+            connection = true;
+        }
+        catch
+        {
+
+        }
+    } 
 
     public async Task GetOrders()
     {
-        Orders = (await DatabaseGateway.GetOrder()).ToArray();
+        Orders = (await DatabaseGateway.GetOrders()).ToArray();
     }
     public async Task GetFleet()
     {

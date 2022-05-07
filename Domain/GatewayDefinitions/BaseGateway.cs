@@ -21,9 +21,9 @@ public class BaseGateway<T1> : IBaseGateway<T1>
         bool isDebug = true)
     {
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        Console.WriteLine($"\n\n\nSendMessage\n\t\tIP Url: {url}\n\t\tSent: {requestDto.ToJson()}");
+        //Console.WriteLine($"\n\n\nSendMessage\n\t\tIP Url: {url}\n\t\tSent: {requestDto.ToJson()}");
         var r = await _httpClient.PostAsJsonAsync(url, requestDto);
-        Console.WriteLine($"\n\n\t\tReceived:{await r.Content.ReadAsStringAsync()}\n\n\n");
+        //Console.WriteLine($"\n\n\t\tReceived:{await r.Content.ReadAsStringAsync()}\n\n\n");
         var dto = await r.Content.ReadFromJsonAsync<TResponse>();
         return dto;
     }
@@ -32,13 +32,13 @@ public class BaseGateway<T1> : IBaseGateway<T1>
         bool isDebug = true)
     {
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        Console.WriteLine($"\n\n\nSendMessage\n\t\tIP Url: {url}\n\t\tSent: {requestDto.ToJson()}");
+        //Console.WriteLine($"\n\n\nSendMessage\n\t\tIP Url: {url}\n\t\tSent: {requestDto.ToJson()}");
         await _httpClient.PostAsJsonAsync(url, requestDto);
     }
     
     public async Task<TResponse> SendMessageGet<TResponse>(string url)
     {
-        Console.WriteLine($"HttpMethods.Get<TResponse>({url})");
+        //Console.WriteLine($"HttpMethods.Get<TResponse>({url})");
         return await HttpMethods.Get<TResponse>(url);
     }
     
@@ -46,9 +46,9 @@ public class BaseGateway<T1> : IBaseGateway<T1>
         bool isDebug = true)
     {
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        Console.WriteLine($"\n\n\nGET\n\t\tIP Url: {url}\n\t\tSent: {requestDto.ToJson()}");
+        //Console.WriteLine($"\n\n\nGET\n\t\tIP Url: {url}\n\t\tSent: {requestDto.ToJson()}");
         var r = await _httpClient.PostAsJsonAsync(url, requestDto);
-        Console.WriteLine($"\n\n\t\tReceived:{await r.Content.ReadAsStringAsync()}\n\n\n");
+        //Console.WriteLine($"\n\n\t\tReceived:{await r.Content.ReadAsStringAsync()}\n\n\n");
         var dto = await r.Content.ReadFromJsonAsync<TResponse>();
         return dto;
     }

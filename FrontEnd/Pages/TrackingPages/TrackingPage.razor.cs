@@ -29,9 +29,9 @@ partial class TrackingPage : ComponentBase
     {
         if (firstRender)
         {
-            Console.WriteLine("_frontEndToDatabaseGateway == null ?" + _frontEndToDatabaseGateway == null);
+            // Console.WriteLine("_frontEndToDatabaseGateway == null ?" + _frontEndToDatabaseGateway == null);
             HomeLocation = await _frontEndToDatabaseGateway.GetHomeLocation();
-            Console.WriteLine($"Home location is {HomeLocation.Latitude}, {HomeLocation.Longitude}");
+            // Console.WriteLine($"Home location is {HomeLocation.Latitude}, {HomeLocation.Longitude}");
             await JsRuntime.InvokeVoidAsync("initGoogleMap", 
                 new {lat = HomeLocation.Latitude, lng = HomeLocation.Longitude});
         }

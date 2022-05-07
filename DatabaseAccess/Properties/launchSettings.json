@@ -12,23 +12,13 @@
     "DatabaseAccess": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:8080",
       "environmentVariables": {
-        "ConnectionString": "<SECRET>",
-        "DatabaseName":"Capstone",
-        "Fleet": "Fleet",
-        "Orders":"Orders",
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": false,
-      "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "CONNECTION_STRING": "mongodb+srv://capstone:YYeUvzrHZg4yJBsK@cluster0.rjlgf.mongodb.net/CapstoneGroup",
+        "DATABASE_NAME":"Capstone",
+        "ASPNETCORE_ENVIRONMENT": "Production"
       }
     }
   }
