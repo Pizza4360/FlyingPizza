@@ -25,8 +25,11 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
         return response;
     }
 
-    /*   public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request)
-           => await SendMessagePost<CreateOrderRequest, CreateOrderResponse>($"{DispatchUrl}/EnqueueOrder", request);*/
+    public async Task<List<Order>> GetOrder()
+    {
+        var response = await SendMessageGet<List<Order>>($"{DbUrl}/GetOrder");
+        return response;
+    }
 
     public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request)
     {
@@ -35,7 +38,8 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
     }
 
     public async Task<CancelDeliveryResponse> CancelOrder(CancelDeliveryRequest request)
-        => await SendMessagePost<CancelDeliveryRequest, CancelDeliveryResponse>($"{DispatchUrl}/CancelOrder", request);
+        => await SendMessagePost<CancelDeliveryRequest, CancelDeliveryResponse>($"{DbUrl}/CancelOrder", request);
+
 
     public async Task<DroneRecord> GetDrone(string id)
     {
