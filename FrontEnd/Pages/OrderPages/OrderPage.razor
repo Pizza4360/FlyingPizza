@@ -2,8 +2,8 @@
 @using FrontEnd.Services
 @using ConvertAddressToGeoLocation = Services.ConvertAddressToGeoLocation
 @inject NavigationManager NavigationManager
-@inject FrontEndToDatabaseGateway FrontEndToDatabaseGateway
-@inject FrontEndToDispatchGateway FrontEndToDispatchGateway
+@inject FrontEndToDatabaseGateway _FrontEndToDatabaseGateway
+@inject FrontEndToDispatchGateway _FrontEndToDispatchGateway
 @inject ConvertAddressToGeoLocation Converter
 
 <div class="quick-look">
@@ -78,7 +78,7 @@
                         @foreach (var order in Orders)
                         {
                             <!--Creates a block for each drone with id, status, more info button and a drone img-->
-                            <li style="background-image: url('../images/order.jpg')" @onclick="@(args => DisplaySelected(@order))">
+                            <li style="background-image: url(@("../images/order.jpg")" @onclick="@(args => DisplaySelected(@order))">
                                 <div class="drone-status">
                                     <span class="title" >Order ID: @order.Id.Substring(0,8)...</span>
                                     <span class="address">@order.DeliveryAddress</span>                                  
@@ -115,10 +115,10 @@
                         @foreach (var drone in Fleet)
                         {
                             <!--Creates a block for each drone with id, status, more info button and a drone img-->
-                            <li style="background-image: url('../images/drone.jpg')">
+                            <li style="background-image: url(@("../images/drone.jpg")">
                                 <div class="drone-status">
                                     <span class="title" >ID: 
-                                        <br> @drone.BadgeNumber.ToString().Substring(0, 4)... <br>
+                                        <br> @drone.DroneId.Substring(0, 4)... <br>
                                     </span>
                                     <span class="price" style="background-color: @Color(drone)">@drone.State</span>
                                     @*<span class="more">

@@ -14,37 +14,46 @@ partial class OrderPage : ComponentBase
     public string DeliveryAddress;
     public string CustomerName;
     public string DroneInput;
+    public Order[] Orders;
 
-        }
-    }
+    public bool connection;
+
+    public Order selectedOrder;
+
+    public string visibility = "hidden";
+
+    public string orderToCancel;
+
+    public string defaultText ="";
+    public DroneRecord[] Fleet;
 
     public async Task GetOrders()
     {
-        Orders = (await _frontEndToDatabaseGateway.GetOrder()).ToArray();
+        Orders = (await _FrontEndToDatabaseGateway.GetOrder()).ToArray();
     }
     public async Task GetFleet()
     {
-        Fleet = (await _frontEndToDatabaseGateway.GetFleet()).ToArray();
+        Fleet = (await _FrontEndToDatabaseGateway.GetFleet()).ToArray();
     }
 
     private async Task<AddDroneResponse> AddDrone()
     {
 
-        return await FrontEndToDispatchGateway.AddDrone(DroneInput);
+        return await _FrontEndToDispatchGateway.AddDrone(DroneInput);
     }
 
     public async Task MakeOrder()
     {
-        var deliveryLocation = await Converter.CoordsFromAddress(DeliveryAddress);
+        var DeliveryLocation = await Converter.CoordsFromAddress(DeliveryAddress);
 
-        var orderId = BaseEntity.GenerateNewId();
+        var OrderId = BaseEntity.GenerateNewId();
         
-        await FrontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest
+        await _FrontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest
         {
-            OrderId = orderId,
+            OrderId = OrderId,
             TimeOrdered = DateTime.Now,
             CustomerName = CustomerName,
-            DeliveryLocation = deliveryLocation,
+            DeliveryLocation = DeliveryLocation,
             DeliveryAddress = DeliveryAddress,
             DroneInput = DroneInput,
             State = OrderState.Waiting
@@ -52,7 +61,7 @@ partial class OrderPage : ComponentBase
 
         await GetOrders();
 
-        var dispatchResponse = _gateway.EnqueueOrder(new EnqueueOrderRequest
+        var dispatchResponse = _FrontEndToDispatchGateway.EnqueueOrder(new EnqueueOrderRequest
         {
             OrderLocation = DeliveryLocation,
             OrderId = OrderId,
@@ -70,7 +79,7 @@ partial class OrderPage : ComponentBase
         }
         defaultText = orderToCancel;
 
-        var dispatchResponse = await _frontEndToDatabaseGateway.CancelOrder(new CancelDeliveryRequest
+        var dispatchResponse = await _FrontEndToDatabaseGateway.CancelOrder(new CancelDeliveryRequest
         {
            OrderId = orderToCancel
         });

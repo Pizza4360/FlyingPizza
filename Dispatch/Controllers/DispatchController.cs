@@ -177,10 +177,10 @@ public class DispatchController : ControllerBase
         };
         Console.WriteLine(
             $"order {order.OrderId} has been delivered? {order.HasBeenDelivered} @ time {order.TimeDelivered}");
-        var result = await _orders.UpdateAsync(order.Update());
+        await _orders.UpdateAsync(order.Update());
         return new CompleteOrderResponse
         {
-            IsAcknowledged = result.IsAcknowledged
+            IsAcknowledged = true
         };
     }
 
