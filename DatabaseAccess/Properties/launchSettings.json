@@ -14,6 +14,11 @@
       "dotnetRunMessages": true,
       "launchBrowser": false,
       "launchUrl": "swagger",
+      "LogLevel": {
+        "Default": "None",
+        "System": "None",
+        "Microsoft": "None"
+      },
       "applicationUrl": "http://localhost:8080",
       "environmentVariables": {
         "CONNECTION_STRING": "mongodb+srv://capstone:YYeUvzrHZg4yJBsK@cluster0.rjlgf.mongodb.net/CapstoneGroup",
