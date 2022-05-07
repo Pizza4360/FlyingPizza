@@ -14,11 +14,11 @@ namespace Dispatch.Services;
 public class PingerService : BackgroundService
 {
     private readonly ILogger Logger;
+    public string DispatchUrl { get; set; }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var _httpClient = new HttpClient();
-        var DispatchUrl = "http://localhost:83/Dispatch";
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(3000, stoppingToken);

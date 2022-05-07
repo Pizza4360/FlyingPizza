@@ -11,7 +11,7 @@ public class DroneToDispatchGateway : BaseGateway<SimDroneController>
     public DroneToDispatchGateway(string dispatchUrl)
     {
         Console.WriteLine($"\nThis drone will talk to Dispatch at {dispatchUrl}");
-        EndPoint = dispatchUrl + "/Dispatch";
+        EndPoint = dispatchUrl;
     }
 
     public string EndPoint { get; set; }

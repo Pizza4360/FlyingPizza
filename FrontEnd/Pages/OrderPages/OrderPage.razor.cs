@@ -28,6 +28,7 @@ partial class OrderPage : ComponentBase
 
     private async Task<AddDroneResponse> AddDrone()
     {
+
         return await FrontEndToDispatchGateway.AddDrone(DroneInput);
     }
 

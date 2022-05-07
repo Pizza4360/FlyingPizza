@@ -4,20 +4,17 @@ using Domain.RepositoryDefinitions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
-    options.AddPolicy("CORS", policy => policy.WithOrigins("https://localhost:44364",
-        "http://localhost:5001", "http://localhost:81", "http://localhost:82",
-        "http://localhost:83",
-        "http://localhost:84",
-        "http://localhost:85",
-        "http://localhost:86",
-        "http://localhost:87",
-        "http://localhost:88").AllowAnyHeader().AllowAnyMethod()));
+    options.AddPolicy("CORS", policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME");
 var fleet = Environment.GetEnvironmentVariable("FLEET_COLLECTION_NAME");
 var orders = Environment.GetEnvironmentVariable("ORDERS_COLLECTION_NAME");
-
+Console.WriteLine($"" +
+                  $"{connectionString}\n" +
+                  $"{databaseName}\n" +
+                  $"{fleet}\n" +
+                  $"{orders}\n");
 #region repositories
 var ordersRepositorySettings = new RepositorySettings
 {
@@ -25,6 +22,8 @@ var ordersRepositorySettings = new RepositorySettings
     DatabaseName = databaseName,
     CollectionName = orders
 };
+
+
 builder.Services.AddSingleton<IOrdersRepository>(_ => new OrderRepository(ordersRepositorySettings));
 
 var fleetRepositorySettings = new RepositorySettings
@@ -48,7 +47,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHostedService<PingerService>();
+builder.Services.AddHostedService(_ => new PingerService{DispatchUrl = Environment.GetEnvironmentVariable("DISPATCH_URL")});
 
 var app = builder.Build();
 

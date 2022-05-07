@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Domain.DTO;
 using Domain.DTO.FrontEndDispatchCommunication;
+using Domain.Entities;
 using Domain.GatewayDefinitions;
 
 namespace FrontEnd.Services;
@@ -29,9 +31,14 @@ public class FrontEndToDispatchGateway : BaseGateway<App>
 
     public async Task<AddDroneResponse> AddDrone(string droneUrl)
     {
-        return await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DispatchUrl}/AddDrone", new AddDroneRequest
+        Console.WriteLine($"drone url is {droneUrl}, dispatchUrl = {DispatchUrl}");
+        return await SendMessagePost<AddDroneRequest, AddDroneResponse>($"{DispatchUrl}/AddDrone",
+            new AddDroneRequest
         {
             DroneUrl = droneUrl,
+            DroneId = BaseEntity.GenerateNewId(),
+            DispatchUrl = "",
+            HomeLocation = null
         });
     }
 

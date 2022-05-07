@@ -25,7 +25,8 @@ public class DispatchController : ControllerBase
         IOrdersRepository orderRepo
     )
     {
-        _dispatchUrl = Environment.GetEnvironmentVariable("DISPATCH_URL") ?? throw new InvalidOperationException(); 
+        _dispatchUrl = Environment.GetEnvironmentVariable("DISPATCH_URL") ?? throw new InvalidOperationException();
+        Console.WriteLine($"I live at {_dispatchUrl}");
         _fleet = droneRepo;
         _orders = orderRepo;
         _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(droneRepo);
@@ -81,6 +82,7 @@ public class DispatchController : ControllerBase
     [HttpPost("AddDrone")]
     public async Task<AddDroneResponse> AddDrone(AddDroneRequest addDroneRequest)
     {
+        Console.WriteLine($"URL IS FUCKING {_dispatchUrl}");
         isInitiatingDrone = true;
         addDroneRequest.DispatchUrl = _dispatchUrl;
         addDroneRequest.HomeLocation = _homeLocation;
@@ -116,7 +118,7 @@ public class DispatchController : ControllerBase
         {
             DroneId = addDroneRequest.DroneId,
             DroneUrl = addDroneRequest.DroneUrl,
-            DispatchUrl = addDroneRequest.DispatchUrl,
+            DispatchUrl = _dispatchUrl,
             HomeLocation = addDroneRequest.HomeLocation
         };
 
