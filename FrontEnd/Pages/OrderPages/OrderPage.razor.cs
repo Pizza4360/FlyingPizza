@@ -14,17 +14,26 @@ partial class OrderPage : ComponentBase
     public string DeliveryAddress;
     public string CustomerName;
     public string DroneInput;
+    public Order[] Orders;
 
-    [Inject] public IJSRuntime JsRuntime { get; set; }
+    public bool connection;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public Order selectedOrder;
+
+    public string visibility = "hidden";
+
+    public string orderToCancel;
+
+    public string defaultText ="";
+    public DroneRecord[] Fleet;
+
+    public async Task GetOrders()
     {
-        if (firstRender) await JsRuntime.InvokeVoidAsync("initGeocoder");
+        Orders = (await DatabaseGateway.GetOrder()).ToArray();
     }
-
-    protected override void OnInitialized()
+    public async Task GetFleet()
     {
-        
+        Fleet = (await DatabaseGateway.GetFleet()).ToArray();
     }
 
     private async Task AddDrone()
@@ -32,7 +41,7 @@ partial class OrderPage : ComponentBase
         await DatabaseGateway.AddDrone(DroneInput);
     }
 
-    private async Task MakeOrder()
+    public async Task MakeOrder()
     {
         var orderId = BaseEntity.GenerateNewId();
         await DatabaseGateway.CreateOrder(new CreateOrderRequest
@@ -42,8 +51,42 @@ partial class OrderPage : ComponentBase
             CustomerName = CustomerName,
             DeliveryLocation = null,
             DeliveryAddress = DeliveryAddress,
-            DroneId = "",
+            DroneId = DroneInput,
             State = OrderState.Waiting
         });
+        await GetOrders(); 
     }
+
+    public async Task CancelOrder()
+    {
+        if (orderToCancel == null)
+        {
+            orderToCancel = selectedOrder.Id;
+        }
+        defaultText = orderToCancel;
+
+      
+        await GetOrders();
+        orderToCancel = null;
+        defaultText = "";
+    }
+
+    public void OnInfoClose(){
+        visibility = "hidden";
+        defaultText = "";
+        selectedOrder = null;
+    }
+
+    public void DisplaySelected(Order selected)
+    {
+        selectedOrder = selected;
+        defaultText = selectedOrder.Id;
+        visibility = "visible";
+    }
+
+    public string Color(DroneRecord drone)
+    {
+        return drone.State.GetColor();
+    }
+    
 }

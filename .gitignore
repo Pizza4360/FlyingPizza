@@ -24,8 +24,6 @@ bld/
 
 
 
-*appsettings*
-*launchsettings*
 /SimDrone/DroneRecord.json
 .dockerignore
 .idea/

@@ -26,23 +26,6 @@
     <a class="dismiss">🗙</a>
 </div>
 <script src="_framework/blazor.webassembly.js"></script>
-<script>
-    var geocoder
-
-    function initGeocoder() {
-        geocoder = new google.maps.Geocoder();
-    }
-
-    function codeAddress(address) {
-        geocoder.geocode({'address': address}, function (results, status) {
-            if (status == 'OK') {
-                return "OK"
-            } else {
-                return "NOT OK"
-            }
-        })
-    }
-</script>
 
 <script>
     var map

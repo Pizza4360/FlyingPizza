@@ -24,12 +24,20 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
         Console.WriteLine($"{s} => {string.Join("\n", response)}");
         return response;
     }
-    
+
+    public async Task<List<Order>> GetOrder()
+    {
+        var response = await SendMessageGet<List<Order>>($"{DbUrl}/GetOrder");
+        return response;
+    }
     public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request)
     {
         Console.Write($"before FrontEndToDatabaseGateway.SendMessagePost, request = {request}");
         return await SendMessagePost<CreateOrderRequest, CreateOrderResponse>($"{DbUrl}/CreateOrder", request);
     }
+
+    public async Task<CancelDeliveryResponse> CancelOrder(CancelDeliveryRequest request)
+        => await SendMessagePost<CancelDeliveryRequest, CancelDeliveryResponse>($"{DbUrl}/CancelOrder", request);
 
     public async Task<DroneRecord> GetDrone(string id)
     {

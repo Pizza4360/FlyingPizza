@@ -31,9 +31,26 @@ public class DatabaseAccess : ControllerBase
     public async Task<List<DroneRecord>> GetFleet()
     {
         Console.WriteLine("got a request to get the fleet...");
-        var fleet = await _fleet.GetAllAsync();
+        var fleet =  await _fleet.GetAllAsync();
         Console.WriteLine("Got back" + string.Join("\n", fleet));
         return fleet;
+    }
+
+    [HttpGet("GetOrder")]
+    public async Task<List<Order>> GetOrder()
+    {
+        Console.WriteLine("got a request to get the orders...");
+        var orders = await _orders.GetAllAsync();
+        Console.WriteLine("Got back" + string.Join("\n", orders));
+        return orders;
+    }
+
+    [HttpPost("CancelOrder")]
+    public async Task<CancelDeliveryResponse> CancelOrder(string OrderId)
+    {
+        Console.WriteLine("got a request to get the orders...");
+        await _orders.RemoveAsync(OrderId);
+        return new CancelDeliveryResponse();
     }
 
     [HttpPost("CreateOrder")]

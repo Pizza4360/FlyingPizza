@@ -44,11 +44,6 @@ public class OrderRepository : IOrdersRepository
         return await _collection.Find(x => x.OrderId == id).FirstOrDefaultAsync();
     }
 
-    public async Task<List<Order>> GetAllAsync()
-    {
-        return (await _collection.FindAsync(_ => true)).ToList();
-    }
-
     public async Task<bool> RemoveAsync(string id)
     {
         return (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
@@ -88,4 +83,8 @@ public class OrderRepository : IOrdersRepository
     {
         throw new NotImplementedException();
     }
+
+    public async Task<List<Order>> GetAllAsync() =>
+        await _collection.Find(_ => true).ToListAsync();
+
 }

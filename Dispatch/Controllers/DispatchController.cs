@@ -148,7 +148,7 @@ public class DispatchController : ControllerBase
         var result = await _orders.UpdateAsync(order.Update());
         return new CompleteOrderResponse
         {
-            IsAcknowledged = result.IsAcknowledged
+            IsAcknowledged = true
         };
     }
 
