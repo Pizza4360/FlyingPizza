@@ -16,7 +16,7 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7102;http://localhost:8083",
       "environmentVariables": {
-        "CONNECTION_STRING": "mongodb+srv://capstone:YYeUvzrHZg4yJBsK@cluster0.rjlgf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+        "ConnectionString": "<SECRET>",
         "DATABASE_NAME": "Capstone",
         "FLEET_COLLECTION_NAME": "Fleet",
         "ORDERS_COLLECTION_NAME":"Orders",
