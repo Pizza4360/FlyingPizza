@@ -104,7 +104,7 @@ public class SimDroneController : ControllerBase
     [NonAction]
     private async Task PersistRecord(DroneRecord droneRecord)
     {
-        if (_drone.DispatchUrl == null) _drone.DispatchUrl = droneRecord.DispatchUrl;
+        _drone.DispatchUrl ??= droneRecord.DispatchUrl;
         _drone.DispatchUrl = droneRecord.DispatchUrl;
         Console.WriteLine("\nSaving drone state...");
 
