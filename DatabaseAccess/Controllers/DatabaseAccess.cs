@@ -3,18 +3,17 @@ using Domain.Entities;
 using Domain.RepositoryDefinitions;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+
 namespace DatabaseAccess.Controllers;
 
 [ApiController]
 [Route("[controller]")]
 public class DatabaseAccess : ControllerBase
 {
-    
-
     private readonly ILogger<DatabaseAccess> _logger;
-    private IFleetRepository _fleet;
-    private IOrdersRepository _orders;
-    
+    private readonly IFleetRepository _fleet;
+    private readonly IOrdersRepository _orders;
+
     public DatabaseAccess(
         ILogger<DatabaseAccess> logger, IFleetRepository fleet, IOrdersRepository orders)
     {
@@ -27,7 +26,7 @@ public class DatabaseAccess : ControllerBase
     public async Task<List<DroneRecord>> GetFleet()
     {
         Console.WriteLine("got a request to get the fleet...");
-        var fleet = await _fleet.GetAllAsync();
+        var fleet =  await _fleet.GetAllAsync();
         Console.WriteLine("Got back" + string.Join("\n", fleet));
         return fleet;
     }
@@ -56,7 +55,7 @@ public class DatabaseAccess : ControllerBase
         await _orders.CreateAsync(order);
         return new CreateOrderResponse();
     }
-    
+
     [HttpGet("GetDrone")]
     public DroneRecord GetDrone(string id)
     {

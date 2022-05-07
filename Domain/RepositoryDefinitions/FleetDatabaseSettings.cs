@@ -1,5 +1,4 @@
-﻿
-namespace DatabaseAccess;
+﻿namespace DatabaseAccess;
 
 public class FleetDatabaseSettings
 {

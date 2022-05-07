@@ -5,7 +5,6 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-
 namespace Domain.GatewayDefinitions;
 
 public class BaseGateway<T1> : IBaseGateway<T1>

@@ -47,3 +47,9 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
     {
         return await SendMessagePost<string, DroneRecord>($"{DbUrl}/GetDrone", id);
     }
+
+    public async Task<Order> GetOrder(string id)
+    {
+        return await SendMessagePost<string, Order>($"{DbUrl}/GetOrder", id);
+    }
+}

@@ -22,38 +22,32 @@ partial class OrderPage : ComponentBase
     {
         Orders = (await _frontEndToDatabaseGateway.GetOrder()).ToArray();
     }
-
     public async Task GetFleet()
     {
         Fleet = (await _frontEndToDatabaseGateway.GetFleet()).ToArray();
     }
 
-    public async Task<AddDroneResponse> AddDrone() {
-        var response = await _frontEndToDispatchGateway.AddDrone(new AddDroneRequest
-        {
-            DroneId = BaseEntity.GenerateNewId(),
-            BadgeNumber = Guid.NewGuid(),
-            HomeLocation = new GeoLocation{ Latitude = 39.74386695629378m, Longitude = -105.00610500179027m },
-            DroneUrl = "http://localhost:85",
-            DispatchUrl = "http://localhost:83"
-        });
-        await GetFleet();
-        return response;
+    private async Task<AddDroneResponse> AddDrone()
+    {
+
+        return await FrontEndToDispatchGateway.AddDrone(DroneInput);
     }
 
     public async Task MakeOrder()
     {
+        var deliveryLocation = await Converter.CoordsFromAddress(DeliveryAddress);
 
-        var DeliveryLocation = await converter.CoordsFromAddress(DeliveryAddress);
-
-        string OrderId = BaseEntity.GenerateNewId();
-
-        await _frontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest {
-            OrderId = OrderId,
+        var orderId = BaseEntity.GenerateNewId();
+        
+        await FrontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest
+        {
+            OrderId = orderId,
             TimeOrdered = DateTime.Now,
             CustomerName = CustomerName,
-            DeliveryLocation = DeliveryLocation,
-            DeliveryAddress = DeliveryAddress
+            DeliveryLocation = deliveryLocation,
+            DeliveryAddress = DeliveryAddress,
+            DroneInput = DroneInput,
+            State = OrderState.Waiting
         });
 
         await GetOrders();

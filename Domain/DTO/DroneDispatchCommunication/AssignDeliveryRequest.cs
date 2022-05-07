@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.DTO.DroneDispatchCommunication;
 

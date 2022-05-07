@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Domain.DTO;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
 using Microsoft.Extensions.Options;
@@ -85,38 +86,14 @@ public class OrderRepository : IOrdersRepository
         return Task.FromResult(result.IsCompletedSuccessfully);
     }
 
-    public async Task<bool> RemoveAsync(string id) =>
-        (await _collection.DeleteOneAsync(x => x.DroneId == id)).IsAcknowledged;
-
-
-    public async Task<bool> UpdateAsync(Order order)
+    public Task UpdateAsync(string id, OrderUpdate update)
     {
-        var result = await _collection.UpdateOneAsync(
-            record => record.DroneId == order.DroneId,
-            GetUpdateDefinition(order));
-        return result.IsAcknowledged;
+        throw new NotImplementedException();
     }
 
-    private static UpdateDefinition<Order> GetUpdateDefinition(Order order)
+    public Task UpdateAsync<T>(string id, T update)
     {
-        var builder = new UpdateDefinitionBuilder<Order>();
-        UpdateDefinition<Order> updateDefinition = null;
-        foreach (var property in order.GetType().GetProperties())
-        {
-            if (property != null)
-            {
-                if (updateDefinition == null)
-                {
-                    updateDefinition = builder.Set(property.Name, property.GetValue(order));
-                }
-                else
-                {
-                    updateDefinition = updateDefinition.Set(property.Name, property.GetValue(order));
-                }
-            }
-        }
-
-        return updateDefinition;
+        throw new NotImplementedException();
     }
 
     public async Task<List<Order>> GetAllAsync() =>
