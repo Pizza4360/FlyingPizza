@@ -13,49 +13,94 @@ partial class OrderPage : ComponentBase
 {
     public string DeliveryAddress;
     public string CustomerName;
-    public string DroneInput;
+    public string DroneUrl;
+    public Order[] Orders;
 
-    [Inject] public IJSRuntime JsRuntime { get; set; }
+    public bool connection;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public Order selectedOrder;
+
+    public string visibility = "hidden";
+
+    public string orderToCancel;
+
+    public string defaultText ="";
+    public DroneRecord[] Fleet;
+    
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender) await JsRuntime.InvokeVoidAsync("initGeocoder");
+        try
+        {          
+            await GetOrders();
+            await GetFleet();
+            connection = true;
+        }
+        catch
+        {
+
+        }
+    } 
+
+    public async Task GetOrders()
+    {
+        Orders = (await DatabaseGateway.GetOrders()).ToArray();
+    }
+    public async Task GetFleet()
+    {
+        Fleet = (await DatabaseGateway.GetFleet()).ToArray();
     }
 
-    protected override void OnInitialized()
+    private async Task AddDrone()
     {
+        await DatabaseGateway.AddDrone(DroneUrl);
     }
 
-    private async Task<AddDroneResponse> AddDrone()
+    public async Task MakeOrder()
     {
-
-        return await FrontEndToDispatchGateway.AddDrone(DroneInput);
-    }
-
-    private async Task MakeOrder()
-    {
-        var deliveryLocation = await Converter.CoordsFromAddress(DeliveryAddress);
-
         var orderId = BaseEntity.GenerateNewId();
-        
-        await FrontEndToDatabaseGateway.CreateOrder(new CreateOrderRequest
+        await DatabaseGateway.CreateOrder(new CreateOrderRequest
         {
             OrderId = orderId,
             TimeOrdered = DateTime.Now,
             CustomerName = CustomerName,
-            DeliveryLocation = deliveryLocation,
+            DeliveryLocation = null,
             DeliveryAddress = DeliveryAddress,
-            DroneInput = DroneInput,
+            DroneId = DroneUrl,
             State = OrderState.Waiting
         });
-        
-        //var dispatchResponse = FrontEndToDispatchGateway.EnqueueOrder(new EnqueueOrderRequest
-        //{
-        //    OrderLocation = deliveryLocation,
-        //    OrderId = orderId
-        //});
-        
-        // Navigate to page to display users current order. 
-        // NavigationManager.NavigateTo("/tracking", false);
+        await GetOrders(); 
     }
+
+    public async Task CancelOrder()
+    {
+        if (orderToCancel == null)
+        {
+            orderToCancel = selectedOrder.Id;
+        }
+        defaultText = orderToCancel;
+
+      
+        await GetOrders();
+        orderToCancel = null;
+        defaultText = "";
+    }
+
+    public void OnInfoClose(){
+        visibility = "hidden";
+        defaultText = "";
+        selectedOrder = null;
+    }
+
+    public void DisplaySelected(Order selected)
+    {
+        selectedOrder = selected;
+        defaultText = selectedOrder.Id;
+        visibility = "visible";
+    }
+
+    public string Color(DroneRecord drone)
+    {
+        return drone.State.GetColor();
+    }
+    
 }

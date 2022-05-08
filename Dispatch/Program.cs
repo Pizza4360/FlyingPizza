@@ -6,33 +6,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
     options.AddPolicy("CORS", policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
+
+#region repositories
+
 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME");
-var fleet = Environment.GetEnvironmentVariable("FLEET_COLLECTION_NAME");
-var orders = Environment.GetEnvironmentVariable("ORDERS_COLLECTION_NAME");
-Console.WriteLine($"" +
-                  $"{connectionString}\n" +
-                  $"{databaseName}\n" +
-                  $"{fleet}\n" +
-                  $"{orders}\n");
-#region repositories
-var ordersRepositorySettings = new RepositorySettings
+var ODDSSettingsSettings = new RepositorySettings
 {
     ConnectionString = connectionString,
     DatabaseName = databaseName,
-    CollectionName = orders
+    CollectionName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
 };
+builder.Services.AddSingleton(_ => new ODDSSettings(ODDSSettingsSettings));
 
+builder.Services.AddSingleton<IOrdersRepository, OrderRepository>();
 
-builder.Services.AddSingleton<IOrdersRepository>(_ => new OrderRepository(ordersRepositorySettings));
-
-var fleetRepositorySettings = new RepositorySettings
-{
-    ConnectionString = connectionString,
-    DatabaseName = databaseName,
-    CollectionName = fleet
-};
-builder.Services.AddSingleton<IFleetRepository>(provider => new FleetRepository(fleetRepositorySettings));
+builder.Services.AddSingleton<IFleetRepository, FleetRepository>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
@@ -47,7 +36,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHostedService(_ => new PingerService{DispatchUrl = Environment.GetEnvironmentVariable("DISPATCH_URL")});
+builder.Services.AddHostedService<PingerService>();
 
 var app = builder.Build();
 
@@ -68,4 +57,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-

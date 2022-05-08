@@ -26,24 +26,6 @@
     <a class="dismiss">🗙</a>
 </div>
 <script src="_framework/blazor.webassembly.js"></script>
-<script>
-    var geocoder
-
-    function initGeocoder() {
-        geocoder = new google.maps.Geocoder();
-
-    }
-
-    function codeAddress(address) {
-        geocoder.geocode({'address': address}, function (results, status) {
-            if (status == 'OK') {
-                return "OK"
-            } else {
-                return "NOT OK"
-            }
-        })
-    }
-</script>
 
 <script>
     var map
@@ -166,13 +148,11 @@
     function updateAll(currentMarkers) {
         for (badgeNumber in markers) { // find out which markers are deleted, remove them
             if (!(badgeNumber in currentMarkers)) {
-                console.log(badgeNumber + " is no longer a valid markers! removing " + markers[badgeNumber])
                 removeMarker(badgeNumber)
             }
         }
         for (var badgeNumber in currentMarkers) {
             if (!(badgeNumber in markers)) { // find out which are new, add them
-                console.log(badgeNumber + " is not in known markers! inserting {" + currentMarkers[badgeNumber])
                 addMarker(badgeNumber, currentMarkers[badgeNumber])
             } else { // must check if the marker is in a new location
                 newMarker = currentMarkers[badgeNumber]
@@ -180,11 +160,9 @@
                     newMarker["lat"] !== markers[badgeNumber].position.lat ||
                     newMarker["lng"] !== markers[badgeNumber].position.lng
                 ) {
-                    console.log("drone " + badgeNumber + " has moved from (" + markers[badgeNumber].getPosition().lat() + "," + markers[badgeNumber].getPosition().lng() + ") to (" + newMarker["lat"] + "," + newMarker["lng"] + ")")
                     updateMarker(badgeNumber, newMarker["lat"], newMarker["lng"]);
                 }
                 if (newMarker["color"] !== markers[badgeNumber].Circle.fillColor) {
-                    console.log(markers[badgeNumber].Circle.fillColor + " vs " + newMarker["color"]);
                     markers[badgeNumber].Circle.setMap(null);
                     markers[badgeNumber].Circle = new google.maps.Circle({
                         center: {lat: newMarker["lat"].lat - 16, lng: newMarker["lng"] - 16},

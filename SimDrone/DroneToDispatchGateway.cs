@@ -6,16 +6,21 @@ using SimDrone.Controllers;
 
 namespace SimDrone;
 
-public class DroneToDispatchGateway : BaseGateway<SimDroneController>
+public class DroneToDispatchGateway : BaseGateway<SimDroneController>, IDroneToDispatchGateway
 {
     public DroneToDispatchGateway(string dispatchUrl)
     {
         Console.WriteLine($"\nThis drone will talk to Dispatch at {dispatchUrl}");
-        EndPoint = dispatchUrl;
+        EndPoint = $"{dispatchUrl}/Dispatch";
     }
 
     public string EndPoint { get; set; }
 
+    public string GetEndPoint()
+    {
+        return EndPoint;
+    }
+    
     public void ChangeHandler(HttpMessageHandler handler)
     {
         // Added for mocking reasons, no way around it

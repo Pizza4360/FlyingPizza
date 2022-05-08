@@ -21,20 +21,19 @@ partial class TrackingPage : ComponentBase
     public DroneRecord[] filteredDrones;
     public DroneRecord[] Fleet;
 
-    [Inject] public FrontEndToDatabaseGateway _FrontEndToDatabaseGateway { get; set; }
-    [Inject] public GeoLocation HomeLocation { get; set; }
+    [Inject] public FrontEndToDatabaseGateway _frontEndToDatabaseGateway { get; set; }
+    public GeoLocation HomeLocation { get; set; }
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            Console.WriteLine($"Home location is {HomeLocation.Latitude}, {HomeLocation.Longitude}");
-            Console.WriteLine("_frontEndToDatabaseGateway == null ?" + _frontEndToDatabaseGateway == null);
+            // Console.WriteLine("_frontEndToDatabaseGateway == null ?" + _frontEndToDatabaseGateway == null);
+            HomeLocation = await _frontEndToDatabaseGateway.GetHomeLocation();
+            // Console.WriteLine($"Home location is {HomeLocation.Latitude}, {HomeLocation.Longitude}");
             await JsRuntime.InvokeVoidAsync("initGoogleMap", 
-                new {lat = HomeLocation.Latitude, lng = HomeLocation.Longitude}
-                );
-            // await JsRuntime.InvokeVoidAsync("initGoogleMap", HomeLocation);
+                new {lat = HomeLocation.Latitude, lng = HomeLocation.Longitude});
         }
     }
 
@@ -42,6 +41,7 @@ partial class TrackingPage : ComponentBase
     {
         await DisplayDroneAsync("Delivering");
         await Temp();
+        await UpdateDroneMarkers();
     }
 
     protected Task Temp()
@@ -57,7 +57,7 @@ partial class TrackingPage : ComponentBase
         try
         {
             dropDownLabel = filter;
-            Fleet = (await _FrontEndToDatabaseGateway.GetFleet()).ToArray();
+            Fleet = (await _frontEndToDatabaseGateway.GetFleet()).ToArray();
             filteredDrones = Fleet.Where(record => record.State.ToString() == filter).ToArray();
             connection = true;
         }

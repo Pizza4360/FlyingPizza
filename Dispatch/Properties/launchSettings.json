@@ -12,28 +12,21 @@
     "Dispatch": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7102;http://localhost:8083",
-      "environmentVariables": {
-        "ConnectionString": "<SECRET>",
-        "DATABASE_NAME": "Capstone",
-        "FLEET_COLLECTION_NAME": "Fleet",
-        "ORDERS_COLLECTION_NAME":"Orders",
-        "DISPATCH_URL": "http://localhost:8083/Dispatch",
-        "HOME_LATITUDE": "39.74362771992734",
-        "HOME_LONGITUDE": "-105.00549345883957",
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
       "launchBrowser": false,
       "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7102;http://localhost:8083",
+      "Logging": {
+        "IncludeScopes": false,
+        "LogLevel": {
+          "Default": "None",
+          "System": "None",
+          "Microsoft": "None"
+        }
+      },
       "environmentVariables": {
-        "ConnectionString": "<SECRET>",
-        "DATABASE_NAME":"Capstone",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "CONNECTION_STRING": "mongodb+srv://capstone:YYeUvzrHZg4yJBsK@cluster0.rjlgf.mongodb.net/CapstoneGroup",
+        "DATABASE_NAME": "Capstone",
+        "ASPNETCORE_ENVIRONMENT": "Production"
       }
     }
   }

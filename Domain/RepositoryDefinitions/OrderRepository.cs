@@ -15,45 +15,33 @@ public class OrderRepository : IOrdersRepository
     private readonly IMongoCollection<Order> _collection;
 
     public
-        OrderRepository(IOptions<OrdersDatabaseSettings>? ordersSettings) //: Domain.InterfaceDefinitions.Repositories
+        OrderRepository(ODDSSettings settings) //: Domain.InterfaceDefinitions.Repositories
     {
         var mongoClient = new MongoClient(
-            ordersSettings.Value.ConnectionString);
+            settings.CONNECTION_STRING);
 
         var mongoDatabase = mongoClient.GetDatabase(
-            ordersSettings.Value.DatabaseName);
+            settings.DATABASE_NAME);
 
         _collection = mongoDatabase.GetCollection<Order>(
-            ordersSettings.Value.CollectionName);
-        Console.WriteLine($"this should be 'Orders'>>>{ordersSettings.Value.CollectionName}<<<");
+            settings.ORDERS_COLLECTION_NAME);
+        Console.WriteLine($"this should be 'Orders'>>>{settings.ORDERS_COLLECTION_NAME}<<<");
     }
 
-    public OrderRepository(RepositorySettings settings) //: Domain.InterfaceDefinitions.Repositories
+    public OrderRepository(IMongoCollection<Order> getCollection)
     {
-        var mongoClient = new MongoClient(
-            settings.ConnectionString);
-
-        var mongoDatabase = mongoClient.GetDatabase(
-            settings.DatabaseName);
-
-        _collection = mongoDatabase.GetCollection<Order>(
-            settings.CollectionName);
-        Console.WriteLine($"this should be 'Orders'>>>{settings.CollectionName}<<<");
+        _collection = getCollection;
     }
 
     public async Task CreateAsync(Order newOrder)
     {
+        Console.WriteLine($"creating:\n{newOrder.ToJson()}");
         await _collection.InsertOneAsync(newOrder);
     }
 
     public async Task<Order> GetByIdAsync(string id)
     {
         return await _collection.Find(x => x.OrderId == id).FirstOrDefaultAsync();
-    }
-
-    public async Task<List<Order>> GetAllAsync()
-    {
-        return (await _collection.FindAsync(_ => true)).ToList();
     }
 
     public async Task<bool> RemoveAsync(string id)
@@ -95,4 +83,8 @@ public class OrderRepository : IOrdersRepository
     {
         throw new NotImplementedException();
     }
+
+    public async Task<List<Order>> GetAllAsync() =>
+        await _collection.Find(_ => true).ToListAsync();
+
 }

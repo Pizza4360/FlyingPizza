@@ -15,6 +15,7 @@ public enum DroneState
     Returning,
     Dead,
     Charging,
+    Unititialized,
     Assigned
 }
 public static class DroneStateExtensions
@@ -25,6 +26,7 @@ public static class DroneStateExtensions
         { DroneState.Returning, "#8A2BE2" },
         { DroneState.Dead, "#FF0000" },
         { DroneState.Charging, "#FF9A08" },
+        { DroneState.Unititialized, "#964B00" },
         { DroneState.Assigned, "#FF9A08" }
     };
     private static readonly Dictionary<DroneState, string> StateToStringDict = new(){
@@ -32,6 +34,7 @@ public static class DroneStateExtensions
         { DroneState.Delivering, "Delivering" },
         { DroneState.Returning, "Returning" },
         { DroneState.Dead, "Dead" },
+        { DroneState.Unititialized, "Unititialized" },
         { DroneState.Charging, "Charging" },
         { DroneState.Assigned, "Assigned" }
     };

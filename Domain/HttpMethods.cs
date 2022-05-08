@@ -89,19 +89,11 @@ public static class HttpMethods
     // the associated information
     public static async Task<T> Get<T>(string url)
     {
-        if (http == null) http = new HttpClient();
+        http ??= new HttpClient();
         var r = await http.GetAsync(url);
-
-        // auto logout on 401 response
         if (r.StatusCode == HttpStatusCode.Unauthorized) return default;
-
-        // throw exception on error response
-        if (!r.IsSuccessStatusCode)
-        {
-            var error = await r.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-            return default;
-        }
-
-        return await r.Content.ReadFromJsonAsync<T>();
+        if (r.IsSuccessStatusCode) return await r.Content.ReadFromJsonAsync<T>();
+        await r.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+        return default;
     }
 }

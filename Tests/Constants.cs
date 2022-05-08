@@ -15,17 +15,25 @@ public class Constants
     public const string DispatcherIp = "localhost:4000";
     public const string Url = "https://FlyingPizza.com";
     public const string DroneId = "abcdefg";
-    public const string TestOrderId = "123456";
+    public const string TestOrderId = "123456123456123456123456";
     public const string CHARGING = "Charging";
+    public static readonly object[] TestItems = Array.Empty<object>();
+    public static readonly OrderState TestOrderState = OrderState.Waiting;
+    
+    private static readonly GeoLocation
+        TestDeliveryLocation = new()
+        {
+            Latitude = 39.74362771992734m, Longitude = -105.00549345883957m
+        },
+        TestHomeLocation = new()
+        {
+            Latitude = 39.74364421910773m,
+            Longitude = -105.00561147600774m
+        };
 
     private const string
         TestDeliveryAddress = "yo mama",
-        TestCustomerName = "bobby",
-        InvalidTestIp = "test_ip",
-        ValidTestIp = "172.18.0.0",
-        TestDispatcherUrl = "http://" + ValidTestIp + ":4000";
-
-    public static readonly Guid TestBadgeNumber = new();
+        TestCustomerName = "bobby";
 
     public static readonly GeoLocation HomeLocation = new()
     {
@@ -38,18 +46,34 @@ public class Constants
         Latitude = 0.00018m,
         Longitude = 0.00011m
     };
+    private static readonly DateTime TestTimeDelivered = DateTime.UtcNow;
 
+    
     public static DroneRecord TestRecord = new()
     {
-        BadgeNumber = TestBadgeNumber,
-        DispatcherUrl = Url,
+        DispatchUrl = Url,
         Id = DroneId,
-        DroneIp = DispatcherIp,
+        DroneUrl = DispatcherIp,
         HomeLocation = HomeLocation,
         Destination = Destination,
         CurrentLocation = HomeLocation,
         OrderId = TestOrderId,
-        State = DroneState.Ready
+        State = DroneState.Ready,
+        DroneId = DroneId
+    };
+    public static readonly Order TestOrder = new()
+    {
+        CustomerName = TestCustomerName,
+        DeliveryAddress = TestDeliveryAddress,
+        DeliveryLocation = TestDeliveryLocation,
+        DroneId = TestRecord.DroneId,
+        Id = TestOrderId,
+        Items = TestItems,
+        OrderId = TestOrderId,
+        State = TestOrderState,
+        TimeDelivered = TestTimeDelivered,
+        TimeOrdered = TestTimeDelivered
+        
     };
 
     public static readonly Dictionary<string, string> TestStringDict = new()
@@ -62,80 +86,136 @@ public class Constants
         StatusCode = HttpStatusCode.OK,
         Content = new StringContent("")
     };
-
-    private static readonly GeoLocation
-        TestDeliveryLocation = new()
-        {
-            Latitude = 39.74362771992734m, Longitude = -105.00549345883957m
-        },
-        TestHomeLocation = new()
-        {
-            Latitude = 39.74364421910773m,
-            Longitude = -105.00561147600774m
-        };
-
-    private static readonly Guid TestGuid = new();
-    private static readonly DateTime TestTimeDelivered = DateTime.UtcNow;
-
-    public static readonly GatewayDto TestGatewayDto = new();
-
-    public static readonly Order TestOrder = new()
-    {
-        DeliveryAddress = TestDeliveryAddress,
-        TimeDelivered = TestTimeDelivered,
-        Id = TestOrderId,
-        TimeOrdered = TestTimeDelivered,
-        DeliveryLocation = TestDeliveryLocation,
-        CustomerName = TestCustomerName
-    };
-
+    
     public static readonly CompleteOrderRequest TestCompleteOrderRequest = new()
     {
         OrderId = TestOrderId,
         Time = TestTimeDelivered
     };
-
-    public static readonly DroneStatusUpdateRequest TestDroneStatusUpdateRequest = new()
-    {
-        Id = TestGuid.ToString(),
-        Location = TestDeliveryLocation,
-        State = DroneState.Ready
-    };
-
-    public static readonly InitDrone TestInitDroneDto = new()
-    {
-        FistStatusUpdateRequestUpdate = TestDroneStatusUpdateRequest,
-        Record = TestRecord
-    };
-
-    private static readonly AddDroneRequest
-        BadDroneInfo = new()
-        {
-            BadgeNumber = TestBadgeNumber,
-            DroneIp = InvalidTestIp
-        },
-        DroneRegistrationInfo = new()
-        {
-            BadgeNumber = TestBadgeNumber,
-            DroneIp = ValidTestIp
-        };
-
-    private static EnqueueOrderRequest
-        _enqueueOrderRequest = new()
-        {
-            OrderId = TestOrderId
-        };
-
-    public static InitDroneRequest TestInitDroneRequest = new()
-    {
-        DroneId = DroneId,
-        DroneIp = Url
-    };
-
-    public static DroneStatusUpdateResponse TestDroneStatusUpdateResponse = new()
-    {
-        Id = DroneId
-    };
-
     public static string TelloIp = "192.168.10.1";
+    
+        public static readonly AssignDeliveryRequest TestAssignDeliverRequest = new()
+        {
+            DroneId = DroneId,
+            OrderId = TestOrderId,
+            OrderLocation = Destination
+        };
+
+        public static readonly AssignDeliveryResponse TestAssignDeliveryResponse = new()
+        {
+            DroneId = DroneId,
+            OrderId = TestOrderId,
+            Success = true
+        };
+
+        public static readonly UpdateDroneStatusResponse TestUpdateResponse = new()
+        {
+            DroneId = DroneId,
+            IsCompletedSuccessfully = true
+        };
+        public static string TestPingString = "I am pinging!";
+        
+        public static PingDto TestPingDto = new()
+        {
+            S = TestPingString
+        };
+        
+        public static readonly AddDroneRequest TestAddDroneRequest = new()
+        {
+            DispatchUrl = TestRecord.DispatchUrl,
+            DroneId = TestRecord.DroneId,
+            DroneUrl = TestRecord.DroneUrl,
+            HomeLocation = TestRecord.HomeLocation
+        };
+
+        public static readonly AddDroneResponse TestAddDroneResponse = new()
+        {
+            DroneId = TestRecord.DroneId,
+            Success = true
+        };
+
+        public static readonly InitDroneResponse TestInitDroneResponse = new()
+        {
+            DroneId = TestRecord.DroneId,
+            Okay = true
+        };
+
+        public static readonly AssignFleetResponse TestAssignFleetResponse = new()
+        {
+            DroneId = TestRecord.DroneId,
+            FirstState = DroneState.Ready,
+            IsInitializedAndAssigned = true
+
+        };
+
+        public static readonly EnqueueOrderRequest TestEnqueueOrderRequest = new()
+        {
+            OrderId = TestOrderId,
+            OrderLocation = TestOrder.DeliveryLocation
+        };
+        
+        public static readonly EnqueueOrderResponse TestEnqueueOrderResponse = new()
+        {
+            IsAssigned = true
+        };
+
+        public static readonly InitDroneRequest TestInitDroneRequest = new()
+        {
+            DroneId = TestRecord.DroneId,
+            DroneUrl = TestRecord.DroneUrl
+        };
+
+        public static readonly AssignFleetRequest TestAssignFleetRequest = new()
+        {
+            DispatchUrl = TestRecord.DispatchUrl,
+            DroneId = TestRecord.DroneId,
+            DroneUrl = TestRecord.DroneUrl,
+            HomeLocation = TestRecord.HomeLocation
+        };
+
+        public static readonly CompleteOrderResponse TestCompleteOrderResponse = new()
+        {
+            IsAcknowledged = true
+        };
+    
+
+        public static DroneUpdate TestUpdate = new()
+        {
+            CurrentLocation = TestRecord.CurrentLocation,
+            Destination = TestRecord.Destination,
+            DroneId = TestRecord.DroneId,
+            OrderId = TestRecord.OrderId,
+            State = TestRecord.State
+        };
+
+        public static readonly DroneRecord TestRecordDead = new()
+        {
+            CurrentLocation = TestRecord.CurrentLocation,
+            Destination = TestRecord.Destination,
+            DispatchUrl = TestRecord.DispatchUrl,
+            DroneId = TestRecord.DroneId,
+            DroneUrl = TestRecord.DroneUrl,
+            HomeLocation = TestRecord.HomeLocation,
+            Id = TestRecord.Id,
+            OrderId = TestRecord.OrderId,
+            State = DroneState.Dead
+        };
+
+        public static readonly ReviveRequest TestReviveRequest = new()
+        {
+            Record = TestRecordDead
+        };
+
+        public static readonly DroneRecord TestRecordReturnHome = new()
+        {
+            CurrentLocation = TestRecord.CurrentLocation,
+            Destination = TestRecord.Destination,
+            DispatchUrl = TestRecord.DispatchUrl,
+            DroneId = TestRecord.DroneId,
+            DroneUrl = TestRecord.DroneUrl,
+            HomeLocation = TestRecord.HomeLocation,
+            Id = TestRecord.Id,
+            OrderId = TestRecord.OrderId,
+            State = DroneState.Returning
+        };
 }

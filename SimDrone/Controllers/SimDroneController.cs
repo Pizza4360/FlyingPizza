@@ -1,6 +1,7 @@
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
+using Domain.GatewayDefinitions;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 
@@ -11,7 +12,7 @@ namespace SimDrone.Controllers;
 public class SimDroneController : ControllerBase
 {
     private static Drone _drone;
-    private static DroneToDispatchGateway _gateway;
+    private static IDroneToDispatchGateway _gateway;
     private bool IsInitiatead;
 
     [HttpPost("InitDrone")]
@@ -58,7 +59,7 @@ public class SimDroneController : ControllerBase
     public async Task<bool> Revive(DroneRecord record)
     {
         Console.WriteLine($"\nSimDroneController.Revive...");
-        if (_gateway == null || string.IsNullOrEmpty(_gateway.EndPoint))
+        if (_gateway == null || string.IsNullOrEmpty(_gateway.GetEndPoint()))
         {
             _gateway = new DroneToDispatchGateway(record.DispatchUrl);
         }
@@ -68,7 +69,7 @@ public class SimDroneController : ControllerBase
     [HttpPost("AssignFleet")]
     public async Task<AssignFleetResponse> AssignFleet(AssignFleetRequest assignFleetRequest)
     {
-        // Console.WriteLine($"{assignFleetRequest.DispatchUrl}");
+        Console.WriteLine($"AssignFleet -------------> {assignFleetRequest.DispatchUrl}");
         var droneRecord = new DroneRecord
         {
             CurrentLocation = assignFleetRequest.HomeLocation,
@@ -77,7 +78,7 @@ public class SimDroneController : ControllerBase
             DroneUrl = assignFleetRequest.DroneUrl,
             HomeLocation = assignFleetRequest.HomeLocation,
             DroneId = assignFleetRequest.DroneId,
-            OrderId = null
+            OrderId = ""
         };
         await JoinFleet(droneRecord);
         Console.WriteLine($"\nSimDrone successfully initialized.\nDrone -->{_drone}");
@@ -103,6 +104,8 @@ public class SimDroneController : ControllerBase
     [NonAction]
     private async Task PersistRecord(DroneRecord droneRecord)
     {
+        _drone.DispatchUrl ??= droneRecord.DispatchUrl;
+        _drone.DispatchUrl = droneRecord.DispatchUrl;
         Console.WriteLine("\nSaving drone state...");
 
         FileStream file;
@@ -138,5 +141,13 @@ public class SimDroneController : ControllerBase
     public async Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest request)
     {
         return await _gateway.CompleteDelivery(request);
+    }
+    public void ChangeGateway(IDroneToDispatchGateway mockGatewayObject)
+    {
+        _gateway = mockGatewayObject;
+    }
+    public void ChangeDrone(Drone newDrone)
+    {
+        _drone = newDrone;
     }
 }

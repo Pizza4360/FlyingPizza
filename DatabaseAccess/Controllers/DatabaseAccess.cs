@@ -1,3 +1,5 @@
+using DatabaseAccess.Services;
+using Domain.DTO;
 using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using Domain.RepositoryDefinitions;
@@ -10,43 +12,99 @@ namespace DatabaseAccess.Controllers;
 [Route("[controller]")]
 public class DatabaseAccess : ControllerBase
 {
-    private readonly ILogger<DatabaseAccess> _logger;
     private readonly IFleetRepository _fleet;
     private readonly IOrdersRepository _orders;
+    private readonly string _apiKey;
+    private readonly string DispatchUrl;
+    private readonly GeoLocation HomeLocation;
 
-    public DatabaseAccess(
-        ILogger<DatabaseAccess> logger, IFleetRepository fleet, IOrdersRepository orders)
+    public DatabaseAccess(ODDSSettings settings)
     {
-        _logger = logger;
-        _fleet = fleet;
-        _orders = orders;
+        _fleet = settings.GetFleetCollection();
+        _orders = settings.GetOrdersCollection();
+        _apiKey = settings.API_KEY;
+        HomeLocation = settings.HOME_LOCATION;
+        DispatchUrl = settings.DISPATCH_URL;
     }
 
     [HttpGet("GetFleet")]
     public async Task<List<DroneRecord>> GetFleet()
     {
-        Console.WriteLine("got a request to get the fleet...");
-        var fleet = await _fleet.GetAllAsync();
-        Console.WriteLine("Got back" + string.Join("\n", fleet));
+        //Console.WriteLine("got a request to get the fleet...");
+        var fleet =  await _fleet.GetAllAsync();
+        //Console.WriteLine("Got back" + string.Join("\n", fleet));
         return fleet;
+    }
+
+    [HttpGet("GetOrders")]
+    public async Task<List<Order>> GetOrders()
+    {
+        //Console.WriteLine("got a request to get the orders...");
+        var orders = await _orders.GetAllAsync();
+        //Console.WriteLine("Got back" + string.Join("\n", orders));
+        return orders;
+    }
+
+    [HttpPost("CancelOrder")]
+    public async Task<CancelDeliveryResponse> CancelOrder(string OrderId)
+    {
+        //Console.WriteLine("got a request to get the orders...");
+        await _orders.RemoveAsync(OrderId);
+        return new CancelDeliveryResponse();
     }
 
     [HttpPost("CreateOrder")]
     public async Task<CreateOrderResponse> CreateOrder(Order order)
     {
-        Console.WriteLine($"\n\n\n\n\nadding order: {order.ToJson()}\n\n\n\n\n");
+        order.DeliveryLocation = await LocationParser.Parse(_apiKey, order.DeliveryAddress);
+        //Console.WriteLine($"\n\n\n\n\nadding order: {order.ToJson()}\n\n\n\n\n");
         await _orders.CreateAsync(order);
         return new CreateOrderResponse();
     }
-
+    
+    [HttpGet("GetHomeLocation")]
+    public async Task<GeoLocation> GetHomeLocation()
+    {
+        //Console.WriteLine($"\n\n\n\nGetting HomeLocation:");
+        return HomeLocation;
+    }
+  
+    
+    [HttpPost("AddDrone")]
+    public async Task AddDrone(PingDto ping)
+    {
+        var droneUrl = ping.S;
+        Console.WriteLine($"\n\n\n\n\n\ngot a new DRONE!!!\n@{droneUrl}");
+        var drone = new DroneRecord
+        {
+            DroneId = BaseEntity.GenerateNewId(),
+            DroneUrl = droneUrl,
+            HomeLocation = HomeLocation,
+            CurrentLocation = HomeLocation,
+            Destination = HomeLocation,
+            State = DroneState.Unititialized,
+            OrderId = null,
+            DispatchUrl = DispatchUrl
+        };
+        //Console.WriteLine($"About to YEET this drone record...{drone}\n\n\n\n\n");
+        await _fleet.CreateAsync(drone);
+    }
+    
     [HttpGet("GetDrone")]
     public DroneRecord GetDrone(string id)
     {
         return _fleet.GetByIdAsync(id).Result;
     }
 
-    [HttpGet("GetOrder")]
-    public Order GetOrder(string id)
+
+    [HttpGet("GetDispatchUrl")]
+    public string GetDispatchUrl()
+    {
+        return DispatchUrl;
+    }
+
+    [HttpGet("GetOrderById")]
+    public Order GetOrderById(string id)
     {
         return _orders.GetByIdAsync(id).Result;
     }
