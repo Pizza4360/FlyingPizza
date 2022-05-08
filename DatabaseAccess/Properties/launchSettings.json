@@ -21,8 +21,9 @@
       },
       "applicationUrl": "http://localhost:8080",
       "environmentVariables": {
-        "CONNECTION_STRING": "mongodb+srv://capstone:YYeUvzrHZg4yJBsK@cluster0.rjlgf.mongodb.net/CapstoneGroup",
+        "CONNECTION_STRING": "<SECRET>",
         "DATABASE_NAME":"Capstone",
+        "ODDS_SETTINGS": "LocalDevelopment", 
         "ASPNETCORE_ENVIRONMENT": "Production"
       }
     }

@@ -15,7 +15,7 @@ var ODDSSettingsSettings = new RepositorySettings
 {
     ConnectionString = connectionString,
     DatabaseName = databaseName,
-    CollectionName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+    CollectionName = Environment.GetEnvironmentVariable("ODDS_SETTINGS")
 };
 builder.Services.AddSingleton(_ => new ODDSSettings(ODDSSettingsSettings));
 
