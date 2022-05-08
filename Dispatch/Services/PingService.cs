@@ -13,13 +13,13 @@ using MongoDB.Bson;
 
 namespace Dispatch.Services;
 
-public class PingerService : BackgroundService
+public class PingService : BackgroundService
 {
     private readonly ILogger Logger;
     private readonly string _dispatchUrl; 
-    public PingerService(ODDSSettings settings)
+    public PingService(IODDSSettings settings)
     {
-        _dispatchUrl = settings.DISPATCH_URL;
+        _dispatchUrl = settings.GetDispatchUrl();
     }
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -34,7 +34,7 @@ public class PingerService : BackgroundService
             {
                 Console.WriteLine($"Ping to {DispatchUrl}");
                 _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var t = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/AssignmentCheck/", new PingDto {S = "Hi"},
+                var t = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/AssignmentCheck/", new BaseDto {Message = "Hi"},
                     stoppingToken);
                 // var pingTask = Pinger.SendPingAsync(IPAddress.Parse("192.168.1.100:83//Ping"), 5000);
                 var cancelTask = Task.Delay(5000, stoppingToken);

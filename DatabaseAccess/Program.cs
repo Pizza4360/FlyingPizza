@@ -29,7 +29,7 @@ public class Program
             DatabaseName = databaseName,
             CollectionName = Environment.GetEnvironmentVariable("ODDS_SETTINGS")
         };
-        builder.Services.AddSingleton(_ => new ODDSSettings(ODDSSettingsSettings));
+        builder.Services.AddSingleton<IODDSSettings, ODDSSettings>(_ => new ODDSSettings(ODDSSettingsSettings));
 
         builder.Services.AddSingleton<IOrdersRepository, OrderRepository>();
 

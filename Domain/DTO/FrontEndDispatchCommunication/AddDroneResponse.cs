@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Domain.DTO.FrontEndDispatchCommunication;
 
-public class AddDroneResponse
+public class AddDroneResponse : BaseDto
 {
     [JsonPropertyName("Success")] public bool Success { get; set; }
 
-    [JsonPropertyName("BadgeNumber")] public string DroneId { get; set; }
+    [JsonPropertyName("DroneId")] public string DroneId { get; set; }
 }

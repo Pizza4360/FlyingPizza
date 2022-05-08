@@ -6,7 +6,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHostedService<PingerService>();
+builder.Services.AddHostedService<PingService>();
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())

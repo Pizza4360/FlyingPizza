@@ -18,13 +18,13 @@ public class DatabaseAccess : ControllerBase
     private readonly string DispatchUrl;
     private readonly GeoLocation HomeLocation;
 
-    public DatabaseAccess(ODDSSettings settings)
+    public DatabaseAccess(IODDSSettings settings)
     {
         _fleet = settings.GetFleetCollection();
         _orders = settings.GetOrdersCollection();
-        _apiKey = settings.API_KEY;
-        HomeLocation = settings.HOME_LOCATION;
-        DispatchUrl = settings.DISPATCH_URL;
+        _apiKey = settings.GetAPIKey();
+        HomeLocation = settings.GetHomeLocation();
+        DispatchUrl = settings.GetDispatchUrl();
     }
 
     [HttpGet("GetFleet")]
@@ -71,9 +71,9 @@ public class DatabaseAccess : ControllerBase
   
     
     [HttpPost("AddDrone")]
-    public async Task AddDrone(PingDto ping)
+    public async Task AddDrone(BaseDto @base)
     {
-        var droneUrl = ping.S;
+        var droneUrl = @base.Message;
         Console.WriteLine($"\n\n\n\n\n\ngot a new DRONE!!!\n@{droneUrl}");
         var drone = new DroneRecord
         {

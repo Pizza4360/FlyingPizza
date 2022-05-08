@@ -2,7 +2,7 @@
 
 namespace Domain.DTO.FrontEndDispatchCommunication;
 
-public class CancelDeliveryResponse
+public class CancelDeliveryResponse : BaseDto
 {
     [JsonPropertyName("OrderId")] public string OrderId { get; set; }
 

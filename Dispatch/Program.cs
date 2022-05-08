@@ -17,7 +17,7 @@ var ODDSSettingsSettings = new RepositorySettings
     DatabaseName = databaseName,
     CollectionName = Environment.GetEnvironmentVariable("ODDS_SETTINGS")
 };
-builder.Services.AddSingleton(_ => new ODDSSettings(ODDSSettingsSettings));
+builder.Services.AddSingleton<IODDSSettings, ODDSSettings>(_ => new ODDSSettings(ODDSSettingsSettings));
 
 builder.Services.AddSingleton<IOrdersRepository, OrderRepository>();
 
@@ -36,7 +36,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHostedService<PingerService>();
+builder.Services.AddHostedService<PingService>();
 
 var app = builder.Build();
 

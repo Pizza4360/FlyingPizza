@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
-public class CompleteOrderRequest
+public class CompleteOrderRequest : BaseDto
 {
     [JsonPropertyName("OrderId")] public string OrderId { get; set; }
 

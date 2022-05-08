@@ -62,7 +62,7 @@ public class FrontEndToDatabaseGateway : BaseGateway<App>
 
     public async Task AddDrone(string droneUrl)
     {
-        await SendMessagePost($"{DbUrl}/AddDrone", new PingDto{S=droneUrl});
+        await SendMessagePost($"{DbUrl}/AddDrone", new BaseDto{Message=droneUrl});
     }
 
     

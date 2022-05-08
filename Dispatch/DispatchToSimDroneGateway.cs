@@ -72,7 +72,7 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>, IDispa
         Console.WriteLine($"DispatchToSimDroneGateway.HealthCheck with url {url}/SimDrone/HealthCheck");
         try
         {
-            droneRecord = await SendMessagePost<PingDto, DroneRecord>($"{url}/SimDrone/HealthCheck", new PingDto {S = "HealthCheck"});
+            droneRecord = await SendMessagePost<BaseDto, DroneRecord>($"{url}/SimDrone/HealthCheck", new BaseDto {Message = "HealthCheck"});
             Console.WriteLine("Awaiting for response...");
             if (droneRecord is {State: DroneState.Ready})
                 return true;

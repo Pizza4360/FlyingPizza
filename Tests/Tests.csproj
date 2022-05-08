@@ -35,17 +35,4 @@
         <ProjectReference Include="..\FrontEnd\FrontEnd.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Remove="Back\DroneToDispatcherGatewayTests.cs" />
-      <Compile Remove="Back\DispatchToDroneGatewayTests.cs" />
-      <Compile Remove="Back\DispatcherControllerTests.cs" />
-      <Compile Remove="Back\SimDroneControllerTests.cs" />
-      <Compile Remove="Back\DatabaseAccessTests.cs" />
-      <Compile Remove="Back\RealDroneTests.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Back" />
-    </ItemGroup>
-
 </Project>
