@@ -84,7 +84,7 @@ public class DatabaseAccess : ControllerBase
             Destination = HomeLocation,
             State = DroneState.Unititialized,
             OrderId = null,
-            DispatchUrl = ""
+            DispatchUrl = DispatchUrl
         };
         //Console.WriteLine($"About to YEET this drone record...{drone}\n\n\n\n\n");
         await _fleet.CreateAsync(drone);

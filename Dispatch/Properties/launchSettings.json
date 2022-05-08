@@ -21,12 +21,12 @@
           "Default": "None",
           "System": "None",
           "Microsoft": "None"
-        },
-        "environmentVariables": {
-          "CONNECTION_STRING": "mongodb+srv://capstone:YYeUvzrHZg4yJBsK@cluster0.rjlgf.mongodb.net/CapstoneGroup",
-          "DATABASE_NAME": "Capstone",
-          "ASPNETCORE_ENVIRONMENT": "Development"
         }
+      },
+      "environmentVariables": {
+        "CONNECTION_STRING": "mongodb+srv://capstone:YYeUvzrHZg4yJBsK@cluster0.rjlgf.mongodb.net/CapstoneGroup",
+        "DATABASE_NAME": "Capstone",
+        "ASPNETCORE_ENVIRONMENT": "Production"
       }
     }
   }
