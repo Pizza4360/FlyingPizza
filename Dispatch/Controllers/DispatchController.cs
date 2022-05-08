@@ -21,12 +21,12 @@ public class DispatchController : ControllerBase
     private readonly string _dispatchUrl;
     private bool _isInitiatingDrone;
 
-    public DispatchController(ODDSSettings settings)
+    public DispatchController(IODDSSettings settings)
     {
         _fleet = settings.GetFleetCollection();
         _orders = settings.GetOrdersCollection();
-        _homeLocation = settings.HOME_LOCATION;
-        _dispatchUrl = settings.DISPATCH_URL;
+        _homeLocation = settings.GetHomeLocation();
+        _dispatchUrl = settings.GetDispatchUrl();
         _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(_fleet);
     }
 
@@ -56,7 +56,7 @@ public class DispatchController : ControllerBase
     }
 
     [HttpPost("AssignmentCheck")]
-    public async Task<PingDto> AssignmentCheck(PingDto p)
+    public async Task<BaseDto> AssignmentCheck(BaseDto p)
     {
         await GetNewDrones();
         if (_isInitiatingDrone) return p;
@@ -103,7 +103,7 @@ public class DispatchController : ControllerBase
             $"\n\n\n\nResponse from _dispatchToSimDroneGateway.InitDrone({initDroneRequest})\n\t->{{DroneId:{initDroneResponse.DroneId},Okay:{initDroneResponse.Okay}}}\n\n\n\n");
         if (!initDroneResponse.Okay)
             return;
-        Console.WriteLine($"is _dispatchUrl null? {_dispatchUrl == null}");
+
         var assignFleetRequest = new AssignFleetRequest
         {
             DroneId = drone.DroneId,
@@ -127,6 +127,7 @@ public class DispatchController : ControllerBase
         Console.WriteLine($"\n\n\n\nsuccess! Saving new drone {drone.DroneId} to repository.\n\n\n\n");
         drone.State = DroneState.Ready;
         drone.OrderId = "";
+        drone.DispatchUrl = _dispatchUrl;
         await _fleet.UpdateAsync(drone.Update());
 
         Console.WriteLine($"\n\n\n\nabout to YEET this drone record:\n{drone.ToJson()}");

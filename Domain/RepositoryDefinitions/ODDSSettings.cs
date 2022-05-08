@@ -7,7 +7,7 @@ using MongoDB.Driver;
 
 namespace Domain.RepositoryDefinitions;
 
-public class ODDSSettings
+public class ODDSSettings : IODDSSettings
 {
     public ODDSSettings(RepositorySettings dbSettings)
     {
@@ -51,5 +51,20 @@ public class ODDSSettings
     {
         Console.WriteLine($"Getting '{ORDERS_COLLECTION_NAME}'");
         return new OrderRepository(_mongoDatabase.GetCollection<Order>(ORDERS_COLLECTION_NAME));
+    }
+
+    public string? GetAPIKey()
+    {
+        return API_KEY;
+    }
+
+    public GeoLocation GetHomeLocation()
+    {
+        return HOME_LOCATION;
+    }
+
+    public string GetDispatchUrl()
+    {
+        return DISPATCH_URL;
     }
 }
