@@ -8,6 +8,10 @@ public class DroneUpdate
     [BsonElement("DroneId")]
     [JsonProperty("DroneId")]
     public string DroneId { get; set; }
+    
+    [BsonElement("Direction")]
+    [JsonProperty("Direction")]
+    public decimal Direction { get; set; }
 
     [BsonElement("State")]
     [JsonProperty("State")]

@@ -8,7 +8,7 @@ namespace Domain.DTO;
 
 public class GeoLocation
 {
-    private const decimal ToleranceInMeters = 40m;
+    private const decimal ToleranceInMeters = 10m;
 
     [BsonElement("Latitude")]
     [JsonPropertyName("Latitude")]
@@ -73,4 +73,6 @@ public class GeoLocation
                ((location1.Latitude >= Latitude && Latitude >= location2.Latitude) ||
                 (location2.Latitude >= Latitude && Latitude >= location1.Latitude));
     }
+
+    public string ToCsv() => $"{Latitude},{Longitude}";
 }

@@ -109,7 +109,8 @@ public class DispatchController : ControllerBase
             DroneId = drone.DroneId,
             DroneUrl = drone.DroneUrl,
             DispatchUrl = _dispatchUrl,
-            HomeLocation = drone.HomeLocation
+            HomeLocation = drone.HomeLocation,
+            BadgeNumber = drone.BadgeNumber
         };
 
         Console.WriteLine($"\n\n\n\nProceeding with _dispatchToSimDroneGateway.AssignFleet({assignFleetRequest.ToJson()}\n\n\n\n");

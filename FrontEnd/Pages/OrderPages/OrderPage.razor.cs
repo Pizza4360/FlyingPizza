@@ -73,13 +73,11 @@ partial class OrderPage : ComponentBase
 
     public async Task CancelOrder()
     {
-        if (orderToCancel == null)
+        if (!string.IsNullOrEmpty(orderToCancel))
         {
             orderToCancel = selectedOrder.Id;
         }
         defaultText = orderToCancel;
-
-      
         await GetOrders();
         orderToCancel = null;
         defaultText = "";

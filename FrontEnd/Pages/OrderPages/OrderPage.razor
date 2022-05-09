@@ -114,8 +114,8 @@
                             <!--Creates a block for each drone with id, status, more info button and a drone img-->
                             <li style="background-image: url(@("../images/drone.jpg")">
                                 <div class="drone-status">
-                                    <span class="title" >ID: 
-                                        <br> @drone.DroneId.Substring(0, 4)... <br>
+                                    <span class="title" >Drone
+                                        <br>#@(drone.BadgeNumber)<br>
                                     </span>
                                     <span class="price" style="background-color: @Color(drone)">@drone.State</span>
                                     @*<span class="more">

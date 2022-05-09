@@ -29,8 +29,15 @@
 
 <script>
     var map
-    let markers = {}
-
+    let currentMarkers = {}
+    let destinations = {}
+    let paths = {}
+    const lineSymbol = {
+        path: "M 0,-1 0,1",
+        strokeOpacity: 1,
+        scale: 4,
+    };
+    const circleRadius = 150
 
     function initGoogleMap(obj) {
         map = new google.maps.Map(document.getElementById("map"), {
@@ -125,75 +132,141 @@
         });
     }
 
-    function addMarker(id, newMarker) {
+    function addPath(id, lat1, lng1, lat2, lng2, color) {
+        let flightPlanCoordinates = [
+            {lat: lat1, lng: lng1},
+            {lat: lat2, lng: lng2}
+        ];
+        let path = new google.maps.Polyline({
+            path: flightPlanCoordinates,
+            geodesic: true,
+            fillColor: color,
+            strokeColor: color,
+            strokeOpacity: 1.0,
+            strokeWeight: 0.5,
+            icons: [
+                {
+                    icon: lineSymbol,
+                    offset: "0",
+                    repeat: "1px",
+                },
+            ],
+
+        });
+        paths[id] = path
+        path.setMap(map);
+    }
+
+    function addTriangle(droneId, color, lat, lng, bearing, title, markerDict, destLat, destLng) {
         // https://stackoverflow.com/questions/43067318/adding-a-circle-radius-around-google-map-markers
-        var marker = new google.maps.Marker({
-            position: {lat: newMarker["lat"], lng: newMarker["lng"]},
-            title: id,
+        // https://developers.google.com/maps/documentation/javascript/reference/geometry#spherical.computeHeading
+        console.log("addTriangle(" + droneId + ", " + color +", " + lat +  + lng + ", " + bearing + ", " + title + ")")
+        let marker = new google.maps.Marker({
+            position: {lat: lat, lng: lng},
+            title: title,
+            icon: "-"
+        });
+        var heading = google.maps.geometry.spherical.computeHeading(marker.getPosition(), {lat: destLat, lng: destLng})
+        var triangle1 = google.maps.geometry.spherical.computeOffset(marker.getPosition(), 250, heading);
+        var triangle2 = google.maps.geometry.spherical.computeOffset(marker.getPosition(), 250, (heading + 120) % 360);
+        var triangle3 = google.maps.geometry.spherical.computeOffset(marker.getPosition(), 250, (heading + 240) % 360);
+        var triangleCoords = [triangle1, triangle2, triangle3];
+        marker.Triangle = new google.maps.Polygon({
+            path: triangleCoords,
+            strokeColor: color,
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: color,
+            fillOpacity: 0.35
+        });
+        marker.Triangle.setMap(map);
+        marker.Triangle.bindTo('center', marker, 'position');
+        markerDict[droneId] = marker;
+        marker.setMap(map);
+    }
+    
+    function addCircle(droneId, color, lat, lng, title, markerDict) {
+        // https://stackoverflow.com/questions/43067318/adding-a-circle-radius-around-google-map-markers
+        console.log("addCircle(" + droneId + ", " + color +", " + lat +  + lng + ", " + title + ")")
+        let marker = new google.maps.Marker({
+            position: {lat: lat, lng: lng},
+            title: title,
             icon: "-"
         });
         marker.Circle = new google.maps.Circle({
             center: {lat: marker.getPosition().lat - 16, lng: marker.getPosition().lng - 16},
-            radius: 150,
+            radius: circleRadius,
             map: map,
-            strokeColor: newMarker["color"],
-            fillColor: newMarker["color"],
+            strokeColor: color,
+            fillColor: color,
             fillOpacity: .75
         });
         marker.Circle.bindTo('center', marker, 'position');
-        markers[id] = marker;
+        markerDict[droneId] = marker;
         marker.setMap(map);
     }
 
-    function updateAll(currentMarkers) {
-        for (badgeNumber in markers) { // find out which markers are deleted, remove them
-            if (!(badgeNumber in currentMarkers)) {
-                removeMarker(badgeNumber)
-            }
+    function removePath(droneId) {
+        paths[droneId].setMap(null)
+        delete paths[droneId]
+    }
+
+    function removeCircle(droneId, dictionary) {
+        dictionary[droneId].Circle.setMap(null)
+        dictionary[droneId].setMap(null)
+        dictionary[droneId] = null
+        delete dictionary[droneId]
+    }   
+    
+    function removeTriangle(droneId, dictionary) {
+        dictionary[droneId].Triangle.setMap(null)
+        dictionary[droneId].setMap(null)
+        dictionary[droneId] = null
+        delete dictionary[droneId]
+    }
+
+    function updateAll(newMarkers, newDestinations, newPaths) {
+        removeAllMarkers();
+        for (let [droneId, newMarker] of Object.entries(newMarkers)) {
+            // console.log("updateAll -> addCircle(" + droneId + ", " + newMarker["color"] + ", "
+            //     + newMarker["lat"] + ", " + newMarker["lng"] + ", " + newMarker["title"] + ", newMarkers)")
+            addTriangle(droneId, newMarker["color"], newMarker["lat"], newMarker["lng"], newMarker["bearing"], newMarker["title"], currentMarkers
+            , newMarker["destLat"], newMarker["destLng"])
+            //    function addTriangle(droneId, color, lat, lng, bearing, title, markerDict) {
         }
-        for (var badgeNumber in currentMarkers) {
-            if (!(badgeNumber in markers)) { // find out which are new, add them
-                addMarker(badgeNumber, currentMarkers[badgeNumber])
-            } else { // must check if the marker is in a new location
-                newMarker = currentMarkers[badgeNumber]
-                if (
-                    newMarker["lat"] !== markers[badgeNumber].position.lat ||
-                    newMarker["lng"] !== markers[badgeNumber].position.lng
-                ) {
-                    updateMarker(badgeNumber, newMarker["lat"], newMarker["lng"]);
-                }
-                if (newMarker["color"] !== markers[badgeNumber].Circle.fillColor) {
-                    markers[badgeNumber].Circle.setMap(null);
-                    markers[badgeNumber].Circle = new google.maps.Circle({
-                        center: {lat: newMarker["lat"].lat - 16, lng: newMarker["lng"] - 16},
-                        radius: 150,
-                        map: map,
-                        strokeColor: newMarker["color"],
-                        fillColor: newMarker["color"],
-                        fillOpacity: .75
-                    });
-                    markers[badgeNumber].Circle.bindTo('center', markers[badgeNumber], 'position');
-                }
-            }
+        //    function addCircle(droneIc, color, lat, lng, title, markerDict) {
+        for (let [droneId, newDestination] of Object.entries(newDestinations)) {
+            // console.log("updateAll -> addCircle(" + droneId + ", " + newDestination["color"] + ", " 
+            //     + newDestination["lat"] + ", " + newDestination["lng"] + ", " + newDestination["title"] + ", destinations)")
+            addCircle(droneId, newDestination["color"], newDestination["lat"], newDestination["lng"], newDestination["title"], destinations);
+        }
+        for (let [droneId, newPath] of Object.entries(newPaths)) {
+            addPath(droneId, newPath["lat1"], newPath["lng1"], newPath["lat2"], newPath["lng2"], newPath["color"])
         }
     }
 
-    function removeMarker(id) {
-        markers[id].Circle.setMap(null)
-        markers[id].setMap(null)
-        markers[id] = null
-        delete markers[id]
+    function removeCurrentMarkers(){
+        for (let droneId in currentMarkers) {
+            console.log("removing '" + droneId + "' from currentMarkers");
+            removeTriangle(droneId, currentMarkers);
+        }
     }
-
+    function removeDestinations(){
+        for(let droneId in destinations){
+            console.log("removing '" + droneId + "' from destinations");
+            removeCircle(droneId, destinations);
+        }
+    }
+    function removePaths(){
+        for(let droneId in paths){
+            console.log("removing '" + droneId + "' from paths");
+            removePath(droneId);
+        }
+    }
     function removeAllMarkers() {
-        for (id in markers) {
-            removeMarker(id)
-        }
-    }
-
-    function updateMarker(id, lat, lng) {
-        markers[id].setMap(map)
-        markers[id].setPosition(new google.maps.LatLng(lat, lng))
+        removeCurrentMarkers();
+        removeDestinations();
+        removePaths();
     }
 </script>
 </body>

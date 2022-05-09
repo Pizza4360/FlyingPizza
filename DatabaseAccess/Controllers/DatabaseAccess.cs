@@ -48,7 +48,7 @@ public class DatabaseAccess : ControllerBase
     [HttpPost("CancelOrder")]
     public async Task<CancelDeliveryResponse> CancelOrder(string OrderId)
     {
-        //Console.WriteLine("got a request to get the orders...");
+        if (string.IsNullOrEmpty(OrderId)) new CancelDeliveryResponse();
         await _orders.RemoveAsync(OrderId);
         return new CancelDeliveryResponse();
     }
@@ -77,6 +77,7 @@ public class DatabaseAccess : ControllerBase
         Console.WriteLine($"\n\n\n\n\n\ngot a new DRONE!!!\n@{droneUrl}");
         var drone = new DroneRecord
         {
+            BadgeNumber = await GetNextBadgeNumber(),
             DroneId = BaseEntity.GenerateNewId(),
             DroneUrl = droneUrl,
             HomeLocation = HomeLocation,
@@ -89,7 +90,27 @@ public class DatabaseAccess : ControllerBase
         //Console.WriteLine($"About to YEET this drone record...{drone}\n\n\n\n\n");
         await _fleet.CreateAsync(drone);
     }
-    
+
+    private async Task<int> GetNextBadgeNumber()
+    {
+        var drones = await _fleet.GetAllAsync();
+        if (!drones.Any())
+        {
+            return 1;
+        }
+        var numbers = (drones).Select(x => x.BadgeNumber);
+        var maxDroneNumber = numbers.Max();
+        foreach (var i in Enumerable.Range(1, maxDroneNumber + 1))
+        {
+            if (!numbers.Contains(i))
+            {
+                return i;
+            }
+        }
+
+        return maxDroneNumber + 1;
+    }
+
     [HttpGet("GetDrone")]
     public DroneRecord GetDrone(string id)
     {

@@ -24,7 +24,7 @@
         }
       },
       "environmentVariables": {
-        "CONNECTION_STRING": "<SECRET>",
+        "CONNECTION_STRING": "mongodb+srv://capstone:YYeUvzrHZg4yJBsK@cluster0.rjlgf.mongodb.net/CapstoneGroup",
         "DATABASE_NAME": "Capstone",
         "ODDS_SETTINGS": "LocalDevelopment",
         "ASPNETCORE_ENVIRONMENT": "Production"

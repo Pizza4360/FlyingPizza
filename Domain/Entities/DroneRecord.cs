@@ -13,6 +13,10 @@ public class DroneRecord : BaseEntity
     [JsonPropertyName("OrderId")]
     public string OrderId { get; set; }
 
+    [BsonElement("BadgeNumber")]
+    [JsonPropertyName("BadgeNumber")]
+    public int BadgeNumber { get; set; }
+
     [BsonElement("Destination")]
     [JsonPropertyName("Destination")]
     public GeoLocation Destination { get; set; }
@@ -38,6 +42,10 @@ public class DroneRecord : BaseEntity
     [BsonElement("DispatchUrl")]
     [JsonPropertyName("DispatchUrl")]
     public string DispatchUrl { get; set; }
+    
+    [BsonElement("Direction")]
+    [JsonPropertyName("Direction")]
+    public decimal Direction { get; set; }
 
     public DroneUpdate Update()
     {
@@ -54,9 +62,11 @@ public class DroneRecord : BaseEntity
     public override string ToString()
     {
         return $"Id:{DroneId}" +
-               $"Currentlocation:{CurrentLocation}\n" +
-               $"Destination:{Destination}\n" +
-               $"Status:{State}";
+               $"Currentlocation:{CurrentLocation.ToCsv()}\n" +
+               $"Destination:{Destination.ToCsv()}\n" +
+               $"Status:{State}" +
+               $"Order Id:{OrderId}" +
+               $"Home Location:{HomeLocation.ToCsv()}";
     }
 
     public override bool Equals(object o)
@@ -68,5 +78,14 @@ public class DroneRecord : BaseEntity
                oo.Destination.Equals(Destination) &&
                oo.State.Equals(State) &&
                oo.DispatchUrl.Equals(DispatchUrl);
+    }
+
+    public object Display()
+    {
+        return $"Drone #{BadgeNumber}:\n" +
+               $"Id:{DroneId}" +
+               $"Currentlocation:{CurrentLocation}\n" +
+               $"Destination:{Destination}\n" +
+               $"Status:{State}";
     }
 }

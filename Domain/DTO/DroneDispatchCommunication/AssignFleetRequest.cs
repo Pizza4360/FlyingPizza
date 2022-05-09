@@ -15,4 +15,7 @@ public class AssignFleetRequest : BaseDto
     
     [JsonPropertyName("HomeLocation")]
     public GeoLocation HomeLocation { get; set; }
+    
+    [JsonPropertyName("BadgeNumber")]
+    public int BadgeNumber { get; set; }
 }
