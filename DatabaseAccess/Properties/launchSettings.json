@@ -26,6 +26,6 @@
         "ODDS_SETTINGS": "LocalDevelopment", 
         "ASPNETCORE_ENVIRONMENT": "Production"
       }
-    }
+    } 
   }
 }

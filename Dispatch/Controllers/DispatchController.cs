@@ -64,6 +64,8 @@ public class DispatchController : ControllerBase
         var availableDrones =
             (from d in await GetAvailableDrones() where string.IsNullOrEmpty(d.OrderId) select d).ToList();
         var unfulfilledOrders = await GetUnfulfilledOrders();
+        Console.WriteLine($"Drones available: [{string.Join(", ", availableDrones.Select(x => x.DroneUrl))}]");
+        Console.WriteLine($"Orders waiting: [{string.Join(", ", unfulfilledOrders.Select(x => x.OrderId))}]");
         foreach (var (drone, order) in availableDrones.Zip(unfulfilledOrders))
         {
             var assignment = new AssignDeliveryRequest
@@ -167,14 +169,14 @@ public class DispatchController : ControllerBase
         var order = await _orders.GetByIdAsync(request.OrderId);
         var drone = await _fleet.GetByIdAsync(request.DroneId);
 
-        // var s1 = $"drone.OrderId {drone.OrderId} -> ";
-        // var s2 = $"order.DroneId {order.DroneId} -> ";
+        var s1 = $"drone.OrderId {drone.OrderId} -> ";
+        var s2 = $"order.DroneId {order.DroneId} -> ";
         order.DroneId = drone.DroneId;
         drone.OrderId = order.OrderId;
-        // s1 += $"{drone.OrderId}";
-        // s2 += $"{order.DroneId}";
-        //
-        // Console.WriteLine($"{s1}\n{s2}");
+        s1 += $"{drone.OrderId}";
+        s2 += $"{order.DroneId}";
+        
+        Console.WriteLine($"{s1}\n{s2}");
         order.State = OrderState.Assigned;
         drone.State = DroneState.Assigned;
 
@@ -189,7 +191,7 @@ public class DispatchController : ControllerBase
     private async Task<IEnumerable<Order>> GetUnfulfilledOrders()
     {
         var orders = await _orders.GetAllAsync();
-        // Console.WriteLine($"All the orders: {orders.Count}");
+        Console.WriteLine($"All the orders: {orders.Count}");
         var unassignedOrders = orders.Where(o =>
             !o.HasBeenDelivered && o is {State: OrderState.Waiting} && string.IsNullOrEmpty(o.DroneId));
         return unassignedOrders;
