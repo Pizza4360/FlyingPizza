@@ -184,7 +184,7 @@
         markerDict[droneId] = marker;
         marker.setMap(map);
     }
-    
+
     function addCircle(droneId, color, lat, lng, title, markerDict) {
         // https://stackoverflow.com/questions/43067318/adding-a-circle-radius-around-google-map-markers
         console.log("addCircle(" + droneId + ", " + color +", " + lat +  + lng + ", " + title + ")")
@@ -216,15 +216,15 @@
         dictionary[droneId].setMap(null)
         dictionary[droneId] = null
         delete dictionary[droneId]
-    }   
-    
+    }
+
     function removeTriangle(droneId, dictionary) {
         dictionary[droneId].Triangle.setMap(null)
         dictionary[droneId].setMap(null)
         dictionary[droneId] = null
         delete dictionary[droneId]
     }
- 
+
     function updateAll(newCurrentLocations, newDestinations, newPaths) {
         for (let [droneId, oldCurrent] of Object.entries(currentLocations)) {
             if(!(droneId in newCurrentLocations)){
@@ -233,7 +233,7 @@
         }
         for (let [droneId, oldDestination] of Object.entries(destinations)) {
             if(!(droneId in newDestinations)){
-                removeCircle(droneId, destinations)
+                // removeCircle(droneId, destinations)
             }
         }
         for (let [droneId, oldPath] of Object.entries(paths)) {
@@ -246,12 +246,12 @@
             if(!(droneId in currentLocations)){
                 console.log(droneId + " not found in currentLocations" +
                     "addTriangle(" + droneId + "," + newCurrent["color"]+"," +newCurrent["lat"]+","+ newCurrent["lng"]+","
-                +newCurrent["bearing"]+"," +newCurrent["title"]+","+ currentLocations, newCurrent["destLat"], newCurrent["destLng"])
+                    +newCurrent["bearing"]+"," +newCurrent["title"]+","+ currentLocations, newCurrent["destLat"], newCurrent["destLng"])
                 addTriangle(droneId, newCurrent["color"], newCurrent["lat"], newCurrent["lng"], newCurrent["bearing"], newCurrent["title"], currentLocations, newCurrent["destLat"], newCurrent["destLng"])
             } else {
                 console.log("found", droneId + "in currentLocations")
-                
-                
+
+
                 if(newCurrent["lat"] !== currentLocations[droneId].position.lat ||
                     newCurrent["lng"] !== currentLocations[droneId].position.lng){
                     console.log("it moved. updateCurrent(",droneId, newCurrent["lat"], newCurrent["lng"],")")
@@ -261,13 +261,13 @@
         }
         for (let [droneId, newDestination] of Object.entries(newDestinations)) {
             if(!(droneId in destinations)){
-                addCircle(droneId, newDestination["color"], newDestination["lat"], newDestination["lng"], newDestination["title"], destinations);
+                // addCircle(droneId, newDestination["color"], newDestination["lat"], newDestination["lng"], newDestination["title"], destinations);
             } else {
-                
+
                 if(
-                    newDestination["lat"] !== destinations[droneId].position.lat 
+                    newDestination["lat"] !== destinations[droneId].position.lat
                     || newDestination["lng"] !== destinations[droneId].position.lng){
-                    updateDestination(droneId, newDestination["lat"], newDestination["lng"]);
+                    // updateDestination(droneId, newDestination["lat"], newDestination["lng"]);
                 }
             }
         }
@@ -275,20 +275,20 @@
             if(!(droneId in paths)){
                 addPath(droneId, newPath["lat1"], newPath["lng1"], newPath["lat2"], newPath["lng2"], newPath["color"])
             } else {
-                let oldPath = paths[droneId];
-                for (var prop in oldPath.getPath().getAt(0)) {
-                    console.log(prop);
-                }
-                if(newPath["lat1"] !== oldPath.getPath().getAt(0).lat ||
-                   newPath["lat2"] !== oldPath.getPath().getAt(1).lat ||
-                   newPath["lng1"] !== oldPath.getPath().getAt(0).lng ||
-                   newPath["lng2"] !== oldPath.getPath().getAt(1).lng){
-                   updatePath(droneId, newPath);
-                }
+                // let oldPath = paths[droneId];
+                // for (var prop in oldPath.getPath().getAt(0)) {
+                //     console.log(prop);
+                // }
+                // if(newPath["lat1"] !== oldPath.getPath().getAt(0).lat ||
+                //     newPath["lat2"] !== oldPath.getPath().getAt(1).lat ||
+                //     newPath["lng1"] !== oldPath.getPath().getAt(0).lng ||
+                //     newPath["lng2"] !== oldPath.getPath().getAt(1).lng){
+                    updatePath(droneId, newPath);
+                // }
             }
         }
 
-        
+
         //
         // for (let [droneId, newMarker] of Object.entries(newCurrentLocations)) {
         //     if(!(droneId in currentLocations)){
@@ -319,6 +319,7 @@
             {lat: newPath["lat1"], lng: newPath["lng1"]},
             {lat: newPath["lat2"], lng: newPath["lng2"]}
         ]);
+        paths[id].setOptions({fillColor: newPath["color"], strokeColor: newPath["color"]});
     }
 
     function removeCurrentMarkers(){
@@ -327,21 +328,21 @@
             removeTriangle(droneId, currentLocations);
         }
     }
-    
+
     function removeDestinations(){
         for(let droneId in destinations){
             console.log("removing '" + droneId + "' from destinations");
             removeCircle(droneId, destinations);
         }
     }
-    
+
     function removePaths(){
         for(let droneId in paths){
             console.log("removing '" + droneId + "' from paths");
             removePath(droneId);
         }
     }
-    
+
     function removeAllMarkers() {
         removeCurrentMarkers();
         removeDestinations();
