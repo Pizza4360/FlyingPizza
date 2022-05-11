@@ -52,7 +52,7 @@ public class RealDroneTests
         }
     }
     
-    
+    [Fact]
     public void drone_should_get_negative_route_negative_dest()
     {
         var mockedGateway = new Mock<IDroneToDispatchGateway>();

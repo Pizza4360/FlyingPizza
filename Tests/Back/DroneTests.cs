@@ -64,7 +64,7 @@ namespace Tests.Back
                 OrderLocation = testDestination
             });
             result.Should().NotBeNull();
-            drone.Destination.Should().BeEquivalentTo(Constants.Destination);
+            drone.Destination.Should().BeEquivalentTo(testDestination);
 
         }
     }
