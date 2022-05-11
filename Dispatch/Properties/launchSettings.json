@@ -1,0 +1,34 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:23129",
+      "sslPort": 44333
+    }
+  },
+  "profiles": {
+    "Dispatch": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7102;http://localhost:8083",
+      "Logging": {
+        "IncludeScopes": false,
+        "LogLevel": {
+          "Default": "None",
+          "System": "None",
+          "Microsoft": "None"
+        }
+      },
+      "environmentVariables": {
+        "CONNECTION_STRING": "mongodb+srv://capstone:YYeUvzrHZg4yJBsK@cluster0.rjlgf.mongodb.net/CapstoneGroup",
+        "DATABASE_NAME": "Capstone",
+        "ODDS_SETTINGS": "LocalDevelopment",
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    }
+  }
+}
