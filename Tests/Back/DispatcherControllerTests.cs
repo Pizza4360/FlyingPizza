@@ -1,272 +1,266 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Dispatch.Controllers;
 using Domain.DTO;
 using Domain.DTO.DroneDispatchCommunication;
-using Domain.DTO.FrontEndDispatchCommunication;
 using Domain.Entities;
 using Domain.GatewayDefinitions;
 using Domain.RepositoryDefinitions;
-using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
+using FluentAssertions;
+using MongoDB.Driver;
+using Moq;
+using Xunit;
 
-namespace Dispatch.Controllers;
+namespace Tests.Back;
 
-[ApiController]
-[Route("[controller]")]
-public class DispatchController : ControllerBase
+public class DispatcherControllerTests
 {
-    private IDispatchToSimDroneGateway _dispatchToSimDroneGateway;
-
-    private readonly IFleetRepository _fleet;
-    private readonly IOrdersRepository _orders;
-    private readonly GeoLocation _homeLocation;
-    private readonly string _dispatchUrl;
-    private bool _isInitiatingDrone;
-
-    public DispatchController(IODDSSettings settings)
+    
+    private List<Order> _testOrderDb = new (){Constants.TestOrder};
+    private List<DroneRecord> _testFleetDb = new () {Constants.TestRecord};
+    private void FinishOrder()
     {
-        _fleet = settings.GetFleetCollection();
-        _orders = settings.GetOrdersCollection();
-        _homeLocation = settings.GetHomeLocation();
-        _dispatchUrl = settings.GetDispatchUrl();
-        _dispatchToSimDroneGateway = new DispatchToSimDroneGateway(_fleet);
+        _testOrderDb.ForEach(x => x.TimeDelivered = DateTime.Now);
     }
 
-    [HttpPost("Recover")]
-    public async Task<bool> Revive(DroneRecord record)
+    private void TestAddDrone()
     {
-        var unsuccessful = true;
-        Console.WriteLine("\n\nGot a request to revive a drone.");
-        var possibleDrones = (await _fleet.GetAllAsync()).Where(x => x.DroneId.Equals(record.DroneId)).ToList();
-        Console.WriteLine($"Possible drones are: [{string.Join(",", possibleDrones)}]");
-        if (!possibleDrones.Any()) {
-            Console.WriteLine($"All my drones are active right now.  Super suspicious..\ndrone -> {record.ToJson()}");
-        } 
-        else if (possibleDrones.Count > 1)
-        {
-            Console.WriteLine("More than one drone is defined with that ID. Super ambiguous and suspicious...");
-        }
-        else
-        {
-            Console.WriteLine($"\nDrone matched {record.DroneId}. Reviving drone.");
-            record.State = DroneState.Ready;
-            await _fleet.UpdateAsync(record.Update());
-            unsuccessful = false;
-        }
-
-        return unsuccessful;
+        _testFleetDb.Add(Constants.TestRecord);
+    }
+    private void TestFlipDrone()
+    {
+        _testFleetDb.ForEach(x => x.State = DroneState.Ready);
     }
 
-    [HttpPost("AssignmentCheck")]
-    public async Task<BaseDto> AssignmentCheck(BaseDto p)
+    private void SetupEnvironment()
     {
-        await GetNewDrones();
-        if (_isInitiatingDrone) return p;
-        var orders = (from o in await GetUnfulfilledOrders() where string.IsNullOrEmpty(o.DroneId) select o).ToList();
-        var availableDrones =
-            (from d in await GetAvailableDrones() where string.IsNullOrEmpty(d.OrderId) select d).ToList();
-        var unfulfilledOrders = await GetUnfulfilledOrders();
-        foreach (var (drone, order) in availableDrones.Zip(unfulfilledOrders))
-        {
-            var assignment = new AssignDeliveryRequest
-                {DroneId = drone.DroneId, OrderId = order.OrderId, OrderLocation = order.DeliveryLocation};
-            
-            /*do not await!!!*/
-            InitiateDelivery(assignment);
-        }
-        return p;
+        _testOrderDb = new List<Order>() {};
+        _testFleetDb = new List<DroneRecord>() {};
+        Environment.SetEnvironmentVariable("DISPATCH_URL", "bogus");
+        Environment.SetEnvironmentVariable("HOME_LATITUDE", "0");
+        Environment.SetEnvironmentVariable("HOME_LONGITUDE", "0");
+    }
+    // [Fact]
+    // public void add_drone_should_create_drone_and_respond()
+    // {
+    //     SetupEnvironment();
+    //     var mockFleetRepo = new Mock<IFleetRepository>();
+    //     var mockOrderRepo = new Mock<IOrdersRepository>();
+    //     var mockGateway = new Mock<IDispatchToSimDroneGateway>();
+    //     var mockResult = new Mock<UpdateResult>();
+    //     mockGateway.Setup(x => x.InitDrone(It.IsAny<InitDroneRequest>())).Returns(Task.FromResult(Constants.TestInitDroneResponse));
+    //     mockGateway.Setup(x => x.AssignFleet(It.IsAny<AssignFleetRequest>()))
+    //         .Returns(Task.FromResult(Constants.TestAssignFleetResponse));
+    //     mockFleetRepo.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(_testFleetDb));
+    //     mockFleetRepo.Setup(x => x.CreateAsync(It.IsAny<DroneRecord>())).Returns(Task.CompletedTask).Callback(TestAddDrone);
+    //     mockFleetRepo.Setup(x => x.UpdateAsync(It.IsAny<DroneUpdate>())).Returns(Task.FromResult(mockResult.Object)).Callback(TestAddDrone);
+    //     var mockODDS = new Mock<IODDSSettings>();
+    //     mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+    //     mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object); 
+    //     var dispatcher = new DispatchController(mockODDS.Object);
+    //     dispatcher.ChangeGateway(mockGateway.Object);
+    //     // Have to make new record since it mutates reference given
+    //     var resultTask = dispatcher.AddDrone(new DroneRecord
+    //     {
+    //         CurrentLocation = Constants.TestRecord.CurrentLocation,
+    //         Destination = Constants.TestRecord.Destination,
+    //         DispatchUrl = Constants.TestRecord.DispatchUrl,
+    //         DroneId = Constants.TestRecord.DroneId,
+    //         DroneUrl = Constants.TestRecord.DroneUrl,
+    //         HomeLocation = Constants.TestRecord.HomeLocation,
+    //         Id = Constants.TestRecord.Id,
+    //         OrderId = Constants.TestRecord.OrderId,
+    //         State = Constants.TestRecord.State
+    //     });
+    //     resultTask.Wait();
+    //     _testFleetDb.Count.Should().BeGreaterThan(0);
+    //     // One of the only non-mutated members
+    //     _testFleetDb[0].DroneUrl.Should().BeEquivalentTo(Constants.TestAddDroneRequest.DroneUrl);
+    // } // Dereferences Mock of drone at some point when ran async
+
+    [Fact]
+    public void complete_valid_order_should_be_true()
+    {
+        SetupEnvironment();
+        var mockResult = new Mock<UpdateResult>(); // nasty Mongo object mocked for use to ignore update
+        mockResult.Setup(x => x.IsAcknowledged).Returns(true);
+        _testOrderDb.Add(Constants.TestOrder);
+        var mockFleetRepo = new Mock<IFleetRepository>();
+        var mockOrderRepo = new Mock<IOrdersRepository>();
+        mockOrderRepo.Setup(x => x.UpdateAsync(It.IsAny<OrderUpdate>()))
+            .Returns(Task.FromResult(mockResult.Object)).Callback(FinishOrder);
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object);
+        var dispatcher = new DispatchController(mockODDS.Object);
+        var responseTask = dispatcher.CompleteOrder(Constants.TestCompleteOrderRequest);
+        responseTask.Wait();
+        var response = responseTask.Result;
+        response.Should().BeEquivalentTo(Constants.TestCompleteOrderResponse);
     }
 
-    [NonAction]
-    private async Task GetNewDrones()
+    [Fact]
+    public void get_drone_by_id_should_get_drone_record()
     {
-        foreach (var drone in (await _fleet.GetAllAsync()).Where(d => d.State == DroneState.Unititialized))
-        {
-            await AddDrone(drone);
-        }
+        SetupEnvironment();
+        _testFleetDb.Add(Constants.TestRecord);
+        var mockGateway = new Mock<IDispatchToSimDroneGateway>();
+        var mockFleetRepo = new Mock<IFleetRepository>();
+        var mockOrderRepo = new Mock<IOrdersRepository>();
+        mockFleetRepo.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns<string>(y => Task.FromResult(_testFleetDb.FindLast(x => x.DroneId == y)));
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object);
+        var dispatcher = new DispatchController(mockODDS.Object);
+        dispatcher.ChangeGateway(mockGateway.Object);
+        var responseTask = dispatcher.GetDroneById(Constants.TestRecord.DroneId);
+        responseTask.Wait();
+        var response = responseTask.Result;
+        response.Value.Should().NotBeNull();
+        response.Value.Should().BeEquivalentTo(Constants.TestRecord);
     }
-
-    [NonAction]
-    public async Task AddDrone(DroneRecord drone)
+    
+    [Fact]
+    public void revive_should_change_db_record_to_ready()
     {
-        _isInitiatingDrone = true;
-        drone.DispatchUrl = _dispatchUrl;
-        drone.HomeLocation = _homeLocation;
-        Console.WriteLine($"DISPATCH_URL = {_dispatchUrl}");
-        var initDroneRequest = new InitDroneRequest
+        SetupEnvironment();
+        var mockMongoQuery = new Mock<UpdateResult>();
+        // record made this way since updateDrone mutates by reference
+        var deadRecord = new DroneRecord
         {
-            DroneId = drone.DroneId,
-            DroneUrl = drone.DroneUrl
+            CurrentLocation = Constants.TestRecordDead.CurrentLocation,
+            Destination = Constants.TestRecordDead.Destination,
+            DispatchUrl = Constants.TestRecordDead.DispatchUrl,
+            DroneId = Constants.TestRecordDead.DroneId,
+            OrderId = Constants.TestRecordDead.OrderId,
+            State = Constants.TestRecordDead.State,
+            DroneUrl = Constants.TestRecordDead.DroneUrl,
+            HomeLocation = Constants.TestRecordDead.HomeLocation,
+            Id = Constants.TestRecordDead.Id
         };
+        _testFleetDb.Add(deadRecord);
+        var mockFleetRepo = new Mock<IFleetRepository>();
+        var mockOrderRepo = new Mock<IOrdersRepository>();
+        mockFleetRepo.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(_testFleetDb));
+        mockFleetRepo.Setup(x => x.UpdateAsync(It.IsAny<DroneUpdate>())).Returns(Task.FromResult(mockMongoQuery.Object)).Callback(TestFlipDrone);
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object);
+        var dispatcher = new DispatchController(mockODDS.Object);
+        var responseTask = dispatcher.Revive(deadRecord);
+        responseTask.Wait();
+        var response = responseTask.Result;
+        response.Should().BeFalse();
+        // Unsuccessful instead of successful being the return is interesting
+        _testFleetDb.Should().Contain(Constants.TestRecord);
+        _testFleetDb.Should().NotContain(Constants.TestRecordDead);
+    }
+    
+    [Fact]
+    public void assign_check_should_pull_order_and_drone_and_initiate_delivery()
+    {
+        SetupEnvironment();
+        var mockMongoQuery = new Mock<UpdateResult>();
+        _testOrderDb.Add(Constants.TestOrder);
+        _testFleetDb.Add(Constants.TestRecord);
+        var mockGateway = new Mock<IDispatchToSimDroneGateway>();
+        var mockFleetRepo = new Mock<IFleetRepository>();
+        var mockOrderRepo = new Mock<IOrdersRepository>();
+        mockGateway.Setup(x => x.AssignDelivery(It.IsAny<AssignDeliveryRequest>())).Returns(Task.FromResult(Constants.TestAssignDeliveryResponse));
+        mockGateway.Setup(x => x.HealthCheck(It.IsAny<string>())).Returns(Task.FromResult(true));
+        mockFleetRepo.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns<string>(y => Task.FromResult(_testFleetDb.FindLast(x => x.DroneId == y)));
+        mockOrderRepo.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns<string>(y => Task.FromResult(_testOrderDb.FindLast(x => x.DroneId == y)));
+        mockFleetRepo.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(_testFleetDb));
+        mockOrderRepo.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(_testOrderDb));
+        mockOrderRepo.Setup(x => x.UpdateAsync(It.IsAny<OrderUpdate>())).Returns(Task.FromResult(mockMongoQuery.Object));
+        mockFleetRepo.Setup(x => x.UpdateAsync(It.IsAny<DroneUpdate>())).Returns(Task.FromResult(mockMongoQuery.Object));
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object);
+        var dispatcher = new DispatchController(mockODDS.Object);
+        dispatcher.ChangeGateway(mockGateway.Object);
+        var responseTask = dispatcher.AssignmentCheck(Constants.TestPingDto);
+        responseTask.Wait();
+        var response = responseTask.Result;
+        response.Should().NotBeNull();
+        response.Should().BeEquivalentTo(Constants.TestPingDto);
+    }
 
-        var initDroneResponse = _dispatchToSimDroneGateway
-            .InitDrone(initDroneRequest).Result;
-        Console.WriteLine(
-            $"\n\n\n\nResponse from _dispatchToSimDroneGateway.InitDrone({initDroneRequest})\n\t->{{DroneId:{initDroneResponse.DroneId},Okay:{initDroneResponse.Okay}}}\n\n\n\n");
-        if (!initDroneResponse.Okay)
-            return;
-
-        var assignFleetRequest = new AssignFleetRequest
+    [Fact]
+    public void post_init_status_should_update_starting_fleet_db()
+    {
+        SetupEnvironment();
+        var mockMongoQuery = new Mock<UpdateResult>();
+        // record made this way since updateDrone mutates by reference
+        var deadRecord = new DroneRecord
         {
-            DroneId = drone.DroneId,
-            DroneUrl = drone.DroneUrl,
-            DispatchUrl = _dispatchUrl,
-            HomeLocation = drone.HomeLocation
+            CurrentLocation = Constants.TestRecordDead.CurrentLocation,
+            Destination = Constants.TestRecordDead.Destination,
+            DispatchUrl = Constants.TestRecordDead.DispatchUrl,
+            DroneId = Constants.TestRecordDead.DroneId,
+            OrderId = Constants.TestRecordDead.OrderId,
+            State = Constants.TestRecordDead.State,
+            DroneUrl = Constants.TestRecordDead.DroneUrl,
+            HomeLocation = Constants.TestRecordDead.HomeLocation,
+            Id = Constants.TestRecordDead.Id
         };
-
-        Console.WriteLine($"\n\n\n\nProceeding with _dispatchToSimDroneGateway.AssignFleet({assignFleetRequest.ToJson()}\n\n\n\n");
-        var assignFleetResponse = _dispatchToSimDroneGateway.AssignFleet(assignFleetRequest).Result;
-        var responseString = assignFleetResponse != null
-            ? assignFleetResponse.IsInitializedAndAssigned.ToString()
-            : "null";
-        Console.WriteLine($"\n\n\n\n_dispatchToSimDroneGateway.AssignFleet - response -> {responseString}\n\n\n\n");
-
-        if (assignFleetResponse is {IsInitializedAndAssigned: false})
-        {
-            Console.WriteLine($"FAILURE! new drone {drone.DroneId} was not initiated.");
-        }
-
-        Console.WriteLine($"\n\n\n\nsuccess! Saving new drone {drone.DroneId} to repository.\n\n\n\n");
-        drone.State = DroneState.Ready;
-        drone.OrderId = "";
-        drone.DispatchUrl = _dispatchUrl;
-        await _fleet.UpdateAsync(drone.Update());
-
-        Console.WriteLine($"\n\n\n\nabout to YEET this drone record:\n{drone.ToJson()}");
+        _testFleetDb.Add(deadRecord);
+        var mockGateway = new Mock<IDispatchToSimDroneGateway>();
+        var mockFleetRepo = new Mock<IFleetRepository>();
+        var mockOrderRepo = new Mock<IOrdersRepository>();
+        mockMongoQuery.Setup(x => x.IsAcknowledged).Returns(true);
+        mockMongoQuery.Setup(x => x.ModifiedCount).Returns(_testFleetDb.Count);
+        mockFleetRepo.Setup(x => x.UpdateAsync(It.IsAny<DroneUpdate>())).Returns(Task.FromResult(mockMongoQuery.Object)).Callback(TestFlipDrone);
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object);
+        var dispatcher = new DispatchController(mockODDS.Object);
+        dispatcher.ChangeGateway(mockGateway.Object);
+        var responseTask = dispatcher.PostInitialStatus(Constants.TestUpdate);
+        responseTask.Wait();
+        var response = responseTask.Result;
+        response.Should().NotBeNull();
+        response.Should().BeEquivalentTo(Constants.TestUpdateResponse);
+        _testFleetDb.Should().Contain(Constants.TestRecord);
+        _testFleetDb.Should().NotContain(Constants.TestRecordDead);
     }
 
-    [HttpPost("CompleteOrder")]
-    public async Task<CompleteOrderResponse> CompleteOrder(CompleteOrderRequest request)
+    [Fact]
+    public void update_drone_status_should_change_fleet_db()
     {
-        var order = new Order
+        SetupEnvironment();
+        var mockMongoQuery = new Mock<UpdateResult>();
+        // record made this way since updateDrone mutates by reference
+        var deadRecord = new DroneRecord
         {
-            OrderId = request.OrderId,
-            State = OrderState.Delivered,
-            TimeDelivered = request.Time,
-            DroneId = request.DroneId
+            CurrentLocation = Constants.TestRecordDead.CurrentLocation,
+            Destination = Constants.TestRecordDead.Destination,
+            DispatchUrl = Constants.TestRecordDead.DispatchUrl,
+            DroneId = Constants.TestRecordDead.DroneId,
+            OrderId = Constants.TestRecordDead.OrderId,
+            State = Constants.TestRecordDead.State,
+            DroneUrl = Constants.TestRecordDead.DroneUrl,
+            HomeLocation = Constants.TestRecordDead.HomeLocation,
+            Id = Constants.TestRecordDead.Id
         };
-        Console.WriteLine(
-            $"order {order.OrderId} has been delivered? {order.HasBeenDelivered} @ time {order.TimeDelivered}");
-        var result = await _orders.UpdateAsync(order.Update());
-        return new CompleteOrderResponse
-        {
-            IsAcknowledged = result.IsAcknowledged
-        };
+        _testFleetDb.Add(deadRecord); 
+        var mockGateway = new Mock<IDispatchToSimDroneGateway>();
+        var mockFleetRepo = new Mock<IFleetRepository>();
+        var mockOrderRepo = new Mock<IOrdersRepository>();
+        mockMongoQuery.Setup(x => x.IsAcknowledged).Returns(true);
+        mockMongoQuery.Setup(x => x.ModifiedCount).Returns(_testFleetDb.Count);
+        mockFleetRepo.Setup(x => x.UpdateAsync(It.IsAny<DroneUpdate>())).Returns(Task.FromResult(mockMongoQuery.Object)).Callback(TestFlipDrone);
+        var mockODDS = new Mock<IODDSSettings>();
+        mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleetRepo.Object);
+        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrderRepo.Object);
+        var dispatcher = new DispatchController(mockODDS.Object);
+        dispatcher.ChangeGateway(mockGateway.Object);
+        var responseTask = dispatcher.UpdateDroneStatus(Constants.TestUpdate);
+        responseTask.Wait();
+        var response = responseTask.Result;
+        response.Should().NotBeNull();
+        response.Should().BeEquivalentTo(Constants.TestUpdateResponse);
     }
-
-    [HttpPost("AssignDelivery")]
-    private async Task<AssignDeliveryResponse> InitiateDelivery(AssignDeliveryRequest request)
-    {
-        if (request == null)
-        {
-            return new AssignDeliveryResponse {DroneId = request.DroneId, Success = false};
-        }
-
-        // Console.WriteLine("!!!!!!" + request.ToJson());
-        // Console.WriteLine($"In DispatchController.AssignDeliveryResponse, order :{request.ToJson()}");
-
-        var order = await _orders.GetByIdAsync(request.OrderId);
-        var drone = await _fleet.GetByIdAsync(request.DroneId);
-
-        // var s1 = $"drone.OrderId {drone.OrderId} -> ";
-        // var s2 = $"order.DroneId {order.DroneId} -> ";
-        order.DroneId = drone.DroneId;
-        drone.OrderId = order.OrderId;
-        // s1 += $"{drone.OrderId}";
-        // s2 += $"{order.DroneId}";
-        //
-        // Console.WriteLine($"{s1}\n{s2}");
-        order.State = OrderState.Assigned;
-        drone.State = DroneState.Assigned;
-
-        await _fleet.UpdateAsync(drone.Update());
-        await _orders.UpdateAsync(order.Update());
-
-        return await _dispatchToSimDroneGateway.AssignDelivery(request);
-    }
-
-
-    [NonAction]
-    private async Task<IEnumerable<Order>> GetUnfulfilledOrders()
-    {
-        var orders = await _orders.GetAllAsync();
-        // Console.WriteLine($"All the orders: {orders.Count}");
-        var unassignedOrders = orders.Where(o =>
-            !o.HasBeenDelivered && o is {State: OrderState.Waiting} && string.IsNullOrEmpty(o.DroneId));
-        return unassignedOrders;
-    }
-
-    [NonAction]
-    private async Task<IEnumerable<DroneRecord>> GetAvailableDrones()
-    {
-        if (_isInitiatingDrone)
-        {
-            Console.WriteLine("Thread lock, cannot read drones at this time.");
-            return new List<DroneRecord>();
-        }
-        try
-        {
-            Console.WriteLine("DequeueOrders...");
-            var drones = from d in await _fleet.GetAllAsync()
-                where d != null
-                      && d.State == DroneState.Ready
-                      && string.IsNullOrEmpty(d.OrderId)
-                select d;
-            var availabledDrones = new List<DroneRecord>();
-            foreach (var drone in drones)
-            {
-                if (!await _dispatchToSimDroneGateway.HealthCheck(drone.DroneId)) continue;
-                Console.WriteLine($"drone at {drone.DroneUrl} is healthy");
-                availabledDrones.Add(drone);
-            }
-
-            return availabledDrones;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return new List<DroneRecord>();
-        }
-    }
-
-    [HttpPost("PostInitialStatus")]
-    public async Task<UpdateDroneStatusResponse> PostInitialStatus(DroneUpdate initialStatusRequest)
-    {
-        // Console.WriteLine($"DispatchController.PostInitialStatus -> {initialStatusRequest}");
-        return await UpdateDroneStatus(initialStatusRequest);
-    }
-
-    [HttpPost("UpdateDroneStatus")]
-    public async Task<UpdateDroneStatusResponse> UpdateDroneStatus(DroneUpdate droneStatusRequest)
-    {
-        // Console.WriteLine($"DispatchController.UpdateDroneStatus -> {droneStatusRequest.ToJson()}");
-        var updateResult = await _fleet.UpdateAsync(droneStatusRequest);
-        var response = new UpdateDroneStatusResponse
-        {
-            DroneId = droneStatusRequest.DroneId,
-            IsCompletedSuccessfully = updateResult.IsAcknowledged && updateResult.ModifiedCount == 1
-        };
-        // Console.WriteLine($"DispatchController.UpdateDroneStatus -> {droneStatusRequest.ToJson()}");
-
-        return response;
-    }
-
-
-    [HttpPost("{id:length(24)}")]
-    public async Task<ActionResult<DroneRecord>> GetDroneById(string requestedDroneId)
-    {
-        // Console.WriteLine($"DispatchController.Get -> {requestedDroneId}");
-        var droneRecord = await _fleet.GetByIdAsync(requestedDroneId);
-
-        if (droneRecord is null) return NotFound();
-
-        return droneRecord;
-    }
-    [NonAction]
-    public void ChangeGateway(IDispatchToSimDroneGateway mockedGate)
-    {
-        _dispatchToSimDroneGateway = mockedGate;
-    }
+    
 }
