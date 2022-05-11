@@ -14,7 +14,7 @@ public class Constants
     public const string DroneIp = "localhost:5000";
     public const string DispatcherIp = "localhost:4000";
     public const string Url = "https://FlyingPizza.com";
-    public const string DroneId = "abcdefg";
+    public const string DroneId = "abcdefabcdefabcdefabcdef";
     public const string TestOrderId = "123456123456123456123456";
     public const string CHARGING = "Charging";
     public static readonly object[] TestItems = Array.Empty<object>();
@@ -115,9 +115,9 @@ public class Constants
         };
         public static string TestPingString = "I am pinging!";
         
-        public static PingDto TestPingDto = new()
+        public static BaseDto TestPingDto = new()
         {
-            S = TestPingString
+            Message = TestPingString
         };
         
         public static readonly AddDroneRequest TestAddDroneRequest = new()
@@ -201,7 +201,7 @@ public class Constants
             State = DroneState.Dead
         };
 
-        public static readonly ReviveRequest TestReviveRequest = new()
+        public static readonly RecoveryRequest TestReviveRequest = new()
         {
             Record = TestRecordDead
         };

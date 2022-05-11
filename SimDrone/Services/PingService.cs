@@ -1,10 +1,11 @@
 using Domain.DTO;
+using Domain.DTO.DroneDispatchCommunication;
 using Domain.Entities;
 using MongoDB.Bson.Serialization;
 
 namespace Domain.Services;
 
-public class PingerService : BackgroundService
+public class PingService : BackgroundService
 {
     private string DroneUrl;
     private string DispatchUrl;
@@ -61,7 +62,7 @@ public class PingerService : BackgroundService
         KeepPingingDispatch = false;
         var rejoinUrl = $"{DroneUrl}/SimDrone/RejoinFleet";
         Console.WriteLine($"Dispatch allowed rejoining! Sending rejoin messagage to {rejoinUrl}");
-        _httpClient.PostAsJsonAsync(rejoinUrl, new ReviveRequest{Record = record});
+        _httpClient.PostAsJsonAsync(rejoinUrl, new RecoveryRequest{Record = record});
         Console.WriteLine($"Successfully recovered and rejoined the fleet!");
     }
 }

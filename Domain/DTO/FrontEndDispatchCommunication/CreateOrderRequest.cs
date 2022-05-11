@@ -2,7 +2,7 @@
 
 namespace Domain.DTO.FrontEndDispatchCommunication;
 
-public class CreateOrderRequest
+public class CreateOrderRequest : BaseDto
 {
     private GeoLocation _location;
 

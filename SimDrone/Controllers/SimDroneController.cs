@@ -31,7 +31,7 @@ public class SimDroneController : ControllerBase
     }
 
     [HttpPost("RejoinFleet")]
-    public async Task RejoinFleet(ReviveRequest request)
+    public async Task RejoinFleet(RecoveryRequest request)
     {
         Console.WriteLine($"SimDroneController.RejoinFleet({request.Record})");
         await JoinFleet(request.Record);
@@ -40,7 +40,7 @@ public class SimDroneController : ControllerBase
     
     
     [HttpPost("HealthCheck")]
-    public async Task<DroneRecord> HealthCheck(PingDto s)
+    public async Task<DroneRecord> HealthCheck(BaseDto s)
     {
         return new DroneRecord
         {

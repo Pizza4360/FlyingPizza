@@ -2,7 +2,7 @@
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
-public class AssignFleetRequest
+public class AssignFleetRequest : BaseDto
 {
     [JsonPropertyName("DroneId")]
     public string DroneId { get; set; }
@@ -15,4 +15,7 @@ public class AssignFleetRequest
     
     [JsonPropertyName("HomeLocation")]
     public GeoLocation HomeLocation { get; set; }
+    
+    [JsonPropertyName("BadgeNumber")]
+    public int BadgeNumber { get; set; }
 }

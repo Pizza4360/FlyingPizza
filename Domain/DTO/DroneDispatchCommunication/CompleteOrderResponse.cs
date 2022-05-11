@@ -2,7 +2,7 @@
 
 namespace Domain.DTO.DroneDispatchCommunication;
 
-public class CompleteOrderResponse
+public class CompleteOrderResponse : BaseDto
 {
     [JsonPropertyName("IsAcknowledged")] public bool IsAcknowledged { get; set; }
 }

@@ -1,5 +1,5 @@
 ﻿namespace Domain.DTO.FrontEndDispatchCommunication;
 
-public class RemoveDroneResponse
+public class RemoveDroneResponse : BaseDto
 {
 }
