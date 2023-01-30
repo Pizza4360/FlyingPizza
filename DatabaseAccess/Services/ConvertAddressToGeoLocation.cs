@@ -11,6 +11,7 @@ public static class LocationParser
     private static readonly HttpClient HttpClient = new();
 
     // Use the api key and address to form a full google maps location request url.
+    // Return a Geolocation with the response's coordinates.
     public static async Task<GeoLocation> Parse(string apiKey, string endpoint)
     {
         Console.WriteLine($"\n\n\n\nParsing address from response:{endpoint}\n\n\n\n");
