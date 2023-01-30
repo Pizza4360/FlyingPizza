@@ -14,7 +14,7 @@ public static class LocationParser
     public static async Task<GeoLocation> Parse(string apiKey, string endpoint)
     {
         Console.WriteLine($"\n\n\n\nParsing address from response:{endpoint}\n\n\n\n");
-        var requestUrl = $"{BaseUrl}/geocode/json?address={HttpUtility.UrlEncode(endpoint)},&key={apiKey};
+        var requestUrl = $"{BaseUrl}/geocode/json?address={HttpUtility.UrlEncode(endpoint)},&key={apiKey}";
         var response = await HttpClient.GetStringAsync(requestUrl);
         Console.Write("RETURNED: " + response);
         var js = JObject.Parse(response);
