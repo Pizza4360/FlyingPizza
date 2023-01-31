@@ -28,7 +28,7 @@ public class RealDroneTests
             Latitude = 0.0m,
             Longitude = 0.0002m
         };
-        var telloDrone = new TelloDrone(new DroneRecord
+        var telloDrone = new TelloDrone(new DroneEntity
         {
             CurrentLocation = start,
             Destination = end,
@@ -36,9 +36,9 @@ public class RealDroneTests
             DroneId = "unused",
             DroneUrl = Constants.TelloIp,
             HomeLocation = start,
-            Id = Constants.TestOrderId,
-            OrderId = Constants.TestOrderId,
-            State = DroneState.Ready
+            Id = Constants.TestDeliveryId,
+            DeliveryId = Constants.TestDeliveryId,
+            LatestStatus = DroneStatus.Ready
         }, mockedGateway.Object,new SimDroneController(), true);
         var route = telloDrone.GetRoute();
         route.Should()
@@ -66,7 +66,7 @@ public class RealDroneTests
             Latitude = 0.0m,
             Longitude = -0.0002m
         };
-        var telloDrone = new TelloDrone(new DroneRecord
+        var telloDrone = new TelloDrone(new DroneEntity
         {
             CurrentLocation = start,
             Destination = end,
@@ -74,9 +74,9 @@ public class RealDroneTests
             DroneId = "unused",
             DroneUrl = Constants.TelloIp,
             HomeLocation = start,
-            Id = Constants.TestOrderId,
-            OrderId = Constants.TestOrderId,
-            State = DroneState.Ready
+            Id = Constants.TestDeliveryId,
+            DeliveryId = Constants.TestDeliveryId,
+            LatestStatus = DroneStatus.Ready
         },mockedGateway.Object, new SimDroneController(), true);
         var route = telloDrone.GetRoute();
         route.Should()
@@ -96,7 +96,7 @@ public class RealDroneTests
     {
         var mockedGateway = new Mock<IDroneToDispatchGateway>();
         var commands = new []{ "command", "forward 100", "back 100", "left 100", "right 100", "takeoff", "land"};
-        var telloDrone = new TelloDrone(new DroneRecord
+        var telloDrone = new TelloDrone(new DroneEntity
         {
             CurrentLocation = Constants.HomeLocation,
             Destination = Constants.Destination,
@@ -104,9 +104,9 @@ public class RealDroneTests
             DroneId = "unused",
             DroneUrl = Constants.TelloIp,
             HomeLocation = Constants.HomeLocation,
-            Id = Constants.TestOrderId,
-            OrderId = Constants.TestOrderId,
-            State = DroneState.Ready
+            Id = Constants.TestDeliveryId,
+            DeliveryId = Constants.TestDeliveryId,
+            LatestStatus = DroneStatus.Ready
         }, mockedGateway.Object,new SimDroneController());
         foreach (var command in commands)
         {
@@ -131,7 +131,7 @@ public class RealDroneTests
             Latitude = 0.0m,
             Longitude = 0.0002m
         };
-        var telloDrone = new TelloDrone(new DroneRecord
+        var telloDrone = new TelloDrone(new DroneEntity
         {
             CurrentLocation = start,
             Destination = end,
@@ -139,15 +139,15 @@ public class RealDroneTests
             DroneId = "unused",
             DroneUrl = Constants.TelloIp,
             HomeLocation = start,
-            Id = Constants.TestOrderId,
-            OrderId = Constants.TestOrderId,
-            State = DroneState.Ready
+            Id = Constants.TestDeliveryId,
+            DeliveryId = Constants.TestDeliveryId,
+            LatestStatus = DroneStatus.Ready
         },mockedGateway.Object, new SimDroneController(), true);
-        telloDrone.DeliverOrder(new AssignDeliveryRequest
+        telloDrone.DeliverDelivery(new AssignDeliveryRequest
         {
             DroneId = "unused",
-            OrderId = Constants.TestOrderId,
-            OrderLocation = end
+            DeliveryId = Constants.TestDeliveryId,
+            DeliveryLocation = end
         });
         telloDrone.Route.Should().Contain(end);
     }

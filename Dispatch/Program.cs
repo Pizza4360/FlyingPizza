@@ -1,5 +1,6 @@
 using DatabaseAccess;
 using Dispatch.Services;
+using Domain.Entities;
 using Domain.RepositoryDefinitions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,31 +10,35 @@ builder.Services.AddCors(options =>
 
 #region repositories
 
-var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME");
-var ODDSSettingsSettings = new RepositorySettings
-{
-    ConnectionString = connectionString,
-    DatabaseName = databaseName,
-    CollectionName = Environment.GetEnvironmentVariable("ODDS_SETTINGS")
-};
-builder.Services.AddSingleton<IODDSSettings, ODDSSettings>(_ => new ODDSSettings(ODDSSettingsSettings));
+builder.Services.AddSingleton<IOpenDroneSystemConfigRepository
+    ,OpenDroneSystemConfigRepository>();
 
-builder.Services.AddSingleton<IOrdersRepository, OrderRepository>();
+builder.Services.AddSingleton<IDeliveriesRepository
+    ,DeliveryRepository>();
 
-builder.Services.AddSingleton<IFleetRepository, FleetRepository>();
+builder.Services.AddSingleton<IDroneRepository
+    ,DroneRepository>();
 
 builder.Services.AddControllers()
-    .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.PropertyNamingPolicy = null
+    );
 
 #endregion repositories
 
+// Todo, does this work? if not, find a way to get logging to work.
 builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+builder.Logging.AddJsonConsole()
+                .AddDebug()
+                .AddEventSourceLogger()
+                .AddFilter(_ =>
+                    _.ToString().Contains("ODDS"));
 
 // Add builder.Services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Learn more about configuring Swagger/OpenAPI at
+// https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHostedService<PingService>();
@@ -47,7 +52,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// turn off ssl: https://stackoverflow.com/questions/43809665/enable-disable-ssl-on-asp-net-core-projects-in-development
+// Todo, add security
+// turn off ssl
 // app.UseHttpsRedirection();
 
 app.UseCors("CORS");

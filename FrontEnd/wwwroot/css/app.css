@@ -6,7 +6,7 @@ html, body {
 }
 
 .quick-look {
-    border-radius: 0.5rem;
+    bdelivery-radius: 0.5rem;
     display: flex;
     padding: 0px !important;
 }
@@ -15,7 +15,7 @@ html, body {
     position: relative;
     z-index: 1;
     width: 70px;
-    border-radius: 0.5rem;
+    bdelivery-radius: 0.5rem;
     background-color: #1e1e24;
     /*Spaces connection div from status bar*/
     margin-left: 5px !important;
@@ -35,7 +35,7 @@ html, body {
         width: 70px;
         background-color: #696969;
         text-align: center;
-        border-radius: 5px;
+        bdelivery-radius: 5px;
         padding: 5px 0;
         transition: opacity 1s ease-in-out;
         position: absolute;
@@ -58,7 +58,7 @@ html, body {
     }
 
 .status-bar {
-    border-radius: 0.5rem;
+    bdelivery-radius: 0.5rem;
     flex-grow: 1;
     background-color: #3f7cac;
     padding: 1.5rem !important;
@@ -76,7 +76,7 @@ a, .btn-link {
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
-    border-color: #1861ac;
+    bdelivery-color: #1861ac;
 }
 
 .content {

@@ -31,7 +31,8 @@ public interface IBaseRepository<DomainEntity, Update>
     ///     Deletes the domain entity with the provided id
     /// </summary>
     /// <param name="id"></param>
-    /// <returns>true if the operation succeeded, or false if it failed (including if the entity doesn't exist)</returns>
+    /// <returns>true if the operation succeeded, or false if it failed
+    /// (including if the entity doesn't exist)</returns>
     public Task<bool> RemoveAsync(string id);
 
     /// <summary>

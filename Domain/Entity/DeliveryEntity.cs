@@ -6,16 +6,20 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities;
 
-[BsonDiscriminator("Order")]
-public class Order : BaseEntity
+[BsonDiscriminator("Delivery")]
+public class DeliveryEntity : BaseEntity<DeliveryUpdate>
 {
-    [BsonElement("DroneId")] public string DroneId { get; set; }
+    [BsonElement("DroneId")]
+    [JsonPropertyName("DroneId")]
+    public string DroneId { get; set; }
 
-    [BsonElement("OrderId")] public string OrderId { get; set; }
+    [BsonElement("DeliveryId")]
+    [JsonPropertyName("DeliveryId")]
+    public string DeliveryId { get; set; }
 
-    [BsonElement("State")]
-    [JsonPropertyName("State")]
-    public OrderState State { get; set; }
+    [BsonElement("Status")]
+    [JsonPropertyName("Status")]
+    public Deliveriestatus Status { get; set; }
 
     [BsonElement("Items")]
     [JsonPropertyName("Items")]
@@ -33,31 +37,31 @@ public class Order : BaseEntity
     [JsonPropertyName("DeliveryLocation")]
     public GeoLocation DeliveryLocation { get; set; }
 
-    [BsonElement("TimeOrdered")]
-    [JsonPropertyName("TimeOrdered")]
+    [BsonElement("TimeDeliveryed")]
+    [JsonPropertyName("TimeDeliveryed")]
     [BsonRepresentation(BsonType.DateTime)]
     public DateTime TimeOrdered { get; set; }
 
+    [BsonIgnoreIfNull]
+    [BsonRepresentation(BsonType.DateTime)]
     [BsonElement("TimeDelivered")]
     [JsonPropertyName("TimeDelivered")]
-    [BsonRepresentation(BsonType.DateTime)]
-    [BsonIgnoreIfNull]
     public DateTime? TimeDelivered { get; set; }
 
 
+    [BsonIgnoreIfNull]
     [BsonElement("HasBeenDelivered")]
     [JsonPropertyName("HasBeenDelivered")]
-    [BsonIgnoreIfNull]
     public bool HasBeenDelivered => TimeDelivered != null;
 
-    public OrderUpdate Update()
+    public override DeliveryUpdate Update()
     {
-        return new()
+        return new DeliveryUpdate
         {
             DroneId = DroneId,
             HasBeenDelivered = HasBeenDelivered,
-            OrderId = OrderId,
-            State = State,
+            DeliveryId = DeliveryId,
+            Status = Status,
             TimeDelivered = TimeDelivered
         };
     }

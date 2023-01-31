@@ -10,21 +10,21 @@ using SimDrone.Controllers;
 
 namespace SimDrone;
 
-public class Drone : DroneRecord
+public class Drone : DroneEntity
 {
     private const decimal DroneStepSizeInKilometers = .0004m;
 
     private SimDroneController _controller;
-    public Drone(DroneRecord record, IDroneToDispatchGateway gateway, SimDroneController controller)
+    public Drone(DroneEntity entity, IDroneToDispatchGateway gateway, SimDroneController controller)
     {
-        DroneId = record.DroneId;
-        HomeLocation = record.HomeLocation;
-        DroneUrl = record.DroneUrl;
+        DroneId = entity.DroneId;
+        HomeLocation = entity.HomeLocation;
+        DroneUrl = entity.DroneUrl;
         _controller = controller;
-        State = DroneState.Ready;
+        LatestStatus = DroneStatus.Ready;
         CurrentLocation = HomeLocation;
-        Destination = record.Destination;
-        Direction = 0m;
+        Destination = entity.Destination;
+        BearingInDegrees = 0m;
     }
 
     public override string ToString()
@@ -44,22 +44,22 @@ public class Drone : DroneRecord
         PatchDroneStatus();
     }
 
-    private async Task<UpdateDroneStatusResponse?> UpdateStatus(DroneState state)
+    private async Task<UpdateDroneStatusResponse?> UpdateStatus(DroneStatus status)
     {
-        if (State == DroneState.Delivering && state == DroneState.Returning)
+        if (LatestStatus == DroneStatus.Delivering && status == DroneStatus.Returning)
         {
             Destination = HomeLocation;
-            OrderId = null;
+            DeliveryId = null;
         }
 
-        State = state;
+        LatestStatus = status;
         return await PatchDroneStatus();
     }
 
-    private async Task<UpdateDroneStatusResponse?> UpdateOrderId(DroneState state)
+    private async Task<UpdateDroneStatusResponse?> UpdateDeliveryId(DroneStatus status)
     {
-        if (State == DroneState.Delivering && state == DroneState.Returning) Destination = HomeLocation;
-        State = state;
+        if (LatestStatus == DroneStatus.Delivering && status == DroneStatus.Returning) Destination = HomeLocation;
+        LatestStatus = status;
         return await PatchDroneStatus();
     }
     
@@ -72,37 +72,37 @@ public class Drone : DroneRecord
         for (var i = 0; !CurrentLocation.Equals(endingLocation); i++)
         {
             Console.WriteLine($"{GeoCalculations.HaversineInMeters(CurrentLocation, endingLocation)} meters away");
-            Direction = GeoCalculations.Bearing(CurrentLocation.Latitude, CurrentLocation.Longitude, endingLocation.Latitude,
+            BearingInDegrees = GeoCalculations.Bearing(CurrentLocation.Latitude, CurrentLocation.Longitude, endingLocation.Latitude,
                 endingLocation.Longitude);
-            Console.WriteLine($"bearing between = {Direction}");
-            buffer[i % 5] = CurrentLocation = GeoCalculations.GetNextLocation(CurrentLocation, Direction, DroneStepSizeInKilometers);
+            Console.WriteLine($"bearing between = {BearingInDegrees}");
+            buffer[i % 5] = CurrentLocation = GeoCalculations.GetNextLocation(CurrentLocation, BearingInDegrees, DroneStepSizeInKilometers);
             Console.WriteLine($"{CurrentLocation}");
             if (i % 100 != 0) continue;
             UpdateLocation(CurrentLocation);
             Thread.Sleep(500);
         }
     }
-    public async Task<AssignDeliveryResponse> DeliverOrder(AssignDeliveryRequest request)
+    public async Task<AssignDeliveryResponse> DeliverDelivery(AssignDeliveryRequest request)
     {
-        OrderId = request.OrderId;
-        await UpdateStatus(DroneState.Delivering);
-        await TravelTo(request.OrderLocation);
+        DeliveryId = request.DeliveryId;
+        await UpdateStatus(DroneStatus.Delivering);
+        await TravelTo(request.DeliveryLocation);
         _controller.CompleteDelivery(
-            new CompleteOrderRequest
+            new CompleteDeliveryRequest
             {
                 DroneId = DroneId,
-                OrderId = OrderId,
+                DeliveryId = DeliveryId,
                 Time = DateTime.Now
             });
         Console.WriteLine("Done with delivery, returning home.");
-        await UpdateStatus(DroneState.Returning);
+        await UpdateStatus(DroneStatus.Returning);
         await TravelTo(HomeLocation);
-        await UpdateStatus(DroneState.Ready);
-        OrderId = request.OrderId;
+        await UpdateStatus(DroneStatus.Ready);
+        DeliveryId = request.DeliveryId;
         return new AssignDeliveryResponse
         {
             DroneId = DroneId,
-            OrderId = OrderId,
+            DeliveryId = DeliveryId,
             Success = true
         };
     }

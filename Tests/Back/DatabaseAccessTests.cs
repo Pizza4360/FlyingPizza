@@ -12,15 +12,15 @@ namespace Tests.Back;
 public class DatabaseAccessTests
 {
     [Fact]
-    public async Task get_fleet_should_get_list_of_drone_records()
+    public async Task get_fleet_should_get_list_of_drone_models()
     {
-        var mockOrders = new Mock<IOrdersRepository>();
-        var mockFleet = new Mock<IFleetRepository>();
-        var testDb = new List<DroneRecord>(){Constants.TestRecord};
+        var mockDeliveries = new Mock<IDeliveriesRepository>();
+        var mockFleet = new Mock<IDroneRepository>();
+        var testDb = new List<DroneEntity>(){Constants.Entity};
         mockFleet.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(testDb));
         var mockODDS = new Mock<IODDSSettings>();
         mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleet.Object);
-        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrders.Object);
+        mockODDS.Setup(x => x.GetDeliveriesCollection()).Returns(mockDeliveries.Object);
         var access = new DatabaseAccess.Controllers.DatabaseAccess(mockODDS.Object);
         var result = await access.GetFleet();
         result.Should().NotBeNull();
@@ -28,58 +28,58 @@ public class DatabaseAccessTests
     }
     
     // [Fact]
-    // public async Task create_order_should_place_order_given_return_empty_obj_for_now()
+    // public async Task create_delivery_should_place_delivery_given_return_empty_obj_for_now()
     // {
     //     var handleFactory = new HttpHandlerFactory();
     //     handleFactory.StringAll();
     //     var handle = handleFactory.GetHttpMessageHandler();
     //     var mockLogger = new Mock<ILogger<DatabaseAccess.Controllers.DatabaseAccess>>();
     //     var mockFleet = new Mock<IFleetRepository>();
-    //     var mockOrders = new Mock<IOrdersRepository>();
+    //     var mockDeliveries = new Mock<IDeliveriesRepository>();
     //     LocationParser.ChangeHandler(handle);
-    //     mockOrders.Setup(x => x.CreateAsync(Constants.TestOrder)).Verifiable();
-    //     mockOrders.Setup(x => x.CreateAsync(It.IsAny<Order>())).Returns(Task.CompletedTask);
+    //     mockDeliveries.Setup(x => x.CreateAsync(Constants.TestDelivery)).Verifiable();
+    //     mockDeliveries.Setup(x => x.CreateAsync(It.IsAny<Delivery>())).Returns(Task.CompletedTask);
     //     var mockODDS = new Mock<IODDSSettings>();
     //     mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleet.Object);
-    //     mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrders.Object);
+    //     mockODDS.Setup(x => x.GetDeliveriesCollection()).Returns(mockDeliveries.Object);
     //     var access = new DatabaseAccess.Controllers.DatabaseAccess(mockODDS.Object);
-    //     var result = await access.CreateOrder(Constants.TestOrder);
-    //     mockOrders.Verify();
+    //     var result = await access.CreateDelivery(Constants.TestDelivery);
+    //     mockDeliveries.Verify();
     //     result.Should().NotBeNull();
     //     result.IsCompletedSuccessfullly.Should().BeFalse();
     //     // Not Testable, HttpSocket can't be mocked here
     // }
     
     [Fact]
-    public void get_drone_should_pull_a_record()
+    public void get_drone_should_pull_a_model()
     {
         var mockLogger = new Mock<ILogger<DatabaseAccess.Controllers.DatabaseAccess>>();
-        var mockFleet = new Mock<IFleetRepository>();
-        var mockOrders = new Mock<IOrdersRepository>();
-        var testDb = new List<DroneRecord>() {Constants.TestRecord};
+        var mockFleet = new Mock<IDroneRepository>();
+        var mockDeliveries = new Mock<IDeliveriesRepository>();
+        var testDb = new List<DroneEntity>() {Constants.Entity};
         mockFleet.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns((string x) => Task.FromResult(testDb.Find(y => y.DroneId == x)));
         var mockODDS = new Mock<IODDSSettings>();
         mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleet.Object);
-        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrders.Object);
+        mockODDS.Setup(x => x.GetDeliveriesCollection()).Returns(mockDeliveries.Object);
         var access = new DatabaseAccess.Controllers.DatabaseAccess(mockODDS.Object);
         var result = access.GetDrone(Constants.DroneId);
         result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(Constants.TestRecord);
+        result.Should().BeEquivalentTo(Constants.Entity);
     }
     
     [Fact]
-    public void get_order_should_pull_an_order()
+    public void get_delivery_should_pull_an_delivery()
     {
-        var mockFleet = new Mock<IFleetRepository>();
-        var mockOrders = new Mock<IOrdersRepository>();
-        var testDb = new List<Order>() {Constants.TestOrder};
-        mockOrders.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns((string x) => Task.FromResult(testDb.Find(y => y.Id == x)));
+        var mockFleet = new Mock<IDroneRepository>();
+        var mockDeliveries = new Mock<IDeliveriesRepository>();
+        var testDb = new List<DeliveryEntity>() {Constants.TestDeliveryEntity};
+        mockDeliveries.Setup(x => x.GetByIdAsync(It.IsAny<string>())).Returns((string x) => Task.FromResult(testDb.Find(y => y.Id == x)));
         var mockODDS = new Mock<IODDSSettings>();
         mockODDS.Setup(x => x.GetFleetCollection()).Returns(mockFleet.Object);
-        mockODDS.Setup(x => x.GetOrdersCollection()).Returns(mockOrders.Object);
+        mockODDS.Setup(x => x.GetDeliveriesCollection()).Returns(mockDeliveries.Object);
         var access = new DatabaseAccess.Controllers.DatabaseAccess(mockODDS.Object);
-        var result = access.GetOrderById(Constants.TestOrderId);
+        var result = access.GetDeliveryById(Constants.TestDeliveryId);
         result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(Constants.TestOrder);
+        result.Should().BeEquivalentTo(Constants.TestDeliveryEntity);
     }
 }

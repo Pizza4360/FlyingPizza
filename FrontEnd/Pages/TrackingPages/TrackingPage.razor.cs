@@ -19,8 +19,8 @@ partial class TrackingPage : ComponentBase
     private Timer _timer;
     public bool connection;
     public string dropDownLabel;
-    public DroneRecord[] filteredDrones;
-    public DroneRecord[] Fleet;
+    public DroneEntity[] filteredDrones;
+    public DroneEntity[] Fleet;
 
     [Inject] public FrontEndToDatabaseGateway _frontEndToDatabaseGateway { get; set; }
     public GeoLocation HomeLocation { get; set; }
@@ -59,7 +59,7 @@ partial class TrackingPage : ComponentBase
         {
             dropDownLabel = filter;
             Fleet = (await _frontEndToDatabaseGateway.GetFleet()).ToArray();
-            filteredDrones = Fleet.Where(record => record.State.ToString() == filter).ToArray();
+            filteredDrones = Fleet.Where(model => model.LatestStatus.ToString() == filter).ToArray();
             connection = true;
         }
         catch
@@ -75,25 +75,25 @@ partial class TrackingPage : ComponentBase
 
     private async Task UpdateDroneMarkers()
     {
-        var droneRecords = await _frontEndToDatabaseGateway.GetFleet();
-        var currentMarkers = droneRecords
-            .Select(x => new JsTriangle(x.CurrentLocation, x.Direction,$"Drone {x.BadgeNumber}", x.State.GetColor(), x.Destination))
+        var droneModels = await _frontEndToDatabaseGateway.GetFleet();
+        var currentMarkers = droneModels
+            .Select(x => new JsTriangle(x.CurrentLocation, x.BearingInDegrees,$"Drone {x.BadgeNumber}", x.LatestStatus.GetColor(), x.Destination))
             .ToDictionary(x => x.title, x => x);
-        var newDestinations = droneRecords.Where(x => x.State is DroneState.Delivering or DroneState.Returning)
+        var newDestinations = droneModels.Where(x => x.LatestStatus is DroneStatus.Delivering or DroneStatus.Returning)
             .Select(x => new JsCircle(x.Destination,  $"Drone {x.BadgeNumber} destination", "#ffffff"))
             .ToDictionary(x => x.title, x => x);
-         var newPaths = droneRecords.Where(x => x.State is DroneState.Delivering or DroneState.Returning).Select(x =>
-            new JsPath(x.CurrentLocation, x.Destination, $"Drone {x.BadgeNumber} destination", x.State.GetColor()))
+         var newPaths = droneModels.Where(x => x.LatestStatus is DroneStatus.Delivering or DroneStatus.Returning).Select(x =>
+            new JsPath(x.CurrentLocation, x.Destination, $"Drone {x.BadgeNumber} destination", x.LatestStatus.GetColor()))
              .ToDictionary(x => x.title, x => x);
          
         await JsRuntime.InvokeVoidAsync("updateAll", currentMarkers, newDestinations, newPaths);
         await DisplayDroneAsync(dropDownLabel);
-        StateHasChanged(); 
+        StatusHasChanged(); 
     }
 
-    public string Color(DroneRecord drone)
+    public string Color(DroneEntity drone)
     {
-        return drone.State.GetColor();
+        return drone.LatestStatus.GetColor();
     }
 
     public class JsTriangle

@@ -4,7 +4,7 @@ using Domain.Entities;
 
 namespace Domain.RepositoryDefinitions;
 
-public interface IFleetRepository : IBaseRepository<DroneRecord, DroneUpdate>
+public interface IDroneRepository : IBaseRepository<DroneEntity, DroneUpdate>
 {
     Task SetDroneOffline(string droneId);
 }

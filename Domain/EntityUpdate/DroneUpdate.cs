@@ -13,9 +13,9 @@ public class DroneUpdate
     [JsonProperty("Direction")]
     public decimal Direction { get; set; }
 
-    [BsonElement("State")]
-    [JsonProperty("State")]
-    public DroneState State { get; set; }
+    [BsonElement("Status")]
+    [JsonProperty("Status")]
+    public DroneStatus Status { get; set; }
 
     [BsonElement("CurrentLoacation")]
     [JsonProperty("CurrentLoacation")]
@@ -25,7 +25,7 @@ public class DroneUpdate
     [JsonProperty("Destination")]
     public GeoLocation Destination { get; set; }
 
-    [BsonElement("OrderId")]
-    [JsonProperty("OrderId")]
-    public string OrderId { get; set; }
+    [BsonElement("DeliveryId")]
+    [JsonProperty("DeliveryId")]
+    public string DeliveryId { get; set; }
 }

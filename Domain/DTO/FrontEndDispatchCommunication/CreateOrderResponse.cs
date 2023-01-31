@@ -1,7 +1,7 @@
 ﻿namespace Domain.DTO.FrontEndDispatchCommunication;
 
-public class CreateOrderResponse : BaseDto
+public class CreateDeliveryResponse : BaseDto
 {
-    public string OrderId { get; set; }
+    public string DeliveryId { get; set; }
     public bool IsCompletedSuccessfullly { get; set; }
 }

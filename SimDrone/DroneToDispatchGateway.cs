@@ -34,15 +34,15 @@ public class DroneToDispatchGateway : BaseGateway<SimDroneController>, IDroneToD
             ($"{EndPoint}/UpdateDroneStatus", request);
     }
 
-    public async Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest request)
+    public async Task<CompleteDeliveryResponse> CompleteDelivery(CompleteDeliveryRequest request)
     {
-        return await SendMessagePost<CompleteOrderRequest, CompleteOrderResponse>(
-            $"{EndPoint}/CompleteOrder", request);
+        return await SendMessagePost<CompleteDeliveryRequest, CompleteDeliveryResponse>(
+            $"{EndPoint}/CompleteDelivery", request);
     }
 
-    public async Task<bool> Revive(DroneRecord record)
+    public async Task<bool> Revive(DroneEntity entity)
     {
-        return await SendMessagePost<DroneRecord, bool>(
-            $"{EndPoint}/Revive", record);
+        return await SendMessagePost<DroneEntity, bool>(
+            $"{EndPoint}/Revive", entity);
     }
 }

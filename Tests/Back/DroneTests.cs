@@ -13,7 +13,7 @@ namespace Tests.Back
     public class DroneTests
     {
         [Fact]
-        public async Task deliver_order_should_return_delivery_response()
+        public async Task deliver_delivery_should_return_delivery_response()
         {
             var testDestination = new GeoLocation
             {
@@ -21,26 +21,26 @@ namespace Tests.Back
                 Longitude = 0.00002m
             };
             var mockedDroneDispatchGateway = new Mock<IDroneToDispatchGateway>();
-            mockedDroneDispatchGateway.Setup(x => x.CompleteDelivery(It.IsAny<CompleteOrderRequest>()))
-                .Returns(Task.FromResult(Constants.TestCompleteOrderResponse));
+            mockedDroneDispatchGateway.Setup(x => x.CompleteDelivery(It.IsAny<CompleteDeliveryRequest>()))
+                .Returns(Task.FromResult(Constants.TestCompleteDeliveryResponse));
             mockedDroneDispatchGateway.Setup(x => x.UpdateDroneStatus(It.IsAny<DroneUpdate>())).Returns(Task.FromResult(Constants.TestUpdateResponse));
             var mockedGate = mockedDroneDispatchGateway.Object;
             var sim = new SimDroneController();
             sim.ChangeGateway(mockedGate);
-            var drone = new Drone(Constants.TestRecord, mockedGate,sim);
+            var drone = new Drone(Constants.Entity, mockedGate,sim);
             sim.ChangeDrone(drone);
             drone.ChangeController(sim);
-            var result = await drone.DeliverOrder(new AssignDeliveryRequest
+            var result = await drone.DeliverDelivery(new AssignDeliveryRequest
             {
                 DroneId = Constants.DroneId,
-                OrderId = Constants.TestOrderId,
-                OrderLocation = testDestination
+                DeliveryId = Constants.TestDeliveryId,
+                DeliveryLocation = testDestination
             });
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(Constants.TestAssignDeliveryResponse);
         }
         [Fact]
-        public async Task deliver_order_should_change_destination()
+        public async Task deliver_delivery_should_change_destination()
         {
             var testDestination = new GeoLocation
             {
@@ -48,20 +48,20 @@ namespace Tests.Back
                 Longitude = 0.00002m
             };
             var mockedDroneDispatchGateway = new Mock<IDroneToDispatchGateway>();
-            mockedDroneDispatchGateway.Setup(x => x.CompleteDelivery(It.IsAny<CompleteOrderRequest>()))
-                .Returns(Task.FromResult(Constants.TestCompleteOrderResponse));
+            mockedDroneDispatchGateway.Setup(x => x.CompleteDelivery(It.IsAny<CompleteDeliveryRequest>()))
+                .Returns(Task.FromResult(Constants.TestCompleteDeliveryResponse));
             mockedDroneDispatchGateway.Setup(x => x.UpdateDroneStatus(It.IsAny<DroneUpdate>())).Returns(Task.FromResult(Constants.TestUpdateResponse));
             var mockedGate = mockedDroneDispatchGateway.Object;
             var sim = new SimDroneController();
             sim.ChangeGateway(mockedGate);
-            var drone = new Drone(Constants.TestRecord, mockedGate,sim);
+            var drone = new Drone(Constants.Entity, mockedGate,sim);
             sim.ChangeDrone(drone);
             drone.ChangeController(sim);
-            var result = await drone.DeliverOrder(new AssignDeliveryRequest
+            var result = await drone.DeliverDelivery(new AssignDeliveryRequest
             {
                 DroneId = Constants.DroneId,
-                OrderId = Constants.TestOrderId,
-                OrderLocation = testDestination
+                DeliveryId = Constants.TestDeliveryId,
+                DeliveryLocation = testDestination
             });
             result.Should().NotBeNull();
             drone.Destination.Should().BeEquivalentTo(Constants.Destination);

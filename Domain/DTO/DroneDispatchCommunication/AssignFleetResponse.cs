@@ -9,5 +9,5 @@ public class AssignFleetResponse : BaseDto
     [JsonPropertyName("IsInitializedAndAssigned")]
     public bool IsInitializedAndAssigned { get; set; }
 
-    [JsonPropertyName("FirstState")] public DroneState FirstState { get; set; }
+    [JsonPropertyName("FirstStatus")] public DroneStatus FirstStatus { get; set; }
 }

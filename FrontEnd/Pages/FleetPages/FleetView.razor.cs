@@ -11,7 +11,7 @@ partial class FleetView : ComponentBase
 {
     public string color;
     public bool connection;
-    public DroneRecord[] Fleet;
+    public DroneEntity[] Fleet;
     public int size;
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
@@ -30,14 +30,14 @@ partial class FleetView : ComponentBase
         }
     }
 
-    public async Task GoToDrone(DroneRecord drone)
+    public async Task GoToDrone(DroneEntity drone)
     {
         globalData.currDrone = drone;
         await dialogService.OpenAsync<DetailedDrone>("View Drone");
     }
 
-    public string Color(DroneRecord drone)
+    public string Color(DroneEntity drone)
     {
-        return drone.State.GetColor();
+        return drone.LatestStatus.GetColor();
     }
 }

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Linq;
+using Domain.DTO;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities;
 
-public class BaseEntity
+public abstract class BaseEntity<TUpdate>
+    : IOpeDroneSystemCollectionUpdate<TUpdate>
 {
-    private const string chars = "abcdef0123456789";
+    private const string Chars = "abcdef0123456789";
     private const int IdLength = 24;
 
     private static readonly Random _random = new();
@@ -16,10 +18,12 @@ public class BaseEntity
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
 
-    // https://stackoverflow.com/questions/1344221/how-can-i-generate-random-alphanumeric-strings
     public static string GenerateNewId()
     {
-        return new string(Enumerable.Repeat(chars, IdLength)
-            .Select(s => s[_random.Next(s.Length)]).ToArray());
+        return new string(Enumerable.Repeat(Chars, IdLength)
+            .Select(str => str[_random.Next(str.Length)])
+            .ToArray());
     }
+
+    public abstract TUpdate Update(); 
 }

@@ -4,15 +4,15 @@ using Newtonsoft.Json;
 
 namespace Domain.DTO;
 
-public class OrderUpdate
+public class DeliveryUpdate
 {
-    [BsonElement("OrderId")]
-    [JsonProperty("OrderId")]
-    public string OrderId { get; set; }
+    [BsonElement("DeliveryId")]
+    [JsonProperty("DeliveryId")]
+    public string DeliveryId { get; set; }
 
-    [BsonElement("State")]
-    [JsonProperty("State")]
-    public OrderState State { get; set; }
+    [BsonElement("Status")]
+    [JsonProperty("Status")]
+    public Deliveriestatus Status { get; set; }
 
     [BsonElement("TimeDelivered")]
     [JsonProperty("TimeDelivered")]

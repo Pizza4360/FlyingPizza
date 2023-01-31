@@ -10,6 +10,6 @@ public class UpdateDroneStatusRequest
     [JsonPropertyName("Location")]
     public GeoLocation Location { get; set; } 
         
-    [JsonPropertyName("State")]
-    public DroneState State { get; set; }
+    [JsonPropertyName("Status")]
+    public DroneStatus Status { get; set; }
 }

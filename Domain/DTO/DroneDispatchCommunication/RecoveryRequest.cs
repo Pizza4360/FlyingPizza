@@ -4,5 +4,5 @@ namespace Domain.DTO.DroneDispatchCommunication;
 
 public class RecoveryRequest : BaseDto
 {
-    public DroneRecord Record { get; set; } 
+    public DroneEntity Entity { get; set; } 
 }

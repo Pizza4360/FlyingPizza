@@ -11,17 +11,17 @@ using Assert = Xunit.Assert;
 namespace Tests.Front;
 
 [TestClass]
-public class OrderPageTest
+public class DeliveryPageTest
 {
     [Fact]
-    public static void TestOrderPage()
+    public static void TestDeliveryPage()
     {
 
         using var cxt = new TestContext();
         cxt.JSInterop.SetupVoid("initGeocoder");
         cxt.Services.AddSingleton<DialogService>();
         // cxt.Services.AddScoped(_=> new FrontEndToDatabaseGateway("DatabaseAccess"));
-        // var check = cxt.RenderComponent<FrontEnd.Pages.OrderPages.OrderPage>();
+        // var check = cxt.RenderComponent<FrontEnd.Pages.DeliveryPages.DeliveryPage>();
         //
         // var connectionBar = check.Find(".quick-look").LastChild.ToMarkup();
         // Assert.Equal(connectionBar,
@@ -33,13 +33,13 @@ public class OrderPageTest
         // var custAddress = check.Find("#ADDRESS");
         //
         //
-        // var cancelOrder = check.Find("#CANCEL_ORDER");
-        // var cancelOrderBtn = check.Find("#CANCEL_ORDER_BTN");
+        // var cancelDelivery = check.Find("#CANCEL_ORDER");
+        // var cancelDeliveryBtn = check.Find("#CANCEL_ORDER_BTN");
         //
-        // var orderFleet = check.Find("#DRONE_FLEET_CARD");
-        // var orderFleetCount = orderFleet.Children;
-        // Assert.Equal(15, orderFleetCount.Length);
-        // foreach (var order in check.FindAll(".drone-status"))
+        // var deliveryFleet = check.Find("#DRONE_FLEET_CARD");
+        // var deliveryFleetCount = deliveryFleet.Children;
+        // Assert.Equal(15, deliveryFleetCount.Length);
+        // foreach (var delivery in check.FindAll(".drone-status"))
         // {
         //     var exit = check.Find("#EXIT_BTN");
         //     Assert.Equal(exit.TextContent, "X");
@@ -50,9 +50,9 @@ public class OrderPageTest
         //
         // customerName.Change("Bob");
         // custAddress.Change("2300 Steele St, Denver, CO 80205");
-        // cancelOrder.Change("1");
-        // var createOrderBtn = check.Find("#ORDER_CREATE_BTN");
-        // createOrderBtn.Click();
+        // cancelDelivery.Change("1");
+        // var createDeliveryBtn = check.Find("#ORDER_CREATE_BTN");
+        // createDeliveryBtn.Click();
         // droneURL.Change("http://test1:87");
         // var addDroneBtn = check.Find("#ADD_DRONE_BTN");
         // addDroneBtn.Click();

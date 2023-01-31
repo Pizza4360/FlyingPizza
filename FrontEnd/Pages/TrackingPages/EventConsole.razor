@@ -47,14 +47,14 @@
     {
         messages.Clear();
 
-        InvokeAsync(StateHasChanged);
+        InvokeAsync(StatusHasChanged);
     }
 
     public void Log(string message)
     {
         messages.Add(new Message {Date = DateTime.Now, Text = message});
 
-        InvokeAsync(StateHasChanged);
+        InvokeAsync(StatusHasChanged);
     }
 
     public void Log(object value)

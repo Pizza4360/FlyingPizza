@@ -6,7 +6,7 @@
 
 .btn {
     background-color: #3f7cac;
-    border-radius: 0.5rem;
+    bdelivery-radius: 0.5rem;
     color: white;
     text-shadow: 0 2px 2px rgba(0,0,0,0.5);
     font-size: 18px;
@@ -30,7 +30,7 @@
     display: grid;
     grid-template-columns: 50% 50%;
     grid-template-rows: 70px auto;
-    border-radius: 0.5rem;
+    bdelivery-radius: 0.5rem;
     background-color: #1e1e24;
 }
 
@@ -38,7 +38,7 @@
     grid-column-start: 1;
     grid-column-end: 3;
     height: 60px;
-    border-radius: 0.5rem;
+    bdelivery-radius: 0.5rem;
     background-color: #35353a;
     padding-left: 0.5rem;
     padding-top: 0.5rem;
@@ -54,7 +54,7 @@
 .input {
     grid-column-start: 1;
     grid-column-end: 1;
-    border-radius: 0.5rem;
+    bdelivery-radius: 0.5rem;
     background-color: #35353a;
     box-shadow: 0 3px 4px rgba(0,0,0,0.4);
     margin: 1rem 0.25rem 1rem 0.5rem;
@@ -70,7 +70,7 @@
     grid-row-start: 2;
     grid-row-end: 4;
     height: 650px;
-    border-radius: 0.5rem;
+    bdelivery-radius: 0.5rem;
     background-color: #1e1e24;
     margin: 1rem 0.5rem 0.5rem 0.25rem;
     color: white;
@@ -98,7 +98,7 @@
     .drone-fleet::-webkit-scrollbar {
         width: 10px;
         background-color: #35353a !important;
-        border-radius: 0.5rem;
+        bdelivery-radius: 0.5rem;
     }
 
     .drone-fleet::-webkit-scrollbar-corner {
@@ -115,7 +115,7 @@
         position: relative;
         z-index: 0;
         background-size: cover;
-        border-radius: 0.5rem;
+        bdelivery-radius: 0.5rem;
         list-style-type: none;
         box-shadow: 0 3px 4px rgba(0,0,0,0.4);
         transition: 0.1s ease-out;
@@ -130,7 +130,7 @@
 
 
 .drone-status {
-    border-radius: 0.5rem;
+    bdelivery-radius: 0.5rem;
     top: 0;
     left: 0;
     right: 0;
@@ -160,7 +160,7 @@
         font-size: 1.5rem;
         font-weight: 700;
         padding: 0rem 0.7rem;
-        border-radius: 4px;
+        bdelivery-radius: 4px;
         background-color: #08af08;
         color: white;
         line-height: 2rem;

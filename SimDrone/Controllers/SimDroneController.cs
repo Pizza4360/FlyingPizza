@@ -33,16 +33,16 @@ public class SimDroneController : ControllerBase
     [HttpPost("RejoinFleet")]
     public async Task RejoinFleet(RecoveryRequest request)
     {
-        Console.WriteLine($"SimDroneController.RejoinFleet({request.Record})");
-        await JoinFleet(request.Record);
-        await _drone.TravelTo(request.Record.HomeLocation);
+        Console.WriteLine($"SimDroneController.RejoinFleet({request.Entity})");
+        await JoinFleet(request.Entity);
+        await _drone.TravelTo(request.Entity.HomeLocation);
     }
     
     
     [HttpPost("HealthCheck")]
-    public async Task<DroneRecord> HealthCheck(BaseDto s)
+    public async Task<DroneEntity> HealthCheck(BaseDto s)
     {
-        return new DroneRecord
+        return new DroneEntity
         {
             DispatchUrl = _drone.DispatchUrl,
             CurrentLocation = _drone.CurrentLocation,
@@ -50,27 +50,27 @@ public class SimDroneController : ControllerBase
             DroneId = _drone.DroneId,
             DroneUrl = _drone.DroneUrl,
             HomeLocation = _drone.HomeLocation,
-            OrderId = _drone.OrderId,
-            State = _drone.State
+            DeliveryId = _drone.DeliveryId,
+            LatestStatus = _drone.LatestStatus
         };
     }
 
     [NonAction]
-    public async Task<bool> Revive(DroneRecord record)
+    public async Task<bool> Revive(DroneEntity entity)
     {
         Console.WriteLine($"\nSimDroneController.Revive...");
         if (_gateway == null || string.IsNullOrEmpty(_gateway.GetEndPoint()))
         {
-            _gateway = new DroneToDispatchGateway(record.DispatchUrl);
+            _gateway = new DroneToDispatchGateway(entity.DispatchUrl);
         }
-        return await _gateway.Revive(record);
+        return await _gateway.Revive(entity);
     }
         
     [HttpPost("AssignFleet")]
     public async Task<AssignFleetResponse> AssignFleet(AssignFleetRequest assignFleetRequest)
     {
         Console.WriteLine($"AssignFleet -------------> {assignFleetRequest.DispatchUrl}");
-        var droneRecord = new DroneRecord
+        var droneModel = new DroneEntity
         {
             CurrentLocation = assignFleetRequest.HomeLocation,
             Destination = assignFleetRequest.HomeLocation,
@@ -78,44 +78,44 @@ public class SimDroneController : ControllerBase
             DroneUrl = assignFleetRequest.DroneUrl,
             HomeLocation = assignFleetRequest.HomeLocation,
             DroneId = assignFleetRequest.DroneId,
-            OrderId = ""
+            DeliveryId = ""
         };
-        await JoinFleet(droneRecord);
+        await JoinFleet(droneModel);
         Console.WriteLine($"\nSimDrone successfully initialized.\nDrone -->{_drone}");
         IsInitiatead = true;
-        //todo write current drone record to file
-        await PersistRecord(droneRecord);
+        //todo write current drone model to file
+        await PersistModel(droneModel);
         return new AssignFleetResponse
         {
-            FirstState = DroneState.Ready,
+            FirstStatus = DroneStatus.Ready,
             DroneId = assignFleetRequest.DroneId,
             IsInitializedAndAssigned = true
         };
     }
 
     [NonAction]
-    private Task JoinFleet(DroneRecord record)
+    private Task JoinFleet(DroneEntity entity)
     {
-        _drone = new Drone(record, _gateway, this);
-        _gateway = new DroneToDispatchGateway(record.DispatchUrl);
+        _drone = new Drone(entity, _gateway, this);
+        _gateway = new DroneToDispatchGateway(entity.DispatchUrl);
         return Task.CompletedTask;
     }
 
     [NonAction]
-    private async Task PersistRecord(DroneRecord droneRecord)
+    private async Task PersistModel(DroneEntity droneEntity)
     {
-        _drone.DispatchUrl ??= droneRecord.DispatchUrl;
-        _drone.DispatchUrl = droneRecord.DispatchUrl;
-        Console.WriteLine("\nSaving drone state...");
+        _drone.DispatchUrl ??= droneEntity.DispatchUrl;
+        _drone.DispatchUrl = droneEntity.DispatchUrl;
+        Console.WriteLine("\nSaving drone status...");
 
         FileStream file;
-        if (!System.IO.File.Exists(DroneRecord.File()))
+        if (!System.IO.File.Exists(DroneEntity.File()))
         {
-            file = System.IO.File.Create(DroneRecord.File());
+            file = System.IO.File.Create(DroneEntity.File());
         }
         else
         {
-            file = System.IO.File.Open(DroneRecord.File(), FileMode.Open);
+            file = System.IO.File.Open(DroneEntity.File(), FileMode.Open);
         }
         await using var writer = new StreamWriter(file);
         await writer.WriteAsync(_drone.ToJson());
@@ -127,18 +127,18 @@ public class SimDroneController : ControllerBase
     [HttpPost("AssignDelivery")]
     public async Task<AssignDeliveryResponse> AssignDelivery(AssignDeliveryRequest assignDeliveryRequest)
     {
-        return await _drone.DeliverOrder(assignDeliveryRequest);
+        return await _drone.DeliverDelivery(assignDeliveryRequest);
     }
 
 
     [HttpPost("UpdateDroneStatus")]
-    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(DroneRecord updateDroneStatusRequest)
+    public async Task<UpdateDroneStatusResponse?> UpdateDroneStatus(DroneEntity updateDroneStatusRequest)
     {
-        PersistRecord(updateDroneStatusRequest);
+        PersistModel(updateDroneStatusRequest);
         return await _gateway.UpdateDroneStatus(updateDroneStatusRequest.Update());
     }
 
-    public async Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest request)
+    public async Task<CompleteDeliveryResponse> CompleteDelivery(CompleteDeliveryRequest request)
     {
         return await _gateway.CompleteDelivery(request);
     }

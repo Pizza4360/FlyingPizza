@@ -5,5 +5,5 @@ namespace Domain.DTO.DroneDispatchCommunication;
 
 public class CompleteRegistrationRequest : BaseDto
 {
-    [JsonPropertyName("Record")] public DroneRecord Record { get; set; }
+    [JsonPropertyName("Model")] public DroneEntity Entity { get; set; }
 }

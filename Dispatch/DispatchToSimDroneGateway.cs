@@ -7,32 +7,33 @@ using Domain.RepositoryDefinitions;
 
 namespace Dispatch;
 
-public class DispatchToSimDroneGateway : BaseGateway<DispatchController>, IDispatchToSimDroneGateway
+public class DispatchToSimDroneGateway 
+    : BaseGateway<DispatchController>, IDispatchToSimDroneGateway
 {
-    private readonly IFleetRepository _fleet;
+    private readonly IDroneRepository _drone;
 
-    public DispatchToSimDroneGateway(IFleetRepository fleet)
+    public DispatchToSimDroneGateway(IDroneRepository drone)
     {
-        _fleet = fleet;
+        _drone = drone;
     }
 
     private async Task<string> Endpoint(string currentDroneId)
     {
         Console.WriteLine($"Getting by drone id {currentDroneId}");
-        return (await _fleet.GetByIdAsync(currentDroneId)).DroneUrl;
+        return (await _drone.GetByIdAsync(currentDroneId)).DroneUrl;
     }
 
     public async Task<InitDroneResponse?> InitDrone(InitDroneRequest request)
     {
         var url = $"{request.DroneUrl}/SimDrone/InitDrone";
         Console.WriteLine($"\n\n\nurl:{url}\n");
-
-
+        
         return await SendMessagePost<InitDroneRequest, InitDroneResponse>(
             url, request);
     }
 
-    public async Task<AssignFleetResponse?> AssignFleet(AssignFleetRequest assignFleetRequest)
+    public async Task<AssignFleetResponse?> AssignFleet(
+        AssignFleetRequest assignFleetRequest)
     {
         if (assignFleetRequest.DispatchUrl is null or "")
         {
@@ -45,49 +46,62 @@ public class DispatchToSimDroneGateway : BaseGateway<DispatchController>, IDispa
         }
 
         var droneUrl = $"{assignFleetRequest.DroneUrl}/SimDrone/AssignFleet";
-        Console.WriteLine($"Sending {assignFleetRequest.DispatchUrl} to the drone @ {droneUrl} so it can talk to us...");
+        Console.WriteLine($"Sending {assignFleetRequest.DispatchUrl} to the "
+                          + $"drone @ {droneUrl} so it can talk to us...");
         Console.WriteLine(
-            $"\n\n\n\n\n!!!!!!!!!!!assignFleetRequest.DispatchUrl = {assignFleetRequest.DispatchUrl}\n\n\n\n");
+            $"\n\n\n\n\n!!!!!!!!!!!assignFleetRequest.DispatchUrl = "
+            + $"{assignFleetRequest.DispatchUrl}\n\n\n\n");
 
-        var response = SendMessagePost<AssignFleetRequest, AssignFleetResponse>(
-            droneUrl, assignFleetRequest);
-
-
+        var response = SendMessagePost
+            <AssignFleetRequest, AssignFleetResponse>(
+                droneUrl, assignFleetRequest);
+        
         response.Wait();
         return response.Result;
     }
 
-    public async Task<AssignDeliveryResponse?> AssignDelivery(AssignDeliveryRequest assignDeliveryRequest)
+    public async Task<AssignDeliveryResponse?> AssignDelivery(
+        AssignDeliveryRequest assignDeliveryRequest)
     {
         var url = await Endpoint(assignDeliveryRequest.DroneId);
-        Console.WriteLine($"\n\nChoosing drone {assignDeliveryRequest.DroneId} url:{url}\n\n");
-        return await SendMessagePost<AssignDeliveryRequest, AssignDeliveryResponse>(
-            $"{url}/SimDrone/AssignDelivery", assignDeliveryRequest);
+        Console.WriteLine($"\n\nChoosing drone {assignDeliveryRequest.DroneId}"
+                          + $" url:{url}\n\n");
+        
+        return await SendMessagePost
+            <AssignDeliveryRequest, AssignDeliveryResponse>(
+                $"{url}/SimDrone/AssignDelivery", assignDeliveryRequest);
     }
 
     public async Task<bool> HealthCheck(string droneId)
     {
         var url = await Endpoint(droneId);
-        DroneRecord droneRecord;
-        Console.WriteLine($"DispatchToSimDroneGateway.HealthCheck with url {url}/SimDrone/HealthCheck");
+        DroneEntity droneEntity;
+        Console.WriteLine($"DispatchToSimDroneGateway.HealthCheck with url "
+                          + $"{url}/SimDrone/HealthCheck");
         try
         {
-            droneRecord = await SendMessagePost<BaseDto, DroneRecord>($"{url}/SimDrone/HealthCheck", new BaseDto {Message = "HealthCheck"});
+            droneEntity = await SendMessagePost<BaseDto, DroneEntity>(
+                $"{url}/SimDrone/HealthCheck",
+                new BaseDto {Message = "HealthCheck"});
+            
             Console.WriteLine("Awaiting for response...");
-            if (droneRecord is {State: DroneState.Ready})
-                return true;
+            
+            if (droneEntity is {LatestStatus: DroneStatus.Ready}) { return true; }
         }
         catch (Exception e)
         {
-            // Todo, find a way to update the drone without all other update params and only ID, set it to DroneState.Dead
+            // Todo, find a way to update the drone without all other update
+            //  params and only ID, set it to DroneStatus.Dead
+            
             Console.WriteLine($"Setting drone {droneId} offline.");
-            await _fleet.SetDroneOffline(droneId);
+            
+            await _drone.SetDroneOffline(droneId);
             Console.WriteLine($"HealthCheck failed for drone at {droneId}. Reason: {e}");
         }
         return false;
     }
     public void ChangeHandle(HttpMessageHandler handle)
     {
-        _httpClient = new HttpClient(handle);
+        HttpClient = new HttpClient(handle);
     }
 }

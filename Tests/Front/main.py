@@ -15,7 +15,7 @@ def check_fleet_view(driver):
     data_connection = driver.find_element(By.CLASS_NAME, "connection-bar")
     data_connection.click()
 
-def make_order(driver):
+def make_delivery(driver):
     page2 = driver.find_element(By.ID, "page2")
 
     page2.click()
@@ -25,16 +25,16 @@ def make_order(driver):
     address_input = driver.find_element(By.ID, "ADDRESS")
     address_input.send_keys("1640 W Colfax Ave, Denver, CO 80204")
 
-    order_submit = driver.find_element(By.ID, "ORDER_CREATE_BTN")
-    order_submit.click()
+    delivery_submit = driver.find_element(By.ID, "ORDER_CREATE_BTN")
+    delivery_submit.click()
 
-    order_id_input = driver.find_element(By.ID, "CANCEL_ORDER")
-    order_id_input.send_keys("1")
+    delivery_id_input = driver.find_element(By.ID, "CANCEL_ORDER")
+    delivery_id_input.send_keys("1")
     cancel_btn = driver.find_element(By.ID, "CANCEL_ORDER_BTN")
     cancel_btn.click()
 
-    orders = driver.find_element(By.ID, "DRONE_FLEET_CARD")
-    print(orders)
+    deliveries = driver.find_element(By.ID, "DRONE_FLEET_CARD")
+    print(deliveries)
 
     drone_url = driver.find_element(By.ID, "DRONE_URL")
     drone_url.send_keys("test_drone2")
@@ -86,8 +86,8 @@ def main():
     driver.get('http://localhost:8081/')
     driver.implicitly_wait(30)
 
-    # Checks the order put then the tracking page.
-    make_order(driver)
+    # Checks the delivery put then the tracking page.
+    make_delivery(driver)
     check_tracking(driver)
     check_fleet_view(driver)
 

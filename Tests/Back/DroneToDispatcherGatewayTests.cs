@@ -8,16 +8,16 @@ namespace Tests.Back.Unit
     public class DroneToDispatcherGatewayTests
     {
         // [Fact]
-        // public async Task complete_order_should_return_dto()
+        // public async Task complete_delivery_should_return_dto()
         // {
         //     var handlerFactory = new HttpHandlerFactory();
-        //     handlerFactory.jsonAll(Constants.TestCompleteOrderResponse);
+        //     handlerFactory.jsonAll(Constants.TestCompleteDeliveryResponse);
         //     var handle = handlerFactory.GetHttpMessageHandler();
         //     var droneGateway = new DroneToDispatchGateway("unused");
         //     droneGateway.ChangeHandler(handle);
-        //     var response = await droneGateway.CompleteDelivery(Constants.TestCompleteOrderRequest);
+        //     var response = await droneGateway.CompleteDelivery(Constants.TestCompleteDeliveryRequest);
         //     response.Should().NotBeNull();
-        //     response.Should().BeEquivalentTo(Constants.TestCompleteOrderResponse);
+        //     response.Should().BeEquivalentTo(Constants.TestCompleteDeliveryResponse);
         // } Untestable, mocked httpclient hidden by real one from baseGateway
         
         

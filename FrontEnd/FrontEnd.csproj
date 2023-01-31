@@ -29,7 +29,7 @@
     <ItemGroup>
         <_ContentIncludedByDefault Remove="Pages\FleetPages\DetailedDrone.razor" />
         <_ContentIncludedByDefault Remove="Pages\FleetPages\FleetView.razor" />
-        <_ContentIncludedByDefault Remove="Pages\OrderPages\OrderPage.razor" />
+        <_ContentIncludedByDefault Remove="Pages\DeliveryPages\DeliveryPage.razor" />
         <_ContentIncludedByDefault Remove="Pages\TrackingPages\EventConsole.razor" />
         <_ContentIncludedByDefault Remove="Pages\TrackingPages\TrackingPage.razor" />
         <_ContentIncludedByDefault Remove="Pages\Counter.razor" />
@@ -54,7 +54,7 @@
     <ItemGroup>
         <UpToDateCheckInput Remove="Pages\FleetPages\DetailedDrone.razor" />
         <UpToDateCheckInput Remove="Pages\FleetPages\FleetView.razor" />
-        <UpToDateCheckInput Remove="Pages\OrderPages\OrderPage.razor" />
+        <UpToDateCheckInput Remove="Pages\DeliveryPages\DeliveryPage.razor" />
         <UpToDateCheckInput Remove="Pages\TrackingPages\EventConsole.razor" />
         <UpToDateCheckInput Remove="Pages\TrackingPages\TrackingPage.razor" />
         <UpToDateCheckInput Remove="Shared\MainLayout.razor" />

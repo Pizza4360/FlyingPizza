@@ -1,4 +1,4 @@
-﻿@page "/order"
+﻿@page "/delivery"
 @using FrontEnd.Services
 @inject NavigationManager NavigationManager
 @inject FrontEndToDatabaseGateway DatabaseGateway
@@ -24,7 +24,7 @@
 
 <div class="content">
     <div class="grid-container" style="margin-right: 0.25rem;"> 
-        <div class="container-title"> Order Manager</div>
+        <div class="container-title"> Delivery Manager</div>
             <div>
                 <div class="input" style="height: 160px">
                     <b>Customer Name: </b>
@@ -33,21 +33,21 @@
                     <b>Address: </b> 
                     <RadzenTextBox id="ADDRESS" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => DeliveryAddress = e.Value.ToString()) />
                     <br />     
-                    <button id="ORDER_CREATE_BTN" class="btn" style="width: 190px" @onclick=@MakeOrder> Create Order </button>
+                    <button id="ORDER_CREATE_BTN" class="btn" style="width: 190px" @onclick=@MakeDelivery> Create Delivery </button>
                 </div>
 
                 <div class="input" style="height: 130px">
-                    <b>Order Id: </b>
-                    @if (selectedOrder != null)
+                    <b>Delivery Id: </b>
+                    @if (selectedDelivery != null)
                     {
-                    <RadzenTextBox id="CANCEL_ORDER" value="@defaultText" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => orderToCancel = e.Value.ToString()) />
+                    <RadzenTextBox id="CANCEL_ORDER" value="@defaultText" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => deliveryToCancel = e.Value.ToString()) />
 
                 } else
                 {
-                    <RadzenTextBox id="CANCEL_ORDER" value="@defaultText" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => orderToCancel = e.Value.ToString()) />
+                    <RadzenTextBox id="CANCEL_ORDER" value="@defaultText" Style="width: 190px" Placeholder="..." AutoComplete="false" @oninput=@(e => deliveryToCancel = e.Value.ToString()) />
                 }
                 <br />
-                    <button id="CANCEL_ORDER_BTN" class="btn" style="width: 190px" @onclick=@CancelOrder> Cancel Order </button>
+                    <button id="CANCEL_ORDER_BTN" class="btn" style="width: 190px" @onclick=@CancelDelivery> Cancel Delivery </button>
                 </div>
 
                 <div class ="input" style="visibility: @visibility; text-align: left; font-size: 20px; line-height: 2;">
@@ -56,12 +56,12 @@
 
                     </div>
 
-                    @if (selectedOrder != null)
+                    @if (selectedDelivery != null)
                     {
-                        <div>ID: @selectedOrder.Id</div>
-                        <div>Delivery Location: @selectedOrder.DeliveryAddress</div>
-                        <div>Customer Name: @selectedOrder.CustomerName</div>
-                        <div>Order Time: @selectedOrder.TimeOrdered</div>
+                        <div>ID: @selectedDelivery.Id</div>
+                        <div>Delivery Location: @selectedDelivery.DeliveryAddress</div>
+                        <div>Customer Name: @selectedDelivery.CustomerName</div>
+                        <div>Delivery Time: @selectedDelivery.TimeDeliveryed</div>
                     }
 
 
@@ -70,22 +70,22 @@
                  
             <div class="info-cards">
                   <ul id="DRONE_FLEET_CARD" class="drone-fleet">
-                    @if (Orders != null)
+                    @if (Deliveries != null)
                     {
-                        @foreach (var order in Orders)
+                        @foreach (var delivery in Deliveries)
                         {
                             <!--Creates a block for each drone with id, status, more info button and a drone img-->
-                            <li style="background-image: url(@("../images/order.jpg")" @onclick="@(args => DisplaySelected(@order))">
+                            <li style="background-image: url(@("../images/delivery.jpg")" @onclick="@(args => DisplaySelected(@delivery))">
                                 <div class="drone-status">
-                                    <span class="title" >Order ID: @order.Id.Substring(0,8)...</span>
-                                    <span class="address">@order.DeliveryAddress</span>                                  
+                                    <span class="title" >Delivery ID: @delivery.Id.Substring(0,8)...</span>
+                                    <span class="address">@delivery.DeliveryAddress</span>                                  
                                 </div>
                             </li>
                         }
                     }
                 </ul>
             </div>
-    </div> @*end of order manager div*@
+    </div> @*end of delivery manager div*@
 
     <div class="grid-container" style="margin-left: 0.25rem;"> 
         <div class="container-title">Drone Manager</div>
@@ -117,7 +117,7 @@
                                     <span class="title" >Drone
                                         <br>#@(drone.BadgeNumber)<br>
                                     </span>
-                                    <span class="price" style="background-color: @Color(drone)">@drone.State</span>
+                                    <span class="price" style="background-color: @Color(drone)">@drone.Status</span>
                                     @*<span class="more">
                                         <RadzenButton style="background-color: #3b3b3b" Icon="add_circle_outline" Click=@(args => GoToDrone(drone)) />
                                     </span>*@

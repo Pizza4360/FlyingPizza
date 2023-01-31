@@ -1,6 +1,6 @@
 ﻿namespace DatabaseAccess;
 
-public class OrdersDatabaseSettings
+public class DeliveriesDatabaseSettings
 {
     public string ConnectionString { get; set; } = null!;
     public string DatabaseName { get; set; } = null!;

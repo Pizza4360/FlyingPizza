@@ -11,9 +11,13 @@ public interface IDroneToDispatchGateway
     public string GetEndPoint();
     public void ChangeHandler(HttpMessageHandler handler);
 
-    public Task<UpdateDroneStatusResponse?> UpdateDroneStatus(DroneUpdate request);
+    public Task<UpdateDroneStatusResponse?> UpdateDroneStatus(
+        DroneUpdate request
+    );
 
-    public Task<CompleteOrderResponse> CompleteDelivery(CompleteOrderRequest request);
+    public Task<CompleteDeliveryResponse> CompleteDelivery(
+        CompleteDeliveryRequest request
+    );
 
-    public Task<bool> Revive(DroneRecord record);
+    public Task<bool> Revive(DroneEntity entity);
 }

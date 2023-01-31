@@ -5,13 +5,13 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities;
 
-public class DroneRecord : BaseEntity
+public class DroneEntity : BaseEntity<DroneUpdate>
 {
-    public static string File() => "drone_data/DroneRecord.json";
+    public static string File() => "drone_data/DroneModel.json";
 
-    [BsonElement("OrderId")]
-    [JsonPropertyName("OrderId")]
-    public string OrderId { get; set; }
+    [BsonElement("DeliveryId")]
+    [JsonPropertyName("DeliveryId")]
+    public string DeliveryId { get; set; }
 
     [BsonElement("BadgeNumber")]
     [JsonPropertyName("BadgeNumber")]
@@ -29,9 +29,9 @@ public class DroneRecord : BaseEntity
     [JsonPropertyName("HomeLocation")]
     public GeoLocation HomeLocation { get; set; }
 
-    [BsonElement("State")]
-    [JsonPropertyName("State")]
-    public DroneState State { get; set; }
+    [BsonElement("Status")]
+    [JsonPropertyName("Status")]
+    public DroneStatus LatestStatus { get; set; }
 
     [BsonElement("DroneId")] public string DroneId { get; set; }
 
@@ -43,19 +43,19 @@ public class DroneRecord : BaseEntity
     [JsonPropertyName("DispatchUrl")]
     public string DispatchUrl { get; set; }
     
-    [BsonElement("Direction")]
-    [JsonPropertyName("Direction")]
-    public decimal Direction { get; set; }
+    [BsonElement("BearingInDegrees")]
+    [JsonPropertyName("BearingInDegrees")]
+    public decimal BearingInDegrees { get; set; }
 
-    public DroneUpdate Update()
+    public override DroneUpdate Update()
     {
         return new()
         {
             CurrentLocation = CurrentLocation,
             Destination = Destination,
             DroneId = DroneId,
-            OrderId = OrderId,
-            State = State
+            DeliveryId = DeliveryId,
+            Status = LatestStatus
         };
     }
 
@@ -64,8 +64,8 @@ public class DroneRecord : BaseEntity
         return $"Id:{DroneId}" +
                $"Currentlocation:{CurrentLocation.ToCsv()}\n" +
                $"Destination:{Destination.ToCsv()}\n" +
-               $"Status:{State}" +
-               $"Order Id:{OrderId}" +
+               $"Status:{LatestStatus}" +
+               $"Delivery Id:{DeliveryId}" +
                $"Home Location:{HomeLocation.ToCsv()}";
     }
 
@@ -73,10 +73,10 @@ public class DroneRecord : BaseEntity
     {
         if (o == null ||
             o.GetType() != GetType()) return false;
-        var oo = (DroneRecord) o;
+        var oo = (DroneEntity) o;
         return oo.CurrentLocation.Equals(CurrentLocation) &&
                oo.Destination.Equals(Destination) &&
-               oo.State.Equals(State) &&
+               oo.LatestStatus.Equals(LatestStatus) &&
                oo.DispatchUrl.Equals(DispatchUrl);
     }
 
@@ -86,6 +86,6 @@ public class DroneRecord : BaseEntity
                $"Id:{DroneId}" +
                $"Currentlocation:{CurrentLocation}\n" +
                $"Destination:{Destination}\n" +
-               $"Status:{State}";
+               $"Status:{LatestStatus}";
     }
 }

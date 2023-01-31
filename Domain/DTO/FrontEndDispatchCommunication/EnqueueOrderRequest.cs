@@ -2,15 +2,15 @@
 
 namespace Domain.DTO.FrontEndDispatchCommunication;
 
-public class EnqueueOrderRequest : BaseDto
+public class EnqueueDeliveryRequest : BaseDto
 
 {
-    [JsonPropertyName("OrderId")] public string OrderId { get; set; }
+    [JsonPropertyName("DeliveryId")] public string DeliveryId { get; set; }
 
-    [JsonPropertyName("OrderLocation")] public GeoLocation OrderLocation { get; set; }
+    [JsonPropertyName("DeliveryLocation")] public GeoLocation DeliveryLocation { get; set; }
 
-    public void Deconstruct(out object drone, out object order)
+    public void Deconstruct(out object drone, out object delivery)
     {
-        (drone, order) = (OrderId, OrderLocation);
+        (drone, delivery) = (DeliveryId, DeliveryLocation);
     }
 }

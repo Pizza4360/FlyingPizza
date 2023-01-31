@@ -6,8 +6,8 @@ namespace FrontEnd.Services;
 
 public class GlobalDataSvc
 {
-    public DroneRecord currDrone { get; set; }
-    public Order currOrder { get; set; }
+    public DroneEntity currDrone { get; set; }
+    public DeliveryEntity CurrDeliveryEntity { get; set; }
     public List<object> cart { get; set; }
 
     public event Action OnChange;

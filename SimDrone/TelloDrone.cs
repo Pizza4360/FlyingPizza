@@ -44,14 +44,14 @@ public class TelloDrone : Drone
         return value / LongToCm;
     }
 
-    public TelloDrone(DroneRecord record,IDroneToDispatchGateway gateway, SimDroneController controller, bool offline = true) : base(record,gateway,controller)
+    public TelloDrone(DroneEntity entity,IDroneToDispatchGateway gateway, SimDroneController controller, bool offline = true) : base(entity,gateway,controller)
     {
         Route = new List<GeoLocation>();
-        Id = record.Id;
-        State = DroneState.Ready;
-        CurrentLocation = record.HomeLocation;
-        Destination = record.Destination;
-        HomeLocation = record.HomeLocation;
+        Id = entity.Id;
+        LatestStatus = DroneStatus.Ready;
+        CurrentLocation = entity.HomeLocation;
+        Destination = entity.Destination;
+        HomeLocation = entity.HomeLocation;
         Offline = offline;
         if (offline)
         {
@@ -81,37 +81,37 @@ public class TelloDrone : Drone
 
     }
 
-    public new async Task<AssignDeliveryResponse> DeliverOrder(AssignDeliveryRequest request)
+    public new async Task<AssignDeliveryResponse> DeliverDelivery(AssignDeliveryRequest request)
     {
-        var successful = DeliverOrder(request.OrderLocation);
+        var successful = DeliverDelivery(request.DeliveryLocation);
         return new AssignDeliveryResponse
         {
             DroneId = request.DroneId,
-            OrderId = request.OrderId,
+            DeliveryId = request.DeliveryId,
             Success = successful
         };
     }
 
-    public bool DeliverOrder(GeoLocation customerLocation)
+    public bool DeliverDelivery(GeoLocation customerLocation)
     {
         Destination = customerLocation;
-        State = DroneState.Delivering;
+        LatestStatus = DroneStatus.Delivering;
         SendCommand(Command);
         SendCommand(Takeoff);
         SendCommand(customerLocation);
         SendCommand(Land);
         SendCommand(Takeoff);
-        State = DroneState.Returning;
+        LatestStatus = DroneStatus.Returning;
         SendCommand(HomeLocation);
         SendCommand(Land);
-        State = DroneState.Ready;
+        LatestStatus = DroneStatus.Ready;
         return true;
     }
 
     private void SendCommand(GeoLocation telemetry)
     {
         var commands = PointToTelloCommands(telemetry.Latitude, telemetry.Longitude);
-        if (State == DroneState.Dead) return;
+        if (LatestStatus == DroneStatus.Dead) return;
         foreach (string command in commands)
         {
             var task = send_command(command, Offline);
@@ -121,14 +121,14 @@ public class TelloDrone : Drone
 
     private void SendCommand(string command)
     {
-        if (State == DroneState.Dead) return;
+        if (LatestStatus == DroneStatus.Dead) return;
         // Refuses to take commands if an error occured.
         var task = send_command(command, Offline);
         task.Wait();
         if (!task.Result)
         {
             // Errors are considered in dead status for now
-            State = DroneState.Dead;
+            LatestStatus = DroneStatus.Dead;
         }
     }
 
@@ -285,7 +285,7 @@ public class TelloDrone : Drone
 
     public override string ToString()
     {
-        return $"location:{CurrentLocation}\nDestination:{Destination}\nStatus:{State}";
+        return $"location:{CurrentLocation}\nDestination:{Destination}\nStatus:{LatestStatus}";
     }
     
    
@@ -294,7 +294,7 @@ public class TelloDrone : Drone
         if (offline)
         {
             var splitCommand = command.Split(" ");
-            State = DroneState.Dead;
+            LatestStatus = DroneStatus.Dead;
             if (splitCommand.Length >= 2 && splitCommand[1].Length > 0)
             {
                 switch (splitCommand[0])

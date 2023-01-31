@@ -19,7 +19,7 @@ public class DispatchToDroneGatewayTests
     // [Fact]
     // public async Task assign_fleet_should_return_dto()
     // {
-    //     var testFleetDb = new List<DroneRecord>(){Constants.TestRecord};
+    //     var testFleetDb = new List<DroneModel>(){Constants.TestModel};
     //     var handleFactory = new HttpHandlerFactory();
     //     handleFactory.jsonAll(Constants.TestAssignFleetRequest);
     //     var handle = handleFactory.GetHttpMessageHandler();
@@ -35,7 +35,7 @@ public class DispatchToDroneGatewayTests
     // [Fact]
     // public async Task assign_delivery_should_return_dto()
     // {
-    //     var testFleetDb = new List<DroneRecord>(){Constants.TestRecord};
+    //     var testFleetDb = new List<DroneModel>(){Constants.TestModel};
     //     var handleFactory = new HttpHandlerFactory();
     //     handleFactory.jsonAll(Constants.TestAssignDeliverRequest);
     //     var handle = handleFactory.GetHttpMessageHandler();

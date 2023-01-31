@@ -1,6 +1,6 @@
 ﻿namespace Domain.DTO.FrontEndDispatchCommunication;
 
-public class EnqueueOrderResponse : BaseDto
+public class EnqueueDeliveryResponse : BaseDto
 {
     public bool IsAssigned { get; set; }
 }

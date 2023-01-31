@@ -7,31 +7,31 @@ using FrontEnd.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace FrontEnd.Pages.OrderPages;
+namespace FrontEnd.Pages.DeliveryPages;
 
-partial class OrderPage : ComponentBase
+partial class DeliveryPage : ComponentBase
 {
     public string DeliveryAddress;
     public string CustomerName;
     public string DroneUrl;
-    public Order[] Orders;
+    public DeliveryEntity[] Deliveries;
 
     public bool connection;
 
-    public Order selectedOrder;
+    public DeliveryEntity SelectedDeliveryEntity;
 
     public string visibility = "hidden";
 
-    public string orderToCancel;
+    public string deliveryToCancel;
 
     public string defaultText ="";
-    public DroneRecord[] Fleet;
+    public DroneEntity[] Fleet;
     
     protected override async Task OnInitializedAsync()
     {
         try
         {          
-            await GetOrders();
+            await GetDeliveries();
             await GetFleet();
             connection = true;
         }
@@ -41,9 +41,9 @@ partial class OrderPage : ComponentBase
         }
     } 
 
-    public async Task GetOrders()
+    public async Task GetDeliveries()
     {
-        Orders = (await DatabaseGateway.GetOrders()).ToArray();
+        Deliveries = (await DatabaseGateway.GetDeliveries()).ToArray();
     }
     public async Task GetFleet()
     {
@@ -55,50 +55,50 @@ partial class OrderPage : ComponentBase
         await DatabaseGateway.AddDrone(DroneUrl);
     }
 
-    public async Task MakeOrder()
+    public async Task MakeDelivery()
     {
-        var orderId = BaseEntity.GenerateNewId();
-        await DatabaseGateway.CreateOrder(new CreateOrderRequest
+        var deliveryId = BaseEntity.GenerateNewId();
+        await DatabaseGateway.CreateDelivery(new CreateDeliveryRequest
         {
-            OrderId = orderId,
-            TimeOrdered = DateTime.Now,
+            DeliveryId = deliveryId,
+            TimeDeliveryed = DateTime.Now,
             CustomerName = CustomerName,
             DeliveryLocation = null,
             DeliveryAddress = DeliveryAddress,
             DroneId = DroneUrl,
-            State = OrderState.Waiting
+            Status = Deliveriestatus.Waiting
         });
-        await GetOrders(); 
+        await GetDeliveries(); 
     }
 
-    public async Task CancelOrder()
+    public async Task CancelDelivery()
     {
-        if (!string.IsNullOrEmpty(orderToCancel))
+        if (!string.IsNullOrEmpty(deliveryToCancel))
         {
-            orderToCancel = selectedOrder.Id;
+            deliveryToCancel = SelectedDeliveryEntity.Id;
         }
-        defaultText = orderToCancel;
-        await GetOrders();
-        orderToCancel = null;
+        defaultText = deliveryToCancel;
+        await GetDeliveries();
+        deliveryToCancel = null;
         defaultText = "";
     }
 
     public void OnInfoClose(){
         visibility = "hidden";
         defaultText = "";
-        selectedOrder = null;
+        SelectedDeliveryEntity = null;
     }
 
-    public void DisplaySelected(Order selected)
+    public void DisplaySelected(DeliveryEntity selected)
     {
-        selectedOrder = selected;
-        defaultText = selectedOrder.Id;
+        SelectedDeliveryEntity = selected;
+        defaultText = SelectedDeliveryEntity.Id;
         visibility = "visible";
     }
 
-    public string Color(DroneRecord drone)
+    public string Color(DroneEntity drone)
     {
-        return drone.State.GetColor();
+        return drone.LatestStatus.GetColor();
     }
     
 }

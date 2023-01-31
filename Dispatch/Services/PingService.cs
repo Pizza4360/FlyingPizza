@@ -17,7 +17,7 @@ public class PingService : BackgroundService
 {
     private readonly ILogger Logger;
     private readonly string _dispatchUrl; 
-    public PingService(IODDSSettings settings)
+    public PingService(OpenDroneDispatchCollectionSettings settings)
     {
         _dispatchUrl = settings.GetDispatchUrl();
     }
@@ -33,11 +33,17 @@ public class PingService : BackgroundService
             try
             {
                 Console.WriteLine($"Ping to {DispatchUrl}");
-                _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var t = await _httpClient.PostAsJsonAsync($"{DispatchUrl}/AssignmentCheck/", new BaseDto {Message = "Hi"},
-                    stoppingToken);
-                // var pingTask = Pinger.SendPingAsync(IPAddress.Parse("192.168.1.100:83//Ping"), 5000);
-                var cancelTask = Task.Delay(5000, stoppingToken);
+                _httpClient.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json")
+                );
+                
+                var t = await _httpClient.PostAsJsonAsync(
+                    $"{DispatchUrl}/AssignmentCheck/", new BaseDto 
+                        {Message = "Let me in!."}, stoppingToken);
+                
+                // var pingTask = Pinger.SendPingAsync(IPAddress.Parse(
+                // "192.168.1.100:83//Ping"), 5000);
+                var _ = Task.Delay(5000, stoppingToken);
                 //double await so exceptions from either task will bubble up
                 await Task.Yield();
             }
